@@ -1,1 +1,4 @@
 import(jaspBase)
+export(NonParametricSurvivalAnalysis)
+export(SemiParametricSurvivalAnalysis)
+export(ParametricSurvivalAnalysis)
