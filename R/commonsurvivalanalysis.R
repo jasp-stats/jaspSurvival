@@ -1,3 +1,7 @@
+# TODO:
+# qml
+# - make the event indicator be the second lvl of the event status variable
+
 .saSurvivalReady      <- function(options) {
 
   ready <- switch(
@@ -31,6 +35,9 @@
 
   # clean from NAs
   dataset <- na.omit(dataset)
+
+  # recode the event status variable
+  dataset[[eventVariable]] <- .saRecodeEventStatus(dataset, options)
 
   # check of errors
   .hasErrors(
@@ -67,57 +74,64 @@
   return(dataset)
 }
 
-
-.saGetSurvIntervalStatus <- function(dataset, options) {
-
-  if (anyDuplicated(c(
-    options[["rightCensored"]],
-    options[["eventIndicator"]],
-    options[["leftCensored"]],
-    options[["intervalCensored"]]
-  )))
-    .quitAnalysis(gettextf("Duplicated level mapping for interval censoring."))
-
-  # 0 = right censored, 1 = event at time, 2 = left censored, 3 = interval censored
-  event <- rep(NA, nrow(dataset))
-  event[dataset[[options[["eventStatus"]]]] == options[["rightCensored"]]]    <- 0
-  event[dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]]]   <- 1
-  event[dataset[[options[["eventStatus"]]]] == options[["leftCensored"]]]     <- 2
-  event[dataset[[options[["eventStatus"]]]] == options[["intervalCensored"]]] <- 3
-
-  return(event)
-}
-.saAddSurvData           <- function(dataset, options) {
+.saRecodeEventStatus <- function(dataset, options) {
 
   if (options[["censoringType"]] == "right") {
 
-    dataset$JASP__Computed__Time  <- dataset[[options[["timeToEvent"]]]]
-    dataset$JASP__Computed__Event <- dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]]
+    # 0 = right censored, 1 = event at time
+    event <- as.numeric(dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]])
 
   } else if (options[["censoringType"]] == "interval") {
 
-    dataset$JASP__Computed__Time  <-  dataset[[options[["intervalStart"]]]]
-    dataset$JASP__Computed__Time2 <-  dataset[[options[["intervalEnd"]]]]
-    dataset$JASP__Computed__Event <-  .saGetSurvIntervalStatus(dataset, options)
+    if (anyDuplicated(c(
+      options[["rightCensored"]],
+      options[["eventIndicator"]],
+      options[["leftCensored"]],
+      options[["intervalCensored"]]
+    )))
+      .quitAnalysis(gettextf("Duplicated level mapping for interval censoring."))
+
+    # 0 = right censored, 1 = event at time, 2 = left censored, 3 = interval censored
+    event <- rep(NA, nrow(dataset))
+    event[dataset[[options[["eventStatus"]]]] == options[["rightCensored"]]]    <- 0
+    event[dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]]]   <- 1
+    event[dataset[[options[["eventStatus"]]]] == options[["leftCensored"]]]     <- 2
+    event[dataset[[options[["eventStatus"]]]] == options[["intervalCensored"]]] <- 3
+
   }
 
-  return(dataset)
+  return(event)
 }
 .saGetSurv               <- function(options) {
   return(switch(
     options[["censoringType"]],
-    "interval" = "survival::Surv(
-      time  = JASP__Computed__Time,
-      time2 = JASP__Computed__Time2,
-      event = JASP__Computed__Event)",
-    "right"    = "survival::Surv(
-      time  = JASP__Computed__Time,
-      event = JASP__Computed__Event)"
+    "interval" = sprintf("survival::Surv(
+      time  = %1$s,
+      time2 = %2$s,
+      event = %3$s)",
+      options[["intervalStart"]],
+      options[["intervalEnd"]],
+      options[["eventStatus"]]
+      ),
+    "right"    = sprintf("survival::Surv(
+      time  = %1$s,
+      event = %2$s)",
+      options[["timeToEvent"]],
+      options[["eventStatus"]]
+      )
   ))
 }
-.saGetFormula            <- function(survival, predictors = NULL, includeConstant = TRUE) {
+.saGetFormula            <- function(options, type) {
 
-  if (is.null(predictors) && includeConstant == FALSE)
+  if (type == "KM") {
+    # nonparametric (Kaplan-Meier) only stratifies by factors
+    predictors      <- options[["factors"]]
+    includeConstant <- TRUE
+  }
+
+  survival <- .saGetSurv(options)
+
+  if (length(predictors) == 0 && includeConstant == FALSE)
     stop(gettext("We need at least one predictor, or an intercept to make a formula"))
 
   if (length(predictors) == 0)

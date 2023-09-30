@@ -46,9 +46,9 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   jaspResults[["fit"]] <- fitContainer
 
   fit <- try(survival::survfit(
-    formula = .saGetFormula(.saGetSurv(options), options[["factors"]]),
+    formula = .saGetFormula(options, type = "KM"),
     type    = "kaplan-meier",
-    data    = .saAddSurvData(dataset, options)
+    data    = dataset
   ))
 
   jaspResults[["fit"]]$object <- fit
