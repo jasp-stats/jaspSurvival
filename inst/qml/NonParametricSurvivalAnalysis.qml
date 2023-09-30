@@ -60,4 +60,66 @@ Form
 			allowedColumns:		["ordinal", "nominal", "nominalText"]
 		}
 	}
+
+	CheckBox
+	{
+		name:	"lifeTable"
+		label:	qsTr("Life table")
+
+		CheckBox
+		{
+			name:		"lifeTableRoundSteps"
+			label:		qsTr("Round steps")
+			checked:	true
+		}
+
+		DropDown
+		{
+			name:		"lifeTableStepsType"
+			id:			lifeTableStepsType
+			label:		qsTr("Steps type")
+			values:
+			[
+				{ label: qsTr("Quantilies"),	value: "quantiles"},
+				{ label: qsTr("Fixed size"),	value: "fixedSize"}
+			]
+		}
+
+		IntegerField
+		{
+			name:			"lifeTableStepsNumber"
+			label:			qsTr("Number")
+			defaultValue:	10
+			visible:		lifeTableStepsType.value == "quantiles"
+		}
+
+		DoubleField
+		{
+			name:			"lifeTableStepsFrom"
+			id:				lifeTableStepsFrom
+			label:			qsTr("From")
+			defaultValue:	0
+			max:			lifeTableStepsTo.value
+			visible:		lifeTableStepsType.value == "fixedSize"
+		}
+
+		DoubleField
+		{
+			name:			"lifeTableStepsSize"
+			label:			qsTr("Size")
+			defaultValue:	1
+			// max:			lifeTableStepsTo.value // TODO: enable once max is data dependent
+			visible:		lifeTableStepsType.value == "fixedSize"
+		}
+
+		DoubleField
+		{
+			name:			"lifeTableStepsTo"
+			id:				lifeTableStepsTo
+			label:			qsTr("To")
+			defaultValue:	0
+			min:			lifeTableStepsFrom.value
+			visible:		lifeTableStepsType.value == "fixedSize"
+		}
+	}
 }

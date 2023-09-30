@@ -1,6 +1,8 @@
 # TODO:
 # qml
 # - make the event indicator be the second lvl of the event status variable
+# - make "lifeTableStepsTo" correspond to the maximum time
+# - make "lifeTableStepsSize" correspond to the maxiumum time/10
 
 .saSurvivalReady      <- function(options) {
 
@@ -73,8 +75,7 @@
 
   return(dataset)
 }
-
-.saRecodeEventStatus <- function(dataset, options) {
+.saRecodeEventStatus  <- function(dataset, options) {
 
   if (options[["censoringType"]] == "right") {
 
@@ -102,7 +103,7 @@
 
   return(event)
 }
-.saGetSurv               <- function(options) {
+.saGetSurv            <- function(options) {
   return(switch(
     options[["censoringType"]],
     "interval" = sprintf("survival::Surv(
@@ -121,7 +122,7 @@
       )
   ))
 }
-.saGetFormula            <- function(options, type) {
+.saGetFormula         <- function(options, type) {
 
   if (type == "KM") {
     # nonparametric (Kaplan-Meier) only stratifies by factors
@@ -142,4 +143,23 @@
     formula <- paste(survival, "~", paste(predictors, collapse = "+"), "-1")
 
   return(as.formula(formula, env = parent.frame(1)))
+}
+.saLifeTableTimes     <- function(dataset, options) {
+
+  times <- dataset[[switch(
+    options[["censoringType"]],
+    "right"    = options[["timeToEvent"]],
+    "interval" = options[["intervalEnd"]]
+  )]]
+
+  timeSteps <- switch(
+    options[["lifeTableStepsType"]],
+    "quantiles" = seq(from = min(times), to = max(times), length.out = options[["lifeTableStepsNumber"]]),
+    "fixedSize" = seq(from = options[["lifeTableStepsFrom"]], to = options[["lifeTableStepsTo"]], by = options[["lifeTableStepsSize"]])
+  )
+
+  if (options[["lifeTableRoundSteps"]])
+    timeSteps <- round(timeSteps)
+
+  return(unique(timeSteps))
 }

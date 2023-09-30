@@ -27,22 +27,23 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   saveRDS(dataset, file = "C:/JASP/dataset.RDS")
 
   if (.saSurvivalReady(options))
-    .saFitKaplanMeier(jaspResults, dataset, options)
+    .sanpFitKaplanMeier(jaspResults, dataset, options)
 
-  .saSummaryTable(jaspResults, dataset, options)
+  .sanpSummaryTable(jaspResults, dataset, options)
+  .sanpLifeTable(jaspResults, dataset, options)
 
   return()
 }
 
-.saNonParametricDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "factors")
+.sanpDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "factors")
 
-.saFitKaplanMeier <- function(jaspResults, dataset, options) {
+.sanpFitKaplanMeier <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["fit"]]))
     return()
 
   fitContainer <- createJaspState()
-  fitContainer$dependOn(.saNonParametricDependencies)
+  fitContainer$dependOn(.sanpDependencies)
   jaspResults[["fit"]] <- fitContainer
 
   fit <- try(survival::survfit(
@@ -55,13 +56,13 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   return()
 }
-.saSummaryTable   <- function(jaspResults, dataset, options) {
+.sanpSummaryTable   <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["summaryTable"]]))
     return()
 
   summaryTable <- createJaspTable(title = gettext("Kaplan-Meier Summary Table"))
-  summaryTable$dependOn(.saNonParametricDependencies)
+  summaryTable$dependOn(.sanpDependencies)
   summaryTable$position <- 1
   jaspResults[["summaryTable"]] <- summaryTable
 
@@ -71,11 +72,13 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   if (length(options[["factors"]]) != 0)
     summaryTable$addColumnInfo(name = "strata",     title = "Strata",          type = "string")
 
-  summaryTable$addColumnInfo(name = "n",            title = "N",               type = "integer")
-  summaryTable$addColumnInfo(name = "events",       title = "Events",          type = "integer")
-  summaryTable$addColumnInfo(name = "median",       title = "Median Survival", type = "number")
-  summaryTable$addColumnInfo(name = "lowerCI",      title = gettext("Lower"),  type = "number", overtitle = overtitleCi)
-  summaryTable$addColumnInfo(name = "upperCI",      title = gettext("Upper"),  type = "number", overtitle = overtitleCi)
+  summaryTable$addColumnInfo(name = "n",                title = "N",               type = "integer")
+  summaryTable$addColumnInfo(name = "events",           title = "Events",          type = "integer")
+  summaryTable$addColumnInfo(name = "restrictedMean",   title = "Restricted Mean", type = "number")
+  summaryTable$addColumnInfo(name = "restrictedMeanSe", title = "Standard Error",  type = "number")
+  summaryTable$addColumnInfo(name = "median",           title = "Median Survival", type = "number")
+  summaryTable$addColumnInfo(name = "lowerCI",          title = gettext("Lower"),  type = "number", overtitle = overtitleCi)
+  summaryTable$addColumnInfo(name = "upperCI",          title = gettext("Upper"),  type = "number", overtitle = overtitleCi)
 
   if (is.null(jaspResults[["fit"]]))
     return()
@@ -87,7 +90,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     return()
   }
 
-  fitSummary <- .saKaplanMeierFitSummary(fit)
+  fitSummary <- .sanpKaplanMeierFitSummary(fit)
   summaryTable$setData(fitSummary)
 
   if (!is.null(attr(dataset, "na.action")))
@@ -95,24 +98,112 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   return()
 }
+.sanpLifeTable      <- function(jaspResults, dataset, options) {
 
-.saKaplanMeierFitSummary <- function(fit) {
+  if (!is.null(jaspResults[["LifeTableContainer"]]))
+    return()
 
-  # there is no output from the print function unfortunately
-  # this function formats a data.frame that can be displayed in JASP
+  LifeTableContainer <- createJaspContainer(title = gettext("Life Table"))
+  LifeTableContainer$dependOn(c(.sanpDependencies, "lifeTable", "lifeTableRoundSteps", "lifeTableStepsType",
+                       "lifeTableStepsNumber", "lifeTableStepsFrom", "lifeTableStepsSize", "lifeTableStepsTo"))
+  LifeTableContainer$position <- 3
+  jaspResults[["LifeTableContainer"]] <- LifeTableContainer
 
-  fitSummary <- survival:::survmean(fit, rmean = "none")$matrix
+  if (is.null(jaspResults[["fit"]])) {
+    jaspResults[["LifeTableContainer"]][["emptyTable"]] <- .sanpEmptyLifeTable()
+    return()
+  }
+
+  fit <- jaspResults[["fit"]][["object"]]
+
+  if (jaspBase::isTryError(fit)) {
+    jaspResults[["LifeTableContainer"]][["emptyTable"]] <- .sanpEmptyLifeTable()
+    return()
+  }
+
+  fitLifeTable <- try(.sanpKaplanMeierFitLifeTable(fit, dataset, options))
+
+  if (jaspBase::isTryError(fitLifeTable)) {
+    jaspResults[["LifeTableContainer"]][["emptyTable"]] <- .sanpEmptyLifeTable()
+    jaspResults[["LifeTableContainer"]][["emptyTable"]]$setError(fitLifeTable)
+    return()
+  }
+
+
+  if (length(options[["factors"]]) == 0) {
+
+    tempTable <- .sanpEmptyLifeTable()
+    tempTable$setData(fitLifeTable)
+
+    jaspResults[["LifeTableContainer"]][["table"]] <- tempTable
+
+  } else {
+
+    i <- 0
+    for (strata in unique(attr(fitLifeTable, "strata"))) {
+
+      i <- i + 1
+      tempTable <- .sanpEmptyLifeTable(title = strata, position = i)
+      tempTable$setData(fitLifeTable[attr(fitLifeTable, "strata") == strata, ])
+
+      jaspResults[["LifeTableContainer"]][[paste0("table", i)]] <- tempTable
+
+    }
+  }
+
+  return()
+}
+
+
+.sanpKaplanMeierFitSummary   <- function(fit) {
+
+  fitSummary <- summary(fit)$table
 
   if(is.null(dim(fitSummary)))
     fitSummary <- data.frame(t(fitSummary))
   else
     fitSummary <- data.frame(fitSummary)
 
-  fitSummary <- fitSummary[,c("records", "events", "median", "X0.95LCL", "X0.95UCL")]
-  colnames(fitSummary) <- c("n", "events", "median", "lowerCI", "upperCI")
+  fitSummary <- fitSummary[,c("records", "events", "rmean", "se.rmean.",  "median", "X0.95LCL", "X0.95UCL")]
+  colnames(fitSummary) <- c("n", "events", "restrictedMean", "restrictedMeanSe", "median", "lowerCI", "upperCI")
 
   if(nrow(fitSummary) > 1)
     fitSummary$strata <- rownames(fitSummary)
 
   return(fitSummary)
 }
+.sanpKaplanMeierFitLifeTable <- function(fit, dataset, options) {
+
+  summaryFit <- summary(fit, times = .saLifeTableTimes(dataset, options))
+
+  lifeTable <- with(summaryFit, data.frame(
+    time          = time,
+    atRisk        = n.risk,
+    events        = n.event,
+    survival      = surv,
+    standardError = std.err,
+    lowerCI       = lower,
+    upperCI       = upper
+  ))
+
+  attr(lifeTable, "strata") <- summaryFit$strata
+
+  return(lifeTable)
+}
+.sanpEmptyLifeTable          <- function(title = "", position = 1) {
+
+  tempTable <- createJaspTable(title = title)
+  tempTable$position <- position
+
+  overtitleCi <- gettextf("%s%% CI", 95)
+  tempTable$addColumnInfo(name = "time",           title = "Time",            type = "number")
+  tempTable$addColumnInfo(name = "atRisk",         title = "N",               type = "integer")
+  tempTable$addColumnInfo(name = "events",         title = "At Risk",         type = "integer")
+  tempTable$addColumnInfo(name = "survival",       title = "Survival",        type = "number")
+  tempTable$addColumnInfo(name = "standardError",  title = "Standard Error",  type = "number")
+  tempTable$addColumnInfo(name = "lowerCI",        title = gettext("Lower"),  type = "number", overtitle = overtitleCi)
+  tempTable$addColumnInfo(name = "upperCI",        title = gettext("Upper"),  type = "number", overtitle = overtitleCi)
+
+  return(tempTable)
+}
+
