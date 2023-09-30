@@ -158,7 +158,7 @@
     "fixedSize" = seq(from = options[["lifeTableStepsFrom"]], to = options[["lifeTableStepsTo"]], by = options[["lifeTableStepsSize"]])
   )
 
-  if (options[["lifeTableRoundSteps"]])
+  if (options[["lifeTableStepsType"]] == "quantiles" && options[["lifeTableRoundSteps"]])
     timeSteps <- round(timeSteps)
 
   return(unique(timeSteps))

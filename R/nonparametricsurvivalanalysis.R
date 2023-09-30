@@ -30,7 +30,12 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     .sanpFitKaplanMeier(jaspResults, dataset, options)
 
   .sanpSummaryTable(jaspResults, dataset, options)
-  .sanpLifeTable(jaspResults, dataset, options)
+
+  if (options[["survivalCurvePlot"]])
+    .sanpSurvivalPlot(jaspResults, dataset, options)
+
+  if (options[["lifeTable"]])
+    .sanpLifeTable(jaspResults, dataset, options)
 
   return()
 }
@@ -98,6 +103,47 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   return()
 }
+.sanpSurvivalPlot   <- function(jaspResults, dataset, options) {
+
+  if (!is.null(jaspResults[["surivalPlot"]]))
+    return()
+
+  surivalPlot <- createJaspPlot(
+    title = gettext("Kaplan-Meier Survival Curve"),
+    width  = 450 + if (length(options[["factors"]]) != 0 && options[["survivalCurvePlotLegend"]] %in% c("left", "right")) 200 else 0,
+    height = 320 + if (length(options[["factors"]]) != 0 && options[["survivalCurvePlotLegend"]] %in% c("top", "bottom")) 50 else 0)
+  surivalPlot$dependOn(c(.sanpDependencies, "survivalCurvePlot", "survivalCurvePlotConfidenceInterval",
+                         "survivalCurvePlotLegend", "survivalCurvePlotDataRug", "colorPalette"))
+  surivalPlot$position <- 3
+  jaspResults[["surivalPlot"]] <- surivalPlot
+
+  if (is.null(jaspResults[["fit"]]))
+    return()
+
+  fit <- jaspResults[["fit"]][["object"]]
+
+  if (jaspBase::isTryError(fit)) {
+    return()
+  }
+
+  fitLifeTable <- try(.sanpKaplanMeierFitLifeTable(fit, dataset, options, plot = TRUE))
+
+  if (jaspBase::isTryError(fitLifeTable)) {
+    surivalPlot$setError(fitLifeTable)
+    return()
+  }
+
+  tempPlot <- try(.sanpPlotLifeTable(fitLifeTable, options))
+
+  if (jaspBase::isTryError(tempPlot)) {
+    surivalPlot$setError(tempPlot)
+    return()
+  }
+
+  surivalPlot$plotObject <- tempPlot
+
+  return()
+}
 .sanpLifeTable      <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["LifeTableContainer"]]))
@@ -106,7 +152,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   LifeTableContainer <- createJaspContainer(title = gettext("Life Table"))
   LifeTableContainer$dependOn(c(.sanpDependencies, "lifeTable", "lifeTableRoundSteps", "lifeTableStepsType",
                        "lifeTableStepsNumber", "lifeTableStepsFrom", "lifeTableStepsSize", "lifeTableStepsTo"))
-  LifeTableContainer$position <- 3
+  LifeTableContainer$position <- 4
   jaspResults[["LifeTableContainer"]] <- LifeTableContainer
 
   if (is.null(jaspResults[["fit"]])) {
@@ -172,9 +218,12 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   return(fitSummary)
 }
-.sanpKaplanMeierFitLifeTable <- function(fit, dataset, options) {
+.sanpKaplanMeierFitLifeTable <- function(fit, dataset, options, plot = FALSE) {
 
-  summaryFit <- summary(fit, times = .saLifeTableTimes(dataset, options))
+  if (plot || options[["lifeTableStepsType"]] == "default")
+    summaryFit <- summary(fit)
+  else
+    summaryFit <- summary(fit, times = .saLifeTableTimes(dataset, options))
 
   lifeTable <- with(summaryFit, data.frame(
     time          = time,
@@ -186,9 +235,50 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     upperCI       = upper
   ))
 
-  attr(lifeTable, "strata") <- summaryFit$strata
+  if (plot)
+    lifeTable$strata <- summaryFit$strata
+  else
+    attr(lifeTable, "strata") <- summaryFit$strata
 
   return(lifeTable)
+}
+.sanpPlotLifeTable           <- function(fitLifeTable, options) {
+
+  if (length(options[["factors"]]) == 0) {
+
+    tempPlot <- ggplot2::ggplot(fitLifeTable) +
+      jaspGraphs::geom_line(mapping = ggplot2::aes(x = time, y = survival))
+
+    if (options[["survivalCurvePlotConfidenceInterval"]])
+      tempPlot <- tempPlot + ggplot2::geom_ribbon(mapping = ggplot2::aes(x = time, ymin = lowerCI, ymax = upperCI), alpha = 0.1, size = 1)
+
+    if (options[["survivalCurvePlotDataRug"]])
+      tempPlot <- tempPlot + ggplot2::geom_rug(ggplot2::aes(x = time, y = survival), sides = "b", alpha = 0.5)
+
+  } else {
+
+    tempPlot <- ggplot2::ggplot(fitLifeTable) +
+      jaspGraphs::geom_line(mapping = ggplot2::aes(x = time, y = survival, group = strata, color = strata))
+
+    if (options[["survivalCurvePlotConfidenceInterval"]])
+      tempPlot <- tempPlot + ggplot2::geom_ribbon(mapping = ggplot2::aes(x = time, ymin = lowerCI, ymax = upperCI, group = strata, fill = strata), alpha = 0.1, size = 1)
+
+    if (options[["survivalCurvePlotDataRug"]])
+      tempPlot <- tempPlot + ggplot2::geom_rug(ggplot2::aes(x = time, y = survival, color = strata), sides = "b", alpha = 0.5)
+
+    tempPlot <- tempPlot + jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]]) +
+      jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]]) +
+      ggplot2::labs(fill = gettext("Strata"), color = gettext("Strata"))
+
+  }
+
+  tempPlot <- tempPlot +
+    jaspGraphs::scale_x_continuous(name = gettext("Time")) +
+    jaspGraphs::scale_y_continuous(name = gettext("Survival")) +
+    jaspGraphs::geom_rangeframe(sides = 'bl') +
+    jaspGraphs::themeJaspRaw(legend.position = if (length(options[["factors"]]) != 0) options[["survivalCurvePlotLegend"]])
+
+  return(tempPlot)
 }
 .sanpEmptyLifeTable          <- function(title = "", position = 1) {
 

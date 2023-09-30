@@ -66,13 +66,6 @@ Form
 		name:	"lifeTable"
 		label:	qsTr("Life table")
 
-		CheckBox
-		{
-			name:		"lifeTableRoundSteps"
-			label:		qsTr("Round steps")
-			checked:	true
-		}
-
 		DropDown
 		{
 			name:		"lifeTableStepsType"
@@ -81,7 +74,8 @@ Form
 			values:
 			[
 				{ label: qsTr("Quantilies"),	value: "quantiles"},
-				{ label: qsTr("Fixed size"),	value: "fixedSize"}
+				{ label: qsTr("Fixed size"),	value: "fixedSize"},
+				{ label: qsTr("Default"),		value: "default"}
 			]
 		}
 
@@ -91,6 +85,14 @@ Form
 			label:			qsTr("Number")
 			defaultValue:	10
 			visible:		lifeTableStepsType.value == "quantiles"
+		}
+
+		CheckBox
+		{
+			name:		"lifeTableRoundSteps"
+			label:		qsTr("Round steps")
+			checked:	true
+			visible:	lifeTableStepsType.value == "quantiles"
 		}
 
 		DoubleField
@@ -121,5 +123,40 @@ Form
 			min:			lifeTableStepsFrom.value
 			visible:		lifeTableStepsType.value == "fixedSize"
 		}
+	}
+
+	CheckBox
+	{
+		name:	"survivalCurvePlot"
+		label:	qsTr("Survival curve plot")
+
+		CheckBox
+		{
+			name:		"survivalCurvePlotConfidenceInterval"
+			label:		qsTr("Confidence interval")
+			checked:	true
+		}
+
+		DropDown
+		{
+			name:		"survivalCurvePlotLegend"
+			label:		qsTr("Legend")
+			values:
+			[
+				{ label: qsTr("Right"),		value: "right"},
+				{ label: qsTr("Left"),		value: "left"},
+				{ label: qsTr("Top"),		value: "top"},
+				{ label: qsTr("Bottom"),	value: "bottom"},
+				{ label: qsTr("None"),		value: "none"}
+			]
+		}
+
+		CheckBox
+		{
+			name:		"survivalCurvePlotDataRug"
+			label:		qsTr("Data rug")
+		}
+		
+		ColorPalette{}
 	}
 }
