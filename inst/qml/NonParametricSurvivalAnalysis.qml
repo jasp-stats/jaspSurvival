@@ -61,67 +61,106 @@ Form
 		}
 	}
 
-	CheckBox
+	Group
 	{
-		name:	"lifeTable"
-		label:	qsTr("Life table")
 
-		DropDown
+		CheckBox
 		{
-			name:		"lifeTableStepsType"
-			id:			lifeTableStepsType
-			label:		qsTr("Steps type")
-			values:
-			[
-				{ label: qsTr("Quantilies"),	value: "quantiles"},
-				{ label: qsTr("Fixed size"),	value: "fixedSize"},
-				{ label: qsTr("Default"),		value: "default"}
-			]
-		}
+			name:	"tests"
+			label:	qsTr("Tests")
 
-		IntegerField
-		{
-			name:			"lifeTableStepsNumber"
-			label:			qsTr("Number")
-			defaultValue:	10
-			visible:		lifeTableStepsType.value == "quantiles"
+			CheckBox
+			{
+				name:		"testsLogRank"
+				label:		qsTr("Log-rank (Mantel-Haenszel)")
+				checked:	true
+			}
+
+			CheckBox
+			{
+				name:		"testsPetoAndPeto"
+				label:		qsTr("Peto and Peto")
+				checked:	true
+			}
+
+			CheckBox
+			{
+				name:		"testsFlemmingHarrington"
+				label:		qsTr("Flemming-Harrington")
+
+				DoubleField
+				{
+					name:			"testsFlemmingHarringtonRho"
+					label:			qsTr("Rho")
+					defaultValue:	0.5
+					min:			0
+					max:			1
+				}
+			}
 		}
 
 		CheckBox
 		{
-			name:		"lifeTableRoundSteps"
-			label:		qsTr("Round steps")
-			checked:	true
-			visible:	lifeTableStepsType.value == "quantiles"
-		}
+			name:	"lifeTable"
+			label:	qsTr("Life table")
 
-		DoubleField
-		{
-			name:			"lifeTableStepsFrom"
-			id:				lifeTableStepsFrom
-			label:			qsTr("From")
-			defaultValue:	0
-			max:			lifeTableStepsTo.value
-			visible:		lifeTableStepsType.value == "fixedSize"
-		}
+			DropDown
+			{
+				name:		"lifeTableStepsType"
+				id:			lifeTableStepsType
+				label:		qsTr("Steps type")
+				values:
+				[
+					{ label: qsTr("Quantilies"),	value: "quantiles"},
+					{ label: qsTr("Fixed size"),	value: "fixedSize"},
+					{ label: qsTr("Default"),		value: "default"}
+				]
+			}
 
-		DoubleField
-		{
-			name:			"lifeTableStepsSize"
-			label:			qsTr("Size")
-			defaultValue:	1
-			// max:			lifeTableStepsTo.value // TODO: enable once max is data dependent
-			visible:		lifeTableStepsType.value == "fixedSize"
-		}
+			IntegerField
+			{
+				name:			"lifeTableStepsNumber"
+				label:			qsTr("Number")
+				defaultValue:	10
+				visible:		lifeTableStepsType.value == "quantiles"
+			}
 
-		DoubleField
-		{
-			name:			"lifeTableStepsTo"
-			id:				lifeTableStepsTo
-			label:			qsTr("To")
-			defaultValue:	0
-			min:			lifeTableStepsFrom.value
-			visible:		lifeTableStepsType.value == "fixedSize"
+			CheckBox
+			{
+				name:		"lifeTableRoundSteps"
+				label:		qsTr("Round steps")
+				checked:	true
+				visible:	lifeTableStepsType.value == "quantiles"
+			}
+
+			DoubleField
+			{
+				name:			"lifeTableStepsFrom"
+				id:				lifeTableStepsFrom
+				label:			qsTr("From")
+				defaultValue:	0
+				max:			lifeTableStepsTo.value
+				visible:		lifeTableStepsType.value == "fixedSize"
+			}
+
+			DoubleField
+			{
+				name:			"lifeTableStepsSize"
+				label:			qsTr("Size")
+				defaultValue:	1
+				// max:			lifeTableStepsTo.value // TODO: enable once max is data dependent
+				visible:		lifeTableStepsType.value == "fixedSize"
+			}
+
+			DoubleField
+			{
+				name:			"lifeTableStepsTo"
+				id:				lifeTableStepsTo
+				label:			qsTr("To")
+				defaultValue:	0
+				min:			lifeTableStepsFrom.value
+				visible:		lifeTableStepsType.value == "fixedSize"
+			}
 		}
 	}
 

@@ -26,10 +26,15 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   saveRDS(options, file = "C:/JASP/options.RDS")
   saveRDS(dataset, file = "C:/JASP/dataset.RDS")
 
-  if (.saSurvivalReady(options))
+  if (.saSurvivalReady(options)) {
     .sanpFitKaplanMeier(jaspResults, dataset, options)
+    .sanpFitTests(jaspResults, dataset, options)
+  }
 
   .sanpSummaryTable(jaspResults, dataset, options)
+
+  if (options[["tests"]])
+    .sanpTestsTable(jaspResults, dataset, options)
 
   if (options[["survivalCurvePlot"]])
     .sanpSurvivalPlot(jaspResults, dataset, options)
@@ -42,7 +47,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
 .sanpDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "factors")
 
-.sanpFitKaplanMeier <- function(jaspResults, dataset, options) {
+.sanpFitKaplanMeier  <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["fit"]]))
     return()
@@ -61,7 +66,58 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   return()
 }
-.sanpSummaryTable   <- function(jaspResults, dataset, options) {
+.sanpFitTests        <- function(jaspResults, dataset, options) {
+
+  if (length(options[["factors"]]) == 0)
+    return()
+
+  if (options[["testsLogRank"]] && is.null(jaspResults[["testLogRank"]])) {
+
+    tempContainer <- createJaspState()
+    tempContainer$dependOn(c(.sanpDependencies, "testsLogRank"))
+    jaspResults[["testLogRank"]] <- tempContainer
+
+    fit <- try(survival::survdiff(
+      formula = .saGetFormula(options, type = "KM"),
+      data    = dataset
+    ))
+
+    jaspResults[["testLogRank"]]$object <- fit
+  }
+
+  if (options[["testsPetoAndPeto"]] && is.null(jaspResults[["testPetoAndPeto"]])) {
+
+    tempContainer <- createJaspState()
+    tempContainer$dependOn(c(.sanpDependencies, "testsPetoAndPeto"))
+    jaspResults[["testPetoAndPeto"]] <- tempContainer
+
+    fit <- try(survival::survdiff(
+      formula = .saGetFormula(options, type = "KM"),
+      data    = dataset,
+      rho     = 1
+    ))
+
+    jaspResults[["testPetoAndPeto"]]$object <- fit
+  }
+
+  if (options[["testsFlemmingHarrington"]] && is.null(jaspResults[["testFlemmingHarrington"]])) {
+
+    tempContainer <- createJaspState()
+    tempContainer$dependOn(c(.sanpDependencies, "testsFlemmingHarrington", "testsFlemmingHarringtonRho"))
+    jaspResults[["testFlemmingHarrington"]] <- tempContainer
+
+    fit <- try(survival::survdiff(
+      formula = .saGetFormula(options, type = "KM"),
+      data    = dataset,
+      rho     = options[["testsFlemmingHarringtonRho"]]
+    ))
+
+    jaspResults[["testFlemmingHarrington"]]$object <- fit
+  }
+
+  return()
+}
+.sanpSummaryTable    <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["summaryTable"]]))
     return()
@@ -103,7 +159,54 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   return()
 }
-.sanpSurvivalPlot   <- function(jaspResults, dataset, options) {
+.sanpTestsTable      <- function(jaspResults, dataset, options) {
+
+  if (!is.null(jaspResults[["testsTable"]]))
+    return()
+
+  testsTable <- createJaspTable(title = gettext("Tests Table"))
+  testsTable$dependOn(c(.sanpDependencies, "testsLogRank", "testsPetoAndPeto", "testsFlemmingHarrington", "testsFlemmingHarringtonRho"))
+  testsTable$position <- 2
+  jaspResults[["testsTable"]] <- testsTable
+
+  testsTable$addColumnInfo(name = "test",     title = "Test",                  type = "string")
+  testsTable$addColumnInfo(name = "chiSqr",   title = gettext("Chi Square"),   type = "number")
+  testsTable$addColumnInfo(name = "df",       title = gettext("df"),           type = "integer")
+  testsTable$addColumnInfo(name = "p",        title = gettext("p"),            type = "pvalue")
+
+  if (length(options[["factors"]]) == 0) {
+    testsTable$addFootnote(gettext("At least one factor needs to be specified"))
+    return()
+  }
+
+  if (options[["testsLogRank"]]) {
+    fit <- jaspResults[["testLogRank"]]$object
+    if (jaspBase::isTryError(fit))
+      testsTable$addFootnote(fit, symbol = "Warning:")
+    else
+      testsTable$addRows(.sanpExtractTest(fit, gettext("Log-rank (Mantel-Haenszel)")))
+  }
+
+  if (options[["testsPetoAndPeto"]]) {
+    fit <- jaspResults[["testPetoAndPeto"]]$object
+    if (jaspBase::isTryError(fit))
+      testsTable$addFootnote(fit, symbol = "Warning:")
+    else
+      testsTable$addRows(.sanpExtractTest(fit, gettext("Peto and Peto")))
+  }
+
+  if (options[["testsFlemmingHarrington"]]) {
+    fit <- jaspResults[["testFlemmingHarrington"]]$object
+    if (jaspBase::isTryError(fit))
+      testsTable$addFootnote(fit, symbol = "Warning:")
+    else
+      testsTable$addRows(.sanpExtractTest(fit, gettext("Flemming-Harrington")))
+  }
+
+  return()
+}
+
+.sanpSurvivalPlot    <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["surivalPlot"]]))
     return()
@@ -144,7 +247,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   return()
 }
-.sanpLifeTable      <- function(jaspResults, dataset, options) {
+.sanpLifeTable       <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["LifeTableContainer"]]))
     return()
@@ -296,4 +399,11 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   return(tempTable)
 }
-
+.sanpExtractTest             <- function(fit, title) {
+  return(list(
+    test   = title,
+    chiSqr = fit$chisq,
+    df     = length(fit$n) - 1,
+    p      = fit$pvalue
+  ))
+}
