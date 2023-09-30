@@ -23,5 +23,27 @@ import JASP				1.0
 
 Form
 {
+	VariablesForm
+	{
+		AvailableVariablesList
+		{
+			name: "allVariablesList"
+		}
 
+		AssignedVariablesList
+		{
+			name:				"timeToEvent"
+			title:				qsTr("Time to Event")
+			suggestedColumns:	["scale"]
+			singleVariable:		true
+		}
+
+		AssignedVariablesList
+		{
+			name:				"event"
+			title:				qsTr("Event")
+			suggestedColumns:	["nominal"]
+			singleVariable:		true
+		}
+	}
 }

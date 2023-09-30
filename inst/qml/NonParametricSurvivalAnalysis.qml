@@ -23,5 +23,41 @@ import JASP				1.0
 
 Form
 {
+	VariablesForm
+	{
+		AvailableVariablesList
+		{
+			name: "allVariablesList"
+		}
 
+		AssignedVariablesList
+		{
+			name:				"timeToEvent"
+			title:				qsTr("Time to Event")
+			suggestedColumns:	["scale"]
+			singleVariable:		true
+		}
+
+		AssignedVariablesList
+		{
+			name:				"eventStatus"
+			title:				qsTr("Event Status")
+			suggestedColumns:	["nominal"]
+			singleVariable:		true
+		}
+
+		DropDown
+		{
+			name:				"eventIndicator"
+			label:				qsTr("Event Indicator")
+			source:				[{name: "eventStatus", use: "levels"}]
+		}
+
+		AssignedVariablesList
+		{
+			name:			 	"factors"
+			title:			 	qsTr("Factors")
+			allowedColumns:		["ordinal", "nominal", "nominalText"]
+		}
+	}
 }

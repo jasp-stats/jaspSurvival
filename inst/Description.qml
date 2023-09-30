@@ -7,8 +7,8 @@ Description
 	title : 		qsTr("Survival Analysis")
 	description:	qsTr("Perform analyses of censored time to event data.")
 	requiresData:	true
-	icon:			"survival-analysis.svg"
-	version:		"0.17"
+//	icon:			"survival-analysis.svg"
+	version:		"0.18.1"
 	author:			"JASP Team"
 	maintainer:		"JASP Team <info@jasp-stats.org>"
 	website:		"jasp-stats.org"
@@ -17,7 +17,7 @@ Description
 	GroupTitle
 	{
 		title:	qsTr("Classical")
-		icon:	"survival-analysis.svg"
+//		icon:	"survival-analysis.svg"
 	}
 
 	Analysis
