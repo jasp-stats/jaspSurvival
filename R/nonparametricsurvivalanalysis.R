@@ -307,7 +307,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   fitSummary <- summary(fit)$table
 
-  if(is.null(dim(fitSummary)))
+  if (is.null(dim(fitSummary)))
     fitSummary <- data.frame(t(fitSummary))
   else
     fitSummary <- data.frame(fitSummary)
@@ -315,7 +315,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   fitSummary <- fitSummary[,c("records", "events", "rmean", "se.rmean.",  "median", "X0.95LCL", "X0.95UCL")]
   colnames(fitSummary) <- c("n", "events", "restrictedMean", "restrictedMeanSe", "median", "lowerCI", "upperCI")
 
-  if(nrow(fitSummary) > 1)
+  if (nrow(fitSummary) > 1)
     fitSummary$strata <- rownames(fitSummary)
 
   return(fitSummary)

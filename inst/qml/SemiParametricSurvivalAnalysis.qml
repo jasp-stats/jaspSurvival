@@ -40,10 +40,104 @@ Form
 
 		AssignedVariablesList
 		{
-			name:				"event"
-			title:				qsTr("Event")
+			name:				"eventStatus"
+			title:				qsTr("Event Status")
 			suggestedColumns:	["nominal"]
 			singleVariable:		true
 		}
+
+		DropDown
+		{
+			name:				"eventIndicator"
+			label:				qsTr("Event Indicator")
+			source:				[{name: "eventStatus", use: "levels"}]
+		}
+
+		AssignedVariablesList
+		{
+			name:			 	"covariates"
+			title:			 	qsTr("Covariates")
+			allowedColumns:		["ordinal", "scale"]
+		}
+
+		AssignedVariablesList
+		{
+			name:			 	"factors"
+			title:			 	qsTr("Factors")
+			allowedColumns:		["ordinal", "nominal", "nominalText"]
+		}
+	}
+
+	Section
+	{
+		title: qsTr("Model")
+
+		VariablesForm
+		{
+			preferredHeight:	jaspTheme.smallDefaultVariablesFormHeight
+
+			AvailableVariablesList
+			{
+				name:	"availableTerms"
+				title:	qsTr("Components")
+				width:	parent.width / 4
+				source:	['covariates', 'factors']
+			}
+
+			ModelTermsList
+			{
+				width:	parent.width * 5 / 9
+			}
+		}
+
+		CheckBox
+		{
+			name:		"interceptTerm"
+			label:		qsTr("Include intercept")
+			checked:	true
+		}
+	}
+
+	Section
+	{
+		title: qsTr("Statistics")
+
+		Group
+		{
+			title:				qsTr("Coefficients")
+			columns:			2
+			Layout.columnSpan:	2
+
+			Group
+			{
+				CheckBox
+				{
+					name:		"coefficientEstimate"
+					label:		qsTr("Estimates")
+					checked:	true
+
+					CheckBox
+					{
+						name:	"vovkSellke"
+						label:	qsTr("Vovk-Sellke maximum p-ratio")
+					}
+				}
+
+				CheckBox
+				{
+					name:		"coefficientHazardRatioEstimates"
+					label:		qsTr("Hazard ratio estimates")
+					checked:	true
+
+					CIField
+					{
+						name:	"coefficientCiLevel"
+						label:	qsTr("Confidence intervals")
+					}
+				}
+				
+			}
+		}
+		
 	}
 }

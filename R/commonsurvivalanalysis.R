@@ -1,8 +1,10 @@
 # TODO:
-# qml
+# qml:
 # - make the event indicator be the second lvl of the event status variable
 # - make "lifeTableStepsTo" correspond to the maximum time
 # - make "lifeTableStepsSize" correspond to the maxiumum time/10
+# R:
+# - convience function for making factor level parameter names nice?
 
 .saSurvivalReady      <- function(options) {
 
@@ -122,27 +124,55 @@
       )
   ))
 }
-.saGetFormula         <- function(options, type) {
+.saGetFormula         <- function(options, type, null = FALSE) {
 
   if (type == "KM") {
     # nonparametric (Kaplan-Meier) only stratifies by factors
-    predictors      <- options[["factors"]]
-    includeConstant <- TRUE
+    predictors    <- options[["factors"]]
+    interceptTerm <- TRUE
+  } else if (type == "Cox") {
+    # Cox proportional hazards always includes intercept
+    predictors    <- .saGetPredictors(options, null = null)
+    interceptTerm <- TRUE
   }
 
   survival <- .saGetSurv(options)
 
-  if (length(predictors) == 0 && includeConstant == FALSE)
+  if (length(predictors) == 0 && interceptTerm == FALSE)
     stop(gettext("We need at least one predictor, or an intercept to make a formula"))
 
   if (length(predictors) == 0)
     formula <- paste(survival, "~", "1")
-  else if (includeConstant)
+  else if (interceptTerm)
     formula <- paste(survival, "~", paste(predictors, collapse = "+"))
   else
     formula <- paste(survival, "~", paste(predictors, collapse = "+"), "-1")
 
   return(as.formula(formula, env = parent.frame(1)))
+}
+.saGetPredictors      <- function(options, null = FALSE) {
+  # modified from jaspRegression::.createGlmFormula
+  # this function outputs a formula name with base64 values as varnames
+  modelTerms    <- options[["modelTerms"]]
+
+  t <- NULL
+  for (i in seq_along(modelTerms)) {
+
+    if (null)
+      nui <- modelTerms[[i]][["isNuisance"]]
+    else
+      nui <- TRUE
+
+    if (!is.null(nui) && nui) {
+      term <- modelTerms[[i]][["components"]]
+      if (length(term) == 1)
+        t <- c(t, term)
+      else
+        t <- c(t, paste(unlist(term), collapse = ":"))
+    }
+  }
+
+  return(t)
 }
 .saLifeTableTimes     <- function(dataset, options) {
 
