@@ -205,7 +205,6 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   return()
 }
-
 .sanpSurvivalPlot    <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["surivalPlot"]]))
@@ -338,12 +337,33 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     upperCI       = upper
   ))
 
-  if (plot)
+  if (plot && !is.null(summaryFit$strata)) {
     lifeTable$strata <- summaryFit$strata
-  else
+    lifeTable <- split(lifeTable, lifeTable$strata)
+    lifeTable <- lapply(lifeTable, .sanpPlotLifeTableFun)
+    lifeTable <- do.call(rbind, lifeTable)
+  } else if (plot) {
+    lifeTable <- .sanpPlotLifeTableFun(lifeTable)
+  } else if (!is.null(summaryFit$strata)) {
     attr(lifeTable, "strata") <- summaryFit$strata
+  }
 
   return(lifeTable)
+}
+.sanpPlotLifeTableFun        <- function(lifeTable) {
+  # modifies the life table such that the resulting plot line is straight from one time to another
+  lifeTable2      <- lifeTable[-nrow(lifeTable),]
+  lifeTable2$time <- lifeTable$time[-1] - 1e-6
+
+  lifeTable0               <- lifeTable[c(1, 1),]
+  lifeTable0$time[1]       <- 0
+  lifeTable0$events        <- 0
+  lifeTable0$survival      <- 1
+  lifeTable0$standardError <- NA
+  lifeTable0$lowerCI       <- NA
+  lifeTable0$upperCI       <- NA
+
+  return(rbind(lifeTable0, lifeTable, lifeTable2))
 }
 .sanpPlotLifeTable           <- function(fitLifeTable, options) {
 
