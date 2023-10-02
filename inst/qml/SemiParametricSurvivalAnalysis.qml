@@ -30,12 +30,55 @@ Form
 			name: "allVariablesList"
 		}
 
+		RadioButtonGroup
+		{
+			id:						censoringType
+			Layout.columnSpan:		2
+			name:					"censoringType"
+			title:					qsTr("Censoring Type")
+			radioButtonsOnSameRow:	true
+			columns:				2
+
+			RadioButton
+			{
+				label:		qsTr("Right")
+				value:		"right"
+				id:			censoringTypeRight
+			}
+
+			RadioButton
+			{
+				label:		qsTr("Interval")
+				value:		"interval"
+				id:			censoringTypeInterval
+			}
+		}
+/*
+		AssignedVariablesList
+		{
+			name:				"intervalStart"
+			title:				qsTr("Interval Start")
+			suggestedColumns:	["scale"]
+			singleVariable:		true
+			visible:			censoringTypeInterval.checked
+		}
+
+		AssignedVariablesList
+		{
+			name:				"intervalEnd"
+			title:				qsTr("intervalEnd")
+			suggestedColumns:	["scale"]
+			singleVariable:		true
+			visible:			censoringTypeInterval.checked
+		}
+*/
 		AssignedVariablesList
 		{
 			name:				"timeToEvent"
 			title:				qsTr("Time to Event")
 			suggestedColumns:	["scale"]
 			singleVariable:		true
+			visible:			censoringTypeRight.checked	
 		}
 
 		AssignedVariablesList
@@ -45,14 +88,38 @@ Form
 			suggestedColumns:	["nominal"]
 			singleVariable:		true
 		}
-
+/*
+		DropDown
+		{
+			name:				"rightCensored"
+			label:				qsTr("Right Censored")
+			source:				[{name: "eventStatus", use: "levels"}]
+			visible:			censoringTypeInterval.checked
+		}
+*/
 		DropDown
 		{
 			name:				"eventIndicator"
 			label:				qsTr("Event Indicator")
 			source:				[{name: "eventStatus", use: "levels"}]
 		}
+/*
+		DropDown
+		{
+			name:				"leftCensored"
+			label:				qsTr("Left Censored")
+			source:				[{name: "eventStatus", use: "levels"}]
+			visible:			censoringTypeInterval.checked
+		}
 
+		DropDown
+		{
+			name:				"intervalCensored"
+			label:				qsTr("Interval Censored")
+			source:				[{name: "eventStatus", use: "levels"}]
+			visible:			censoringTypeInterval.checked
+		}
+*/
 		AssignedVariablesList
 		{
 			name:			 	"covariates"
