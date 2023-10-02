@@ -131,15 +131,15 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   overtitleCi <- gettextf("%s%% CI", 95)
 
   if (length(options[["factors"]]) != 0)
-    summaryTable$addColumnInfo(name = "strata",     title = "Strata",          type = "string")
+    summaryTable$addColumnInfo(name = "strata",     title = gettext("Strata"),          type = "string")
 
-  summaryTable$addColumnInfo(name = "n",                title = "N",               type = "integer")
-  summaryTable$addColumnInfo(name = "events",           title = "Events",          type = "integer")
-  summaryTable$addColumnInfo(name = "restrictedMean",   title = "Restricted Mean", type = "number")
-  summaryTable$addColumnInfo(name = "restrictedMeanSe", title = "Standard Error",  type = "number")
-  summaryTable$addColumnInfo(name = "median",           title = "Median Survival", type = "number")
-  summaryTable$addColumnInfo(name = "lowerCI",          title = gettext("Lower"),  type = "number", overtitle = overtitleCi)
-  summaryTable$addColumnInfo(name = "upperCI",          title = gettext("Upper"),  type = "number", overtitle = overtitleCi)
+  summaryTable$addColumnInfo(name = "n",                title = gettext("N"),               type = "integer")
+  summaryTable$addColumnInfo(name = "events",           title = gettext("Events"),          type = "integer")
+  summaryTable$addColumnInfo(name = "restrictedMean",   title = gettext("Restricted Mean"), type = "number")
+  summaryTable$addColumnInfo(name = "restrictedMeanSe", title = gettext("Standard Error"),  type = "number")
+  summaryTable$addColumnInfo(name = "median",           title = gettext("Median Survival"), type = "number")
+  summaryTable$addColumnInfo(name = "lowerCI",          title = gettext("Lower"),           type = "number", overtitle = overtitleCi)
+  summaryTable$addColumnInfo(name = "upperCI",          title = gettext("Upper"),           type = "number", overtitle = overtitleCi)
 
   if (is.null(jaspResults[["fit"]]))
     return()
@@ -169,7 +169,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   testsTable$position <- 2
   jaspResults[["testsTable"]] <- testsTable
 
-  testsTable$addColumnInfo(name = "test",     title = "Test",                  type = "string")
+  testsTable$addColumnInfo(name = "test",     title = gettext("Test"),         type = "string")
   testsTable$addColumnInfo(name = "chiSqr",   title = gettext("Chi Square"),   type = "number")
   testsTable$addColumnInfo(name = "df",       title = gettext("df"),           type = "integer")
   testsTable$addColumnInfo(name = "p",        title = gettext("p"),            type = "pvalue")
@@ -409,13 +409,13 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   tempTable$position <- position
 
   overtitleCi <- gettextf("%s%% CI", 95)
-  tempTable$addColumnInfo(name = "time",           title = "Time",            type = "number")
-  tempTable$addColumnInfo(name = "atRisk",         title = "N",               type = "integer")
-  tempTable$addColumnInfo(name = "events",         title = "At Risk",         type = "integer")
-  tempTable$addColumnInfo(name = "survival",       title = "Survival",        type = "number")
-  tempTable$addColumnInfo(name = "standardError",  title = "Standard Error",  type = "number")
-  tempTable$addColumnInfo(name = "lowerCI",        title = gettext("Lower"),  type = "number", overtitle = overtitleCi)
-  tempTable$addColumnInfo(name = "upperCI",        title = gettext("Upper"),  type = "number", overtitle = overtitleCi)
+  tempTable$addColumnInfo(name = "time",           title = gettext("Time"),            type = "number")
+  tempTable$addColumnInfo(name = "atRisk",         title = gettext("At Risk"),         type = "integer")
+  tempTable$addColumnInfo(name = "events",         title = gettext("Events"),          type = "integer")
+  tempTable$addColumnInfo(name = "survival",       title = gettext("Survival"),        type = "number")
+  tempTable$addColumnInfo(name = "standardError",  title = gettext("Standard Error"),  type = "number")
+  tempTable$addColumnInfo(name = "lowerCI",        title = gettext("Lower"),           type = "number", overtitle = overtitleCi)
+  tempTable$addColumnInfo(name = "upperCI",        title = gettext("Upper"),           type = "number", overtitle = overtitleCi)
 
   return(tempTable)
 }
