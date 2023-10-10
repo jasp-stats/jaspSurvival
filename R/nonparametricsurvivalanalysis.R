@@ -55,9 +55,14 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   fitContainer <- createJaspState()
   fitContainer$dependOn(.sanpDependencies)
   jaspResults[["fit"]] <- fitContainer
-
+  # TODO: fix scoping in ggsurvplot
+  #fit <- try(survival::survfit(
+  #  formula = .saGetFormula(options, type = "KM"),
+  #  type    = "kaplan-meier",
+  #  data    = dataset
+  #))
   fit <- try(survival::survfit(
-    formula = .saGetFormula(options, type = "KM"),
+    formula = survival::Surv(time = JaspColumn_0_Encoded, event = JaspColumn_1_Encoded) ~ JaspColumn_2_Encoded,
     type    = "kaplan-meier",
     data    = dataset
   ))
@@ -212,10 +217,14 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   surivalPlot <- createJaspPlot(
     title = gettext("Kaplan-Meier Survival Curve"),
-    width  = 450 + if (length(options[["factors"]]) != 0 && options[["survivalCurvePlotLegend"]] %in% c("left", "right")) 200 else 0,
-    height = 320 + if (length(options[["factors"]]) != 0 && options[["survivalCurvePlotLegend"]] %in% c("top", "bottom")) 50 else 0)
-  surivalPlot$dependOn(c(.sanpDependencies, "survivalCurvePlot", "survivalCurvePlotConfidenceInterval",
-                         "survivalCurvePlotLegend", "survivalCurvePlotDataRug", "colorPalette"))
+    width  = 450,
+    height = 320 +
+      if (options[["survivalCurvePlotRiskTable"]]) 200 else 0 +
+      if (options[["survivalCurveCensoringPlot"]]) 200 else 0)
+  surivalPlot$dependOn(c(.sanpDependencies, "survivalCurvePlot", "survivalCurvePlotConfidenceInterval", "survivalCurvePlotPValue",
+                         "survivalCurvePlotRiskTable", "survivalCurvePlotRiskTableCumulative",
+                         "survivalCurveCensoringPlot", "survivalCurveCensoringPlotCumulative",
+                         "colorPalette"))
   surivalPlot$position <- 3
   jaspResults[["surivalPlot"]] <- surivalPlot
 
@@ -228,14 +237,40 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     return()
   }
 
-  fitLifeTable <- try(.sanpKaplanMeierFitLifeTable(fit, dataset, options, plot = TRUE))
+  #fitLifeTable <- try(.sanpKaplanMeierFitLifeTable(fit, dataset, options, plot = TRUE))
+  #
+  #if (jaspBase::isTryError(fitLifeTable)) {
+  #  surivalPlot$setError(fitLifeTable)
+  #  return()
+  #}
+  #
+  #tempPlot <- try(.sanpPlotLifeTable(fitLifeTable, options))
 
-  if (jaspBase::isTryError(fitLifeTable)) {
-    surivalPlot$setError(fitLifeTable)
-    return()
-  }
+  tempPlot  <- try(survminer::ggsurvplot(
+    fit,
+    data = dataset,
 
-  tempPlot <- try(.sanpPlotLifeTable(fitLifeTable, options))
+    palette  = jaspGraphs::JASPcolors(palette = options[["colorPalette"]]),
+    conf.int = options[["survivalCurvePlotConfidenceInterval"]],
+    pval     = options[["survivalCurvePlotPValue"]],
+
+    title = "Survival curves",
+
+    risk.table        = options[["survivalCurvePlotRiskTable"]],
+    cumevents         = options[["survivalCurvePlotRiskTableCumulative"]],
+    risk.table.height = 0.35,
+
+    ncensor.plot        = options[["survivalCurveCensoringPlot"]],
+    cumcensor           = options[["survivalCurveCensoringPlotCumulative"]],
+    ncensor.plot.height = 0.35
+  ))
+
+  # for(i in seq_along(tempPlot))
+  #   tempPlot[[i]] <- tempPlot[[i]] + jaspGraphs::themeJaspRaw() + jaspGraphs::geom_rangeframe()
+
+  # re-construct plot array
+  tempPlot <- tempPlot[names(tempPlot) %in% c("plot", "table", "ncensor.plot")]
+  tempPlot <- jaspGraphs:::jaspGraphsPlot$new(subplots = tempPlot, layout = matrix(seq_along(tempPlot), nrow = length(tempPlot)))
 
   if (jaspBase::isTryError(tempPlot)) {
     surivalPlot$setError(tempPlot)

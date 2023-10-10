@@ -4,7 +4,10 @@
 # - make "lifeTableStepsTo" correspond to the maximum time
 # - make "lifeTableStepsSize" correspond to the maxiumum time/10
 # R:
-# - convience function for making factor level parameter names nice?
+# - convenient function for making factor level parameter names nice (in regression tables)?
+# - why legend names are so wide? Encoding/decoding problems?
+# - make sure x-axis are aligned in the survival plot
+# - jaspTheme the plot
 
 .saSurvivalReady      <- function(options) {
 
