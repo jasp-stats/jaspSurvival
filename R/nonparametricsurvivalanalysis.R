@@ -55,17 +55,15 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   fitContainer <- createJaspState()
   fitContainer$dependOn(.sanpDependencies)
   jaspResults[["fit"]] <- fitContainer
-  # TODO: fix scoping in ggsurvplot
-  #fit <- try(survival::survfit(
-  #  formula = .saGetFormula(options, type = "KM"),
-  #  type    = "kaplan-meier",
-  #  data    = dataset
-  #))
+
   fit <- try(survival::survfit(
-    formula = survival::Surv(time = JaspColumn_0_Encoded, event = JaspColumn_1_Encoded) ~ JaspColumn_2_Encoded,
+    formula = .saGetFormula(options, type = "KM"),
     type    = "kaplan-meier",
     data    = dataset
   ))
+  # fix scoping in ggsurvplot
+  fit$call$formula <- eval(fit$call$formula)
+
 
   jaspResults[["fit"]]$object <- fit
 
@@ -221,7 +219,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     height = 320 +
       if (options[["survivalCurvePlotRiskTable"]]) 200 else 0 +
       if (options[["survivalCurveCensoringPlot"]]) 200 else 0)
-  surivalPlot$dependOn(c(.sanpDependencies, "survivalCurvePlot", "survivalCurvePlotConfidenceInterval", "survivalCurvePlotPValue",
+  surivalPlot$dependOn(c(.sanpDependencies, "survivalCurvePlot", "survivalCurvePlotConfidenceInterval",
                          "survivalCurvePlotRiskTable", "survivalCurvePlotRiskTableCumulative",
                          "survivalCurveCensoringPlot", "survivalCurveCensoringPlotCumulative",
                          "colorPalette"))
@@ -252,7 +250,6 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
     palette  = jaspGraphs::JASPcolors(palette = options[["colorPalette"]]),
     conf.int = options[["survivalCurvePlotConfidenceInterval"]],
-    pval     = options[["survivalCurvePlotPValue"]],
 
     title = "Survival curves",
 
@@ -264,6 +261,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     cumcensor           = options[["survivalCurveCensoringPlotCumulative"]],
     ncensor.plot.height = 0.35
   ))
+
 
   # for(i in seq_along(tempPlot))
   #   tempPlot[[i]] <- tempPlot[[i]] + jaspGraphs::themeJaspRaw() + jaspGraphs::geom_rangeframe()

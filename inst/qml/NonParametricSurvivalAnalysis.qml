@@ -178,13 +178,6 @@ Form
 
 		CheckBox
 		{
-			name:		"survivalCurvePlotPValue"
-			label:		qsTr("p-value")
-			checked:	false
-		}
-
-		CheckBox
-		{
 			name:		"survivalCurvePlotRiskTable"
 			label:		qsTr("Risk table")
 			checked:	false

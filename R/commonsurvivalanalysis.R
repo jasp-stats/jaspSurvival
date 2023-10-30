@@ -6,6 +6,7 @@
 # R:
 # - convenient function for making factor level parameter names nice (in regression tables)?
 # - why legend names are so wide? Encoding/decoding problems?
+#   (smth along the lines of: `levels(tempPlot$data.survplot$strata) <- jaspBase::decodeColNames(levels(tempPlot$data.survplot$strata), strict = FALSE)`
 # - make sure x-axis are aligned in the survival plot
 # - jaspTheme the plot
 

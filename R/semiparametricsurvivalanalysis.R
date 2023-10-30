@@ -52,6 +52,8 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
       formula = .saGetFormula(options, type = "Cox", null = FALSE),
       data    = dataset
     ))
+    # fix scoping in ggsurvplot
+    fit$call$formula <- eval(fit$call$formula)
 
     jaspResults[["fit"]]$object <- fit
   }
@@ -66,6 +68,8 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
       formula = .saGetFormula(options, type = "Cox", null = TRUE),
       data    = dataset
     ))
+    # fix scoping in ggsurvplot
+    fitNull$call$formula <- eval(fitNull$call$formula)
 
     jaspResults[["fitNull"]]$object <- fitNull
   }
