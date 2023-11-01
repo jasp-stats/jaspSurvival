@@ -27,7 +27,7 @@ Description
 		func:			"NonParametricSurvivalAnalysis"
 		requiresData:	true
 	}
-
+/*
 	Analysis
 	{
 		menu:			qsTr("Semi-parametric")
@@ -43,4 +43,5 @@ Description
 		func:			"ParametricSurvivalAnalysis"
 		requiresData:	true
 	}
+*/
 }

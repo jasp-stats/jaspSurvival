@@ -23,9 +23,6 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   if (.saSurvivalReady(options))
     dataset <- .saReadDataset(dataset, options)
 
-  saveRDS(options, file = "C:/JASP/options.RDS")
-  saveRDS(dataset, file = "C:/JASP/dataset.RDS")
-
   if (.saSurvivalReady(options)) {
     .sanpFitKaplanMeier(jaspResults, dataset, options)
     .sanpFitTests(jaspResults, dataset, options)
