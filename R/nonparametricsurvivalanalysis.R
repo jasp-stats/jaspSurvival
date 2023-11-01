@@ -244,6 +244,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   #
   #tempPlot <- try(.sanpPlotLifeTable(fitLifeTable, options))
 
+
   tempPlot  <- try(survminer::ggsurvplot(
     fit,
     data = dataset,
@@ -251,7 +252,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     palette  = jaspGraphs::JASPcolors(palette = options[["colorPalette"]]),
     conf.int = options[["survivalCurvePlotConfidenceInterval"]],
 
-    title = "Survival curves",
+    title = gettext("Survival curves"),
 
     risk.table        = options[["survivalCurvePlotRiskTable"]],
     cumevents         = options[["survivalCurvePlotRiskTableCumulative"]],
@@ -263,12 +264,24 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   ))
 
 
-  # for(i in seq_along(tempPlot))
-  #   tempPlot[[i]] <- tempPlot[[i]] + jaspGraphs::themeJaspRaw() + jaspGraphs::geom_rangeframe()
+  # TODO: legend label names are too long and when translated within JASP, there is too much empty space
 
+  # TODO: This would add theme JASP to the figures, but the "table" figure throws an error
+  # for(i in seq_along(tempPlot)) {
+  #   if (ggplot2::is.ggplot(tempPlot[[i]]))
+  #     tempPlot[[i]] <- tempPlot[[i]] + jaspGraphs::themeJaspRaw() + jaspGraphs::geom_rangeframe()
+  # }
+
+  # TODO: This can create the grid but losses the x-axis correspondence across all figures
   # re-construct plot array
   tempPlot <- tempPlot[names(tempPlot) %in% c("plot", "table", "ncensor.plot")]
   tempPlot <- jaspGraphs:::jaspGraphsPlot$new(subplots = tempPlot, layout = matrix(seq_along(tempPlot), nrow = length(tempPlot)))
+
+  # TODO: We tried this to use their original grid set-up, but the validator keeps throwing errors
+  # class(tempPlot) <- c(class(tempPlot), "ggplot")
+  # obj <- list(tempPlot)
+  # class(obj) <- "ggplot"
+  # tempPlot <- jaspGraphs:::jaspGraphsPlot$new(subplots = obj, plotFunction = \(x) survminer:::print.ggsurvplot(x[[1]]))
 
   if (jaspBase::isTryError(tempPlot)) {
     surivalPlot$setError(tempPlot)
