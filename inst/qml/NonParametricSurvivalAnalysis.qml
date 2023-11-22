@@ -52,7 +52,7 @@ Form
 			name:				"eventIndicator"
 			label:				qsTr("Event Indicator")
 			source:				[{name: "eventStatus", use: "levels"}]
-			indexDefaultValue:  eventStatusId ? 1 : 0
+			onCountChanged:		currentIndex = 1
 		}
 
 		AssignedVariablesList
@@ -113,9 +113,9 @@ Form
 				label:		qsTr("Steps type")
 				values:
 				[
+					{ label: qsTr("Default"),		value: "default"},
 					{ label: qsTr("Quantilies"),	value: "quantiles"},
-					{ label: qsTr("Fixed size"),	value: "fixedSize"},
-					{ label: qsTr("Default"),		value: "default"}
+					{ label: qsTr("Fixed size"),	value: "fixedSize"}
 				]
 			}
 
