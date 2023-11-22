@@ -207,31 +207,32 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 }
 .sanpSurvivalPlot    <- function(jaspResults, dataset, options) {
 
-  if (!is.null(jaspResults[["surivalPlot"]]))
-    return()
+  if (!is.null(jaspResults[["surivalPlots"]]))
+    surivalPlots <- jaspResults[["surivalPlots"]]
+  else {
+    surivalPlots <- createJaspContainer(gettext("Kaplan-Meier Survival Plots"))
+    surivalPlots$dependOn(c(.sanpDependencies, "survivalCurvePlot", "colorPalette", "survivalCurvePlotLegend"))
 
-  surivalPlot <- createJaspPlot(
-    title = gettext("Kaplan-Meier Survival Curve"),
-    width  = 450,
-    height = 320 +
-      if (options[["survivalCurvePlotRiskTable"]]) 200 else 0 +
-      if (options[["survivalCurveCensoringPlot"]]) 200 else 0)
-  surivalPlot$dependOn(c(.sanpDependencies, "survivalCurvePlot", "survivalCurvePlotConfidenceInterval",
-                         "survivalCurvePlotRiskTable", "survivalCurvePlotRiskTableCumulative",
-                         "survivalCurveCensoringPlot", "survivalCurveCensoringPlotCumulative",
-                         "colorPalette"))
-  surivalPlot$position <- 3
-  jaspResults[["surivalPlot"]] <- surivalPlot
+    surivalPlots$position <- 3
+    jaspResults[["surivalPlots"]] <- surivalPlots
+  }
 
-  if (is.null(jaspResults[["fit"]]))
+  if (is.null(jaspResults[["fit"]])) {
+    waitingPlot                  <- createJaspPlot()
+    jaspResults[["waitingPlot"]] <- waitingPlot
     return()
+  }
+
 
   fit <- jaspResults[["fit"]][["object"]]
 
   if (jaspBase::isTryError(fit)) {
+    waitingPlot                  <- createJaspPlot()
+    jaspResults[["waitingPlot"]] <- waitingPlot
     return()
   }
 
+  ## old code: manually creating survival plot
   #fitLifeTable <- try(.sanpKaplanMeierFitLifeTable(fit, dataset, options, plot = TRUE))
   #
   #if (jaspBase::isTryError(fitLifeTable)) {
@@ -251,16 +252,75 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
     title = gettext("Survival curves"),
 
-    risk.table        = options[["survivalCurvePlotRiskTable"]],
-    cumevents         = options[["survivalCurvePlotRiskTableCumulative"]],
-    risk.table.height = 0.35,
-
-    ncensor.plot        = options[["survivalCurveCensoringPlot"]],
-    cumcensor           = options[["survivalCurveCensoringPlotCumulative"]],
-    ncensor.plot.height = 0.35
+    risk.table    = options[["survivalCurvePlotRiskTable"]],
+    cumevents     = options[["survivalCurvePlotCumulativeEventsTable"]],
+    ncensor.plot  = options[["survivalCurveCensoringPlot"]],
+    cumcensor     = options[["survivalCurveCensoringPlotCumulative"]]
   ))
 
+  if (jaspBase::isTryError(tempPlot)) {
+    surivalCurvePlot$setError(tempPlot)
+    return()
+  }
 
+  # translate names
+  translatedNames        <- jaspBase::decodeColNames(names(fit$strata))
+  names(translatedNames) <- names(fit$strata)
+
+  # add survival curve
+  if (is.null(surivalPlots[["surivalCurvePlot"]])) {
+    surivalCurvePlot <- createJaspPlot(title = gettext("Survival Curve"), width  = 450, height = 320)
+    surivalCurvePlot$dependOn(c("survivalCurvePlotConfidenceInterval"))
+    surivalCurvePlot$position <- 1
+    surivalPlots[["surivalCurvePlot"]] <- surivalCurvePlot
+
+    surivalCurvePlot$plotObject <- tempPlot[["plot"]] +
+      ggplot2::scale_fill_discrete(labels = translatedNames)  +
+      ggplot2::scale_color_discrete(labels = translatedNames) +
+      jaspGraphs::themeJaspRaw(legend.position = options[["survivalCurvePlotLegend"]]) + jaspGraphs::geom_rangeframe()
+  }
+
+
+  if (options[["survivalCurvePlotRiskTable"]] && is.null(surivalPlots[["riskTable"]])) {
+    riskTable <- createJaspPlot(
+      title = gettext("Risk Table"),
+      width = 450, height = 320)
+    riskTable$dependOn("survivalCurvePlotRiskTable")
+    riskTable$position <- 2
+    surivalPlots[["riskTable"]] <- riskTable
+
+    riskTable$plotObject <- tempPlot[["table"]] + ggplot2::scale_y_discrete(labels = translatedNames)
+  }
+
+
+  if (options[["survivalCurvePlotCumulativeEventsTable"]] && is.null(surivalPlots[["cumulativeEventsTable"]])) {
+    cumulativeEventsTable <- createJaspPlot(
+      title = gettext("Cumulative Events Table") ,
+      width = 450, height = 320)
+    cumulativeEventsTable$dependOn("survivalCurvePlotCumulativeEventsTable")
+    cumulativeEventsTable$position <- 3
+    surivalPlots[["cumulativeEventsTable"]] <- cumulativeEventsTable
+
+    cumulativeEventsTable$plotObject <- tempPlot[["cumevents"]] + ggplot2::scale_y_discrete(labels = translatedNames)
+  }
+
+
+  if (options[["survivalCurveCensoringPlot"]] && is.null(surivalPlots[["censoringPlot"]])) {
+    censoringPlot <- createJaspPlot(
+      title = if (!options[["survivalCurveCensoringPlotCumulative"]]) gettext("Censoring Plot") else gettext("Cumulative Censoring Plot"),
+      width  = 450, height = 320)
+    censoringPlot$dependOn(c("survivalCurveCensoringPlot", "survivalCurveCensoringPlotCumulative"))
+    censoringPlot$position <- 4
+    surivalPlots[["censoringPlot"]] <- censoringPlot + ggplot2::scale_y_discrete(labels = translatedNames)
+
+    # TODO: seems to be a problem in the plotting R package
+    if (length(options[["factors"]]) == 0 && !options[["survivalCurveCensoringPlotCumulative"]])
+      censoringPlot$setError("Simple censoring plot is currently broken in the absence of factors.")
+    else
+      censoringPlot$plotObject <- tempPlot[["ncensor.plot"]]
+  }
+
+  #
   # TODO: legend label names are too long and when translated within JASP, there is too much empty space
 
   # TODO: This would add theme JASP to the figures, but the "table" figure throws an error
@@ -271,8 +331,8 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   # TODO: This can create the grid but losses the x-axis correspondence across all figures
   # re-construct plot array
-  tempPlot <- tempPlot[names(tempPlot) %in% c("plot", "table", "ncensor.plot")]
-  tempPlot <- jaspGraphs:::jaspGraphsPlot$new(subplots = tempPlot, layout = matrix(seq_along(tempPlot), nrow = length(tempPlot)))
+  # tempPlot <- tempPlot[names(tempPlot) %in% c("plot", "table", "ncensor.plot")]
+  # tempPlot <- jaspGraphs:::jaspGraphsPlot$new(subplots = tempPlot, layout = matrix(seq_along(tempPlot), nrow = length(tempPlot)))
 
   # TODO: We tried this to use their original grid set-up, but the validator keeps throwing errors
   # class(tempPlot) <- c(class(tempPlot), "ggplot")
@@ -280,12 +340,12 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   # class(obj) <- "ggplot"
   # tempPlot <- jaspGraphs:::jaspGraphsPlot$new(subplots = obj, plotFunction = \(x) survminer:::print.ggsurvplot(x[[1]]))
 
-  if (jaspBase::isTryError(tempPlot)) {
-    surivalPlot$setError(tempPlot)
-    return()
-  }
+  # if (jaspBase::isTryError(tempPlot)) {
+  #   surivalPlot$setError(tempPlot)
+  #   return()
+  # }
 
-  surivalPlot$plotObject <- tempPlot
+  # surivalPlot$plotObject <- tempPlot
 
   return()
 }

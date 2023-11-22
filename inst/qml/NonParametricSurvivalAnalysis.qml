@@ -183,13 +183,13 @@ Form
 			name:		"survivalCurvePlotRiskTable"
 			label:		qsTr("Risk table")
 			checked:	false
+		}
 
-			CheckBox
-			{
-				name:		"survivalCurvePlotRiskTableCumulative"
-				label:		qsTr("Cumulative")
-				checked:	false
-			}
+		CheckBox
+		{
+			name:		"survivalCurvePlotCumulativeEventsTable"
+			label:		qsTr("Cumulative events table")
+			checked:	false
 		}
 
 		CheckBox
@@ -206,19 +206,19 @@ Form
 			}
 		}
 
-		//DropDown
-		//{
-		//	name:		"survivalCurvePlotLegend"
-		//	label:		qsTr("Legend")
-		//	values:
-		//	[
-		//		{ label: qsTr("Right"),		value: "right"},
-		//		{ label: qsTr("Left"),		value: "left"},
-		//		{ label: qsTr("Top"),		value: "top"},
-		//		{ label: qsTr("Bottom"),	value: "bottom"},
-		//		{ label: qsTr("None"),		value: "none"}
-		//	]
-		//}
+		DropDown
+		{
+			name:		"survivalCurvePlotLegend"
+			label:		qsTr("Legend")
+			values:
+			[
+				{ label: qsTr("Bottom"),	value: "bottom"},
+				{ label: qsTr("Right"),		value: "right"},
+				{ label: qsTr("Left"),		value: "left"},
+				{ label: qsTr("Top"),		value: "top"},
+				{ label: qsTr("None"),		value: "none"}
+			]
+		}
 
 		//CheckBox
 		//{
