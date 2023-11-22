@@ -40,6 +40,7 @@ Form
 
 		AssignedVariablesList
 		{
+			id:					eventStatusId
 			name:				"eventStatus"
 			title:				qsTr("Event Status")
 			suggestedColumns:	["nominal"]
@@ -51,6 +52,7 @@ Form
 			name:				"eventIndicator"
 			label:				qsTr("Event Indicator")
 			source:				[{name: "eventStatus", use: "levels"}]
+			indexDefaultValue:  eventStatusId ? 1 : 0
 		}
 
 		AssignedVariablesList
