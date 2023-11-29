@@ -66,23 +66,20 @@ Form
 	Group
 	{
 
-		CheckBox
+		Group
 		{
-			name:	"tests"
-			label:	qsTr("Tests")
+			title:	qsTr("Tests")
 
 			CheckBox
 			{
 				name:		"testsLogRank"
 				label:		qsTr("Log-rank (Mantel-Haenszel)")
-				checked:	true
 			}
 
 			CheckBox
 			{
 				name:		"testsPetoAndPeto"
 				label:		qsTr("Peto and Peto")
-				checked:	true
 			}
 
 			CheckBox

@@ -29,9 +29,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   }
 
   .sanpSummaryTable(jaspResults, dataset, options)
-
-  if (options[["tests"]])
-    .sanpTestsTable(jaspResults, dataset, options)
+  .sanpTestsTable(jaspResults, dataset, options)
 
   if (options[["survivalCurvePlot"]])
     .sanpSurvivalPlot(jaspResults, dataset, options)
@@ -162,6 +160,9 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 .sanpTestsTable      <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["testsTable"]]))
+    return()
+
+  if (!(options[["testsLogRank"]] || options[["testsPetoAndPeto"]] || options[["testsFlemmingHarrington"]]))
     return()
 
   testsTable <- createJaspTable(title = gettext("Tests Table"))
@@ -311,13 +312,13 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
       width  = 450, height = 320)
     censoringPlot$dependOn(c("survivalCurveCensoringPlot", "survivalCurveCensoringPlotCumulative"))
     censoringPlot$position <- 4
-    surivalPlots[["censoringPlot"]] <- censoringPlot + ggplot2::scale_y_discrete(labels = translatedNames)
+    surivalPlots[["censoringPlot"]] <- censoringPlot
 
     # TODO: seems to be a problem in the plotting R package
     if (length(options[["factors"]]) == 0 && !options[["survivalCurveCensoringPlotCumulative"]])
       censoringPlot$setError("Simple censoring plot is currently broken in the absence of factors.")
     else
-      censoringPlot$plotObject <- tempPlot[["ncensor.plot"]]
+      censoringPlot$plotObject <- tempPlot[["ncensor.plot"]] + ggplot2::scale_y_discrete(labels = translatedNames)
   }
 
   #
