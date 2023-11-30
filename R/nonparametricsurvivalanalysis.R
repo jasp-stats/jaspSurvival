@@ -19,6 +19,8 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   # non-parametric allows only for right censored data -- set the options for generic functions downstream
   options[["censoringType"]] <- "right"
+  saveRDS(options, file = "C:/JASP/options.RDS")
+  saveRDS(dataset, file = "C:/JASP/dataset.RDS")
 
   if (.saSurvivalReady(options))
     dataset <- .saReadDataset(dataset, options)
@@ -276,8 +278,8 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     surivalPlots[["surivalCurvePlot"]] <- surivalCurvePlot
 
     surivalCurvePlot$plotObject <- tempPlot[["plot"]] +
-      ggplot2::scale_fill_discrete(labels = translatedNames)  +
-      ggplot2::scale_color_discrete(labels = translatedNames) +
+      ggplot2::scale_fill_discrete(labels = translatedNames, type = jaspGraphs::JASPcolors(palette = options[["colorPalette"]]))  +
+      ggplot2::scale_color_discrete(labels = translatedNames, type = jaspGraphs::JASPcolors(palette = options[["colorPalette"]])) +
       jaspGraphs::themeJaspRaw(legend.position = options[["survivalCurvePlotLegend"]]) + jaspGraphs::geom_rangeframe()
   }
 
