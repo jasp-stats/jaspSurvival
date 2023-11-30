@@ -19,8 +19,6 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   # non-parametric allows only for right censored data -- set the options for generic functions downstream
   options[["censoringType"]] <- "right"
-  saveRDS(options, file = "C:/JASP/options.RDS")
-  saveRDS(dataset, file = "C:/JASP/dataset.RDS")
 
   if (.saSurvivalReady(options))
     dataset <- .saReadDataset(dataset, options)
