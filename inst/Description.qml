@@ -4,7 +4,7 @@ import JASP.Module	1.0
 Description
 {
 	name:			"jaspSurvival"
-	title : 		qsTr("Survival Analysis")
+	title : 		qsTr("Survival Analysis (beta)")
 	description:	qsTr("Perform analyses of censored time to event data.")
 	requiresData:	true
 	icon:			"survival-analysis.svg"
