@@ -27,15 +27,15 @@ Description
 		func:			"NonParametricSurvivalAnalysis"
 		requiresData:	true
 	}
-/*
+
 	Analysis
 	{
 		menu:			qsTr("Semi-parametric")
 		title:			qsTr("Semi-parametric Survival Analysis")
 		func:			"SemiParametricSurvivalAnalysis"
-    	requiresData:	true
+		requiresData:	true
 	}
-  
+/*
   	Analysis
 	{
 		menu:			qsTr("Parametric")

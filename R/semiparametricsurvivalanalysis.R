@@ -167,17 +167,18 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     estimatesTable$addFootnote(gettextf("Null model contains nuisance parameters: %s", paste(nullPredictors, collapse = ", ")))
     estimates <- NULL
   } else
-    estimates <- .saspCoxFitSummary(fitNull, "H\u2080")
+    estimates <- .saspCoxFitSummary(fitNull, options, "H\u2080")
 
   if (jaspBase::isTryError(fit)) {
     estimatesTable$setError(fit, symbol = gettextf("The model failed with the following message:"))
     return()
   } else
-    estimates <- rbind(estimates, .saspCoxFitSummary(fit, "H\u2081"))
+    estimates <- rbind(estimates, .saspCoxFitSummary(fit, options, "H\u2081"))
 
 
   if (!is.null(estimates) && options[["vovkSellke"]])
     estimates$vsmpr <- VovkSellkeMPR(estimates$pval)
+
 
   estimatesTable$setData(estimates)
 
@@ -212,13 +213,13 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     hazardRatioTable$addFootnote(gettextf("Null model contains nuisance parameters: %s", paste(nullPredictors, collapse = ", ")))
     estimates <- NULL
   } else
-    estimates <- .saspCoxFitSummary(fitNull, "H\u2080", HR = TRUE, CI = options[["coefficientCiLevel"]])
+    estimates <- .saspCoxFitSummary(fitNull, options, "H\u2080", HR = TRUE, CI = options[["coefficientCiLevel"]])
 
   if (jaspBase::isTryError(fit)) {
     hazardRatioTable$setError(fit, symbol = gettextf("The model failed with the following message:"))
     return()
   } else
-    estimates <- rbind(estimates, .saspCoxFitSummary(fit, "H\u2081", HR = TRUE, CI = options[["coefficientCiLevel"]]))
+    estimates <- rbind(estimates, .saspCoxFitSummary(fit, options, "H\u2081", HR = TRUE, CI = options[["coefficientCiLevel"]]))
 
 
   if (!is.null(estimates) && options[["vovkSellke"]])
@@ -230,16 +231,16 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 }
 
 
-.saspCoxFitSummary     <- function(fit, model, HR = FALSE, CI = 0.95) {
+.saspCoxFitSummary     <- function(fit, options, model, HR = FALSE, CI = 0.95) {
 
   if (HR)
     estimatesFit <- summary(fit, conf.int = CI)$conf.int[,-2,drop=FALSE]
   else
     estimatesFit <- summary(fit)$coefficients[,c("coef", "se(coef)", "z", "Pr(>|z|)"),drop=FALSE]
 
-  if (is.null(estimatesFit)) {
+  if (is.null(estimatesFit))
     return()
-  }else if (is.null(dim(estimatesFit)))
+  else if (is.null(dim(estimatesFit)))
     estimatesFit <- data.frame(t(estimatesFit))
   else
     estimatesFit <- data.frame(estimatesFit)
@@ -251,7 +252,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   estimatesFit <- cbind(
     "model" = "",
-    "param" = rownames(estimatesFit),
+    "param" = sapply(rownames(estimatesFit), function(x) .saTermNames(x, c(options[["covariates"]], options[["factors"]]))),
     estimatesFit)
 
   estimatesFit[1, "model"] <- model

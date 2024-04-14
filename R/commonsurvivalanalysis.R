@@ -197,3 +197,29 @@
 
   return(unique(timeSteps))
 }
+.saTermNames          <- function(varName, variables) {
+  # based on jaspMixedModels::.mmVariableNames
+
+  if (varName == "(Intercept)")
+    return("Intercept")
+
+  for (vn in variables) {
+    inf <- regexpr(vn, varName, fixed = TRUE)
+
+    if (inf[1] != -1) {
+      varName <- paste0(
+        substr(varName, 0, inf[1] - 1),
+        substr(varName, inf[1], inf[1] + attr(inf, "match.length") - 1),
+        " (",
+        substr(varName, inf[1] + attr(inf, "match.length"), nchar(varName))
+      )
+    }
+
+  }
+
+  varName <- gsub(":", paste0(")", jaspBase::interactionSymbol), varName, fixed = TRUE)
+  varName <- paste0(varName, ")")
+  varName <- gsub(" ()", "", varName, fixed = TRUE)
+
+  return(varName)
+}
