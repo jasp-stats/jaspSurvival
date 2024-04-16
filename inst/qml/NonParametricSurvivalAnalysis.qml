@@ -59,7 +59,7 @@ Form
 		{
 			name:			 	"factors"
 			title:			 	qsTr("Factors")
-			allowedColumns:		["ordinal", "nominal", "nominalText"]
+			allowedColumns:		["ordinal", "nominal"]
 		}
 	}
 
