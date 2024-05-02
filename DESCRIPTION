@@ -1,7 +1,7 @@
 Package: jaspSurvival
 Type: Package
 Title: A Survival Module for JASP
-Version: 0.18.3
+Version: 0.19.0
 Date: 2020-10-15
 Author: JASP Team
 Website: jasp-stats.org
