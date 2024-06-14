@@ -34,7 +34,7 @@ Form
 		{
 			name:				"timeToEvent"
 			title:				qsTr("Time to Event")
-			suggestedColumns:	["scale"]
+			allowedColumns:		["scale"]
 			singleVariable:		true
 		}
 
@@ -43,7 +43,7 @@ Form
 			id:					eventStatusId
 			name:				"eventStatus"
 			title:				qsTr("Event Status")
-			suggestedColumns:	["nominal"]
+			allowedColumns:		["nominal"]
 			singleVariable:		true
 		}
 
@@ -59,7 +59,7 @@ Form
 		{
 			name:			 	"factors"
 			title:			 	qsTr("Factors")
-			allowedColumns:		["ordinal", "nominal"]
+			allowedColumns:		["nominal"]
 		}
 	}
 

@@ -58,7 +58,7 @@ Form
 		{
 			name:				"intervalStart"
 			title:				qsTr("Interval Start")
-			suggestedColumns:	["scale"]
+			allowedColumns:		["scale"]
 			singleVariable:		true
 			visible:			censoringTypeInterval.checked
 		}
@@ -67,7 +67,7 @@ Form
 		{
 			name:				"intervalEnd"
 			title:				qsTr("intervalEnd")
-			suggestedColumns:	["scale"]
+			allowedColumns:		["scale"]
 			singleVariable:		true
 			visible:			censoringTypeInterval.checked
 		}
@@ -76,7 +76,7 @@ Form
 		{
 			name:				"timeToEvent"
 			title:				qsTr("Time to Event")
-			suggestedColumns:	["scale"]
+			allowedColumns:		["scale"]
 			singleVariable:		true
 			visible:			censoringTypeRight.checked	
 		}
@@ -85,7 +85,7 @@ Form
 		{
 			name:				"eventStatus"
 			title:				qsTr("Event Status")
-			suggestedColumns:	["nominal"]
+			allowedColumns:		["nominal"]
 			singleVariable:		true
 		}
 /*
@@ -124,14 +124,14 @@ Form
 		{
 			name:			 	"covariates"
 			title:			 	qsTr("Covariates")
-			allowedColumns:		["ordinal", "scale"]
+			allowedColumns:		["scale"]
 		}
 
 		AssignedVariablesList
 		{
 			name:			 	"factors"
 			title:			 	qsTr("Factors")
-			allowedColumns:		["ordinal", "nominal"]
+			allowedColumns:		["nominal"]
 		}
 	}
 
