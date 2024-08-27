@@ -66,7 +66,7 @@
     },
     "RcppEigen": {
       "Package": "RcppEigen",
-      "Version": "0.3.4.0.0",
+      "Version": "0.3.4.0.2",
       "Source": "Repository"
     },
     "SparseM": {
@@ -106,7 +106,7 @@
     },
     "bslib": {
       "Package": "bslib",
-      "Version": "0.7.0",
+      "Version": "0.8.0",
       "Source": "Repository"
     },
     "cachem": {
@@ -131,7 +131,7 @@
     },
     "checkmate": {
       "Package": "checkmate",
-      "Version": "2.3.1",
+      "Version": "2.3.2",
       "Source": "Repository"
     },
     "cli": {
@@ -151,7 +151,7 @@
     },
     "colorspace": {
       "Package": "colorspace",
-      "Version": "2.1-0",
+      "Version": "2.1-1",
       "Source": "Repository"
     },
     "commonmark": {
@@ -166,7 +166,7 @@
     },
     "corrplot": {
       "Package": "corrplot",
-      "Version": "0.92",
+      "Version": "0.94",
       "Source": "Repository"
     },
     "cowplot": {
@@ -176,7 +176,7 @@
     },
     "cpp11": {
       "Package": "cpp11",
-      "Version": "0.4.7",
+      "Version": "0.5.0",
       "Source": "Repository"
     },
     "crayon": {
@@ -191,12 +191,12 @@
     },
     "curl": {
       "Package": "curl",
-      "Version": "5.2.1",
+      "Version": "5.2.2",
       "Source": "Repository"
     },
     "data.table": {
       "Package": "data.table",
-      "Version": "1.15.4",
+      "Version": "1.16.0",
       "Source": "Repository"
     },
     "desc": {
@@ -206,7 +206,7 @@
     },
     "digest": {
       "Package": "digest",
-      "Version": "0.6.36",
+      "Version": "0.6.37",
       "Source": "Repository"
     },
     "doBy": {
@@ -246,7 +246,7 @@
     },
     "fdrtool": {
       "Package": "fdrtool",
-      "Version": "1.2.17",
+      "Version": "1.2.18",
       "Source": "Repository"
     },
     "fontBitstreamVera": {
@@ -513,7 +513,7 @@
     },
     "minqa": {
       "Package": "minqa",
-      "Version": "1.2.7",
+      "Version": "1.2.8",
       "Source": "Repository"
     },
     "mnormt": {
@@ -538,12 +538,12 @@
     },
     "mvtnorm": {
       "Package": "mvtnorm",
-      "Version": "1.2-5",
+      "Version": "1.2-6",
       "Source": "Repository"
     },
     "nlme": {
       "Package": "nlme",
-      "Version": "3.1-165",
+      "Version": "3.1-166",
       "Source": "Repository"
     },
     "nloptr": {
@@ -568,7 +568,7 @@
     },
     "openssl": {
       "Package": "openssl",
-      "Version": "2.2.0",
+      "Version": "2.2.1",
       "Source": "Repository"
     },
     "pbapply": {
@@ -678,7 +678,7 @@
     },
     "rjson": {
       "Package": "rjson",
-      "Version": "0.2.21",
+      "Version": "0.2.22",
       "Source": "Repository"
     },
     "rlang": {
@@ -688,7 +688,7 @@
     },
     "rmarkdown": {
       "Package": "rmarkdown",
-      "Version": "2.27",
+      "Version": "2.28",
       "Source": "Repository"
     },
     "rpart": {
@@ -723,7 +723,7 @@
     },
     "shiny": {
       "Package": "shiny",
-      "Version": "1.8.1.1",
+      "Version": "1.9.1",
       "Source": "Repository"
     },
     "sourcetools": {
@@ -813,7 +813,7 @@
     },
     "uuid": {
       "Package": "uuid",
-      "Version": "1.2-0",
+      "Version": "1.2-1",
       "Source": "Repository"
     },
     "vctrs": {
@@ -833,12 +833,12 @@
     },
     "withr": {
       "Package": "withr",
-      "Version": "3.0.0",
+      "Version": "3.0.1",
       "Source": "Repository"
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.46",
+      "Version": "0.47",
       "Source": "Repository"
     },
     "xml2": {
