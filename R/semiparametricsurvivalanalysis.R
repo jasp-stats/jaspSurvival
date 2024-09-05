@@ -17,27 +17,36 @@
 
 SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NULL) {
 
-  # semi-parametric allows only for right censored data -- set the options for generic functions downstream
-  options[["censoringType"]] <- "right"
-
   if (.saSurvivalReady(options))
     dataset <- .saReadDataset(dataset, options)
 
-  if (.saSurvivalReady(options)) {
+  saveRDS(options, file = "C:/JASP/options.RDS")
+  saveRDS(dataset, file = "C:/JASP/dataset.RDS")
+
+  if (.saSurvivalReady(options))
     .saspFitCox(jaspResults, dataset, options)
-  }
+
+  saveRDS(jaspResults[["fit"]]$object, file = "C:/JASP/fit.RDS")
 
   .saspSummaryTable(jaspResults, dataset, options)
-  .saspEstimatesTable(jaspResults, dataset, options)
-  .saspHazardRatioTable(jaspResults, dataset, options)
+  .saspTestsTable(jaspResults, dataset, options)
+
+  if (options[["modelFit"]])
+    .saspModelFitTable(jaspResults, dataset, options)
+
+  if (options[["coefficientEstimate"]])
+    .saspEstimatesTable(jaspResults, dataset, options)
+
+  if (options[["coefficientHazardRatioEstimates"]])
+    .saspHazardRatioTable(jaspResults, dataset, options)
 
 
   return()
 }
 
-.saspDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "factors", "covariates", "modelTerms")
+.saspDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "factors", "covariates", "modelTerms", "method")
 
-.saspFitCox           <- function(jaspResults, dataset, options) {
+.saspFitCox               <- function(jaspResults, dataset, options) {
 
   if (is.null(jaspResults[["fit"]])) {
 
@@ -47,7 +56,8 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
     fit <- try(survival::coxph(
       formula = .saGetFormula(options, type = "Cox", null = FALSE),
-      data    = dataset
+      data    = dataset,
+      method  = options[["method"]]
     ))
     # fix scoping in ggsurvplot
     fit$call$formula <- eval(fit$call$formula)
@@ -63,7 +73,8 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
     fitNull <- try(survival::coxph(
       formula = .saGetFormula(options, type = "Cox", null = TRUE),
-      data    = dataset
+      data    = dataset,
+      method  = options[["method"]]
     ))
     # fix scoping in ggsurvplot
     fitNull$call$formula <- eval(fitNull$call$formula)
@@ -73,7 +84,64 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   return()
 }
-.saspSummaryTable     <- function(jaspResults, dataset, options) {
+.saspTestsTable           <- function(jaspResults, dataset, options) {
+
+  if (!is.null(jaspResults[["testsTable"]]))
+    return()
+
+  if (!(options[["testsLikelihoodRatio"]] || options[["testsWald"]] || options[["testsScore"]]))
+    return()
+
+  testsTable <- createJaspTable(title = gettext("Model Tests Table"))
+  testsTable$dependOn(c(.saspDependencies, "testsLikelihoodRatio", "testsWald", "testsScore"))
+  testsTable$position <- 2
+  jaspResults[["testsTable"]] <- testsTable
+
+  testsTable$addColumnInfo(name = "test",     title = gettext("Test"),         type = "string")
+  testsTable$addColumnInfo(name = "chiSqr",   title = gettext("Chi Square"),   type = "number")
+  testsTable$addColumnInfo(name = "df",       title = gettext("df"),           type = "integer")
+  testsTable$addColumnInfo(name = "p",        title = gettext("p"),            type = "pvalue")
+
+  if (length(options[["factors"]]) == 0 && length(options[["covariates"]]) == 0) {
+    testsTable$addFootnote(gettext("At least one factor or covariate needs to be specified"))
+    return()
+  }
+
+  fit        <- jaspResults[["fit"]][["object"]]
+  fitSummary <- summary(fit)
+
+  if (options[["testsLikelihoodRatio"]]) {
+    testsTable$addRows(list(
+      "test"   = gettext("Likelihood ratio"),
+      "chiSqr" = fitSummary[["logtest"]][["test"]],
+      "df"     = fitSummary[["logtest"]][["df"]],
+      "p"      = fitSummary[["logtest"]][["pvalue"]]
+    ))
+  }
+
+  if (options[["testsWald"]]) {
+    testsTable$addRows(list(
+      "test"   = gettext("Wald"),
+      "chiSqr" = fitSummary[["waldtest"]][["test"]],
+      "df"     = fitSummary[["waldtest"]][["df"]],
+      "p"      = fitSummary[["waldtest"]][["pvalue"]]
+    ))
+  }
+
+  if (options[["testsScore"]]) {
+    testsTable$addRows(list(
+      "test"   = gettext("Score"),
+      "chiSqr" = fitSummary[["sctest"]][["test"]],
+      "df"     = fitSummary[["sctest"]][["df"]],
+      "p"      = fitSummary[["sctest"]][["pvalue"]]
+    ))
+  }
+
+  testsTable$addFootnote(gettext("Test are based on the H\u2081 model."))
+
+  return()
+}
+.saspSummaryTable         <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["summaryTable"]]))
     return()
@@ -85,9 +153,9 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   # create empty table
   summaryTable$addColumnInfo(name = "mod",    title = gettext("Model"),    type = "string")
-  summaryTable$addColumnInfo(name = "loglik", title = gettext("log Lik."), type = "number")
+  summaryTable$addColumnInfo(name = "loglik", title = gettext("Log Lik."), type = "number")
   summaryTable$addColumnInfo(name = "df",     title = gettext("df"),       type = "integer")
-  summaryTable$addColumnInfo(name = "pvl",    title = gettext("p"),        type = "pvalue")
+#  summaryTable$addColumnInfo(name = "pvl",    title = gettext("p"),        type = "pvalue")
   summaryTable$addColumnInfo(name = "aic",    title = gettext("AIC"),      type = "number", format="dp:3")
   summaryTable$addColumnInfo(name = "bic",    title = gettext("BIC"),      type = "number", format="dp:3")
 
@@ -104,7 +172,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
       "mod"    = "H\u2080",
       "loglik" = as.numeric(logLik(fitNull)),
       "df"     = attr(logLik(fitNull), "df"),
-      "pvl"    = pchisq(2 * (fitNull$loglik[2] - fitNull$loglik[1]), df = attr(logLik(fitNull), "df"), lower.tail = FALSE),
+#      "pvl"    = pchisq(2 * (fitNull$loglik[2] - fitNull$loglik[1]), df = attr(logLik(fitNull), "df"), lower.tail = FALSE),
       "aic"    = AIC(fitNull),
       "bic"    = BIC(fitNull)
     ))
@@ -116,10 +184,12 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
       "mod"    = "H\u2081",
       "loglik" = as.numeric(logLik(fit)),
       "df"     = attr(logLik(fit), "df"),
-      "pvl"    = pchisq(2 * (fit$loglik[2] - fit$loglik[1]), df = attr(logLik(fit), "df"), lower.tail = FALSE),
+#      "pvl"    = pchisq(2 * (fit$loglik[2] - fit$loglik[1]), df = attr(logLik(fit), "df"), lower.tail = FALSE),
       "aic"    = AIC(fit),
       "bic"    = BIC(fit)
     ))
+
+  summaryTable$addFootnote(gettextf("%1$i observations with %2$i events.", fit[["n"]], fit[["nevent"]]))
 
   if (!is.null(attr(dataset, "na.action")))
     summaryTable$addFootnote(gettextf("%1$i observations ommited due to missing values.", length(attr(dataset, "na.action"))))
@@ -130,14 +200,55 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   return()
 }
-.saspEstimatesTable   <- function(jaspResults, dataset, options) {
+.saspModelFitTable        <- function(jaspResults, dataset, options) {
+
+  if (!is.null(jaspResults[["modelFitTable"]]))
+    return()
+
+  modelFitTable <- createJaspTable(title = gettext("Model Fit Summary Table"))
+  modelFitTable$dependOn(c(.saspDependencies, "modelFit"))
+  modelFitTable$position <- 3
+  jaspResults[["modelFitTable"]] <- modelFitTable
+
+  # create empty table
+  modelFitTable$addColumnInfo(name = "mod",    title = gettext("Model"),    type = "string")
+  modelFitTable$addColumnInfo(name = "concordanceEstimate",  title = gettext("Estimate"),       type = "number", overtitle = gettext("Concordance"))
+  modelFitTable$addColumnInfo(name = "concordanceSe",        title = gettext("Standard Error"), type = "number", overtitle = gettext("Concordance"))
+
+  if (!.saSurvivalReady(options))
+    return()
+
+  fit     <- jaspResults[["fit"]][["object"]]
+  fitNull <- jaspResults[["fitNull"]][["object"]]
+
+  if (jaspBase::isTryError(fitNull))
+    modelFitTable$addFootnote(fitNull, symbol = gettextf("The null model failed with the following message:"))
+  else
+    modelFitTable$addRows(list(
+      "mod"    = "H\u2080",
+      "concordanceEstimate" = fitNull[["concordance"]][["concordance"]],
+      "concordanceSe"       = fitNull[["concordance"]][["std"]]
+    ))
+
+  if (jaspBase::isTryError(fit))
+    modelFitTable$setError(fit, symbol = gettextf("The model failed with the following message:"))
+  else
+    modelFitTable$addRows(list(
+      "mod"    = "H\u2081",
+      "concordanceEstimate" = fit[["concordance"]][["concordance"]],
+      "concordanceSe"       = fit[["concordance"]][["std"]]
+    ))
+
+  return()
+}
+.saspEstimatesTable       <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["estimatesTable"]]))
     return()
 
   estimatesTable <- createJaspTable(title = gettext("Cox Proportional Hazards Estimates Table"))
-  estimatesTable$dependOn(c(.saspDependencies, "coefficientEstimate", "vovkSellke"))
-  estimatesTable$position <- 2
+  estimatesTable$dependOn(c(.saspDependencies, "coefficientEstimate", "vovkSellke", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel"))
+  estimatesTable$position <- 4
   jaspResults[["estimatesTable"]] <- estimatesTable
 
   # create empty table
@@ -145,6 +256,11 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   estimatesTable$addColumnInfo(name = "param",  title = "",                        type = "string")
   estimatesTable$addColumnInfo(name = "est",    title = gettext("Estimate"),       type = "number")
   estimatesTable$addColumnInfo(name = "se",     title = gettext("Standard Error"), type = "number")
+  if (options[["coefficientsConfidenceIntervals"]]) {
+    overtitle <- gettextf("%.0f%% CI", 100 * options[["coefficientsConfidenceIntervalsLevel"]])
+    estimatesTable$addColumnInfo(name = "lower",  title = gettext("Lower"),   type = "number", overtitle = overtitle)
+    estimatesTable$addColumnInfo(name = "upper",  title = gettext("Upper"),   type = "number", overtitle = overtitle)
+  }
   estimatesTable$addColumnInfo(name = "zval",   title = gettext("z"),              type = "number")
   estimatesTable$addColumnInfo(name = "pval",   title = gettext("p"),              type = "pvalue")
 
@@ -184,23 +300,25 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   return()
 }
-.saspHazardRatioTable <- function(jaspResults, dataset, options) {
+.saspHazardRatioTable     <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["hazardRatioTable"]]))
     return()
 
   hazardRatioTable <- createJaspTable(title = gettext("Hazard Ratios Estimates Table"))
-  hazardRatioTable$dependOn(c(.saspDependencies, "coefficientHazardRatioEstimates", "coefficientCiLevel"))
-  hazardRatioTable$position <- 3
+  hazardRatioTable$dependOn(c(.saspDependencies, "coefficientHazardRatioEstimates", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel"))
+  hazardRatioTable$position <- 5
   jaspResults[["hazardRatioTable"]] <- hazardRatioTable
 
   # create empty table
-  overtitle <- gettextf("%.0f%% CI", 100 * options[["coefficientCiLevel"]])
   hazardRatioTable$addColumnInfo(name = "model",  title = gettext("Model"),          type = "string")
   hazardRatioTable$addColumnInfo(name = "param",  title = "",                        type = "string")
   hazardRatioTable$addColumnInfo(name = "est",    title = gettext("Hazard Ratio"),   type = "number")
-  hazardRatioTable$addColumnInfo(name = "lower",  title = gettext("Lower"), type = "number", overtitle = overtitle)
-  hazardRatioTable$addColumnInfo(name = "upper",  title = gettext("Upper"), type = "number", overtitle = overtitle)
+  if (options[["coefficientsConfidenceIntervals"]]) {
+    overtitle <- gettextf("%.0f%% CI", 100 * options[["coefficientsConfidenceIntervalsLevel"]])
+    hazardRatioTable$addColumnInfo(name = "lower",  title = gettext("Lower"), type = "number", overtitle = overtitle)
+    hazardRatioTable$addColumnInfo(name = "upper",  title = gettext("Upper"), type = "number", overtitle = overtitle)
+  }
 
   if (!.saSurvivalReady(options))
     return()
@@ -213,13 +331,13 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     hazardRatioTable$addFootnote(gettextf("Null model contains nuisance parameters: %s", paste(nullPredictors, collapse = ", ")))
     estimates <- NULL
   } else
-    estimates <- .saspCoxFitSummary(fitNull, options, "H\u2080", HR = TRUE, CI = options[["coefficientCiLevel"]])
+    estimates <- .saspCoxFitSummary(fitNull, options, "H\u2080", HR = TRUE)
 
   if (jaspBase::isTryError(fit)) {
     hazardRatioTable$setError(fit, symbol = gettextf("The model failed with the following message:"))
     return()
   } else
-    estimates <- rbind(estimates, .saspCoxFitSummary(fit, options, "H\u2081", HR = TRUE, CI = options[["coefficientCiLevel"]]))
+    estimates <- rbind(estimates, .saspCoxFitSummary(fit, options, "H\u2081", HR = TRUE))
 
 
   if (!is.null(estimates) && options[["vovkSellke"]])
@@ -231,24 +349,30 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 }
 
 
-.saspCoxFitSummary     <- function(fit, options, model, HR = FALSE, CI = 0.95) {
+.saspCoxFitSummary     <- function(fit, options, model, HR = FALSE) {
 
-  if (HR)
-    estimatesFit <- summary(fit, conf.int = CI)$conf.int[,-2,drop=FALSE]
-  else
-    estimatesFit <- summary(fit)$coefficients[,c("coef", "se(coef)", "z", "Pr(>|z|)"),drop=FALSE]
+  # extract coefficients
+  estimatesFit <- summary(fit)$coefficients[,c("coef", "se(coef)", "z", "Pr(>|z|)"), drop = FALSE]
 
-  if (is.null(estimatesFit))
-    return()
-  else if (is.null(dim(estimatesFit)))
-    estimatesFit <- data.frame(t(estimatesFit))
-  else
-    estimatesFit <- data.frame(estimatesFit)
+  # make into a data.frame
+  if (is.null(estimatesFit))            return()
+  else if (is.null(dim(estimatesFit)))  estimatesFit <- data.frame(t(estimatesFit))
+  else                                  estimatesFit <- data.frame(estimatesFit)
 
-  if (HR)
-    colnames(estimatesFit) <- c("est", "lower", "upper")
-  else
-    colnames(estimatesFit) <- c("est", "se", "zval", "pval")
+  # fix column names
+  colnames(estimatesFit) <- c("est", "se", "zval", "pval")
+
+  # add confidence intervals
+  if (options[["coefficientsConfidenceIntervals"]]) {
+    estimatesFit$lower <- estimatesFit$est + qnorm((1 - options[["coefficientsConfidenceIntervalsLevel"]]) / 2) * estimatesFit$se
+    estimatesFit$upper <- estimatesFit$est - qnorm((1 - options[["coefficientsConfidenceIntervalsLevel"]]) / 2) * estimatesFit$se
+  }
+
+  # transform to HR if needed
+  if (HR) {
+    estimatesFit <- estimatesFit[,!colnames(estimatesFit) %in% c("se", "zval", "pval"), drop = FALSE]
+    estimatesFit <- exp(estimatesFit)
+  }
 
   estimatesFit <- cbind(
     "model" = "",

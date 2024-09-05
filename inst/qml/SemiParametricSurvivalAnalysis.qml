@@ -25,53 +25,31 @@ Form
 {
 	VariablesForm
 	{
+		removeInvisibles:	true
+
 		AvailableVariablesList
 		{
 			name: "allVariablesList"
 		}
 
-		RadioButtonGroup
-		{
-			id:						censoringType
-			Layout.columnSpan:		2
-			name:					"censoringType"
-			title:					qsTr("Censoring Type")
-			radioButtonsOnSameRow:	true
-			columns:				2
-
-			RadioButton
-			{
-				label:		qsTr("Right")
-				value:		"right"
-				id:			censoringTypeRight
-			}
-
-			RadioButton
-			{
-				label:		qsTr("Interval")
-				value:		"interval"
-				id:			censoringTypeInterval
-			}
-		}
-/*
 		AssignedVariablesList
 		{
 			name:				"intervalStart"
 			title:				qsTr("Interval Start")
 			allowedColumns:		["scale"]
 			singleVariable:		true
-			visible:			censoringTypeInterval.checked
+			visible:			censoringTypeCounting.checked
 		}
 
 		AssignedVariablesList
 		{
 			name:				"intervalEnd"
-			title:				qsTr("intervalEnd")
+			title:				qsTr("Interval End")
 			allowedColumns:		["scale"]
 			singleVariable:		true
-			visible:			censoringTypeInterval.checked
+			visible:			censoringTypeCounting.checked
 		}
-*/
+
 		AssignedVariablesList
 		{
 			name:				"timeToEvent"
@@ -83,43 +61,21 @@ Form
 
 		AssignedVariablesList
 		{
+			id:					eventStatusId
 			name:				"eventStatus"
 			title:				qsTr("Event Status")
 			allowedColumns:		["nominal"]
 			singleVariable:		true
 		}
-/*
-		DropDown
-		{
-			name:				"rightCensored"
-			label:				qsTr("Right Censored")
-			source:				[{name: "eventStatus", use: "levels"}]
-			visible:			censoringTypeInterval.checked
-		}
-*/
+
 		DropDown
 		{
 			name:				"eventIndicator"
 			label:				qsTr("Event Indicator")
 			source:				[{name: "eventStatus", use: "levels"}]
-		}
-/*
-		DropDown
-		{
-			name:				"leftCensored"
-			label:				qsTr("Left Censored")
-			source:				[{name: "eventStatus", use: "levels"}]
-			visible:			censoringTypeInterval.checked
+			onCountChanged:		currentIndex = 1
 		}
 
-		DropDown
-		{
-			name:				"intervalCensored"
-			label:				qsTr("Interval Censored")
-			source:				[{name: "eventStatus", use: "levels"}]
-			visible:			censoringTypeInterval.checked
-		}
-*/
 		AssignedVariablesList
 		{
 			name:			 	"covariates"
@@ -132,6 +88,43 @@ Form
 			name:			 	"factors"
 			title:			 	qsTr("Factors")
 			allowedColumns:		["nominal"]
+		}
+	}
+
+	DropDown
+	{
+		name:		"method"
+		label:		qsTr("Method")
+		values:
+		[
+			{ label: qsTr("Efron"),			value: "efron"},
+			{ label: qsTr("Breslow"),		value: "breslow"},
+			{ label: qsTr("Exact"),			value: "exact"}
+		]
+	}
+
+	RadioButtonGroup
+	{
+		id:						censoringType
+		Layout.columnSpan:		1
+		name:					"censoringType"
+		title:					qsTr("Censoring Type")
+		radioButtonsOnSameRow:	true
+		columns:				2
+
+		RadioButton
+		{
+			label:		qsTr("Right")
+			value:		"right"
+			id:			censoringTypeRight
+			checked:	true
+		}
+
+		RadioButton
+		{
+			label:		qsTr("Counting")
+			value:		"counting"
+			id:			censoringTypeCounting
 		}
 	}
 
@@ -156,18 +149,44 @@ Form
 				width:	parent.width * 5 / 9
 			}
 		}
-
-		CheckBox
-		{
-			name:		"interceptTerm"
-			label:		qsTr("Include intercept")
-			checked:	true
-		}
 	}
 
 	Section
 	{
 		title: qsTr("Statistics")
+
+		Group
+		{
+
+			CheckBox
+			{
+				name:		"modelFit"
+				label:		qsTr("Model fit")
+			}
+
+			Group
+			{
+				title:	qsTr("Tests")
+
+				CheckBox
+				{
+					name:		"testsLikelihoodRatio"
+					label:		qsTr("Likelihood ratio")
+				}
+
+				CheckBox
+				{
+					name:		"testsWald"
+					label:		qsTr("Wald")
+				}
+
+				CheckBox
+				{
+					name:		"testsScore"
+					label:		qsTr("Score (log-rank)")
+				}
+			}		
+		}
 
 		Group
 		{
@@ -195,16 +214,21 @@ Form
 					name:		"coefficientHazardRatioEstimates"
 					label:		qsTr("Hazard ratio estimates")
 					checked:	true
+				}
 
+				CheckBox
+				{
+					name:				"coefficientsConfidenceIntervals"
+					label:				qsTr("Confidence intervals")
+					checked:			true
+					childrenOnSameRow:	true
+					
 					CIField
 					{
-						name:	"coefficientCiLevel"
-						label:	qsTr("Confidence intervals")
+						name:	"coefficientsConfidenceIntervalsLevel"
 					}
-				}
-				
+				}				
 			}
 		}
-		
 	}
 }

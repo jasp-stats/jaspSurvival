@@ -14,7 +14,7 @@
 
   ready <- switch(
     options[["censoringType"]],
-    "interval" = options[["eventStatus"]] != "" && options[["intervalStart"]] != "" && options[["intervalEnd"]] != "",
+    "counting" = options[["eventStatus"]] != "" && options[["intervalStart"]] != "" && options[["intervalEnd"]] != "",
     "right"    = options[["eventStatus"]] != "" && options[["timeToEvent"]] != ""
   )
 
@@ -29,7 +29,7 @@
   eventVariable <- options[["eventStatus"]]
   timeVariable  <- switch(
     options[["censoringType"]],
-    "interval" = c(options[["intervalStart"]], options[["intervalEnd"]]),
+    "counting" = c(options[["intervalStart"]], options[["intervalEnd"]]),
     "right"    = options[["timeToEvent"]]
   )
 
@@ -56,7 +56,7 @@
   )
 
   # check that interval start < end
-  if (options[["censoringType"]] == "interval") {
+  if (options[["censoringType"]] == "counting") {
     if (any(dataset[[options[["intervalStart"]]]] > dataset[[options[["intervalEnd"]]]]))
       .quitAnalysis(gettextf("The end time must be larger than start time."))
   }
@@ -85,25 +85,11 @@
 
   if (options[["censoringType"]] == "right") {
 
-    # 0 = right censored, 1 = event at time
-    event <- as.numeric(dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]])
+    event <- dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]]
 
-  } else if (options[["censoringType"]] == "interval") {
+  } else if (options[["censoringType"]] == "counting") {
 
-    if (anyDuplicated(c(
-      options[["rightCensored"]],
-      options[["eventIndicator"]],
-      options[["leftCensored"]],
-      options[["intervalCensored"]]
-    )))
-      .quitAnalysis(gettextf("Duplicated level mapping for interval censoring."))
-
-    # 0 = right censored, 1 = event at time, 2 = left censored, 3 = interval censored
-    event <- rep(NA, nrow(dataset))
-    event[dataset[[options[["eventStatus"]]]] == options[["rightCensored"]]]    <- 0
-    event[dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]]]   <- 1
-    event[dataset[[options[["eventStatus"]]]] == options[["leftCensored"]]]     <- 2
-    event[dataset[[options[["eventStatus"]]]] == options[["intervalCensored"]]] <- 3
+    event <- dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]]
 
   }
 
@@ -112,17 +98,19 @@
 .saGetSurv            <- function(options) {
   return(switch(
     options[["censoringType"]],
-    "interval" = sprintf("survival::Surv(
+    "counting" = sprintf("survival::Surv(
       time  = %1$s,
       time2 = %2$s,
-      event = %3$s)",
+      event = %3$s,
+      type  = 'counting')",
       options[["intervalStart"]],
       options[["intervalEnd"]],
       options[["eventStatus"]]
       ),
     "right"    = sprintf("survival::Surv(
       time  = %1$s,
-      event = %2$s)",
+      event = %2$s,
+      type  = 'right')",
       options[["timeToEvent"]],
       options[["eventStatus"]]
       )
@@ -142,7 +130,7 @@
 
   survival <- .saGetSurv(options)
 
-  if (length(predictors) == 0 && interceptTerm == FALSE)
+  if (length(predictors) == 0 && !interceptTerm)
     stop(gettext("We need at least one predictor, or an intercept to make a formula"))
 
   if (length(predictors) == 0)
