@@ -165,47 +165,69 @@ Form
 
 	CheckBox
 	{
-		name:	"survivalCurvePlot"
-		label:	qsTr("Survival curve plot")
+		name:	"plot"
+		label:	qsTr("Plot")
+
+		DropDown
+		{
+			name:		"plotType"
+			label:		qsTr("Type")
+			values:
+			[
+				{ label: qsTr("Survival"),					value: "survival"},
+				{ label: qsTr("Risk"),						value: "risk"},
+				{ label: qsTr("Cumulative hazard"),			value: "cumulativeHazard"},
+				{ label: qsTr("Complementary log-log"),		value: "complementaryLogLog"}
+			]
+		}
 
 		CheckBox
 		{
-			name:		"survivalCurvePlotConfidenceInterval"
+			name:		"plotConfidenceInterval"
 			label:		qsTr("Confidence interval")
 			checked:	true
 		}
 
 		CheckBox
 		{
-			name:		"survivalCurvePlotRiskTable"
+			name:		"plotRiskTable"
 			label:		qsTr("Risk table")
-			checked:	false
-		}
+			checked:	true
+			childrenOnSameRow:	true
 
-		CheckBox
-		{
-			name:		"survivalCurvePlotCumulativeEventsTable"
-			label:		qsTr("Cumulative events table")
-			checked:	false
-		}
-
-		CheckBox
-		{
-			name:		"survivalCurveCensoringPlot"
-			label:		qsTr("Censoring plot")
-			checked:	false
-
-			CheckBox
+			DropDown
 			{
-				name:		"survivalCurveCensoringPlotCumulative"
-				label:		qsTr("Cumulative")
-				checked:	false
+				name:		"plotRiskTableValue"
+				values:
+				[
+					{ label: qsTr("Number at risk"),	value: "numberAtRisk"},
+					{ label: qsTr("Cumulative events"),	value: "cumulativeEvents"},
+					{ label: qsTr("Both"),				value: "both"},
+					{ label: qsTr("Both (brackets)"),	value: "bothBrackets"}
+				]
 			}
 		}
 
+		CheckBox
+		{
+			name:		"plotAddQuantile"
+			label:		qsTr("Add quantile")
+			checked:	false
+			childrenOnSameRow:	true
+			
+			DoubleField
+			{
+				name:			"plotAddQuantileValue"
+				defaultValue:	0.5	
+				min:			0
+				max:			1
+			}
+		}
+
+
 		DropDown
 		{
-			name:		"survivalCurvePlotLegend"
+			name:		"plotLegend"
 			label:		qsTr("Legend")
 			values:
 			[
@@ -216,13 +238,18 @@ Form
 				{ label: qsTr("None"),		value: "none"}
 			]
 		}
-
-		//CheckBox
-		//{
-		//	name:		"survivalCurvePlotDataRug"
-		//	label:		qsTr("Data rug")
-		//}
 		
 		ColorPalette{}
+
+		DropDown
+		{
+			name:		"plotTheme"
+			label:		qsTr("Theme")
+			values:
+			[
+				{ label: qsTr("JASP"),			value: "jasp"},
+				{ label: qsTr("ggsurvfit"),		value: "ggsurvfit"}
+			]
+		}
 	}
 }
