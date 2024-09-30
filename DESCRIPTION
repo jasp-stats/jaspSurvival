@@ -11,7 +11,7 @@ License: GPL (>= 2)
 Encoding: UTF-8
 Imports:
   survival,
-  survminer,
+  ggsurvfit,
   jaspBase,
   jaspGraphs
 Suggests:

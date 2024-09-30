@@ -192,19 +192,44 @@ Form
 		{
 			name:		"plotRiskTable"
 			label:		qsTr("Risk table")
-			checked:	true
-			childrenOnSameRow:	true
+			checked:	false
 
-			DropDown
+			CheckBox
 			{
-				name:		"plotRiskTableValue"
-				values:
-				[
-					{ label: qsTr("Number at risk"),	value: "numberAtRisk"},
-					{ label: qsTr("Cumulative events"),	value: "cumulativeEvents"},
-					{ label: qsTr("Both"),				value: "both"},
-					{ label: qsTr("Both (brackets)"),	value: "bothBrackets"}
-				]
+				name:		"plotRiskTableNumberAtRisk"
+				label:		qsTr("Number at risk")
+				checked:	true
+			}
+
+			CheckBox
+			{
+				name:		"plotRiskTableCumulativeNumberOfObservedEvents"
+				label:		qsTr("Cum. number of observed events")
+				checked:	true
+			}
+
+			CheckBox
+			{
+				name:		"plotRiskTableCumulativeNumberOfCensoredObservations"
+				label:		qsTr("Cum. number of censored obs.")
+			}
+
+			CheckBox
+			{
+				name:		"plotRiskTableNumberOfEventsInTimeInterval"
+				label:		qsTr("Number of events in time interval")
+			}
+
+			CheckBox
+			{
+				name:		"plotRiskTableNumberOfCensoredObservationsInTimeInterval"
+				label:		qsTr("Number of censored obs. in time interval")
+			}
+
+			CheckBox
+			{
+				name:		"plotRiskTableAsASingleLine"
+				label:		qsTr("As a single line")
 			}
 		}
 
