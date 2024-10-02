@@ -222,7 +222,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
       "risk"                 = gettext("Kaplan-Meier Risk Plot"),
       "cumulativeHazard"     = gettext("Kaplan-Meier Cumulative Hazard Plot"),
       "complementaryLogLog"  = gettext("Kaplan-Meier Complementary Log-Log Plot")
-    ))
+    ), width = 450, height = if (options[["plotRiskTable"]]) 700 else 400)
     surivalPlot$dependOn(c(.sanpDependencies, "plot", "plotType", "plotConfidenceInterval", "plotRiskTable",
                            "plotRiskTableNumberAtRisk", "plotRiskTableCumulativeNumberOfObservedEvents",
                            "plotRiskTableCumulativeNumberOfCensoredObservations", "plotRiskTableNumberOfEventsInTimeInterval",
@@ -271,6 +271,16 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   #   cumcensor     = options[["survivalCurveCensoringPlotCumulative"]]
   # ))
 
+  .ggsurvfit2JaspPlot <- function(x) {
+    grDevices::png(f <- tempfile())
+    on.exit({
+      grDevices::dev.off()
+      if (file.exists(f))
+        file.remove(f)
+    })
+    return(ggsurvfit:::ggsurvfit_build(tempPlot))
+  }
+
   tempPlot <- ggsurvfit::survfit2(.saGetFormula(options, type = "KM"), data = dataset) |>
     ggsurvfit::ggsurvfit(
       type      = switch(
@@ -310,6 +320,8 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     tempPlot <- tempPlot +
       jaspGraphs::geom_rangeframe(sides = "bl") +
       jaspGraphs::themeJaspRaw(legend.position = options[["plotLegend"]])
+  else
+    tempPlot <- tempPlot + ggplot2::theme(legend.position = options[["plotLegend"]])
 
   # scaling and formatting
   tempPlot <- tempPlot + ggsurvfit::scale_ggsurvfit() +
@@ -320,7 +332,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     return()
   }
 
-  surivalPlot$plotObject <- tempPlot
+  surivalPlot$plotObject <- .ggsurvfit2JaspPlot(tempPlot)
 
   return()
 }
