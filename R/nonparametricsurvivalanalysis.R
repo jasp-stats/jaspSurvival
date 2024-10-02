@@ -211,6 +211,20 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   return()
 }
+.sanpGetSurvivalPlotHeight <- function(options) {
+  if (!options[["plotRiskTable"]])
+    return(400)
+  else if (!options[["plotRiskTableAsASingleLine"]])
+    return(450)
+  else
+    return(400 + 50 * sum(c(
+      options[["plotRiskTableNumberAtRisk"]],
+      options[["plotRiskTableCumulativeNumberOfObservedEvents"]],
+      options[["plotRiskTableCumulativeNumberOfCensoredObservations"]],
+      options[["plotRiskTableNumberOfEventsInTimeInterval"]],
+      options[["plotRiskTableNumberOfCensoredObservationsInTimeInterval"]]
+    )))
+}
 .sanpSurvivalPlot    <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["surivalPlot"]]))
@@ -222,7 +236,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
       "risk"                 = gettext("Kaplan-Meier Risk Plot"),
       "cumulativeHazard"     = gettext("Kaplan-Meier Cumulative Hazard Plot"),
       "complementaryLogLog"  = gettext("Kaplan-Meier Complementary Log-Log Plot")
-    ), width = 450, height = if (options[["plotRiskTable"]]) 700 else 400)
+    ), width = 450, height = .sanpGetSurvivalPlotHeight(options))
     surivalPlot$dependOn(c(.sanpDependencies, "plot", "plotType", "plotConfidenceInterval", "plotRiskTable",
                            "plotRiskTableNumberAtRisk", "plotRiskTableCumulativeNumberOfObservedEvents",
                            "plotRiskTableCumulativeNumberOfCensoredObservations", "plotRiskTableNumberOfEventsInTimeInterval",
