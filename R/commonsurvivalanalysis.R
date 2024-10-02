@@ -5,10 +5,7 @@
 # - make "lifeTableStepsSize" correspond to the maxiumum time/10
 # R:
 # - convenient function for making factor level parameter names nice (in regression tables)?
-# - why legend names are so wide? Encoding/decoding problems?
-#   (smth along the lines of: `levels(tempPlot$data.survplot$strata) <- jaspBase::decodeColNames(levels(tempPlot$data.survplot$strata), strict = FALSE)`
-# - make sure x-axis are aligned in the survival plot
-# - jaspTheme the plot
+# - add frailty to coxph
 
 .saSurvivalReady      <- function(options) {
 
@@ -34,11 +31,16 @@
   )
 
   factorsVariable    <- Filter(function(s) s != "", options[["factors"]])
-  covariatesVariable <- Filter(function(s) s != "", options[["covariates"]]) # only for (semi)parametric
+  # only for (semi)parametric
+  covariatesVariable <- Filter(function(s) s != "", options[["covariates"]])
+  strataVariable     <- Filter(function(s) s != "", options[["strata"]])
+  idVariable         <- Filter(function(s) s != "", options[["id"]])
+  clusterVariable    <- Filter(function(s) s != "", options[["cluster"]])
+  weightsVariable    <- Filter(function(s) s != "", options[["weights"]])
 
   dataset <- .readDataSetToEnd(
-    columns.as.numeric = c(timeVariable, covariatesVariable),
-    columns.as.factor  = c(eventVariable, factorsVariable)
+    columns.as.numeric = c(timeVariable, covariatesVariable, weightsVariable),
+    columns.as.factor  = c(eventVariable, factorsVariable, strataVariable, idVariable, clusterVariable),
   )
 
   # clean from NAs
@@ -51,7 +53,7 @@
   .hasErrors(
     dataset                      = dataset,
     type                         = c("negativeValues"),
-    negativeValues.target        = timeVariable,
+    negativeValues.target        = c(timeVariable, weightsVariable),
     exitAnalysisIfErrors         = TRUE
   )
 
@@ -98,7 +100,7 @@
 .saGetSurv            <- function(options) {
   return(switch(
     options[["censoringType"]],
-    "counting" = sprintf("survival::Surv(
+    "counting" = sprintf("Surv(
       time  = %1$s,
       time2 = %2$s,
       event = %3$s,
@@ -107,7 +109,7 @@
       options[["intervalEnd"]],
       options[["eventStatus"]]
       ),
-    "right"    = sprintf("survival::Surv(
+    "right"    = sprintf("Surv(
       time  = %1$s,
       event = %2$s,
       type  = 'right')",
@@ -146,6 +148,17 @@
   # modified from jaspRegression::.createGlmFormula
   # this function outputs a formula name with base64 values as varnames
   modelTerms    <- options[["modelTerms"]]
+
+  # add "strata" calls
+  for (i in seq_along(options[["strata"]])) {
+    for (j in seq_along(modelTerms)) {
+      modelTerms[[j]]$components <- gsub(
+        options[["strata"]][[i]],
+        paste0("strata(", options[["strata"]][[i]], ")"),
+        modelTerms[[j]]$components
+      )
+    }
+  }
 
   t <- NULL
   for (i in seq_along(modelTerms)) {
@@ -210,4 +223,134 @@
   varName <- gsub(" ()", "", varName, fixed = TRUE)
 
   return(varName)
+}
+
+.saGetSurvivalPlotHeight <- function(options) {
+  if (!options[["plotRiskTable"]])
+    return(400)
+  else if (!options[["plotRiskTableAsASingleLine"]])
+    return(450)
+  else
+    return(400 + 50 * sum(c(
+      options[["plotRiskTableNumberAtRisk"]],
+      options[["plotRiskTableCumulativeNumberOfObservedEvents"]],
+      options[["plotRiskTableCumulativeNumberOfCensoredObservations"]],
+      options[["plotRiskTableNumberOfEventsInTimeInterval"]],
+      options[["plotRiskTableNumberOfCensoredObservationsInTimeInterval"]]
+    )))
+}
+.saSurvivalPlot          <- function(jaspResults, dataset, options, type) {
+
+  if (!is.null(jaspResults[["surivalPlot"]]))
+    surivalPlot <- jaspResults[["surivalPlot"]]
+  else {
+    surivalPlot <- createJaspPlot(title = switch(
+      options[["plotType"]],
+      "survival"             = gettext("Survival Plot"),
+      "risk"                 = gettext("Risk Plot"),
+      "cumulativeHazard"     = gettext("Cumulative Hazard Plot"),
+      "complementaryLogLog"  = gettext("Complementary Log-Log Plot")
+    ), width = 450, height = .saGetSurvivalPlotHeight(options))
+    surivalPlot$dependOn(c(.sanpDependencies, "plot", "plotType", "plotStrata", "plotConfidenceInterval", "plotRiskTable",
+                           "plotRiskTableNumberAtRisk", "plotRiskTableCumulativeNumberOfObservedEvents",
+                           "plotRiskTableCumulativeNumberOfCensoredObservations", "plotRiskTableNumberOfEventsInTimeInterval",
+                           "plotRiskTableNumberOfCensoredObservationsInTimeInterval", "plotRiskTableAsASingleLine",
+                           "plotAddQuantile", "plotAddQuantileValue",
+                           "colorPalette", "plotLegend", "plotTheme"))
+    surivalPlot$position <- 3
+    jaspResults[["surivalPlot"]] <- surivalPlot
+  }
+
+  if (is.null(jaspResults[["fit"]]))
+    return()
+
+  fit <- jaspResults[["fit"]][["object"]]
+
+  if (jaspBase::isTryError(fit))
+    return()
+
+  .ggsurvfit2JaspPlot <- function(x) {
+    grDevices::png(f <- tempfile())
+    on.exit({
+      grDevices::dev.off()
+      if (file.exists(f))
+        file.remove(f)
+    })
+    return(ggsurvfit:::ggsurvfit_build(tempPlot))
+  }
+
+  if (type == "KM")
+    tempPlot <- ggsurvfit::survfit2(.saGetFormula(options, type = type), data = dataset) |>
+      ggsurvfit::ggsurvfit(
+        type      = switch(
+          options[["plotType"]],
+          "survival"             = "survival",
+          "risk"                 = "risk",
+          "cumulativeHazard"     = "cumhaz",
+          "complementaryLogLog"  = "cloglog"
+        ),
+        linewidth = 1
+      )
+  else if (type == "Cox")
+    tempPlot <- ggsurvfit::survfit2(fit) |>
+      ggsurvfit::ggsurvfit(
+        type      = switch(
+          options[["plotType"]],
+          "survival"             = "survival",
+          "risk"                 = "risk",
+          "cumulativeHazard"     = "cumhaz",
+          "complementaryLogLog"  = "cloglog"
+        ),
+        linewidth = 1
+      )
+
+
+  if (options[["plotConfidenceInterval"]])
+    tempPlot <- tempPlot + ggsurvfit::add_confidence_interval()
+
+  if (options[["plotRiskTable"]]) {
+    riskTableStatistics <-  c(
+      if (options[["plotRiskTableNumberAtRisk"]])                               "n.risk",
+      if (options[["plotRiskTableCumulativeNumberOfObservedEvents"]])           "cum.event",
+      if (options[["plotRiskTableCumulativeNumberOfCensoredObservations"]])     "cum.censor",
+      if (options[["plotRiskTableNumberOfEventsInTimeInterval"]])               "n.event",
+      if (options[["plotRiskTableNumberOfCensoredObservationsInTimeInterval"]]) "n.censor"
+    )
+
+    if (length(riskTableStatistics) > 0) {
+      if (options[["plotRiskTableAsASingleLine"]])
+        riskTableStatistics <- paste0("{", riskTableStatistics, "}", collapse = ", ")
+
+      tempPlot <- tempPlot + ggsurvfit::add_risktable(risktable_stats = riskTableStatistics)
+    }
+  }
+
+  if (options[["plotAddQuantile"]])
+    tempPlot <- tempPlot + ggsurvfit::add_quantile(y_value = options[["plotAddQuantileValue"]], color = "gray50", linewidth = 0.75)
+
+  if (options[["plotTheme"]] == "jasp")
+    tempPlot <- tempPlot +
+      jaspGraphs::geom_rangeframe(sides = "bl") +
+      jaspGraphs::themeJaspRaw(legend.position = options[["plotLegend"]])
+  else
+    tempPlot <- tempPlot + ggplot2::theme(legend.position = options[["plotLegend"]])
+
+  # scaling and formatting
+  tempPlot <- tempPlot +
+    jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]]) +
+    jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
+
+  if (options[["plotType"]] == "complementaryLogLog")
+    tempPlot <- tempPlot + ggplot2::scale_x_continuous(transform = "log") + ggplot2::xlab(gettext("log(Time)"))
+  else
+    tempPlot <- tempPlot + ggsurvfit::scale_ggsurvfit()
+
+  if (jaspBase::isTryError(tempPlot)) {
+    surivalCurvePlot$setError(tempPlot)
+    return()
+  }
+
+  surivalPlot$plotObject <- .ggsurvfit2JaspPlot(tempPlot)
+
+  return()
 }

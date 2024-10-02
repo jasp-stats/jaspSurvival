@@ -21,6 +21,8 @@ import JASP.Controls	1.0
 import JASP.Widgets		1.0
 import JASP				1.0
 
+import "./qml_components"		as SA
+
 Form
 {
 	VariablesForm
@@ -58,6 +60,7 @@ Form
 		AssignedVariablesList
 		{
 			name:			 	"factors"
+			id:					factors
 			title:			 	qsTr("Factors")
 			allowedColumns:		["nominal"]
 		}
@@ -163,118 +166,5 @@ Form
 		}
 	}
 
-	CheckBox
-	{
-		name:	"plot"
-		label:	qsTr("Plot")
-
-		DropDown
-		{
-			name:		"plotType"
-			label:		qsTr("Type")
-			values:
-			[
-				{ label: qsTr("Survival"),					value: "survival"},
-				{ label: qsTr("Risk"),						value: "risk"},
-				{ label: qsTr("Cumulative hazard"),			value: "cumulativeHazard"},
-				{ label: qsTr("Complementary log-log"),		value: "complementaryLogLog"}
-			]
-		}
-
-		CheckBox
-		{
-			name:		"plotConfidenceInterval"
-			label:		qsTr("Confidence interval")
-			checked:	true
-		}
-
-		CheckBox
-		{
-			name:		"plotRiskTable"
-			label:		qsTr("Risk table")
-			checked:	false
-
-			CheckBox
-			{
-				name:		"plotRiskTableNumberAtRisk"
-				label:		qsTr("Number at risk")
-				checked:	true
-			}
-
-			CheckBox
-			{
-				name:		"plotRiskTableCumulativeNumberOfObservedEvents"
-				label:		qsTr("Cum. number of observed events")
-				checked:	true
-			}
-
-			CheckBox
-			{
-				name:		"plotRiskTableCumulativeNumberOfCensoredObservations"
-				label:		qsTr("Cum. number of censored obs.")
-			}
-
-			CheckBox
-			{
-				name:		"plotRiskTableNumberOfEventsInTimeInterval"
-				label:		qsTr("Number of events in time interval")
-			}
-
-			CheckBox
-			{
-				name:		"plotRiskTableNumberOfCensoredObservationsInTimeInterval"
-				label:		qsTr("Number of censored obs. in time interval")
-			}
-
-			CheckBox
-			{
-				name:		"plotRiskTableAsASingleLine"
-				label:		qsTr("As a single line")
-			}
-		}
-
-		CheckBox
-		{
-			name:		"plotAddQuantile"
-			label:		qsTr("Add quantile")
-			checked:	false
-			childrenOnSameRow:	true
-			
-			DoubleField
-			{
-				name:			"plotAddQuantileValue"
-				defaultValue:	0.5	
-				min:			0
-				max:			1
-			}
-		}
-
-
-		DropDown
-		{
-			name:		"plotLegend"
-			label:		qsTr("Legend")
-			values:
-			[
-				{ label: qsTr("Bottom"),	value: "bottom"},
-				{ label: qsTr("Right"),		value: "right"},
-				{ label: qsTr("Left"),		value: "left"},
-				{ label: qsTr("Top"),		value: "top"},
-				{ label: qsTr("None"),		value: "none"}
-			]
-		}
-		
-		ColorPalette{}
-
-		DropDown
-		{
-			name:		"plotTheme"
-			label:		qsTr("Theme")
-			values:
-			[
-				{ label: qsTr("JASP"),			value: "jasp"},
-				{ label: qsTr("ggsurvfit"),		value: "ggsurvfit"}
-			]
-		}
-	}
+	SA.SurvivalPlot{}
 }

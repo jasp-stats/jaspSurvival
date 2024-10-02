@@ -40,11 +40,13 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   if (options[["coefficientHazardRatioEstimates"]])
     .saspHazardRatioTable(jaspResults, dataset, options)
 
+  if (options[["plot"]])
+    .saSurvivalPlot(jaspResults, dataset, options, type = "Cox")
 
   return()
 }
 
-.saspDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "factors", "covariates", "modelTerms", "method")
+.saspDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "factors", "covariates", "strata", "id", "cluster", "modelTerms", "method")
 
 .saspFitCox               <- function(jaspResults, dataset, options) {
 
@@ -54,10 +56,13 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     fitContainer$dependOn(.saspDependencies)
     jaspResults[["fit"]] <- fitContainer
 
-    fit <- try(survival::coxph(
+    fit <- try(coxph(
       formula = .saGetFormula(options, type = "Cox", null = FALSE),
       data    = dataset,
-      method  = options[["method"]]
+      method  = options[["method"]],
+      id      = if (options[["id"]] != "")      dataset[[options[["id"]]]],
+      cluster = if (options[["cluster"]] != "") dataset[[options[["cluster"]]]],
+      weights = if (options[["weights"]] != "") options[["weights"]]
     ))
     # fix scoping in ggsurvplot
     fit$call$formula <- eval(fit$call$formula)
@@ -70,11 +75,13 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     fitNullContainer <- createJaspState()
     fitNullContainer$dependOn(.saspDependencies)
     jaspResults[["fitNull"]] <- fitNullContainer
-
-    fitNull <- try(survival::coxph(
+    fitNull <- try(coxph(
       formula = .saGetFormula(options, type = "Cox", null = TRUE),
       data    = dataset,
-      method  = options[["method"]]
+      method  = options[["method"]],
+      id      = if (options[["id"]] != "")      dataset[[options[["id"]]]],
+      cluster = if (options[["cluster"]] != "") dataset[[options[["cluster"]]]],
+      weights = if (options[["weights"]] != "") options[["weights"]]
     ))
     # fix scoping in ggsurvplot
     fitNull$call$formula <- eval(fitNull$call$formula)
@@ -196,7 +203,13 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   nullPredictors <- .saGetPredictors(options, null = TRUE)
   if (length(nullPredictors) != 0)
-    summaryTable$addFootnote(gettextf("Null model contains nuisance parameters: %s", paste(nullPredictors, collapse = ", ")))
+    summaryTable$addFootnote(gettextf("Null model contains nuisance parameters: %1$s", paste(nullPredictors, collapse = ", ")))
+
+  if (options[["cluster"]] != "")
+    summaryTable$addFootnote(gettextf("Robust variance estimation based on %1$s.", options[["cluster"]]))
+
+  if (options[["id"]] != "")
+    summaryTable$addFootnote(gettextf("Subject identification based on %1$s.", options[["id"]]))
 
   return()
 }
@@ -256,6 +269,8 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   estimatesTable$addColumnInfo(name = "param",  title = "",                        type = "string")
   estimatesTable$addColumnInfo(name = "est",    title = gettext("Estimate"),       type = "number")
   estimatesTable$addColumnInfo(name = "se",     title = gettext("Standard Error"), type = "number")
+  if (options[["cluster"]] != "" || options[["id"]] != "")
+    estimatesTable$addColumnInfo(name = "rse",    title = gettext("Robust Standard Error"), type = "number")
   if (options[["coefficientsConfidenceIntervals"]]) {
     overtitle <- gettextf("%.0f%% CI", 100 * options[["coefficientsConfidenceIntervalsLevel"]])
     estimatesTable$addColumnInfo(name = "lower",  title = gettext("Lower"),   type = "number", overtitle = overtitle)
@@ -295,6 +310,8 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   if (!is.null(estimates) && options[["vovkSellke"]])
     estimates$vsmpr <- VovkSellkeMPR(estimates$pval)
 
+  if (length(options[["strata"]]) > 0)
+    estimatesTable$addFootnote(gettextf("Results are stratified via: %1$s.", paste0(options[["strata"]], collapse = ", ")))
 
   estimatesTable$setData(estimates)
 
@@ -352,7 +369,17 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 .saspCoxFitSummary     <- function(fit, options, model, HR = FALSE) {
 
   # extract coefficients
-  estimatesFit <- summary(fit)$coefficients[,c("coef", "se(coef)", "z", "Pr(>|z|)"), drop = FALSE]
+  estimatesFit <- summary(fit)$coefficients
+  toExtract    <- c(
+    "est"    = "coef",
+    "se"     = "se(coef)",
+    "rse"    = "robust se",
+    "zval"   = "z",
+    "pval"   = "Pr(>|z|)"
+  )
+  namesEstimatesFit <- colnames(estimatesFit)
+  estimatesFit      <- estimatesFit[,namesEstimatesFit %in% toExtract, drop = FALSE]
+
 
   # make into a data.frame
   if (is.null(estimatesFit))            return()
@@ -360,17 +387,17 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   else                                  estimatesFit <- data.frame(estimatesFit)
 
   # fix column names
-  colnames(estimatesFit) <- c("est", "se", "zval", "pval")
+  colnames(estimatesFit) <- names(toExtract)[toExtract %in% namesEstimatesFit]
 
   # add confidence intervals
   if (options[["coefficientsConfidenceIntervals"]]) {
-    estimatesFit$lower <- estimatesFit$est + qnorm((1 - options[["coefficientsConfidenceIntervalsLevel"]]) / 2) * estimatesFit$se
-    estimatesFit$upper <- estimatesFit$est - qnorm((1 - options[["coefficientsConfidenceIntervalsLevel"]]) / 2) * estimatesFit$se
+    estimatesFit$lower <- estimatesFit[,"est"] + qnorm((1 - options[["coefficientsConfidenceIntervalsLevel"]]) / 2) * estimatesFit[,if("rse" %in% colnames(estimatesFit)) "rse" else "se"]
+    estimatesFit$upper <- estimatesFit[,"est"] - qnorm((1 - options[["coefficientsConfidenceIntervalsLevel"]]) / 2) * estimatesFit[,if("rse" %in% colnames(estimatesFit)) "rse" else "se"]
   }
 
   # transform to HR if needed
   if (HR) {
-    estimatesFit <- estimatesFit[,!colnames(estimatesFit) %in% c("se", "zval", "pval"), drop = FALSE]
+    estimatesFit <- estimatesFit[,!colnames(estimatesFit) %in% c("se", "rse", "zval", "pval"), drop = FALSE]
     estimatesFit <- exp(estimatesFit)
   }
 

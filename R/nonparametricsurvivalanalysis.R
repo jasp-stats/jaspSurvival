@@ -37,7 +37,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   .sanpTestsTable(jaspResults, dataset, options)
 
   if (options[["plot"]])
-    .sanpSurvivalPlot(jaspResults, dataset, options)
+    .saSurvivalPlot(jaspResults, dataset, options, type = "KM")
 
   if (options[["lifeTable"]])
     .sanpLifeTable(jaspResults, dataset, options)
@@ -56,7 +56,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   fitContainer$dependOn(.sanpDependencies)
   jaspResults[["fit"]] <- fitContainer
 
-  fit <- try(survival::survfit(
+  fit <- try(survfit(
     formula = .saGetFormula(options, type = "KM"),
     type    = "kaplan-meier",
     data    = dataset
@@ -80,7 +80,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     tempContainer$dependOn(c(.sanpDependencies, "testsLogRank"))
     jaspResults[["testLogRank"]] <- tempContainer
 
-    fit <- try(survival::survdiff(
+    fit <- try(survdiff(
       formula = .saGetFormula(options, type = "KM"),
       data    = dataset
     ))
@@ -94,7 +94,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     tempContainer$dependOn(c(.sanpDependencies, "testsPetoAndPeto"))
     jaspResults[["testPetoAndPeto"]] <- tempContainer
 
-    fit <- try(survival::survdiff(
+    fit <- try(survdiff(
       formula = .saGetFormula(options, type = "KM"),
       data    = dataset,
       rho     = 1
@@ -109,7 +109,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     tempContainer$dependOn(c(.sanpDependencies, "testsFlemmingHarrington", "testsFlemmingHarringtonRho"))
     jaspResults[["testFlemmingHarrington"]] <- tempContainer
 
-    fit <- try(survival::survdiff(
+    fit <- try(survdiff(
       formula = .saGetFormula(options, type = "KM"),
       data    = dataset,
       rho     = options[["testsFlemmingHarringtonRho"]]
@@ -211,146 +211,6 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   return()
 }
-.sanpGetSurvivalPlotHeight <- function(options) {
-  if (!options[["plotRiskTable"]])
-    return(400)
-  else if (!options[["plotRiskTableAsASingleLine"]])
-    return(450)
-  else
-    return(400 + 50 * sum(c(
-      options[["plotRiskTableNumberAtRisk"]],
-      options[["plotRiskTableCumulativeNumberOfObservedEvents"]],
-      options[["plotRiskTableCumulativeNumberOfCensoredObservations"]],
-      options[["plotRiskTableNumberOfEventsInTimeInterval"]],
-      options[["plotRiskTableNumberOfCensoredObservationsInTimeInterval"]]
-    )))
-}
-.sanpSurvivalPlot    <- function(jaspResults, dataset, options) {
-
-  if (!is.null(jaspResults[["surivalPlot"]]))
-    surivalPlot <- jaspResults[["surivalPlot"]]
-  else {
-    surivalPlot <- createJaspPlot(title = switch(
-      options[["plotType"]],
-      "survival"             = gettext("Kaplan-Meier Survival Plot"),
-      "risk"                 = gettext("Kaplan-Meier Risk Plot"),
-      "cumulativeHazard"     = gettext("Kaplan-Meier Cumulative Hazard Plot"),
-      "complementaryLogLog"  = gettext("Kaplan-Meier Complementary Log-Log Plot")
-    ), width = 450, height = .sanpGetSurvivalPlotHeight(options))
-    surivalPlot$dependOn(c(.sanpDependencies, "plot", "plotType", "plotConfidenceInterval", "plotRiskTable",
-                           "plotRiskTableNumberAtRisk", "plotRiskTableCumulativeNumberOfObservedEvents",
-                           "plotRiskTableCumulativeNumberOfCensoredObservations", "plotRiskTableNumberOfEventsInTimeInterval",
-                           "plotRiskTableNumberOfCensoredObservationsInTimeInterval", "plotRiskTableAsASingleLine",
-                            "plotAddQuantile", "plotAddQuantileValue",
-                            "colorPalette", "plotLegend", "plotTheme"))
-    surivalPlot$position <- 3
-    jaspResults[["surivalPlot"]] <- surivalPlot
-  }
-
-  if (is.null(jaspResults[["fit"]])) {
-    return()
-  }
-
-
-  fit <- jaspResults[["fit"]][["object"]]
-
-  if (jaspBase::isTryError(fit)) {
-    return()
-  }
-
-  ## old code: manually creating survival plot
-  #fitLifeTable <- try(.sanpKaplanMeierFitLifeTable(fit, dataset, options, plot = TRUE))
-  #
-  #if (jaspBase::isTryError(fitLifeTable)) {
-  #  surivalPlot$setError(fitLifeTable)
-  #  return()
-  #}
-  #
-  #tempPlot <- try(.sanpPlotLifeTable(fitLifeTable, options))
-
-
-  ## old code: using survminer
-  # tempPlot  <- try(survminer::ggsurvplot(
-  #   fit,
-  #   data = dataset,
-  #
-  #   palette  = jaspGraphs::JASPcolors(palette = options[["colorPalette"]]),
-  #   conf.int = options[["survivalCurvePlotConfidenceInterval"]],
-  #
-  #   title = gettext("Survival curves"),
-  #
-  #   risk.table    = options[["survivalCurvePlotRiskTable"]],
-  #   cumevents     = options[["survivalCurvePlotCumulativeEventsTable"]],
-  #   ncensor.plot  = options[["survivalCurveCensoringPlot"]],
-  #   cumcensor     = options[["survivalCurveCensoringPlotCumulative"]]
-  # ))
-
-  .ggsurvfit2JaspPlot <- function(x) {
-    grDevices::png(f <- tempfile())
-    on.exit({
-      grDevices::dev.off()
-      if (file.exists(f))
-        file.remove(f)
-    })
-    return(ggsurvfit:::ggsurvfit_build(tempPlot))
-  }
-
-  tempPlot <- ggsurvfit::survfit2(.saGetFormula(options, type = "KM"), data = dataset) |>
-    ggsurvfit::ggsurvfit(
-      type      = switch(
-        options[["plotType"]],
-        "survival"             = "survival",
-        "risk"                 = "risk",
-        "cumulativeHazard"     = "cumhaz",
-        "complementaryLogLog"  = "cloglog"
-      ),
-      linewidth = 1
-    )
-
-  if (options[["plotConfidenceInterval"]])
-    tempPlot <- tempPlot + ggsurvfit::add_confidence_interval()
-
-  if (options[["plotRiskTable"]]) {
-    riskTableStatistics <-  c(
-      if (options[["plotRiskTableNumberAtRisk"]])                               "n.risk",
-      if (options[["plotRiskTableCumulativeNumberOfObservedEvents"]])           "cum.event",
-      if (options[["plotRiskTableCumulativeNumberOfCensoredObservations"]])     "cum.censor",
-      if (options[["plotRiskTableNumberOfEventsInTimeInterval"]])               "n.event",
-      if (options[["plotRiskTableNumberOfCensoredObservationsInTimeInterval"]]) "n.censor"
-    )
-
-    if (length(riskTableStatistics) > 0) {
-      if (options[["plotRiskTableAsASingleLine"]])
-        riskTableStatistics <- paste0("{", riskTableStatistics, "}", collapse = ", ")
-
-      tempPlot <- tempPlot + ggsurvfit::add_risktable(risktable_stats = riskTableStatistics)
-    }
-  }
-
-  if (options[["plotAddQuantile"]])
-    tempPlot <- tempPlot + ggsurvfit::add_quantile(y_value = options[["plotAddQuantileValue"]], color = "gray50", linewidth = 0.75)
-
-  if (options[["plotTheme"]] == "jasp")
-    tempPlot <- tempPlot +
-      jaspGraphs::geom_rangeframe(sides = "bl") +
-      jaspGraphs::themeJaspRaw(legend.position = options[["plotLegend"]])
-  else
-    tempPlot <- tempPlot + ggplot2::theme(legend.position = options[["plotLegend"]])
-
-  # scaling and formatting
-  tempPlot <- tempPlot + ggsurvfit::scale_ggsurvfit() +
-    jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]]) +
-    jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
-
-  if (jaspBase::isTryError(tempPlot)) {
-    surivalCurvePlot$setError(tempPlot)
-    return()
-  }
-
-  surivalPlot$plotObject <- .ggsurvfit2JaspPlot(tempPlot)
-
-  return()
-}
 .sanpLifeTable       <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["LifeTableContainer"]]))
@@ -406,7 +266,6 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   return()
 }
-
 
 .sanpKaplanMeierFitSummary   <- function(fit) {
 

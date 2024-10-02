@@ -21,11 +21,14 @@ import JASP.Controls	1.0
 import JASP.Widgets		1.0
 import JASP				1.0
 
+import "./qml_components"		as SA
+
 Form
 {
 	VariablesForm
 	{
 		removeInvisibles:	true
+		height:		1000
 
 		AvailableVariablesList
 		{
@@ -89,6 +92,37 @@ Form
 			title:			 	qsTr("Factors")
 			allowedColumns:		["nominal"]
 		}
+
+		AssignedVariablesList
+		{
+			name:			 	"strata"
+			title:			 	qsTr("Strata")
+			allowedColumns:		["nominal"]
+		}
+
+		AssignedVariablesList
+		{
+			name:			 	"id"
+			title:			 	qsTr("Id")
+			allowedColumns:		["nominal"]
+			singleVariable:		true
+		}
+
+		AssignedVariablesList
+		{
+			name:			 	"cluster"
+			title:			 	qsTr("Cluster")
+			allowedColumns:		["nominal"]
+			singleVariable:		true
+		}
+
+		AssignedVariablesList
+		{
+			name:			 	"weights"
+			title:			 	qsTr("Weights")
+			allowedColumns:		["scale"]
+			singleVariable:		true
+		}
 	}
 
 	DropDown
@@ -141,7 +175,7 @@ Form
 				name:	"availableTerms"
 				title:	qsTr("Components")
 				width:	parent.width / 4
-				source:	['covariates', 'factors']
+				source:	['covariates', 'factors', 'strata'] 
 			}
 
 			ModelTermsList
@@ -230,5 +264,12 @@ Form
 				}				
 			}
 		}
+	}
+
+	Section
+	{
+		title:	qsTr("Plot")
+
+		SA.SurvivalPlot{}
 	}
 }
