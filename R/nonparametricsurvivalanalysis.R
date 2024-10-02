@@ -339,7 +339,8 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   # scaling and formatting
   tempPlot <- tempPlot + ggsurvfit::scale_ggsurvfit() +
-    jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]])
+    jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]]) +
+    jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
 
   if (jaspBase::isTryError(tempPlot)) {
     surivalCurvePlot$setError(tempPlot)
