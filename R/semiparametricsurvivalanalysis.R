@@ -23,8 +23,8 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   saveRDS(options, file = "C:/JASP/options.RDS")
   saveRDS(dataset, file = "C:/JASP/dataset.RDS")
 
-  if (.saSurvivalReady(options))
-    .saspFitCox(jaspResults, dataset, options)
+  .saspFitCox(jaspResults, dataset, options)
+  .saspFitCoxAssumptionTest(jaspResults, dataset, options)
 
   saveRDS(jaspResults[["fit"]]$object, file = "C:/JASP/fit.RDS")
 
@@ -43,12 +43,21 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   if (options[["plot"]])
     .saSurvivalPlot(jaspResults, dataset, options, type = "Cox")
 
+  if (options[["proportionalHazardsTable"]])
+    .saspProportionalHazardsTable(jaspResults, dataset, options)
+
+  if (options[["proportionalHazardsPlot"]])
+    .saspProportionalHazardsPlots(jaspResults, dataset, options)
+
   return()
 }
 
 .saspDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "factors", "covariates", "strata", "id", "cluster", "modelTerms", "method")
 
 .saspFitCox               <- function(jaspResults, dataset, options) {
+
+  if (!.saSurvivalReady(options))
+    return()
 
   if (is.null(jaspResults[["fit"]])) {
 
@@ -88,6 +97,40 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
     jaspResults[["fitNull"]]$object <- fitNull
   }
+
+  return()
+}
+.saspFitCoxAssumptionTest <- function(jaspResults, dataset, options) {
+
+  if (!.saSurvivalReady(options))
+    return()
+
+  # fit only if diagnostics table/plot requested
+  if (!options[["proportionalHazardsTable"]] && !options[["proportionalHazardsPlot"]])
+    return()
+
+  if (!is.null(jaspResults[["fitTest"]]))
+    return()
+
+  fitTestContainer <- createJaspState()
+  fitTestContainer$dependOn(c(.saspDependencies, "proportionalHazardsTransformation", "proportionalHazardsTestTerms"))
+  jaspResults[["fitTest"]] <- fitTestContainer
+
+  if (is.null(jaspResults[["fit"]]))
+    return()
+
+  fit <- jaspResults[["fit"]][["object"]]
+
+  if (jaspBase::isTryError(fit))
+    return()
+
+  fitTest <- cox.zph(
+    fit       = fit,
+    transform = options[["proportionalHazardsTransformation"]],
+    terms     = options[["proportionalHazardsTestTerms"]]
+  )
+
+  jaspResults[["fitTest"]]$object <- fitTest
 
   return()
 }
@@ -361,6 +404,122 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     estimates$vsmpr <- VovkSellkeMPR(estimates$pval)
 
   hazardRatioTable$setData(estimates)
+
+  return()
+}
+.saspProportionalHazardsTable <- function(jaspResults, dataset, options) {
+
+  if (!is.null(jaspResults[["proportionalHazardsTable"]]))
+    return()
+
+  proportionalHazardsTable <- createJaspTable(title = gettext("Proporational Hazards Assumption Test Table"))
+  proportionalHazardsTable$dependOn(c(.saspDependencies, "proportionalHazardsTable", "proportionalHazardsTransformation", "proportionalHazardsTestTerms"))
+  proportionalHazardsTable$position <- 7
+  jaspResults[["proportionalHazardsTable"]] <- proportionalHazardsTable
+
+  # create empty table
+  proportionalHazardsTable$addColumnInfo(name = "param",    title = "",                      type = "string")
+  proportionalHazardsTable$addColumnInfo(name = "chisq",    title = gettext("Chi Square"),   type = "number")
+  proportionalHazardsTable$addColumnInfo(name = "df",       title = gettext("df"),           type = "integer")
+  proportionalHazardsTable$addColumnInfo(name = "p",        title = gettext("p"),            type = "pvalue")
+
+  if (!.saSurvivalReady(options))
+    return()
+
+  fitTest <- jaspResults[["fitTest"]][["object"]]
+
+  if (jaspBase::isTryError(fitTest)) {
+    proportionalHazardsTable$setError(gettextf("The model test failed with the following message: %1$s", fitTest))
+    return()
+  }
+
+  fitTestSummary <- cbind.data.frame(param = rownames(fitTest[["table"]]), fitTest[["table"]])
+  fitTestSummary$param[fitTestSummary$param == "GLOBAL"] <- gettext("Global")
+  fitTestSummary$param <- sapply(fitTestSummary$param, function(x) .saTermNames(x, c(options[["covariates"]], options[["factors"]])))
+
+  proportionalHazardsTable$setData(fitTestSummary)
+  proportionalHazardsTable$addFootnote(gettextf("Tests are performed using the %1$s survival times transformation.", options[["proportionalHazardsTransformation"]]))
+
+  return()
+}
+.saspProportionalHazardsPlots <- function(jaspResults, dataset, options) {
+
+  if (!is.null(jaspResults[["proportionalHazardsPlots"]]))
+    return()
+
+  proportionalHazardsPlots <- createJaspContainer(title = gettext("Proporational Hazards Assumption Test Plots"))
+  proportionalHazardsPlots$dependOn(c(.saspDependencies, "proportionalHazardsPlot", "proportionalHazardsTransformation", "proportionalHazardsTestTerms"))
+  proportionalHazardsPlots$position <- 8
+  jaspResults[["proportionalHazardsPlots"]] <- proportionalHazardsPlots
+
+  if (!.saSurvivalReady(options)) {
+    surivalPlot <- createJaspPlot()
+    proportionalHazardsPlots[["waitingPlot"]] <- surivalPlot
+    return()
+  }
+
+  fitTest <- jaspResults[["fitTest"]][["object"]]
+
+  if (jaspBase::isTryError(fitTest)) {
+    surivalPlot <- createJaspPlot()
+    surivalPlot$setError(gettextf("The model test failed with the following message: %1$s", fitTest))
+    proportionalHazardsPlots[["waitingPlot"]] <- surivalPlot
+    return()
+  }
+
+  for(i in 1:(nrow(fitTest$table) - 1)) {
+
+    tempVariable    <- rownames(fitTest$table)[i]
+    tempFitTestPlot <- plot(fitTest, plot = FALSE, var = tempVariable)
+
+    # adapted from the survival:::plot.cox.zph
+    tempDfPoints <- data.frame(
+      x = fitTest$x,
+      y = fitTest$y[,i]
+    )
+    tempDfPrediction <- data.frame(
+      x = tempFitTestPlot$x,
+      y = tempFitTestPlot$y[,1]
+    )
+    tempDfCiBand <- data.frame(
+        x = c(tempFitTestPlot$x,     rev(tempFitTestPlot$x)),
+        y = c(tempFitTestPlot$y[,2], rev(tempFitTestPlot$y[,3]))
+    )
+
+    if (fitTest$transform == "log") {
+      tempDfPoints$x <- exp(tempDfPoints$x)
+    }
+
+    # x-ticks
+    xTime <- fitTest$time
+    indx  <- !duplicated(tempDfPoints$x)
+    aprX  <- approx(tempDfPoints$x[indx], xTime[indx], seq(min(tempDfPoints$x), max(tempDfPoints$x), length = 5))
+
+    # y-ticks
+    yTicks <- jaspGraphs::getPrettyAxisBreaks(range(c(tempDfPoints$y, tempDfCiBand$y)))
+
+    tempPlot <- ggplot2::ggplot() +
+      ggplot2::geom_polygon(data = tempDfCiBand, mapping = ggplot2::aes(x = x, y = y), fill = "grey", alpha = 0.5) +
+      jaspGraphs::geom_line(data = tempDfPrediction, mapping = ggplot2::aes(x = x, y = y)) +
+      jaspGraphs::geom_point(data = tempDfPoints, mapping = ggplot2::aes(x = x, y = y)) +
+      ggplot2::labs(
+        x     = gettext("Time"),
+        y     = gettext("Beta(t)")
+      )
+    tempPlot <- tempPlot +
+      jaspGraphs::scale_x_continuous(breaks = aprX$x, labels = signif(aprX$y, 2)) +
+      jaspGraphs::scale_y_continuous(limits = range(yTicks), breaks = yTicks)
+
+    tempPlot <- tempPlot + jaspGraphs::geom_rangeframe(sides = "bl") + jaspGraphs::themeJaspRaw()
+
+    tempJaspPlot <- createJaspPlot(
+      plot   = tempPlot,
+      title  = .saTermNames(tempVariable, c(options[["covariates"]], options[["factors"]])),
+      width  = 450,
+      height = 320
+    )
+    proportionalHazardsPlots[[paste0("plot", i)]] <- tempJaspPlot
+  }
 
   return()
 }

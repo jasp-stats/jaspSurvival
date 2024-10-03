@@ -272,4 +272,50 @@ Form
 
 		SA.SurvivalPlot{}
 	}
+
+	Section
+	{
+		title:	qsTr("Diagnostics")
+
+		Group
+		{
+			title:	qsTr("Proportional Hazards")
+
+			DropDown
+			{
+				name:		"proportionalHazardsTransformation"
+				label:		qsTr("Transformation")
+				values:
+				[
+					{ label: qsTr("KM"),			value: "km"},
+					{ label: qsTr("Rank"),			value: "rank"},
+					{ label: qsTr("Identity"),		value: "identity"}
+				]
+			}
+
+			CheckBox
+			{
+				name:		"proportionalHazardsTestTerms"
+				label:		qsTr("Test terms")
+			}			
+
+			CheckBox
+			{
+				name:		"proportionalHazardsTable"
+				label:		qsTr("Table")
+			}
+
+			CheckBox
+			{
+				name:		"proportionalHazardsPlot"
+				label:		qsTr("Plot")
+			}
+		}
+
+		CheckBox
+		{
+			name:		"influentialObservationsTable"
+			label:		qsTr("Influential observations table")
+		}
+	}
 }

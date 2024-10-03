@@ -203,6 +203,8 @@
 
   if (varName == "(Intercept)")
     return("Intercept")
+  if (varName == "Global")
+    return("Global")
 
   for (vn in variables) {
     inf <- regexpr(vn, varName, fixed = TRUE)
@@ -257,7 +259,11 @@
                            "plotRiskTableNumberOfCensoredObservationsInTimeInterval", "plotRiskTableAsASingleLine",
                            "plotAddQuantile", "plotAddQuantileValue",
                            "colorPalette", "plotLegend", "plotTheme"))
-    surivalPlot$position <- 3
+    surivalPlot$position <- switch(
+      type,
+      "KM"  = 3,
+      "Cox" = 7
+    )
     jaspResults[["surivalPlot"]] <- surivalPlot
   }
 
