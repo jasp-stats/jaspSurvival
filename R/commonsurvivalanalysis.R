@@ -34,13 +34,14 @@
   # only for (semi)parametric
   covariatesVariable <- Filter(function(s) s != "", options[["covariates"]])
   strataVariable     <- Filter(function(s) s != "", options[["strata"]])
-  idVariable         <- Filter(function(s) s != "", options[["id"]])
+  # idVariable         <- Filter(function(s) s != "", options[["id"]])
   clusterVariable    <- Filter(function(s) s != "", options[["cluster"]])
   weightsVariable    <- Filter(function(s) s != "", options[["weights"]])
+  frailtyVariable    <- Filter(function(s) s != "", options[["frailty"]])
 
   dataset <- .readDataSetToEnd(
     columns.as.numeric = c(timeVariable, covariatesVariable, weightsVariable),
-    columns.as.factor  = c(eventVariable, factorsVariable, strataVariable, idVariable, clusterVariable),
+    columns.as.factor  = c(eventVariable, factorsVariable, strataVariable, clusterVariable, frailtyVariable),
   )
 
   # clean from NAs
@@ -126,7 +127,7 @@
     interceptTerm <- TRUE
   } else if (type == "Cox") {
     # Cox proportional hazards always includes intercept
-    predictors    <- .saGetPredictors(options, null = null)
+    predictors    <- c(.saGetPredictors(options, null = null), .saGetFrailty(options))
     interceptTerm <- TRUE
   }
 
@@ -178,6 +179,24 @@
   }
 
   return(t)
+}
+.saGetFrailty         <- function(options) {
+
+  if (options[["frailty"]] == "")
+    return()
+
+  frailty <- sprintf(
+    "frailty(%1$s, distribution = '%2$s', method = '%3$s'%4$s%5$s)",
+    options[["frailty"]],
+    options[["frailtyDistribution"]],
+    options[["frailtyMethod"]],
+    if (options[["frailtyMethod"]] != "fixed") ""
+    else if (options[["frailtyMethodFixed"]] == "df")    paste0("df = ",    options[["frailtyMethodFixedDf"]])
+    else if (options[["frailtyMethodFixed"]] == "theta") paste0("theta = ", options[["frailtyMethodFixedTheta"]]),
+    if (options[["frailtyMethod"]] == "t")  paste0("tdf = ", options[["frailtyMethodTDf"]]) else ""
+  )
+
+  return(frailty)
 }
 .saLifeTableTimes     <- function(dataset, options) {
 

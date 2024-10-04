@@ -27,14 +27,14 @@ Form
 {
 	VariablesForm
 	{
-		removeInvisibles:	true
+//		removeInvisibles:	true
 		height:		1000
 
 		AvailableVariablesList
 		{
 			name: "allVariablesList"
 		}
-
+/*
 		AssignedVariablesList
 		{
 			name:				"intervalStart"
@@ -52,7 +52,7 @@ Form
 			singleVariable:		true
 			visible:			censoringTypeCounting.checked
 		}
-
+*/
 		AssignedVariablesList
 		{
 			name:				"timeToEvent"
@@ -93,28 +93,6 @@ Form
 			allowedColumns:		["nominal"]
 		}
 
-		AssignedVariablesList
-		{
-			name:			 	"strata"
-			title:			 	qsTr("Strata")
-			allowedColumns:		["nominal"]
-		}
-
-		AssignedVariablesList
-		{
-			name:			 	"id"
-			title:			 	qsTr("Id")
-			allowedColumns:		["nominal"]
-			singleVariable:		true
-		}
-
-		AssignedVariablesList
-		{
-			name:			 	"cluster"
-			title:			 	qsTr("Cluster")
-			allowedColumns:		["nominal"]
-			singleVariable:		true
-		}
 
 		AssignedVariablesList
 		{
@@ -164,7 +142,144 @@ Form
 
 	Section
 	{
-		title: qsTr("Model")
+		title: qsTr("Strata, Clustering, and Frailty")
+
+		VariablesForm
+		{
+			height:		400
+
+			AvailableVariablesList
+			{
+				name: "allVariablesList2"
+			}
+
+			AssignedVariablesList
+			{
+				name:			 	"strata"
+				title:			 	qsTr("Strata")
+				allowedColumns:		["nominal"]
+			}
+
+			// TODO: allow only if multiple outcomes are possible
+			/*
+			AssignedVariablesList
+			{
+				name:			 	"id"
+				title:			 	qsTr("Id")
+				allowedColumns:		["nominal"]
+				singleVariable:		true
+			}
+			*/
+
+			// TODO: allow either cluster/id or frailty
+			AssignedVariablesList
+			{
+				name:			 	"cluster"
+				title:			 	qsTr("Cluster")
+				allowedColumns:		["nominal"]
+				singleVariable:		true
+			}
+
+			AssignedVariablesList
+			{
+				name:			 	"frailty"
+				title:			 	qsTr("Frailty")
+				allowedColumns:		["nominal"]
+				singleVariable:		true
+			}
+		}
+
+		Group
+		{
+			title:		qsTr("Frailty")
+			// enable if frailty selected
+
+			DropDown
+			{
+				name:		"frailtyDistribution"
+				id:			frailtyDistribution
+				label:		qsTr("Distribution")
+				values:
+				[
+					{ label: qsTr("Gamma"),		value: "gamma"},
+					{ label: qsTr("Gaussian"),	value: "gaussian"},
+					{ label: qsTr("T"),			value: "t"}
+				]
+			}
+
+			DropDown
+			{
+				name:		"frailtyMethod"
+				id:			frailtyMethod
+				label:		qsTr("Method")
+				values:		(function() {
+					if (frailtyDistribution.value == "gamma") {
+						return [
+							{ label: qsTr("EM"),		value: "em"},
+							{ label: qsTr("AIC"),		value: "aic"},
+							{ label: qsTr("Fixed"),		value: "fixed"}
+						];
+					} else if (design.value == "gaussian") {
+						return [
+							{ label: qsTr("REML"),		value: "reml"},
+							{ label: qsTr("AIC"),		value: "aic"},
+							{ label: qsTr("Fixed"),		value: "fixed"}
+						];
+					} else if (design.value == "t") {
+						return [
+							{ label: qsTr("AIC"),		value: "aic"},
+							{ label: qsTr("Fixed"),		value: "fixed"}
+						];
+					}
+				})()
+			}
+
+			DoubleField
+			{
+				label:			qsTr("Df")
+				visible:		frailtyDistribution.value == "t"
+				name:			"frailtyMethodTDf"
+				defaultValue:	5
+			}
+
+			Group
+			{
+				visible:	frailtyMethod.value == "fixed"
+
+				DropDown
+				{
+					name:		"frailtyMethodFixed"
+					id:			frailtyMethodFixed
+					label:		qsTr("Fix")
+					values:		
+					[
+						{ label: qsTr("Theta"),	value: "theta"},
+						{ label: qsTr("Df"),	value: "df"}
+					]
+				}
+
+				DoubleField
+				{
+					label:			qsTr("Theta")
+					visible:		frailtyMethodFixed.value == "theta"
+					name:			"frailtyMethodFixedTheta"
+					defaultValue:	0
+				}
+
+				DoubleField
+				{
+					label:			qsTr("Df")
+					visible:		frailtyMethodFixed.value == "df"
+					name:			"frailtyMethodFixedDf"
+					defaultValue:	0
+				}
+			}
+		}
+	}
+
+	Section
+	{
+		title:	qsTr("Model")
 
 		VariablesForm
 		{
@@ -181,13 +296,14 @@ Form
 			ModelTermsList
 			{
 				width:	parent.width * 5 / 9
+				id:		selectedModelTerms
 			}
 		}
 	}
 
 	Section
 	{
-		title: qsTr("Statistics")
+		title:		qsTr("Statistics")
 
 		Group
 		{
@@ -225,8 +341,6 @@ Form
 		Group
 		{
 			title:				qsTr("Coefficients")
-			columns:			2
-			Layout.columnSpan:	2
 
 			Group
 			{
@@ -281,6 +395,18 @@ Form
 		{
 			title:	qsTr("Proportional Hazards")
 
+			CheckBox
+			{
+				name:		"proportionalHazardsTable"
+				label:		qsTr("Table")
+			}
+
+			CheckBox
+			{
+				name:		"proportionalHazardsPlot"
+				label:		qsTr("Plot")
+			}
+
 			DropDown
 			{
 				name:		"proportionalHazardsTransformation"
@@ -299,23 +425,51 @@ Form
 				label:		qsTr("Test terms")
 			}			
 
-			CheckBox
-			{
-				name:		"proportionalHazardsTable"
-				label:		qsTr("Table")
-			}
-
-			CheckBox
-			{
-				name:		"proportionalHazardsPlot"
-				label:		qsTr("Plot")
-			}
 		}
 
-		CheckBox
+		Group
 		{
-			name:		"influentialObservationsTable"
-			label:		qsTr("Influential observations table")
+			title: qsTr("Residuals Plots")
+			
+			CheckBox
+			{
+				name:		"residualPlotResidualVsTime"
+				label:		qsTr("Residuals vs. time")
+// TODO:
+//				enabled:	residualPlotResidualType.value == "martingale" || censoringTypeCounting.length > 0
+			}
+
+			CheckBox
+			{
+				name:	"residualPlotResidualVsPredictors"
+				label:	qsTr("Residuals vs. predictors")
+			}
+
+			CheckBox
+			{
+				name:	"residualPlotResidualVsPredicted"
+				label:	qsTr("Residuals vs. predicted")
+			}
+
+			CheckBox
+			{
+				name:	"residualPlotResidualHistogram"
+				label:	qsTr("Residuals histogram")
+			}
+
+			DropDown
+			{
+				name:		"residualPlotResidualType"
+				id:			residualPlotResidualType
+				label:		qsTr("Type")
+				values:
+				[
+					{ label: qsTr("Martingale"),			value: "martingale"},
+					{ label: qsTr("Score"),					value: "score"},
+					{ label: qsTr("Schoenfeld"),			value: "schoenfeld"},
+					{ label: qsTr("Scaled Schoenfeld"),		value: "scaledSchoenfeld"}
+				]
+			}
 		}
 	}
 }
