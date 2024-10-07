@@ -156,6 +156,7 @@ Form
 			AssignedVariablesList
 			{
 				name:			 	"strata"
+				id:					strata
 				title:			 	qsTr("Strata")
 				allowedColumns:		["nominal"]
 			}
@@ -175,6 +176,8 @@ Form
 			AssignedVariablesList
 			{
 				name:			 	"cluster"
+				id:					cluster
+				enabled:			frailty.count == 0
 				title:			 	qsTr("Cluster")
 				allowedColumns:		["nominal"]
 				singleVariable:		true
@@ -183,6 +186,8 @@ Form
 			AssignedVariablesList
 			{
 				name:			 	"frailty"
+				id:					frailty
+				enabled:			cluster.count == 0
 				title:			 	qsTr("Frailty")
 				allowedColumns:		["nominal"]
 				singleVariable:		true
@@ -192,7 +197,7 @@ Form
 		Group
 		{
 			title:		qsTr("Frailty")
-			// enable if frailty selected
+			enabled:	frailty.count > 0
 
 			DropDown
 			{
@@ -443,6 +448,7 @@ Form
 			{
 				name:	"residualPlotResidualVsPredictors"
 				label:	qsTr("Residuals vs. predictors")
+				enabled:selectedModelTerms.count > 0
 			}
 
 			CheckBox

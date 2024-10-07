@@ -9,8 +9,9 @@ Maintainer: JASP Team <info@jasp-stats.org>
 Description: Perform analyses of censored time to event data.
 License: GPL (>= 2)
 Encoding: UTF-8
+Depends:
+  survival
 Imports:
-  survival,
   ggsurvfit,
   jaspBase,
   jaspGraphs
