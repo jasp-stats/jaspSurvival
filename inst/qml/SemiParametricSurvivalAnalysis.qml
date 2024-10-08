@@ -27,14 +27,14 @@ Form
 {
 	VariablesForm
 	{
-//		removeInvisibles:	true
-		height:		1000
+		removeInvisibles:	true
+		height:				850
 
 		AvailableVariablesList
 		{
 			name: "allVariablesList"
 		}
-/*
+
 		AssignedVariablesList
 		{
 			name:				"intervalStart"
@@ -52,7 +52,7 @@ Form
 			singleVariable:		true
 			visible:			censoringTypeCounting.checked
 		}
-*/
+
 		AssignedVariablesList
 		{
 			name:				"timeToEvent"
@@ -142,7 +142,7 @@ Form
 
 	Section
 	{
-		title: qsTr("Strata, Clustering, and Frailty")
+		title: qsTr("Strata, Cluster, and Frailty")
 
 		VariablesForm
 		{
@@ -172,7 +172,6 @@ Form
 			}
 			*/
 
-			// TODO: allow either cluster/id or frailty
 			AssignedVariablesList
 			{
 				name:			 	"cluster"
@@ -224,13 +223,13 @@ Form
 							{ label: qsTr("AIC"),		value: "aic"},
 							{ label: qsTr("Fixed"),		value: "fixed"}
 						];
-					} else if (design.value == "gaussian") {
+					} else if (frailtyDistribution.value == "gaussian") {
 						return [
 							{ label: qsTr("REML"),		value: "reml"},
 							{ label: qsTr("AIC"),		value: "aic"},
 							{ label: qsTr("Fixed"),		value: "fixed"}
 						];
-					} else if (design.value == "t") {
+					} else if (frailtyDistribution.value == "t") {
 						return [
 							{ label: qsTr("AIC"),		value: "aic"},
 							{ label: qsTr("Fixed"),		value: "fixed"}
@@ -332,12 +331,14 @@ Form
 				CheckBox
 				{
 					name:		"testsWald"
+					enabled:	frailty.count == 0
 					label:		qsTr("Wald")
 				}
 
 				CheckBox
 				{
 					name:		"testsScore"
+					enabled:	frailty.count == 0
 					label:		qsTr("Score (log-rank)")
 				}
 			}		
@@ -367,6 +368,13 @@ Form
 					name:		"coefficientHazardRatioEstimates"
 					label:		qsTr("Hazard ratio estimates")
 					checked:	true
+
+					CheckBox
+					{
+						name:		"coefficientHazardRatioEstimatesIncludeFrailty"
+						label:		qsTr("Include frailty")
+						enabled:	frailty.count > 0
+					}
 				}
 
 				CheckBox
@@ -440,8 +448,6 @@ Form
 			{
 				name:		"residualPlotResidualVsTime"
 				label:		qsTr("Residuals vs. time")
-// TODO:
-//				enabled:	residualPlotResidualType.value == "martingale" || censoringTypeCounting.length > 0
 			}
 
 			CheckBox
@@ -468,13 +474,21 @@ Form
 				name:		"residualPlotResidualType"
 				id:			residualPlotResidualType
 				label:		qsTr("Type")
-				values:
-				[
-					{ label: qsTr("Martingale"),			value: "martingale"},
-					{ label: qsTr("Score"),					value: "score"},
-					{ label: qsTr("Schoenfeld"),			value: "schoenfeld"},
-					{ label: qsTr("Scaled Schoenfeld"),		value: "scaledSchoenfeld"}
-				]
+				values:		(function() {
+					if (frailty.count == 0) {
+						return [
+							{ label: qsTr("Martingale"),			value: "martingale"},
+							{ label: qsTr("Score"),					value: "score"},
+							{ label: qsTr("Schoenfeld"),			value: "schoenfeld"},
+							{ label: qsTr("Scaled Schoenfeld"),		value: "scaledSchoenfeld"}
+						];
+					} else {
+						return [
+							{ label: qsTr("Martingale"),			value: "martingale"}
+						];
+					} 
+				})()
+
 			}
 		}
 	}

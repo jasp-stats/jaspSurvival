@@ -1,11 +1,7 @@
 # TODO:
 # qml:
-# - make the event indicator be the second lvl of the event status variable
 # - make "lifeTableStepsTo" correspond to the maximum time
 # - make "lifeTableStepsSize" correspond to the maxiumum time/10
-# R:
-# - convenient function for making factor level parameter names nice (in regression tables)?
-# - add frailty to coxph
 
 .saSurvivalReady      <- function(options) {
 
@@ -14,6 +10,16 @@
     "counting" = options[["eventStatus"]] != "" && options[["intervalStart"]] != "" && options[["intervalEnd"]] != "",
     "right"    = options[["eventStatus"]] != "" && options[["timeToEvent"]] != ""
   )
+
+  # deal with specifying fixed variance / dfs for frailty (default is zero which is an invalid setting --- user has to specify something themself)
+  if (ready && !is.null(options[["frailty"]]) && options[["frailty"]] != "" && options[["frailtyMethod"]] == "fixed") {
+    ready <-  ready && switch(
+      options[["frailtyMethodFixed"]],
+      "theta" = options[["frailtyMethodFixedTheta"]] > 0,
+      "df"    = options[["frailtyMethodFixedDf"]] > 0
+    )
+  }
+
 
   return(ready)
 }
@@ -189,10 +195,14 @@
     "frailty(%1$s, distribution = '%2$s', method = '%3$s'%4$s%5$s)",
     options[["frailty"]],
     options[["frailtyDistribution"]],
-    options[["frailtyMethod"]],
+    # simplifying GUI for fixed (instead of having fixed.theta and fixed.df)
+    if (options[["frailtyMethod"]] == "fixed" && options[["frailtyMethodFixed"]] == "theta")  "fixed"
+    else if(options[["frailtyMethod"]] == "fixed" && options[["frailtyMethodFixed"]] == "df") "df"
+    else options[["frailtyMethod"]],
+    # adding the fixed part
     if (options[["frailtyMethod"]] != "fixed") ""
-    else if (options[["frailtyMethodFixed"]] == "df")    paste0("df = ",    options[["frailtyMethodFixedDf"]])
-    else if (options[["frailtyMethodFixed"]] == "theta") paste0("theta = ", options[["frailtyMethodFixedTheta"]]),
+    else if (options[["frailtyMethodFixed"]] == "df")    paste0(", df = ",    options[["frailtyMethodFixedDf"]])
+    else if (options[["frailtyMethodFixed"]] == "theta") paste0(", theta = ", options[["frailtyMethodFixedTheta"]]),
     if (options[["frailtyMethod"]] == "t")  paste0("tdf = ", options[["frailtyMethodTDf"]]) else ""
   )
 
@@ -220,10 +230,15 @@
 .saTermNames          <- function(varName, variables) {
   # based on jaspMixedModels::.mmVariableNames
 
-  if (varName == "(Intercept)")
-    return("Intercept")
-  if (varName == "Global")
-    return("Global")
+  # deal with non-standard columns names
+  if (!grepl("JaspColumn", varName)) {
+    if (varName == "(Intercept)")
+      return("Intercept")
+    if (varName == "Global")
+      return("Global")
+    if (grepl("gamma:", varName, fixed = TRUE) || grepl("gauss:", varName, fixed = TRUE) || grepl("t:", varName, fixed = TRUE))
+      return(paste0("(frailty) ", varName))
+  }
 
   for (vn in variables) {
     inf <- regexpr(vn, varName, fixed = TRUE)
@@ -305,30 +320,34 @@
   }
 
   if (type == "KM")
-    tempPlot <- ggsurvfit::survfit2(.saGetFormula(options, type = type), data = dataset) |>
-      ggsurvfit::ggsurvfit(
-        type      = switch(
-          options[["plotType"]],
-          "survival"             = "survival",
-          "risk"                 = "risk",
-          "cumulativeHazard"     = "cumhaz",
-          "complementaryLogLog"  = "cloglog"
-        ),
-        linewidth = 1
-      )
+    tempPlot <- try(ggsurvfit::ggsurvfit(
+      x    = ggsurvfit::survfit2(.saGetFormula(options, type = type), data = dataset),
+      type = switch(
+        options[["plotType"]],
+        "survival"             = "survival",
+        "risk"                 = "risk",
+        "cumulativeHazard"     = "cumhaz",
+        "complementaryLogLog"  = "cloglog"
+      ),
+      linewidth = 1
+    ))
   else if (type == "Cox")
-    tempPlot <- ggsurvfit::survfit2(fit) |>
-      ggsurvfit::ggsurvfit(
-        type      = switch(
-          options[["plotType"]],
-          "survival"             = "survival",
-          "risk"                 = "risk",
-          "cumulativeHazard"     = "cumhaz",
-          "complementaryLogLog"  = "cloglog"
-        ),
-        linewidth = 1
-      )
+    tempPlot <- try(ggsurvfit::ggsurvfit(
+      x    = ggsurvfit::survfit2(fit),
+      type = switch(
+        options[["plotType"]],
+        "survival"             = "survival",
+        "risk"                 = "risk",
+        "cumulativeHazard"     = "cumhaz",
+        "complementaryLogLog"  = "cloglog"
+      ),
+      linewidth = 1
+    ))
 
+  if (jaspBase::isTryError(tempPlot)) {
+    surivalPlot$setError(tempPlot)
+    return()
+  }
 
   if (options[["plotConfidenceInterval"]])
     tempPlot <- tempPlot + ggsurvfit::add_confidence_interval()
