@@ -21,6 +21,8 @@ import JASP.Controls	1.0
 import JASP.Widgets		1.0
 import JASP				1.0
 
+import "./qml_components"		as SA
+
 Form
 {
 	VariablesForm
@@ -58,6 +60,7 @@ Form
 		AssignedVariablesList
 		{
 			name:			 	"factors"
+			id:					factors
 			title:			 	qsTr("Factors")
 			allowedColumns:		["nominal"]
 		}
@@ -163,66 +166,5 @@ Form
 		}
 	}
 
-	CheckBox
-	{
-		name:	"survivalCurvePlot"
-		label:	qsTr("Survival curve plot")
-
-		CheckBox
-		{
-			name:		"survivalCurvePlotConfidenceInterval"
-			label:		qsTr("Confidence interval")
-			checked:	true
-		}
-
-		CheckBox
-		{
-			name:		"survivalCurvePlotRiskTable"
-			label:		qsTr("Risk table")
-			checked:	false
-		}
-
-		CheckBox
-		{
-			name:		"survivalCurvePlotCumulativeEventsTable"
-			label:		qsTr("Cumulative events table")
-			checked:	false
-		}
-
-		CheckBox
-		{
-			name:		"survivalCurveCensoringPlot"
-			label:		qsTr("Censoring plot")
-			checked:	false
-
-			CheckBox
-			{
-				name:		"survivalCurveCensoringPlotCumulative"
-				label:		qsTr("Cumulative")
-				checked:	false
-			}
-		}
-
-		DropDown
-		{
-			name:		"survivalCurvePlotLegend"
-			label:		qsTr("Legend")
-			values:
-			[
-				{ label: qsTr("Bottom"),	value: "bottom"},
-				{ label: qsTr("Right"),		value: "right"},
-				{ label: qsTr("Left"),		value: "left"},
-				{ label: qsTr("Top"),		value: "top"},
-				{ label: qsTr("None"),		value: "none"}
-			]
-		}
-
-		//CheckBox
-		//{
-		//	name:		"survivalCurvePlotDataRug"
-		//	label:		qsTr("Data rug")
-		//}
-		
-		ColorPalette{}
-	}
+	SA.SurvivalPlot{}
 }
