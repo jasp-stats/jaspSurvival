@@ -28,7 +28,8 @@ Form
 	VariablesForm
 	{
 		removeInvisibles:	true
-		height:				850
+		// TODO: Bruno fix height adjustment please
+		height:				censoringTypeRight.checked ? 900 : 1100
 
 		AvailableVariablesList
 		{
@@ -42,6 +43,8 @@ Form
 			allowedColumns:		["scale"]
 			singleVariable:		true
 			visible:			censoringTypeCounting.checked
+			property bool active:	censoringTypeCounting.checked
+			onActiveChanged: 		if (!active && count > 0) itemDoubleClicked(0)
 		}
 
 		AssignedVariablesList
@@ -51,6 +54,8 @@ Form
 			allowedColumns:		["scale"]
 			singleVariable:		true
 			visible:			censoringTypeCounting.checked
+			property bool active:	censoringTypeCounting.checked
+			onActiveChanged: 		if (!active && count > 0) itemDoubleClicked(0)
 		}
 
 		AssignedVariablesList
@@ -60,6 +65,8 @@ Form
 			allowedColumns:		["scale"]
 			singleVariable:		true
 			visible:			censoringTypeRight.checked	
+			property bool active:	censoringTypeRight.checked
+			onActiveChanged: 		if (!active && count > 0) itemDoubleClicked(0)
 		}
 
 		AssignedVariablesList
@@ -146,7 +153,8 @@ Form
 
 		VariablesForm
 		{
-			height:		400
+			// TODO Bruno: the heigh adjustment does not seem to work
+			height:		300
 
 			AvailableVariablesList
 			{
