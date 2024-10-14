@@ -186,7 +186,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     ))
   }
 
-  testsTable$addFootnote(gettext("Test are based on the H\u2081 model."))
+  testsTable$addFootnote(gettext("Tests are based on the H\u2081 model."))
 
   return()
 }
@@ -512,7 +512,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     return()
   }
 
-  for(i in 1:(nrow(fitTest$table) - 1)) {
+  for (i in 1:(nrow(fitTest$table) - 1)) {
 
     tempVariable    <- rownames(fitTest$table)[i]
     tempFitTestPlot <- plot(fitTest, plot = FALSE, var = tempVariable)
@@ -642,7 +642,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
       residualPlotResidualVsPredictors[["waitingPlot"]] <- tempPlot
       residualPlotResidualVsTime$setError(residuals)
     } else {
-      for(i in 1:ncol(predictorsFit)) {
+      for (i in 1:ncol(predictorsFit)) {
 
         # skip frailty terms
         if (grepl("frailty", colnames(predictorsFit)[i]))
@@ -739,7 +739,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     )
 
     if (!options[["coefficientHazardRatioEstimatesIncludeFrailty"]])
-      estimatesFit <- estimatesFit[grepl("JaspColumn",rownames(estimatesFit)),,drop=FALSE]
+      estimatesFit <- estimatesFit[grepl("JaspColumn", rownames(estimatesFit)), , drop=FALSE]
 
   } else {
 
