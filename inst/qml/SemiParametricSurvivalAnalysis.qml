@@ -21,57 +21,43 @@ import JASP.Controls	1.0
 import JASP.Widgets		1.0
 import JASP				1.0
 
+import "./qml_components"		as SA
+
 Form
 {
 	VariablesForm
 	{
+		removeInvisibles:	true
+		// TODO: Bruno fix height adjustment please
+		height:				censoringTypeRight.checked ? 900 : 1100
+
 		AvailableVariablesList
 		{
 			name: "allVariablesList"
 		}
 
-		RadioButtonGroup
-		{
-			id:						censoringType
-			Layout.columnSpan:		2
-			name:					"censoringType"
-			title:					qsTr("Censoring Type")
-			radioButtonsOnSameRow:	true
-			columns:				2
-
-			RadioButton
-			{
-				label:		qsTr("Right")
-				value:		"right"
-				id:			censoringTypeRight
-			}
-
-			RadioButton
-			{
-				label:		qsTr("Interval")
-				value:		"interval"
-				id:			censoringTypeInterval
-			}
-		}
-/*
 		AssignedVariablesList
 		{
 			name:				"intervalStart"
 			title:				qsTr("Interval Start")
 			allowedColumns:		["scale"]
 			singleVariable:		true
-			visible:			censoringTypeInterval.checked
+			visible:			censoringTypeCounting.checked
+			property bool active:	censoringTypeCounting.checked
+			onActiveChanged: 		if (!active && count > 0) itemDoubleClicked(0)
 		}
 
 		AssignedVariablesList
 		{
 			name:				"intervalEnd"
-			title:				qsTr("intervalEnd")
+			title:				qsTr("Interval End")
 			allowedColumns:		["scale"]
 			singleVariable:		true
-			visible:			censoringTypeInterval.checked
+			visible:			censoringTypeCounting.checked
+			property bool active:	censoringTypeCounting.checked
+			onActiveChanged: 		if (!active && count > 0) itemDoubleClicked(0)
 		}
-*/
+
 		AssignedVariablesList
 		{
 			name:				"timeToEvent"
@@ -79,47 +65,27 @@ Form
 			allowedColumns:		["scale"]
 			singleVariable:		true
 			visible:			censoringTypeRight.checked	
+			property bool active:	censoringTypeRight.checked
+			onActiveChanged: 		if (!active && count > 0) itemDoubleClicked(0)
 		}
 
 		AssignedVariablesList
 		{
+			id:					eventStatusId
 			name:				"eventStatus"
 			title:				qsTr("Event Status")
 			allowedColumns:		["nominal"]
 			singleVariable:		true
 		}
-/*
-		DropDown
-		{
-			name:				"rightCensored"
-			label:				qsTr("Right Censored")
-			source:				[{name: "eventStatus", use: "levels"}]
-			visible:			censoringTypeInterval.checked
-		}
-*/
+
 		DropDown
 		{
 			name:				"eventIndicator"
 			label:				qsTr("Event Indicator")
 			source:				[{name: "eventStatus", use: "levels"}]
-		}
-/*
-		DropDown
-		{
-			name:				"leftCensored"
-			label:				qsTr("Left Censored")
-			source:				[{name: "eventStatus", use: "levels"}]
-			visible:			censoringTypeInterval.checked
+			onCountChanged:		currentIndex = 1
 		}
 
-		DropDown
-		{
-			name:				"intervalCensored"
-			label:				qsTr("Interval Censored")
-			source:				[{name: "eventStatus", use: "levels"}]
-			visible:			censoringTypeInterval.checked
-		}
-*/
 		AssignedVariablesList
 		{
 			name:			 	"covariates"
@@ -133,11 +99,199 @@ Form
 			title:			 	qsTr("Factors")
 			allowedColumns:		["nominal"]
 		}
+
+
+		AssignedVariablesList
+		{
+			name:			 	"weights"
+			title:			 	qsTr("Weights")
+			allowedColumns:		["scale"]
+			singleVariable:		true
+		}
+	}
+
+	DropDown
+	{
+		name:		"method"
+		label:		qsTr("Method")
+		values:
+		[
+			{ label: qsTr("Efron"),			value: "efron"},
+			{ label: qsTr("Breslow"),		value: "breslow"},
+			{ label: qsTr("Exact"),			value: "exact"}
+		]
+	}
+
+	RadioButtonGroup
+	{
+		id:						censoringType
+		Layout.columnSpan:		1
+		name:					"censoringType"
+		title:					qsTr("Censoring Type")
+		radioButtonsOnSameRow:	true
+		columns:				2
+
+		RadioButton
+		{
+			label:		qsTr("Right")
+			value:		"right"
+			id:			censoringTypeRight
+			checked:	true
+		}
+
+		RadioButton
+		{
+			label:		qsTr("Counting")
+			value:		"counting"
+			id:			censoringTypeCounting
+		}
 	}
 
 	Section
 	{
-		title: qsTr("Model")
+		title: qsTr("Strata, Cluster, and Frailty")
+
+		VariablesForm
+		{
+			// TODO Bruno: the heigh adjustment does not seem to work
+			height:		300
+
+			AvailableVariablesList
+			{
+				name: "allVariablesList2"
+			}
+
+			AssignedVariablesList
+			{
+				name:			 	"strata"
+				id:					strata
+				title:			 	qsTr("Strata")
+				allowedColumns:		["nominal"]
+			}
+
+			// TODO: allow only if multiple outcomes are possible
+			/*
+			AssignedVariablesList
+			{
+				name:			 	"id"
+				title:			 	qsTr("Id")
+				allowedColumns:		["nominal"]
+				singleVariable:		true
+			}
+			*/
+
+			AssignedVariablesList
+			{
+				name:			 	"cluster"
+				id:					cluster
+				enabled:			frailty.count == 0
+				title:			 	qsTr("Cluster")
+				allowedColumns:		["nominal"]
+				singleVariable:		true
+			}
+
+			AssignedVariablesList
+			{
+				name:			 	"frailty"
+				id:					frailty
+				enabled:			cluster.count == 0
+				title:			 	qsTr("Frailty")
+				allowedColumns:		["nominal"]
+				singleVariable:		true
+			}
+		}
+
+		Group
+		{
+			title:		qsTr("Frailty")
+			enabled:	frailty.count > 0
+
+			DropDown
+			{
+				name:		"frailtyDistribution"
+				id:			frailtyDistribution
+				label:		qsTr("Distribution")
+				values:
+				[
+					{ label: qsTr("Gamma"),		value: "gamma"},
+					{ label: qsTr("Gaussian"),	value: "gaussian"},
+					{ label: qsTr("T"),			value: "t"}
+				]
+			}
+
+			DropDown
+			{
+				name:		"frailtyMethod"
+				id:			frailtyMethod
+				label:		qsTr("Method")
+				values:		(function() {
+					if (frailtyDistribution.value == "gamma") {
+						return [
+							{ label: qsTr("EM"),		value: "em"},
+							{ label: qsTr("AIC"),		value: "aic"},
+							{ label: qsTr("Fixed"),		value: "fixed"}
+						];
+					} else if (frailtyDistribution.value == "gaussian") {
+						return [
+							{ label: qsTr("REML"),		value: "reml"},
+							{ label: qsTr("AIC"),		value: "aic"},
+							{ label: qsTr("Fixed"),		value: "fixed"}
+						];
+					} else if (frailtyDistribution.value == "t") {
+						return [
+							{ label: qsTr("AIC"),		value: "aic"},
+							{ label: qsTr("Fixed"),		value: "fixed"}
+						];
+					}
+				})()
+			}
+
+			DoubleField
+			{
+				label:			qsTr("Df")
+				visible:		frailtyDistribution.value == "t"
+				name:			"frailtyMethodTDf"
+				defaultValue:	5
+			}
+
+			Group
+			{
+				visible:	frailtyMethod.value == "fixed"
+
+				DropDown
+				{
+					name:		"frailtyMethodFixed"
+					id:			frailtyMethodFixed
+					label:		qsTr("Fix")
+					values:		
+					[
+						{ label: qsTr("Theta"),	value: "theta"},
+						{ label: qsTr("Df"),	value: "df"}
+					]
+				}
+
+				DoubleField
+				{
+					label:			qsTr("Theta")
+					visible:		frailtyMethodFixed.value == "theta"
+					name:			"frailtyMethodFixedTheta"
+					defaultValue:	0
+				}
+
+				DoubleField
+				{
+					label:			qsTr("Df")
+					visible:		frailtyMethodFixed.value == "df"
+					name:			"frailtyMethodFixedDf"
+					defaultValue:	0
+				}
+			}
+		}
+	}
+
+	Section
+	{
+		title:	qsTr("Model")
 
 		VariablesForm
 		{
@@ -148,32 +302,59 @@ Form
 				name:	"availableTerms"
 				title:	qsTr("Components")
 				width:	parent.width / 4
-				source:	['covariates', 'factors']
+				source:	['covariates', 'factors', 'strata'] 
 			}
 
 			ModelTermsList
 			{
 				width:	parent.width * 5 / 9
+				id:		selectedModelTerms
 			}
-		}
-
-		CheckBox
-		{
-			name:		"interceptTerm"
-			label:		qsTr("Include intercept")
-			checked:	true
 		}
 	}
 
 	Section
 	{
-		title: qsTr("Statistics")
+		title:		qsTr("Statistics")
+
+		Group
+		{
+
+			CheckBox
+			{
+				name:		"modelFit"
+				label:		qsTr("Model fit")
+			}
+
+			Group
+			{
+				title:	qsTr("Tests")
+
+				CheckBox
+				{
+					name:		"testsLikelihoodRatio"
+					label:		qsTr("Likelihood ratio")
+				}
+
+				CheckBox
+				{
+					name:		"testsWald"
+					enabled:	frailty.count == 0
+					label:		qsTr("Wald")
+				}
+
+				CheckBox
+				{
+					name:		"testsScore"
+					enabled:	frailty.count == 0
+					label:		qsTr("Score (log-rank)")
+				}
+			}		
+		}
 
 		Group
 		{
 			title:				qsTr("Coefficients")
-			columns:			2
-			Layout.columnSpan:	2
 
 			Group
 			{
@@ -196,15 +377,127 @@ Form
 					label:		qsTr("Hazard ratio estimates")
 					checked:	true
 
-					CIField
+					CheckBox
 					{
-						name:	"coefficientCiLevel"
-						label:	qsTr("Confidence intervals")
+						name:		"coefficientHazardRatioEstimatesIncludeFrailty"
+						label:		qsTr("Include frailty")
+						enabled:	frailty.count > 0
 					}
 				}
-				
+
+				CheckBox
+				{
+					name:				"coefficientsConfidenceIntervals"
+					label:				qsTr("Confidence intervals")
+					checked:			true
+					childrenOnSameRow:	true
+					
+					CIField
+					{
+						name:	"coefficientsConfidenceIntervalsLevel"
+					}
+				}				
 			}
 		}
-		
+	}
+
+	Section
+	{
+		title:	qsTr("Plot")
+
+		SA.SurvivalPlot{}
+	}
+
+	Section
+	{
+		title:	qsTr("Diagnostics")
+
+		Group
+		{
+			title:	qsTr("Proportional Hazards")
+
+			CheckBox
+			{
+				name:		"proportionalHazardsTable"
+				label:		qsTr("Table")
+			}
+
+			CheckBox
+			{
+				name:		"proportionalHazardsPlot"
+				label:		qsTr("Plot")
+			}
+
+			DropDown
+			{
+				name:		"proportionalHazardsTransformation"
+				label:		qsTr("Transformation")
+				values:
+				[
+					{ label: qsTr("KM"),			value: "km"},
+					{ label: qsTr("Rank"),			value: "rank"},
+					{ label: qsTr("Identity"),		value: "identity"}
+				]
+			}
+
+			CheckBox
+			{
+				name:		"proportionalHazardsTestTerms"
+				label:		qsTr("Test terms")
+			}			
+
+		}
+
+		Group
+		{
+			title: qsTr("Residuals Plots")
+			
+			CheckBox
+			{
+				name:		"residualPlotResidualVsTime"
+				label:		qsTr("Residuals vs. time")
+			}
+
+			CheckBox
+			{
+				name:	"residualPlotResidualVsPredictors"
+				label:	qsTr("Residuals vs. predictors")
+				enabled:selectedModelTerms.count > 0
+			}
+
+			CheckBox
+			{
+				name:	"residualPlotResidualVsPredicted"
+				label:	qsTr("Residuals vs. predicted")
+			}
+
+			CheckBox
+			{
+				name:	"residualPlotResidualHistogram"
+				label:	qsTr("Residuals histogram")
+			}
+
+			DropDown
+			{
+				name:		"residualPlotResidualType"
+				id:			residualPlotResidualType
+				label:		qsTr("Type")
+				values:		(function() {
+					if (frailty.count == 0) {
+						return [
+							{ label: qsTr("Martingale"),			value: "martingale"},
+							{ label: qsTr("Score"),					value: "score"},
+							{ label: qsTr("Schoenfeld"),			value: "schoenfeld"},
+							{ label: qsTr("Scaled Schoenfeld"),		value: "scaledSchoenfeld"}
+						];
+					} else {
+						return [
+							{ label: qsTr("Martingale"),			value: "martingale"}
+						];
+					} 
+				})()
+
+			}
+		}
 	}
 }
