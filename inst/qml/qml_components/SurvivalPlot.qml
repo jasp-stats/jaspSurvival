@@ -110,6 +110,7 @@ CheckBox
 	DropDown
 	{
 		name:		"plotLegend"
+		enabled:	strata.count > 0
 		label:		qsTr("Legend")
 		values:
 		[
@@ -121,7 +122,10 @@ CheckBox
 		]
 	}
 
-	ColorPalette{}
+	ColorPalette
+	{
+		enabled:	strata.count > 0
+	}
 
 	DropDown
 	{
