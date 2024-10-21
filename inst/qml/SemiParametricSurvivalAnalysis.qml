@@ -28,8 +28,7 @@ Form
 	VariablesForm
 	{
 		removeInvisibles:	true
-		// TODO: Bruno fix height adjustment please
-		height:				censoringTypeRight.checked ? 900 : 1100
+		preferredHeight:	(censoringTypeRight.checked ? 400 : 450 ) * jaspTheme.uiScale
 
 		AvailableVariablesList
 		{
