@@ -18,8 +18,7 @@
 SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NULL) {
 
   if (.saSurvivalReady(options))
-    dataset <- .saReadDataset(dataset, options)
-
+    dataset <- .saCheckDataset(dataset, options)
   .saspFitCox(jaspResults, dataset, options)
   .saspFitCoxAssumptionTest(jaspResults, dataset, options)
 
@@ -207,6 +206,9 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 #  summaryTable$addColumnInfo(name = "pvl",    title = gettext("p"),        type = "pvalue")
   summaryTable$addColumnInfo(name = "aic",    title = gettext("AIC"),      type = "number", format="dp:3")
   summaryTable$addColumnInfo(name = "bic",    title = gettext("BIC"),      type = "number", format="dp:3")
+
+  if (.saspCoxWaitingForFrailty(options))
+    summaryTable$addFootnote(gettext("Either 'theta' of 'df' must be set to a value larger than zero when using 'Fixed' frailty method."))
 
   if (!.saSurvivalReady(options))
     return()
@@ -788,4 +790,15 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 }
 .saspHasFrailty           <- function(options) {
   return(options[["frailty"]] != "")
+}
+.saspCoxWaitingForFrailty <- function(options) {
+
+  if (is.null(options[["frailty"]]) || (options[["frailty"]] != "" && options[["frailtyMethod"]] != "fixed"))
+    return(FALSE)
+  else
+    switch(
+      options[["frailtyMethodFixed"]],
+      "theta" = options[["frailtyMethodFixedTheta"]] == 0,
+      "df"    = options[["frailtyMethodFixedDf"]]    == 0
+    )
 }

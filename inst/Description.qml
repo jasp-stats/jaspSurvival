@@ -7,6 +7,7 @@ Description
 	title : 		qsTr("Survival (beta)")
 	description:	qsTr("Perform analyses of censored time to event data.")
 	requiresData:	true
+	preloadData:  true
 	icon:			"survival-analysis.svg"
 	version			: "0.19.2"
 	author:			"JASP Team"

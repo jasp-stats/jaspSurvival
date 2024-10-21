@@ -11,22 +11,14 @@
     "right"    = options[["eventStatus"]] != "" && options[["timeToEvent"]] != ""
   )
 
-  # deal with specifying fixed variance / dfs for frailty (default is zero which is an invalid setting --- user has to specify something themself)
-  if (ready && !is.null(options[["frailty"]]) && options[["frailty"]] != "" && options[["frailtyMethod"]] == "fixed") {
-    ready <-  ready && switch(
-      options[["frailtyMethodFixed"]],
-      "theta" = options[["frailtyMethodFixedTheta"]] > 0,
-      "df"    = options[["frailtyMethodFixedDf"]] > 0
-    )
-  }
+  # check whether Cox regression is waiting for frailty
+  coxWaitingForFrailty <- .saspCoxWaitingForFrailty(options)
 
+  ready <-  ready && !coxWaitingForFrailty
 
   return(ready)
 }
-.saReadDataset        <- function(dataset, options) {
-
-  if (!is.null(dataset))
-    return(dataset)
+.saCheckDataset        <- function(dataset, options) {
 
   # load the data
   eventVariable <- options[["eventStatus"]]
@@ -44,11 +36,6 @@
   clusterVariable    <- Filter(function(s) s != "", options[["cluster"]])
   weightsVariable    <- Filter(function(s) s != "", options[["weights"]])
   frailtyVariable    <- Filter(function(s) s != "", options[["frailty"]])
-
-  dataset <- .readDataSetToEnd(
-    columns.as.numeric = c(timeVariable, covariatesVariable, weightsVariable),
-    columns.as.factor  = c(eventVariable, factorsVariable, strataVariable, clusterVariable, frailtyVariable),
-  )
 
   # clean from NAs
   dataset <- na.omit(dataset)

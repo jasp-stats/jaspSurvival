@@ -21,7 +21,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   options[["censoringType"]] <- "right"
 
   if (.saSurvivalReady(options))
-    dataset <- .saReadDataset(dataset, options)
+    dataset <- .saCheckDataset(dataset, options)
 
   if (.saSurvivalReady(options)) {
     .sanpFitKaplanMeier(jaspResults, dataset, options)
