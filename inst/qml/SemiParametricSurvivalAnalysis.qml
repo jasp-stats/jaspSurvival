@@ -113,6 +113,7 @@ Form
 	DropDown
 	{
 		name:		"method"
+		id:			method
 		label:		qsTr("Method")
 		values:
 		[
@@ -184,7 +185,7 @@ Form
 			{
 				name:			 	"cluster"
 				id:					cluster
-				enabled:			frailty.count == 0
+				enabled:			frailty.count == 0 && method.value != "exact"
 				title:			 	qsTr("Cluster")
 				allowedColumns:		["nominal"]
 				singleVariable:		true
