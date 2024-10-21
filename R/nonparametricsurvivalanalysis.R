@@ -40,7 +40,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   return()
 }
 
-.sanpDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "factors")
+.sanpDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "strata")
 
 .sanpFitKaplanMeier  <- function(jaspResults, dataset, options) {
 
@@ -66,7 +66,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 }
 .sanpFitTests        <- function(jaspResults, dataset, options) {
 
-  if (length(options[["factors"]]) == 0)
+  if (length(options[["strata"]]) == 0)
     return()
 
   if (options[["testsLogRank"]] && is.null(jaspResults[["testLogRank"]])) {
@@ -128,7 +128,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   # create empty table
   overtitleCi <- gettextf("%s%% CI", 95)
 
-  if (length(options[["factors"]]) != 0)
+  if (length(options[["strata"]]) != 0)
     summaryTable$addColumnInfo(name = "strata",     title = gettext("Strata"),          type = "string")
 
   summaryTable$addColumnInfo(name = "n",                title = gettext("N"),               type = "integer")
@@ -175,8 +175,8 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   testsTable$addColumnInfo(name = "df",       title = gettext("df"),           type = "integer")
   testsTable$addColumnInfo(name = "p",        title = gettext("p"),            type = "pvalue")
 
-  if (length(options[["factors"]]) == 0) {
-    testsTable$addFootnote(gettext("At least one factor needs to be specified"))
+  if (length(options[["strata"]]) == 0) {
+    testsTable$addFootnote(gettext("At least one strata needs to be specified"))
     return()
   }
 
@@ -238,7 +238,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   }
 
 
-  if (length(options[["factors"]]) == 0) {
+  if (length(options[["strata"]]) == 0) {
 
     tempTable <- .sanpEmptyLifeTable()
     tempTable$setData(fitLifeTable)
@@ -326,7 +326,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 }
 .sanpPlotLifeTable           <- function(fitLifeTable, options) {
 
-  if (length(options[["factors"]]) == 0) {
+  if (length(options[["strata"]]) == 0) {
 
     tempPlot <- ggplot2::ggplot(fitLifeTable) +
       jaspGraphs::geom_line(mapping = ggplot2::aes(x = time, y = survival))
@@ -358,7 +358,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     jaspGraphs::scale_x_continuous(name = gettext("Time")) +
     jaspGraphs::scale_y_continuous(name = gettext("Survival")) +
     jaspGraphs::geom_rangeframe(sides = 'bl') +
-    jaspGraphs::themeJaspRaw(legend.position = if (length(options[["factors"]]) != 0) options[["survivalCurvePlotLegend"]])
+    jaspGraphs::themeJaspRaw(legend.position = if (length(options[["strata"]]) != 0) options[["survivalCurvePlotLegend"]])
 
   return(tempPlot)
 }

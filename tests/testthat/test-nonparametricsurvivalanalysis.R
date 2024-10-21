@@ -2,7 +2,7 @@ context("Nonparametric Survival Analysis")
 
 #### single group ----
 options <- analysisOptions("NonParametricSurvivalAnalysis")
-options$.meta <- list(eventStatus = list(shouldEncode = TRUE), factors = list(
+options$.meta <- list(eventStatus = list(shouldEncode = TRUE), strata = list(
   shouldEncode = TRUE), timeToEvent = list(shouldEncode = TRUE))
 options$colorPalette <- "colorblind"
 options$eventIndicator <- "1"
@@ -77,12 +77,12 @@ test_that("Survival Curve plot matches", {
 
 #### multigroup + test ----
 options <- analysisOptions("NonParametricSurvivalAnalysis")
-options$.meta <- list(eventStatus = list(shouldEncode = TRUE), factors = list(
+options$.meta <- list(eventStatus = list(shouldEncode = TRUE), strata = list(
   shouldEncode = TRUE), timeToEvent = list(shouldEncode = TRUE))
 options$colorPalette <- "grandBudapest"
 options$eventIndicator <- "1"
 options$eventStatus <- "status"
-options$factors <- "x"
+options$strata <- "x"
 options$lifeTable <- TRUE
 options$lifeTableStepsType <- "quantiles"
 options$survivalCurveCensoringPlot <- TRUE

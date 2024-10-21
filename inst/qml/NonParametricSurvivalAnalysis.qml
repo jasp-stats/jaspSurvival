@@ -59,9 +59,9 @@ Form
 
 		AssignedVariablesList
 		{
-			name:			 	"factors"
-			id:					factors
-			title:			 	qsTr("Factors")
+			name:			 	"strata"
+			id:					strata
+			title:			 	qsTr("Strata")
 			allowedColumns:		["nominal"]
 		}
 	}

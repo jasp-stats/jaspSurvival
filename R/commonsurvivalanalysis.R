@@ -28,10 +28,10 @@
     "right"    = options[["timeToEvent"]]
   )
 
-  factorsVariable    <- Filter(function(s) s != "", options[["factors"]])
+  strataVariable     <- Filter(function(s) s != "", options[["strata"]])
   # only for (semi)parametric
   covariatesVariable <- Filter(function(s) s != "", options[["covariates"]])
-  strataVariable     <- Filter(function(s) s != "", options[["strata"]])
+  factorsVariable    <- Filter(function(s) s != "", options[["factors"]])
   # idVariable         <- Filter(function(s) s != "", options[["id"]])
   clusterVariable    <- Filter(function(s) s != "", options[["cluster"]])
   weightsVariable    <- Filter(function(s) s != "", options[["weights"]])
@@ -115,8 +115,8 @@
 .saGetFormula         <- function(options, type, null = FALSE) {
 
   if (type == "KM") {
-    # nonparametric (Kaplan-Meier) only stratifies by factors
-    predictors    <- options[["factors"]]
+    # nonparametric (Kaplan-Meier) only stratifies by strata
+    predictors    <- options[["strata"]]
     interceptTerm <- TRUE
   } else if (type == "Cox") {
     # Cox proportional hazards always includes intercept
