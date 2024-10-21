@@ -609,7 +609,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   ### create all requested plots
   # residuals vs time
-  if (options[["residualPlotResidualVsTime"]] && is.null(residualsPlots[["residualPlotResidualVsTime"]])) {
+  if (options[["residualPlotResidualType"]] %in% c("martingale", "deviance") && options[["residualPlotResidualVsTime"]] && is.null(residualsPlots[["residualPlotResidualVsTime"]])) {
 
     residualPlotResidualVsTime <- createJaspPlot(title = gettext("Residuals vs. Time"), dependencies = "residualPlotResidualVsTime", position = 1, width = 450, height = 320)
     residualsPlots[["residualPlotResidualVsTime"]] <- residualPlotResidualVsTime
@@ -650,20 +650,31 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
         if (grepl("frailty", colnames(predictorsFit)[i]))
           next
 
-        tempPredictorName <- .saTermNames(colnames(predictorsFit)[i], c(options[["covariates"]], options[["factors"]]))
-        residualsPlots[[paste0("residualPlotResidualVsPredictors", i)]] <- createJaspPlot(
-          plot         = .saspResidualsPlot(x = predictorsFit[varIndx,i], y = residuals, xlab = tempPredictorName, ylab = .saspResidualsPlotName(options)),
-          title        = gettextf("Residuals vs. %1$s", tempPredictorName),
-          position     = i,
-          width        = 450,
-          height       = 320
-        )
+        if (options[["residualPlotResidualType"]] %in% c("schoenfeld", "scaledSchoenfeld", "score")) {
+          tempPredictorName <- .saTermNames(colnames(predictorsFit)[i], c(options[["covariates"]], options[["factors"]]))
+          residualsPlots[[paste0("residualPlotResidualVsPredictors", i)]] <- createJaspPlot(
+            plot         = .saspResidualsPlot(x = predictorsFit[varIndx,i], y = if (ncol(predictorsFit) == 1) residuals else residuals[,i], xlab = tempPredictorName, ylab = .saspResidualsPlotName(options)),
+            title        = gettextf("Residuals vs. %1$s", tempPredictorName),
+            position     = i,
+            width        = 450,
+            height       = 320
+          )
+        } else {
+          tempPredictorName <- .saTermNames(colnames(predictorsFit)[i], c(options[["covariates"]], options[["factors"]]))
+          residualsPlots[[paste0("residualPlotResidualVsPredictors", i)]] <- createJaspPlot(
+            plot         = .saspResidualsPlot(x = predictorsFit[varIndx,i], y = residuals, xlab = tempPredictorName, ylab = .saspResidualsPlotName(options)),
+            title        = gettextf("Residuals vs. %1$s", tempPredictorName),
+            position     = i,
+            width        = 450,
+            height       = 320
+          )
+        }
       }
     }
   }
 
   # residuals vs predicted
-  if (options[["residualPlotResidualVsPredicted"]] && is.null(residualsPlots[["residualPlotResidualVsPredicted"]])) {
+  if (options[["residualPlotResidualType"]] %in% c("martingale", "deviance") && options[["residualPlotResidualVsPredicted"]] && is.null(residualsPlots[["residualPlotResidualVsPredicted"]])) {
 
     residualPlotResidualVsPredicted <- createJaspPlot(title = gettext("Residuals vs. Predicted"), dependencies = "residualPlotResidualVsPredicted", position = 3, width = 450, height = 320)
     residualsPlots[["residualPlotResidualVsPredicted"]] <- residualPlotResidualVsPredicted
@@ -671,7 +682,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     if (jaspBase::isTryError(residuals)) {
       residualPlotResidualVsPredicted$setError(residuals)
     } else {
-      tempPlot <- try(.saspResidualsPlot(x = predict(fit)[varIndx], y = residuals, xlab = gettext("Predicted"), ylab = .saspResidualsPlotName(options)))
+      tempPlot <- try(.saspResidualsPlot(y = exp(-predict(fit, type = "expected")[varIndx]), x = residuals, ylab = gettext("Predicted Survival"), xlab = .saspResidualsPlotName(options)))
 
       if (jaspBase::isTryError(tempPlot))
         residualsPlots$setError(tempPlot)
@@ -681,7 +692,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   }
 
   # residuals histogram
-  if (options[["residualPlotResidualHistogram"]] && is.null(residualsPlots[["residualPlotResidualHistogram"]])) {
+  if (options[["residualPlotResidualType"]] %in% c("martingale", "deviance") && options[["residualPlotResidualHistogram"]] && is.null(residualsPlots[["residualPlotResidualHistogram"]])) {
 
     residualPlotResidualHistogram <- createJaspPlot(title = gettext("Residuals Histogram"), dependencies = "residualPlotResidualHistogram", position = 4, width = 450, height = 320)
     residualsPlots[["residualPlotResidualHistogram"]] <- residualPlotResidualHistogram
@@ -723,6 +734,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   switch(
     options[["residualPlotResidualType"]],
     "martingale"       = gettext("Martingale Residuals"),
+    "deviance"         = gettext("Deviance Residuals"),
     "score"            = gettext("Score Residuals"),
     "schoenfeld"       = gettext("Schoenfeld Residuals"),
     "scaledSchoenfeld" = gettext("Scaled Schoenfeld Residuals")

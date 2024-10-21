@@ -457,25 +457,28 @@ Form
 			{
 				name:		"residualPlotResidualVsTime"
 				label:		qsTr("Residuals vs. time")
+				enabled:	 residualPlotResidualType.value == "martingale" || residualPlotResidualType.value == "deviance"
 			}
 
 			CheckBox
 			{
-				name:	"residualPlotResidualVsPredictors"
-				label:	qsTr("Residuals vs. predictors")
-				enabled:selectedModelTerms.count > 0
+				name:		"residualPlotResidualVsPredictors"
+				label:		qsTr("Residuals vs. predictors")
+				enabled:	selectedModelTerms.count > 0
 			}
 
 			CheckBox
 			{
-				name:	"residualPlotResidualVsPredicted"
-				label:	qsTr("Residuals vs. predicted")
+				name:		"residualPlotResidualVsPredicted"
+				label:		qsTr("Residuals vs. predicted survival")
+				enabled:	residualPlotResidualType.value == "martingale" || residualPlotResidualType.value == "deviance"
 			}
 
 			CheckBox
 			{
-				name:	"residualPlotResidualHistogram"
-				label:	qsTr("Residuals histogram")
+				name:		"residualPlotResidualHistogram"
+				label:		qsTr("Residuals histogram")
+				enabled:	residualPlotResidualType.value == "martingale" || residualPlotResidualType.value == "deviance"
 			}
 
 			DropDown
@@ -483,21 +486,13 @@ Form
 				name:		"residualPlotResidualType"
 				id:			residualPlotResidualType
 				label:		qsTr("Type")
-				values:		(function() {
-					if (frailty.count == 0) {
-						return [
-							{ label: qsTr("Martingale"),			value: "martingale"},
-							{ label: qsTr("Score"),					value: "score"},
-							{ label: qsTr("Schoenfeld"),			value: "schoenfeld"},
-							{ label: qsTr("Scaled Schoenfeld"),		value: "scaledSchoenfeld"}
-						];
-					} else {
-						return [
-							{ label: qsTr("Martingale"),			value: "martingale"}
-						];
-					} 
-				})()
-
+				values:		[
+					{ label: qsTr("Martingale"),			value: "martingale"},
+					{ label: qsTr("Deviance"),				value: "deviance"},
+					{ label: qsTr("Score"),					value: "score"},
+					{ label: qsTr("Schoenfeld"),			value: "schoenfeld"},
+					{ label: qsTr("Scaled Schoenfeld"),		value: "scaledSchoenfeld"}
+				]
 			}
 		}
 	}
