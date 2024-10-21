@@ -40,7 +40,7 @@ CheckBox
 
 	CheckBox
 	{
-		name:		"plotConfidenceInterval"
+		name:		"plotCi"
 		label:		qsTr("Confidence interval")
 		checked:	true
 	}

@@ -274,7 +274,7 @@
       "cumulativeHazard"     = gettext("Cumulative Hazard Plot"),
       "complementaryLogLog"  = gettext("Complementary Log-Log Plot")
     ), width = 450, height = .saGetSurvivalPlotHeight(options))
-    surivalPlot$dependOn(c(.sanpDependencies, "plot", "plotType", "plotStrata", "plotConfidenceInterval", "plotRiskTable",
+    surivalPlot$dependOn(c(.sanpDependencies, "plot", "plotType", "plotStrata", "plotCi", "plotRiskTable",
                            "plotRiskTableNumberAtRisk", "plotRiskTableCumulativeNumberOfObservedEvents",
                            "plotRiskTableCumulativeNumberOfCensoredObservations", "plotRiskTableNumberOfEventsInTimeInterval",
                            "plotRiskTableNumberOfCensoredObservationsInTimeInterval", "plotRiskTableAsASingleLine",
@@ -336,7 +336,7 @@
     return()
   }
 
-  if (options[["plotConfidenceInterval"]])
+  if (options[["plotCi"]])
     tempPlot <- tempPlot + ggsurvfit::add_confidence_interval()
 
   if (options[["plotRiskTable"]]) {

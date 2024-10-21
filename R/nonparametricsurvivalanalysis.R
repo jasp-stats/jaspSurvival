@@ -331,7 +331,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     tempPlot <- ggplot2::ggplot(fitLifeTable) +
       jaspGraphs::geom_line(mapping = ggplot2::aes(x = time, y = survival))
 
-    if (options[["survivalCurvePlotConfidenceInterval"]])
+    if (options[["survivalCurveplotCi"]])
       tempPlot <- tempPlot + ggplot2::geom_ribbon(mapping = ggplot2::aes(x = time, ymin = lowerCI, ymax = upperCI), alpha = 0.1, size = 1)
 
     if (options[["survivalCurvePlotDataRug"]])
@@ -342,7 +342,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     tempPlot <- ggplot2::ggplot(fitLifeTable) +
       jaspGraphs::geom_line(mapping = ggplot2::aes(x = time, y = survival, group = strata, color = strata))
 
-    if (options[["survivalCurvePlotConfidenceInterval"]])
+    if (options[["survivalCurveplotCi"]])
       tempPlot <- tempPlot + ggplot2::geom_ribbon(mapping = ggplot2::aes(x = time, ymin = lowerCI, ymax = upperCI, group = strata, fill = strata), alpha = 0.1, size = 1)
 
     if (options[["survivalCurvePlotDataRug"]])
