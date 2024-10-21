@@ -793,7 +793,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 }
 .saspCoxWaitingForFrailty <- function(options) {
 
-  if (is.null(options[["frailty"]]) || (options[["frailty"]] != "" && options[["frailtyMethod"]] != "fixed"))
+  if (is.null(options[["frailty"]]) || options[["frailty"]] == "" || (options[["frailty"]] != "" && options[["frailtyMethod"]] != "fixed"))
     return(FALSE)
   else
     switch(
