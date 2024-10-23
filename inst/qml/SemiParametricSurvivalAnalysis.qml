@@ -63,7 +63,7 @@ Form
 			title:				qsTr("Time to Event")
 			allowedColumns:		["scale"]
 			singleVariable:		true
-			visible:			censoringTypeRight.checked	
+			visible:			censoringTypeRight.checked
 			property bool active:	censoringTypeRight.checked
 			onActiveChanged: 		if (!active && count > 0) itemDoubleClicked(0)
 		}
@@ -153,8 +153,7 @@ Form
 
 		VariablesForm
 		{
-			// TODO Bruno: the heigh adjustment does not seem to work
-			height:		300
+			preferredHeight:		300
 
 			AvailableVariablesList
 			{
@@ -263,7 +262,7 @@ Form
 					name:		"frailtyMethodFixed"
 					id:			frailtyMethodFixed
 					label:		qsTr("Fix")
-					values:		
+					values:
 					[
 						{ label: qsTr("Theta"),	value: "theta"},
 						{ label: qsTr("Df"),	value: "df"}
@@ -302,7 +301,7 @@ Form
 				name:	"availableTerms"
 				title:	qsTr("Components")
 				width:	parent.width / 4
-				source:	['covariates', 'factors', 'strata'] 
+				source:	['covariates', 'factors', 'strata']
 			}
 
 			ModelTermsList
@@ -349,7 +348,7 @@ Form
 					enabled:	frailty.count == 0
 					label:		qsTr("Score (log-rank)")
 				}
-			}		
+			}
 		}
 
 		Group
@@ -391,12 +390,12 @@ Form
 					label:				qsTr("Confidence intervals")
 					checked:			true
 					childrenOnSameRow:	true
-					
+
 					CIField
 					{
 						name:	"coefficientsConfidenceIntervalsLevel"
 					}
-				}				
+				}
 			}
 		}
 	}
@@ -444,14 +443,14 @@ Form
 			{
 				name:		"proportionalHazardsTestTerms"
 				label:		qsTr("Test terms")
-			}			
+			}
 
 		}
 
 		Group
 		{
 			title: qsTr("Residuals Plots")
-			
+
 			CheckBox
 			{
 				name:		"residualPlotResidualVsTime"

@@ -54,7 +54,7 @@
   # check that interval start < end
   if (options[["censoringType"]] == "counting") {
     if (any(dataset[[options[["intervalStart"]]]] > dataset[[options[["intervalEnd"]]]]))
-      .quitAnalysis(gettextf("The end time must be larger than start time."))
+      .quitAnalysis(gettextf("The end time must be larger than the start time."))
   }
 
   if (!is.null(covariatesVariable))
@@ -184,7 +184,7 @@
     options[["frailtyDistribution"]],
     # simplifying GUI for fixed (instead of having fixed.theta and fixed.df)
     if (options[["frailtyMethod"]] == "fixed" && options[["frailtyMethodFixed"]] == "theta")  "fixed"
-    else if(options[["frailtyMethod"]] == "fixed" && options[["frailtyMethodFixed"]] == "df") "df"
+    else if (options[["frailtyMethod"]] == "fixed" && options[["frailtyMethodFixed"]] == "df") "df"
     else options[["frailtyMethod"]],
     # adding the fixed part
     if (options[["frailtyMethod"]] != "fixed") ""

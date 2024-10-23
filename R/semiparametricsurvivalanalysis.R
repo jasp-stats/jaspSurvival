@@ -747,10 +747,12 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   if (HR) {
 
-    estimatesFit <- cbind(
-      "est"   = exp(coef(fit)),
-      exp(confint(fit, level = options[["coefficientsConfidenceIntervalsLevel"]]))
-    )
+    estimatesFit <- data.frame("est" = exp(coef(fit)))
+
+    if (options[[ "coefficientsConfidenceIntervals"]]) {
+      estimatesFit <- cbind(estimatesFit, exp(confint(fit, level = options[["coefficientsConfidenceIntervalsLevel"]])))
+      colnames(estimatesFit)[2:3] <- c("lower", "upper")
+    }
 
     if (!options[["coefficientHazardRatioEstimatesIncludeFrailty"]])
       estimatesFit <- estimatesFit[grepl("JaspColumn", rownames(estimatesFit)), , drop=FALSE]
@@ -781,13 +783,11 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   # fix names
   if (!HR)
     colnames(estimatesFit) <- names(toExtract)[toExtract %in% namesEstimatesFit]
-  else
-    colnames(estimatesFit) <- c("est", "lower", "upper")
 
   # add confidence intervals
   if (!HR && options[["coefficientsConfidenceIntervals"]]) {
-    estimatesFit$lower <- estimatesFit[,"est"] + qnorm((1 - options[["coefficientsConfidenceIntervalsLevel"]]) / 2) * estimatesFit[,if("rse" %in% colnames(estimatesFit)) "rse" else "se"]
-    estimatesFit$upper <- estimatesFit[,"est"] - qnorm((1 - options[["coefficientsConfidenceIntervalsLevel"]]) / 2) * estimatesFit[,if("rse" %in% colnames(estimatesFit)) "rse" else "se"]
+    estimatesFit$lower <- estimatesFit[, "est"] + qnorm((1 - options[["coefficientsConfidenceIntervalsLevel"]]) / 2) * estimatesFit[, if("rse" %in% colnames(estimatesFit)) "rse" else "se"]
+    estimatesFit$upper <- estimatesFit[, "est"] - qnorm((1 - options[["coefficientsConfidenceIntervalsLevel"]]) / 2) * estimatesFit[, if("rse" %in% colnames(estimatesFit)) "rse" else "se"]
   }
 
   estimatesFit <- cbind(
