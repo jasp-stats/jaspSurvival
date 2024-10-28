@@ -1,45 +1,41 @@
 # TODO:
 # qml:
-# - make the event indicator be the second lvl of the event status variable
 # - make "lifeTableStepsTo" correspond to the maximum time
 # - make "lifeTableStepsSize" correspond to the maxiumum time/10
-# R:
-# - convenient function for making factor level parameter names nice (in regression tables)?
-# - why legend names are so wide? Encoding/decoding problems?
-#   (smth along the lines of: `levels(tempPlot$data.survplot$strata) <- jaspBase::decodeColNames(levels(tempPlot$data.survplot$strata), strict = FALSE)`
-# - make sure x-axis are aligned in the survival plot
-# - jaspTheme the plot
 
 .saSurvivalReady      <- function(options) {
 
   ready <- switch(
     options[["censoringType"]],
-    "interval" = options[["eventStatus"]] != "" && options[["intervalStart"]] != "" && options[["intervalEnd"]] != "",
+    "counting" = options[["eventStatus"]] != "" && options[["intervalStart"]] != "" && options[["intervalEnd"]] != "",
     "right"    = options[["eventStatus"]] != "" && options[["timeToEvent"]] != ""
   )
 
+  # check whether Cox regression is waiting for frailty
+  coxWaitingForFrailty <- .saspCoxWaitingForFrailty(options)
+
+  ready <-  ready && !coxWaitingForFrailty
+
   return(ready)
 }
-.saReadDataset        <- function(dataset, options) {
-
-  if (!is.null(dataset))
-    return(dataset)
+.saCheckDataset        <- function(dataset, options) {
 
   # load the data
   eventVariable <- options[["eventStatus"]]
   timeVariable  <- switch(
     options[["censoringType"]],
-    "interval" = c(options[["intervalStart"]], options[["intervalEnd"]]),
+    "counting" = c(options[["intervalStart"]], options[["intervalEnd"]]),
     "right"    = options[["timeToEvent"]]
   )
 
+  strataVariable     <- Filter(function(s) s != "", options[["strata"]])
+  # only for (semi)parametric
+  covariatesVariable <- Filter(function(s) s != "", options[["covariates"]])
   factorsVariable    <- Filter(function(s) s != "", options[["factors"]])
-  covariatesVariable <- Filter(function(s) s != "", options[["covariates"]]) # only for (semi)parametric
-
-  dataset <- .readDataSetToEnd(
-    columns.as.numeric = c(timeVariable, covariatesVariable),
-    columns.as.factor  = c(eventVariable, factorsVariable)
-  )
+  # idVariable         <- Filter(function(s) s != "", options[["id"]])
+  clusterVariable    <- Filter(function(s) s != "", options[["cluster"]])
+  weightsVariable    <- Filter(function(s) s != "", options[["weights"]])
+  frailtyVariable    <- Filter(function(s) s != "", options[["frailty"]])
 
   # clean from NAs
   dataset <- na.omit(dataset)
@@ -51,14 +47,14 @@
   .hasErrors(
     dataset                      = dataset,
     type                         = c("negativeValues"),
-    negativeValues.target        = timeVariable,
+    negativeValues.target        = c(timeVariable, weightsVariable),
     exitAnalysisIfErrors         = TRUE
   )
 
   # check that interval start < end
-  if (options[["censoringType"]] == "interval") {
+  if (options[["censoringType"]] == "counting") {
     if (any(dataset[[options[["intervalStart"]]]] > dataset[[options[["intervalEnd"]]]]))
-      .quitAnalysis(gettextf("The end time must be larger than start time."))
+      .quitAnalysis(gettextf("The end time must be larger than the start time."))
   }
 
   if (!is.null(covariatesVariable))
@@ -85,25 +81,11 @@
 
   if (options[["censoringType"]] == "right") {
 
-    # 0 = right censored, 1 = event at time
-    event <- as.numeric(dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]])
+    event <- dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]]
 
-  } else if (options[["censoringType"]] == "interval") {
+  } else if (options[["censoringType"]] == "counting") {
 
-    if (anyDuplicated(c(
-      options[["rightCensored"]],
-      options[["eventIndicator"]],
-      options[["leftCensored"]],
-      options[["intervalCensored"]]
-    )))
-      .quitAnalysis(gettextf("Duplicated level mapping for interval censoring."))
-
-    # 0 = right censored, 1 = event at time, 2 = left censored, 3 = interval censored
-    event <- rep(NA, nrow(dataset))
-    event[dataset[[options[["eventStatus"]]]] == options[["rightCensored"]]]    <- 0
-    event[dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]]]   <- 1
-    event[dataset[[options[["eventStatus"]]]] == options[["leftCensored"]]]     <- 2
-    event[dataset[[options[["eventStatus"]]]] == options[["intervalCensored"]]] <- 3
+    event <- dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]]
 
   }
 
@@ -112,17 +94,19 @@
 .saGetSurv            <- function(options) {
   return(switch(
     options[["censoringType"]],
-    "interval" = sprintf("survival::Surv(
+    "counting" = sprintf("Surv(
       time  = %1$s,
       time2 = %2$s,
-      event = %3$s)",
+      event = %3$s,
+      type  = 'counting')",
       options[["intervalStart"]],
       options[["intervalEnd"]],
       options[["eventStatus"]]
       ),
-    "right"    = sprintf("survival::Surv(
+    "right"    = sprintf("Surv(
       time  = %1$s,
-      event = %2$s)",
+      event = %2$s,
+      type  = 'right')",
       options[["timeToEvent"]],
       options[["eventStatus"]]
       )
@@ -131,18 +115,18 @@
 .saGetFormula         <- function(options, type, null = FALSE) {
 
   if (type == "KM") {
-    # nonparametric (Kaplan-Meier) only stratifies by factors
-    predictors    <- options[["factors"]]
+    # nonparametric (Kaplan-Meier) only stratifies by strata
+    predictors    <- options[["strata"]]
     interceptTerm <- TRUE
   } else if (type == "Cox") {
     # Cox proportional hazards always includes intercept
-    predictors    <- .saGetPredictors(options, null = null)
+    predictors    <- c(.saGetPredictors(options, null = null), .saGetFrailty(options))
     interceptTerm <- TRUE
   }
 
   survival <- .saGetSurv(options)
 
-  if (length(predictors) == 0 && interceptTerm == FALSE)
+  if (length(predictors) == 0 && !interceptTerm)
     stop(gettext("We need at least one predictor, or an intercept to make a formula"))
 
   if (length(predictors) == 0)
@@ -158,6 +142,17 @@
   # modified from jaspRegression::.createGlmFormula
   # this function outputs a formula name with base64 values as varnames
   modelTerms    <- options[["modelTerms"]]
+
+  # add "strata" calls
+  for (i in seq_along(options[["strata"]])) {
+    for (j in seq_along(modelTerms)) {
+      modelTerms[[j]]$components <- gsub(
+        options[["strata"]][[i]],
+        paste0("strata(", options[["strata"]][[i]], ")"),
+        modelTerms[[j]]$components
+      )
+    }
+  }
 
   t <- NULL
   for (i in seq_along(modelTerms)) {
@@ -178,6 +173,28 @@
 
   return(t)
 }
+.saGetFrailty         <- function(options) {
+
+  if (options[["frailty"]] == "")
+    return()
+
+  frailty <- sprintf(
+    "frailty(%1$s, distribution = '%2$s', method = '%3$s'%4$s%5$s)",
+    options[["frailty"]],
+    options[["frailtyDistribution"]],
+    # simplifying GUI for fixed (instead of having fixed.theta and fixed.df)
+    if (options[["frailtyMethod"]] == "fixed" && options[["frailtyMethodFixed"]] == "theta")  "fixed"
+    else if (options[["frailtyMethod"]] == "fixed" && options[["frailtyMethodFixed"]] == "df") "df"
+    else options[["frailtyMethod"]],
+    # adding the fixed part
+    if (options[["frailtyMethod"]] != "fixed") ""
+    else if (options[["frailtyMethodFixed"]] == "df")    paste0(", df = ",    options[["frailtyMethodFixedDf"]])
+    else if (options[["frailtyMethodFixed"]] == "theta") paste0(", theta = ", options[["frailtyMethodFixedTheta"]]),
+    if (options[["frailtyMethod"]] == "t")  paste0("tdf = ", options[["frailtyMethodTDf"]]) else ""
+  )
+
+  return(frailty)
+}
 .saLifeTableTimes     <- function(dataset, options) {
 
   times <- dataset[[switch(
@@ -196,4 +213,175 @@
     timeSteps <- round(timeSteps)
 
   return(unique(timeSteps))
+}
+.saTermNames          <- function(varName, variables) {
+  # based on jaspMixedModels::.mmVariableNames
+
+  # deal with non-standard columns names
+  if (!grepl("JaspColumn", varName)) {
+    if (varName == "(Intercept)")
+      return("Intercept")
+    if (varName == "Global")
+      return("Global")
+    if (grepl("gamma:", varName, fixed = TRUE) || grepl("gauss:", varName, fixed = TRUE) || grepl("t:", varName, fixed = TRUE))
+      return(paste0("(frailty) ", varName))
+  }
+
+  for (vn in variables) {
+    inf <- regexpr(vn, varName, fixed = TRUE)
+
+    if (inf[1] != -1) {
+      varName <- paste0(
+        substr(varName, 0, inf[1] - 1),
+        substr(varName, inf[1], inf[1] + attr(inf, "match.length") - 1),
+        " (",
+        substr(varName, inf[1] + attr(inf, "match.length"), nchar(varName))
+      )
+    }
+
+  }
+
+  varName <- gsub(":", paste0(")", jaspBase::interactionSymbol), varName, fixed = TRUE)
+  varName <- paste0(varName, ")")
+  varName <- gsub(" ()", "", varName, fixed = TRUE)
+
+  return(varName)
+}
+
+.saGetSurvivalPlotHeight <- function(options) {
+  if (!options[["plotRiskTable"]])
+    return(400)
+  else if (!options[["plotRiskTableAsASingleLine"]])
+    return(450)
+  else
+    return(400 + 50 * sum(c(
+      options[["plotRiskTableNumberAtRisk"]],
+      options[["plotRiskTableCumulativeNumberOfObservedEvents"]],
+      options[["plotRiskTableCumulativeNumberOfCensoredObservations"]],
+      options[["plotRiskTableNumberOfEventsInTimeInterval"]],
+      options[["plotRiskTableNumberOfCensoredObservationsInTimeInterval"]]
+    )))
+}
+.saSurvivalPlot          <- function(jaspResults, dataset, options, type) {
+
+  if (!is.null(jaspResults[["surivalPlot"]]))
+    surivalPlot <- jaspResults[["surivalPlot"]]
+  else {
+    surivalPlot <- createJaspPlot(title = switch(
+      options[["plotType"]],
+      "survival"             = gettext("Survival Plot"),
+      "risk"                 = gettext("Risk Plot"),
+      "cumulativeHazard"     = gettext("Cumulative Hazard Plot"),
+      "complementaryLogLog"  = gettext("Complementary Log-Log Plot")
+    ), width = 450, height = .saGetSurvivalPlotHeight(options))
+    surivalPlot$dependOn(c(.sanpDependencies, "plot", "plotType", "plotStrata", "plotCi", "plotRiskTable",
+                           "plotRiskTableNumberAtRisk", "plotRiskTableCumulativeNumberOfObservedEvents",
+                           "plotRiskTableCumulativeNumberOfCensoredObservations", "plotRiskTableNumberOfEventsInTimeInterval",
+                           "plotRiskTableNumberOfCensoredObservationsInTimeInterval", "plotRiskTableAsASingleLine",
+                           "plotAddQuantile", "plotAddQuantileValue",
+                           "colorPalette", "plotLegend", "plotTheme"))
+    surivalPlot$position <- switch(
+      type,
+      "KM"  = 3,
+      "Cox" = 7
+    )
+    jaspResults[["surivalPlot"]] <- surivalPlot
+  }
+
+  if (is.null(jaspResults[["fit"]]))
+    return()
+
+  fit <- jaspResults[["fit"]][["object"]]
+
+  if (jaspBase::isTryError(fit))
+    return()
+
+  .ggsurvfit2JaspPlot <- function(x) {
+    grDevices::png(f <- tempfile())
+    on.exit({
+      grDevices::dev.off()
+      if (file.exists(f))
+        file.remove(f)
+    })
+    return(ggsurvfit:::ggsurvfit_build(tempPlot))
+  }
+
+  if (type == "KM")
+    tempPlot <- try(ggsurvfit::ggsurvfit(
+      x    = ggsurvfit::survfit2(.saGetFormula(options, type = type), data = dataset),
+      type = switch(
+        options[["plotType"]],
+        "survival"             = "survival",
+        "risk"                 = "risk",
+        "cumulativeHazard"     = "cumhaz",
+        "complementaryLogLog"  = "cloglog"
+      ),
+      linewidth = 1
+    ))
+  else if (type == "Cox")
+    tempPlot <- try(ggsurvfit::ggsurvfit(
+      x    = ggsurvfit::survfit2(fit),
+      type = switch(
+        options[["plotType"]],
+        "survival"             = "survival",
+        "risk"                 = "risk",
+        "cumulativeHazard"     = "cumhaz",
+        "complementaryLogLog"  = "cloglog"
+      ),
+      linewidth = 1
+    ))
+
+  if (jaspBase::isTryError(tempPlot)) {
+    surivalPlot$setError(tempPlot)
+    return()
+  }
+
+  if (options[["plotCi"]])
+    tempPlot <- tempPlot + ggsurvfit::add_confidence_interval()
+
+  if (options[["plotRiskTable"]]) {
+    riskTableStatistics <-  c(
+      if (options[["plotRiskTableNumberAtRisk"]])                               "n.risk",
+      if (options[["plotRiskTableCumulativeNumberOfObservedEvents"]])           "cum.event",
+      if (options[["plotRiskTableCumulativeNumberOfCensoredObservations"]])     "cum.censor",
+      if (options[["plotRiskTableNumberOfEventsInTimeInterval"]])               "n.event",
+      if (options[["plotRiskTableNumberOfCensoredObservationsInTimeInterval"]]) "n.censor"
+    )
+
+    if (length(riskTableStatistics) > 0) {
+      if (options[["plotRiskTableAsASingleLine"]])
+        riskTableStatistics <- paste0("{", riskTableStatistics, "}", collapse = ", ")
+
+      tempPlot <- tempPlot + ggsurvfit::add_risktable(risktable_stats = riskTableStatistics)
+    }
+  }
+
+  if (options[["plotAddQuantile"]])
+    tempPlot <- tempPlot + ggsurvfit::add_quantile(y_value = options[["plotAddQuantileValue"]], color = "gray50", linewidth = 0.75)
+
+  if (options[["plotTheme"]] == "jasp")
+    tempPlot <- tempPlot +
+      jaspGraphs::geom_rangeframe(sides = "bl") +
+      jaspGraphs::themeJaspRaw(legend.position = options[["plotLegend"]])
+  else
+    tempPlot <- tempPlot + ggplot2::theme(legend.position = options[["plotLegend"]])
+
+  # scaling and formatting
+  tempPlot <- tempPlot +
+    jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]]) +
+    jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
+
+  if (options[["plotType"]] == "complementaryLogLog")
+    tempPlot <- tempPlot + ggplot2::scale_x_continuous(transform = "log") + ggplot2::xlab(gettext("log(Time)"))
+  else
+    tempPlot <- tempPlot + ggsurvfit::scale_ggsurvfit()
+
+  if (jaspBase::isTryError(tempPlot)) {
+    surivalCurvePlot$setError(tempPlot)
+    return()
+  }
+
+  surivalPlot$plotObject <- .ggsurvfit2JaspPlot(tempPlot)
+
+  return()
 }

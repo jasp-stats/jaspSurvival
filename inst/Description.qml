@@ -7,6 +7,7 @@ Description
 	title : 		qsTr("Survival (beta)")
 	description:	qsTr("Perform analyses of censored time to event data.")
 	requiresData:	true
+	preloadData:  true
 	icon:			"survival-analysis.svg"
 	version			: "0.19.2"
 	author:			"JASP Team"
@@ -27,15 +28,15 @@ Description
 		func:			"NonParametricSurvivalAnalysis"
 		requiresData:	true
 	}
-/*
+
 	Analysis
 	{
 		menu:			qsTr("Semi-parametric")
 		title:			qsTr("Semi-parametric Survival Analysis")
 		func:			"SemiParametricSurvivalAnalysis"
-    	requiresData:	true
+		requiresData:	true
 	}
-  
+/*
   	Analysis
 	{
 		menu:			qsTr("Parametric")
