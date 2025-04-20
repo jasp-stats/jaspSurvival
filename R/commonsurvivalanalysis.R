@@ -18,7 +18,7 @@
 
   return(ready)
 }
-.saCheckDataset        <- function(dataset, options) {
+.saCheckDataset       <- function(dataset, options) {
 
   # load the data
   eventVariable <- options[["eventStatus"]]
@@ -29,13 +29,10 @@
   )
 
   strataVariable     <- Filter(function(s) s != "", options[["strata"]])
+  weightsVariable    <- if (options[["weights"]] != "") options[["weights"]]
   # only for (semi)parametric
   covariatesVariable <- Filter(function(s) s != "", options[["covariates"]])
   factorsVariable    <- Filter(function(s) s != "", options[["factors"]])
-  # idVariable         <- Filter(function(s) s != "", options[["id"]])
-  clusterVariable    <- Filter(function(s) s != "", options[["cluster"]])
-  weightsVariable    <- Filter(function(s) s != "", options[["weights"]])
-  frailtyVariable    <- Filter(function(s) s != "", options[["frailty"]])
 
   # clean from NAs
   dataset <- na.omit(dataset)
@@ -57,7 +54,7 @@
       .quitAnalysis(gettextf("The end time must be larger than the start time."))
   }
 
-  if (!is.null(covariatesVariable))
+  if (!is.null(covariatesVariable) && length(covariatesVariable) > 0)
     .hasErrors(
       dataset                      = dataset,
       type                         = c("infinity", "observations", "variance", "varCovData"),
@@ -74,6 +71,15 @@
       modelInteractions.modelTerms = options[["modelTerms"]],
       exitAnalysisIfErrors         = TRUE
     )
+
+  if (!is.null(weightsVariable)) {
+    if (!all(isWholenumber(dataset[[weightsVariable]])))
+      .quitAnalysis(gettextf("The weights variable must be an integer."))
+    if (anyNA(dataset[[weightsVariable]]))
+      .quitAnalysis(gettextf("The weights variable must not contain missing values."))
+    if (any(dataset[[weightsVariable]] < 1))
+      .quitAnalysis(gettextf("The weights variable must be positive."))
+  }
 
   return(dataset)
 }
@@ -385,3 +391,4 @@
 
   return()
 }
+isWholenumber            <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol

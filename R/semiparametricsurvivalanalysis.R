@@ -19,6 +19,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   if (.saSurvivalReady(options))
     dataset <- .saCheckDataset(dataset, options)
+
   .saspFitCox(jaspResults, dataset, options)
   .saspFitCoxAssumptionTest(jaspResults, dataset, options)
 
@@ -50,7 +51,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   return()
 }
 
-.saspDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "factors", "covariates",
+.saspDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "factors", "covariates", "weights",
                        "strata", "id", "cluster",
                        "frailty", "frailtyDistribution", "frailtyMethod", "frailtyMethodTDf", "frailtyMethodFixed", "frailtyMethodFixedTheta",  "frailtyMethodFixedDf",
                        "modelTerms", "method")
@@ -72,7 +73,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
       method  = options[["method"]],
       # id      = if (options[["id"]] != "")      dataset[[options[["id"]]]],
       cluster = if (options[["cluster"]] != "") dataset[[options[["cluster"]]]],
-      weights = if (options[["weights"]] != "") options[["weights"]]
+      weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]]
     ))
 
     jaspResults[["fit"]]$object <- fit
@@ -90,7 +91,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
       method  = options[["method"]],
       # id      = if (options[["id"]] != "")      dataset[[options[["id"]]]],
       cluster = if (options[["cluster"]] != "") dataset[[options[["cluster"]]]],
-      weights = if (options[["weights"]] != "") options[["weights"]]
+      weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]]
     ))
 
     jaspResults[["fitNull"]]$object <- fitNull

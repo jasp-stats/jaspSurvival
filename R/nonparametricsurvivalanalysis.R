@@ -20,8 +20,10 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   # non-parametric allows only for right censored data -- set the options for generic functions downstream
   options[["censoringType"]] <- "right"
 
-  if (.saSurvivalReady(options))
+  if (.saSurvivalReady(options)) {
     dataset <- .saCheckDataset(dataset, options)
+    dataset <- .sanpWeightDataset(dataset, options)
+  }
 
   if (.saSurvivalReady(options)) {
     .sanpFitKaplanMeier(jaspResults, dataset, options)
@@ -40,8 +42,18 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   return()
 }
 
-.sanpDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "strata")
+.sanpDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "strata", "weights")
 
+.sanpWeightDataset   <- function(dataset, options) {
+
+  # manually apply weights to the dataset
+  # the kaplan-meier etc do not have a weight argument
+
+  if (options[["weights"]] != "")
+    dataset <- dataset[rep(seq_len(nrow(dataset)), dataset[[options[["weights"]]]]), ]
+
+  return(dataset)
+}
 .sanpFitKaplanMeier  <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["fit"]]))
