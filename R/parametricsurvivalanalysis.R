@@ -17,5 +17,11 @@
 
 ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NULL) {
 
+  if (.saSurvivalReady(options))
+    dataset <- .saCheckDataset(dataset, options)
+
+
+  saveRDS(options, file = "C:/JASP/options.RDS")
+  saveRDS(dataset, file = "C:/JASP/dataset.RDS")
   return()
 }
