@@ -18,7 +18,7 @@
 SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NULL) {
 
   if (.saSurvivalReady(options))
-    dataset <- .saCheckDataset(dataset, options)
+    dataset <- .saCheckDataset(dataset, options, type = "Cox")
 
   .saspFitCox(jaspResults, dataset, options)
   .saspFitCoxAssumptionTest(jaspResults, dataset, options)
@@ -51,7 +51,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   return()
 }
 
-.saspDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "factors", "covariates", "weights",
+.saspDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "censoringType", "factors", "covariates", "weights",
                        "strata", "id", "cluster",
                        "frailty", "frailtyDistribution", "frailtyMethod", "frailtyMethodTDf", "frailtyMethodFixed", "frailtyMethodFixedTheta",  "frailtyMethodFixedDf",
                        "modelTerms", "method")

@@ -27,7 +27,7 @@ Form
 	VariablesForm
 	{
 		removeInvisibles:	true
-		preferredHeight:	((censoringTypeRight.checked  || censoringTypeLeft.checked) ? 400 : 450 ) * jaspTheme.uiScale
+		preferredHeight:	((censoringTypeRight.checked  || censoringTypeLeft.checked) ? 450 : 500 ) * jaspTheme.uiScale
 
 		AvailableVariablesList
 		{
@@ -114,6 +114,16 @@ Form
 			singleVariable:		true
 			info: qsTr("Select a variable for case weights, weighting each observation accordingly in the model.")
 		}
+
+		AssignedVariablesList
+		{
+			name:			 	"subgroup"
+			id:					subgroup
+			title:			 	qsTr("Subgroup")
+			allowedColumns:		["nomial"]
+			singleVariable:		true
+			info: qsTr("Select a variable for subgroup analysis, allowing for separate analyses within each subgroup.")
+		}
 	}
 
 	RadioButtonGroup
@@ -136,16 +146,16 @@ Form
 
 		RadioButton
 		{
-			label:		qsTr("Interval")
-			value:		"interval"
-			id:			censoringTypeInterval
+			label:		qsTr("Left")
+			value:		"left"
+			id:			censoringTypeLeft
 		}
 
 		RadioButton
 		{
-			label:		qsTr("Left")
-			value:		"left"
-			id:			censoringTypeLeft
+			label:		qsTr("Interval")
+			value:		"interval"
+			id:			censoringTypeInterval
 		}
 	}
 
@@ -154,175 +164,94 @@ Form
 		name:		"distribution"
 		id:			distribution
 		label:		qsTr("Distribution")
+		startValue:	"weibull"
 		info: qsTr("Choose the parametric distribution for the analysis. All fits and display results for all 'Selected parametric families' in the 'Advanced' section. 'Best AIC' and 'Best BIC' fit all `Selected parametric families` in the Advanced section and display the results only for a parametric family with the lowest AIC/BIC.")
 		values:
 		[
-			{ label: qsTr("Generalized gamma"),					value: "generalizedGamma" },
-			{ label: qsTr("Generalized F"),						value: "generalizedF" },
-			{ label: qsTr("Weibull"),							value: "weibull" },
-			{ label: qsTr("Gamma"),								value: "gamma" },
 			{ label: qsTr("Exponential"),						value: "exponential" },
+			{ label: qsTr("Gamma"),								value: "gamma" },
+			{ label: qsTr("Generalized F"),						value: "generalizedF" },
+			{ label: qsTr("Generalized gamma"),					value: "generalizedGamma" },
+			{ label: qsTr("Gompertz"),							value: "gompertz" },
 			{ label: qsTr("Log-logistic"),						value: "logLogistic" },
 			{ label: qsTr("Log-normal"),						value: "logNormal" },
-			{ label: qsTr("Gompertz"),							value: "gompertz" },
+			{ label: qsTr("Weibull"),							value: "weibull" },
 			{ label: qsTr("Generalized gamma (original)"),		value: "generalizedGammaOriginal" },
 			{ label: qsTr("Generalized F (original)"),			value: "generalizedFOriginal" },
 			{ label: qsTr("All"),								value: "all"},
-			{ label: qsTr("Best AIC"),							value: "bestAIC"},
-			{ label: qsTr("Best BIC"),							value: "bestBIC"}
+			{ label: qsTr("Best AIC"),							value: "bestAic"},
+			{ label: qsTr("Best BIC"),							value: "bestBic"}
 		]
 	}
 
 	Section
 	{
-		title: qsTr("Strata, Cluster, and Frailty")
+		title: qsTr("Model")
 
-		VariablesForm
+		FactorsForm
 		{
-			preferredHeight:		300
-
-			AvailableVariablesList
-			{
-				name: "allVariablesList2"
-			}
-
-			AssignedVariablesList
-			{
-				name:			 	"strata"
-				id:					strata
-				title:			 	qsTr("Strata")
-				allowedColumns:		["nominal"]
-				info: qsTr("Select variables to define strata, allowing separate baseline hazard functions for each stratum.")
-			}
-
-			// TODO: allow only if multiple outcomes are possible
-			/*
-			AssignedVariablesList
-			{
-				name:			 	"id"
-				title:			 	qsTr("Id")
-				allowedColumns:		["nominal"]
-				singleVariable:		true
-			}
-			*/
-
-			AssignedVariablesList
-			{
-				name:			 	"cluster"
-				id:					cluster
-				enabled:			frailty.count == 0 && method.value != "exact"
-				title:			 	qsTr("Cluster")
-				allowedColumns:		["nominal"]
-				singleVariable:		true
-				info: qsTr("Select a variable to define clusters of correlated observations for robust variance estimation. Disabled when a Frailty variable is specified or Method is set to Exact.")
-			}
-
-			AssignedVariablesList
-			{
-				name:			 	"frailty"
-				id:					frailty
-				enabled:			cluster.count == 0
-				title:			 	qsTr("Frailty")
-				allowedColumns:		["nominal"]
-				singleVariable:		true
-				info: qsTr("Select a variable for frailty to model unobserved heterogeneity using random effects. Disabled when a Cluster variable is specified.")
-			}
+			name:				"modelTerms"
+			id:					modelTerms
+			nested:				true
+			startIndex:			1
+			initNumberFactors:	1
+			allowInteraction:	true
+			baseName:			"model"
+			baseTitle:			qsTr("Model")
+			availableVariablesListName:		"availableTerms"
+			availableVariablesList.source:	['covariates', 'factors']
+			allowedColumns:		[]
 		}
+
+		CheckBox
+		{
+			name:		"includeIntercept"
+			label:		qsTr("Include intercept")
+			checked:	true
+		}
+	}
+
+	Section
+	{
+		title: qsTr("Statistics")
 
 		Group
 		{
-			title:		qsTr("Frailty")
-			enabled:	frailty.count > 0
+			title:		qsTr("Model Summary")
 
-			DropDown
+			CheckBox 
 			{
-				name:		"frailtyDistribution"
-				id:			frailtyDistribution
-				label:		qsTr("Distribution")
-				info: qsTr("Choose the distribution for the frailty term: Gamma, Gaussian, or T distribution. Only available when a Frailty variable is specified.")
-				values:
-				[
-					{ label: qsTr("Gamma"),		value: "gamma"},
-					{ label: qsTr("Gaussian"),	value: "gaussian"},
-					{ label: qsTr("T"),			value: "t"}
-				]
-			}
+				name:		"modelSummaryRankModels"
+				label:		qsTr("Rank models")
+				enabled:	distribution.value == "all" || modelTerms.count > 1
+				info: qsTr("Rank models based on the selected criterion.")
 
-			DropDown
-			{
-				name:		"frailtyMethod"
-				id:			frailtyMethod
-				label:		qsTr("Method")
-				info: qsTr("Select the estimation method for the frailty distribution. Options vary based on the chosen Distribution.")
-				values:		(function() {
-					if (frailtyDistribution.value == "gamma") {
-						return [
-							{ label: qsTr("EM"),		value: "em"},
-							{ label: qsTr("AIC"),		value: "aic"},
-							{ label: qsTr("Fixed"),		value: "fixed"}
-						];
-					} else if (frailtyDistribution.value == "gaussian") {
-						return [
-							{ label: qsTr("REML"),		value: "reml"},
-							{ label: qsTr("AIC"),		value: "aic"},
-							{ label: qsTr("Fixed"),		value: "fixed"}
-						];
-					} else if (frailtyDistribution.value == "t") {
-						return [
-							{ label: qsTr("AIC"),		value: "aic"},
-							{ label: qsTr("Fixed"),		value: "fixed"}
-						];
+				RadioButtonGroup
+				{
+					name:		"modelSummaryRankModelsBy"
+
+					RadioButton
+					{
+						label:		qsTr("AIC")
+						value:		"aic"
+						checked:	true
 					}
-				})()
-			}
 
-			DoubleField
-			{
-				label:			qsTr("Df")
-				visible:		frailtyDistribution.value == "t"
-				name:			"frailtyMethodTDf"
-				defaultValue:	5
-				info: qsTr("Set the degrees of freedom (Df) for the T frailty distribution. Only visible when Distribution is set to T.")
-			}
+					RadioButton
+					{
+						label:		qsTr("BIC")
+						value:		"bic"
+					}
 
-			Group
-			{
-				visible:	frailtyMethod.value == "fixed"
-
-				DropDown
-				{
-					name:		"frailtyMethodFixed"
-					id:			frailtyMethodFixed
-					label:		qsTr("Fix")
-					info: qsTr("Choose the parameter to fix in the frailty model when Method is set to Fixed: Theta or Df.")
-					values:
-					[
-						{ label: qsTr("Theta"),	value: "theta"},
-						{ label: qsTr("Df"),	value: "df"}
-					]
-				}
-
-				DoubleField
-				{
-					label:			qsTr("Theta")
-					visible:		frailtyMethodFixed.value == "theta"
-					name:			"frailtyMethodFixedTheta"
-					defaultValue:	0
-					info: qsTr("Specify the value of Theta to fix in the frailty model. Only visible when Fix is set to Theta.")
-				}
-
-				DoubleField
-				{
-					label:			qsTr("Df")
-					visible:		frailtyMethodFixed.value == "df"
-					name:			"frailtyMethodFixedDf"
-					defaultValue:	0
-					info: qsTr("Specify the degrees of freedom (Df) to fix in the frailty model. Only visible when Fix is set to Df.")
+					RadioButton
+					{
+						label:		qsTr("Log lik.")
+						value:		"logLik"
+					}
 				}
 			}
 		}
 	}
-
 
 	Section
 	{
@@ -330,19 +259,41 @@ Form
 
 		Group
 		{
-			title:		qsTr("Selected parametric families")
+			title:		qsTr("Selected parametric distributions")
 			enabled:	distribution.value == "all" || distribution.value == "bestAIC" || distribution.value == "bestBIC"
 
-			CheckBox { name: "SelectedParametricFamilyGeneralizedGamma";			label: qsTr("Generalized gamma");				checked: true}
-			CheckBox { name: "SelectedParametricFamilyGeneralizedF";				label: qsTr("Generalized F");					checked: true }
-			CheckBox { name: "SelectedParametricFamilyWeibull";						label: qsTr("Weibull");							checked: true }
-			CheckBox { name: "SelectedParametricFamilyGamma";						label: qsTr("Gamma");							checked: true }
-			CheckBox { name: "SelectedParametricFamilyExponential";					label: qsTr("Exponential");						checked: true }
-			CheckBox { name: "SelectedParametricFamilyLogLogistic";					label: qsTr("Log-logistic");					checked: true }
-			CheckBox { name: "SelectedParametricFamilyLogNormal";					label: qsTr("Log-normal");						checked: true }
-			CheckBox { name: "SelectedParametricFamilyGompertz";					label: qsTr("Gompertz");						checked: true }
-			CheckBox { name: "SelectedParametricFamilyGeneralizedGammaOriginal"; 	label: qsTr("Generalized gamma (original)");	checked: false }
-			CheckBox { name: "SelectedParametricFamilyGeneralizedFOriginal"; 		label: qsTr("Generalized F (original)");		checked: false }
+
+			CheckBox { name: "selectedParametricDistributionExponential";					label: qsTr("Exponential");						checked: true }
+			CheckBox { name: "selectedParametricDistributionGamma";						label: qsTr("Gamma");							checked: true }
+			CheckBox { name: "selectedParametricDistributionGeneralizedF";				label: qsTr("Generalized F");					checked: true }
+			CheckBox { name: "selectedParametricDistributionGeneralizedGamma";			label: qsTr("Generalized gamma");				checked: true }
+			CheckBox { name: "selectedParametricDistributionGompertz";					label: qsTr("Gompertz");						checked: true }
+			CheckBox { name: "selectedParametricDistributionLogLogistic";					label: qsTr("Log-logistic");					checked: true }
+			CheckBox { name: "selectedParametricDistributionLogNormal";					label: qsTr("Log-normal");						checked: true }
+			CheckBox { name: "selectedParametricDistributionWeibull";						label: qsTr("Weibull");							checked: true }
+			CheckBox { name: "selectedParametricDistributionGeneralizedGammaOriginal"; 	label: qsTr("Generalized gamma (original)");	checked: false }
+			CheckBox { name: "selectedParametricDistributionGeneralizedFOriginal"; 		label: qsTr("Generalized F (original)");		checked: false }
+		}
+
+		Group
+		{
+			CheckBox
+			{
+				name:		"includeFullDatasetInSubgroupAnalysis"
+				text:		qsTr("Include full dataset in subgroup analysis")
+				enabled:	subgroup.count == 1
+				checked:	false
+				info: qsTr("Include the full dataset output in the subgroup analysis. This option is only available when the subgroup analysis is selected.")
+			}
+
+			CheckBox
+			{
+				name:		"compareModelsAcrossDistributions"
+				text:		qsTr("Compare models across distributions")
+				enabled:	(distribution.value == "all" || distribution.value == "bestAIC" || distribution.value == "bestBIC") && modelTerms.count > 1
+				checked:	false
+				info: qsTr("Compare models across distributions. This option is only available when the multiple models and parametric distributions are specified.")
+			}
 		}
 	}
 }

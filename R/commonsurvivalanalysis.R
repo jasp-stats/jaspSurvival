@@ -8,7 +8,9 @@
   ready <- switch(
     options[["censoringType"]],
     "counting" = options[["eventStatus"]] != "" && options[["intervalStart"]] != "" && options[["intervalEnd"]] != "",
-    "right"    = options[["eventStatus"]] != "" && options[["timeToEvent"]] != ""
+    "interval" = options[["eventStatus"]] != "" && options[["intervalStart"]] != "" && options[["intervalEnd"]] != "",
+    "right"    = options[["eventStatus"]] != "" && options[["timeToEvent"]] != "",
+    "left"     = options[["eventStatus"]] != "" && options[["timeToEvent"]] != ""
   )
 
   # check whether Cox regression is waiting for frailty
@@ -18,14 +20,16 @@
 
   return(ready)
 }
-.saCheckDataset       <- function(dataset, options) {
+.saCheckDataset       <- function(dataset, options, type) {
 
   # load the data
   eventVariable <- options[["eventStatus"]]
   timeVariable  <- switch(
     options[["censoringType"]],
     "counting" = c(options[["intervalStart"]], options[["intervalEnd"]]),
-    "right"    = options[["timeToEvent"]]
+    "interval" = c(options[["intervalStart"]], options[["intervalEnd"]]),
+    "right"    = options[["timeToEvent"]],
+    "left"     = options[["timeToEvent"]]
   )
 
   strataVariable     <- Filter(function(s) s != "", options[["strata"]])
@@ -33,9 +37,12 @@
   # only for (semi)parametric
   covariatesVariable <- Filter(function(s) s != "", options[["covariates"]])
   factorsVariable    <- Filter(function(s) s != "", options[["factors"]])
+  # only for parametric
+  subgroupVariable   <- if (options[["subgroup"]] != "") options[["subgroup"]]
 
   # clean from NAs
   dataset <- na.omit(dataset)
+  dataset <- droplevels(dataset)
 
   # recode the event status variable
   dataset[[eventVariable]] <- .saRecodeEventStatus(dataset, options)
@@ -64,7 +71,16 @@
       exitAnalysisIfErrors         = TRUE
     )
 
-  if (!is.null(options[["modelTerms"]]))
+  if (!is.null(subgroupVariable))
+    .hasErrors(
+      dataset                      = dataset,
+      type                         = c("observations", "variance"),
+      all.target                   = subgroupVariable,
+      observations.amount          = "< 2",
+      exitAnalysisIfErrors         = TRUE
+    )
+
+  if (!is.null(options[["modelTerms"]]) && type == "Cox")
     .hasErrors(
       dataset                      = dataset,
       type                         = c("modelInteractions"),
@@ -85,15 +101,7 @@
 }
 .saRecodeEventStatus  <- function(dataset, options) {
 
-  if (options[["censoringType"]] == "right") {
-
-    event <- dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]]
-
-  } else if (options[["censoringType"]] == "counting") {
-
-    event <- dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]]
-
-  }
+  event <- dataset[[options[["eventStatus"]]]] == options[["eventIndicator"]]
 
   return(event)
 }
@@ -109,10 +117,26 @@
       options[["intervalEnd"]],
       options[["eventStatus"]]
       ),
+    "interval" = sprintf("Surv(
+      time  = %1$s,
+      time2 = %2$s,
+      event = %3$s,
+      type  = 'interval2')",
+      options[["intervalStart"]],
+      options[["intervalEnd"]],
+      options[["eventStatus"]]
+      ),
     "right"    = sprintf("Surv(
       time  = %1$s,
       event = %2$s,
       type  = 'right')",
+      options[["timeToEvent"]],
+      options[["eventStatus"]]
+      ),
+    "left"    = sprintf("Surv(
+      time  = %1$s,
+      event = %2$s,
+      type  = 'left')",
       options[["timeToEvent"]],
       options[["eventStatus"]]
       )
@@ -129,6 +153,25 @@
     predictors    <- c(.saGetPredictors(options, null = null), .saGetFrailty(options))
     interceptTerm <- TRUE
   }
+
+  survival <- .saGetSurv(options)
+
+  if (length(predictors) == 0 && !interceptTerm)
+    stop(gettext("We need at least one predictor, or an intercept to make a formula"))
+
+  if (length(predictors) == 0)
+    formula <- paste(survival, "~", "1")
+  else if (interceptTerm)
+    formula <- paste(survival, "~", paste(predictors, collapse = "+"))
+  else
+    formula <- paste(survival, "~", paste(predictors, collapse = "+"), "-1")
+
+  return(as.formula(formula, env = parent.frame(1)))
+}
+.sapGetFormula        <- function(options, modelTerms) {
+
+  predictors    <- .sapGetPredictors(modelTerms)
+  interceptTerm <- options[["includeIntercept"]]
 
   survival <- .saGetSurv(options)
 
@@ -175,6 +218,19 @@
       else
         t <- c(t, paste(unlist(term), collapse = ":"))
     }
+  }
+
+  return(t)
+}
+.sapGetPredictors     <- function(modelTerms) {
+
+  t <- NULL
+  for (i in seq_along(modelTerms[["components"]])) {
+    term <- modelTerms[["components"]][[i]]
+    if (length(term) == 1)
+      t <- c(t, term)
+    else
+      t <- c(t, paste(unlist(term), collapse = ":"))
   }
 
   return(t)
@@ -390,5 +446,35 @@
   surivalPlot$plotObject <- .ggsurvfit2JaspPlot(tempPlot)
 
   return()
+}
+
+.saSafeRbind             <- function(dfs) {
+
+  # this function allows combining data.frames with different columns
+  # the main issue is that some models might be missing coefficients/terms,
+  # or complete fit failure, as such, simple rbind might misaligned the grouped output
+  # importantly, the order of the output data.frame
+  # does not matter as order is determined by the table itself
+
+  dfs <- dfs[!sapply(dfs, function(x) is.null(x) || length(x) == 0 || nrow(x) == 0)]
+  if (length(dfs) == 0)
+    return(NULL)
+
+  # gather all colnames
+  colnamesUnique <- unique(unlist(lapply(dfs, colnames)))
+
+  # add missing columns and reorder
+  for (i in seq_along(dfs)) {
+    colnamesMissing <- setdiff(colnamesUnique, colnames(dfs[[i]]))
+    if (length(colnamesMissing) > 0) {
+      for (col in colnamesMissing) {
+        dfs[[i]][[col]] <- NA
+      }
+    }
+    dfs[[i]] <- dfs[[i]][,colnamesUnique,drop=FALSE]
+  }
+
+  df <- do.call(rbind, dfs)
+  return(df)
 }
 isWholenumber            <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol

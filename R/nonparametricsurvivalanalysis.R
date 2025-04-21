@@ -21,7 +21,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   options[["censoringType"]] <- "right"
 
   if (.saSurvivalReady(options)) {
-    dataset <- .saCheckDataset(dataset, options)
+    dataset <- .saCheckDataset(dataset, options, type = "KM")
     dataset <- .sanpWeightDataset(dataset, options)
   }
 
