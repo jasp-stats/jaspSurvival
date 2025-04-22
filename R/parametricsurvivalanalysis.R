@@ -21,7 +21,9 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     dataset <- .saCheckDataset(dataset, options, type = "parametric")
 
   .sapFit(jaspResults, dataset, options)
-  .sapSummaryTable(jaspResults, options)
+
+  if (options[["modelSummary"]])
+    .sapSummaryTable(jaspResults, options)
 
   return()
 }
@@ -260,7 +262,10 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   fit <- .sapExtractFit(jaspResults, options)
 
   # output dependencies
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "modelSummaryRankModels", "modelSummaryRankModelsBy")
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions",
+                          "modelSummary",
+                          "modelSummaryRankModels", "modelSummaryRankModelsBy",
+                          "modelSummaryAicWeighs", "modelSummaryBicWeighs")
 
   if (length(fit) > 1) {
 
@@ -302,6 +307,10 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   summaryTable$addColumnInfo(name = "df",            title = gettext("df"),           type = "integer")
   summaryTable$addColumnInfo(name = "aic",           title = gettext("AIC"),          type = "number", format="dp:3")
   summaryTable$addColumnInfo(name = "bic",           title = gettext("BIC"),          type = "number", format="dp:3")
+  if (options[["modelSummaryAicWeighs"]] && length(fit) > 1)
+    summaryTable$addColumnInfo(name = "aicWeight",     title = gettext("AIC Weight"),   type = "number", format="dp:3")
+  if (options[["modelSummaryBicWeighs"]] && length(fit) > 1)
+    summaryTable$addColumnInfo(name = "bicWeight",     title = gettext("BIC Weight"),   type = "number", format="dp:3")
   if (options[["modelSummaryRankModels"]] && length(fit) > 1)
     summaryTable$addColumnInfo(name = "rank",        title = gettext("Rank"),         type = "integer")
 
@@ -311,8 +320,16 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   # extract the data
   data <- .saSafeRbind(lapply(fit, .sapRowSummaryTable))
 
-  # add postprocessing
-  if (options[["modelSummaryRankModels"]] && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
+  # add information criteria weights
+  if (options[["modelSummaryAicWeighs"]] && length(fit) > 1 && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
+    data$aicWeight <- .sapInformationCriteria2Weights(data[["aic"]])
+  }
+  if (options[["modelSummaryBicWeighs"]] && length(fit) > 1 && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
+    data$bicWeight <- .sapInformationCriteria2Weights(data[["bic"]])
+  }
+
+  # add model rank
+  if (options[["modelSummaryRankModels"]] && length(fit) > 1 && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
     data <- data[order(data[[options[["modelSummaryRankModelsBy"]]]], decreasing = options[["modelSummaryRankModelsBy"]] == "logLik", na.last = TRUE), ]
     data$rank <- seq_len(nrow(data))
     data$rank[is.na(data$rank)] <- NA
@@ -362,6 +379,22 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   if ((options[["compareModelsAcrossDistributions"]] && .sapMultipleModels(options) && .sapMultiplDistributions(options)) ||
       (!.sapMultipleModels(options) && .sapMultiplDistributions(options)))
     tempTable$addColumnInfo(name = "distribution", title = gettext("Distribution"), type = "string")
+}
+
+.sapInformationCriteria2Weights <- function(ic) {
+
+  isValidIc <- !is.na(ic)
+  validIc   <- ic[isValidIc]
+
+  deltaIc     <- validIc - min(validIc)
+  relativeIc  <- exp(-0.5 * deltaIc)
+  sumIc       <- sum(relativeIc)
+  icWeights   <- relativeIc/sumIc
+
+  out            <- rep(0, length(ic))
+  out[isValidIc] <- icWeights
+
+  return(out)
 }
 
 .sapCollectFitErrors      <- function(fit, options) {

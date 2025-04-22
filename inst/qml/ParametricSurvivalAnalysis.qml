@@ -215,9 +215,12 @@ Form
 	{
 		title: qsTr("Statistics")
 
-		Group
+		CheckBox
 		{
-			title:		qsTr("Model Summary")
+			label:		qsTr("Model summary")
+			name:		"modelSummary"
+			checked:	true
+			info: qsTr("Include a table with information about the model fit.")
 
 			CheckBox 
 			{
@@ -249,6 +252,22 @@ Form
 						value:		"logLik"
 					}
 				}
+			}
+
+			CheckBox
+			{
+				name:		"modelSummaryAicWeighs"
+				label:		qsTr("AIC weights")
+				enabled:	distribution.value == "all" || modelTerms.count > 1
+				info: qsTr("Include AIC weights in the model summary.")
+			}
+
+			CheckBox
+			{
+				name:		"modelSummaryBicWeighs"
+				label:		qsTr("BIC weights")
+				enabled:	distribution.value == "all" || modelTerms.count > 1
+				info: qsTr("Include BIC weights in the model summary.")
 			}
 		}
 	}
