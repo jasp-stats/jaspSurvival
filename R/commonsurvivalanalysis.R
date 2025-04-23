@@ -448,7 +448,7 @@
   return()
 }
 
-.saSafeRbind             <- function(dfs) {
+.saSafeRbind     <- function(dfs) {
 
   # this function allows combining data.frames with different columns
   # the main issue is that some models might be missing coefficients/terms,
@@ -475,6 +475,31 @@
   }
 
   df <- do.call(rbind, dfs)
+  return(df)
+}
+.saSafeSimplify  <- function(df) {
+
+  # transform into factors to keep the order during splitting
+  df[["model"]]        <- factor(df[["model"]],        levels = unique(df[["model"]]))
+  df[["distribution"]] <- factor(df[["distribution"]], levels = unique(df[["distribution"]]))
+  df[["subgroup"]]     <- factor(df[["subgroup"]],     levels = unique(df[["subgroup"]]))
+
+  # simplifying output tables
+  df <- do.call(rbind, lapply(split(df, df[["subgroup"]]), function(x) {
+    x <- do.call(rbind, lapply(split(x, x[["distribution"]]), function(xx) {
+      xx[["model"]][duplicated(xx[["model"]])] <- NA
+      return(xx)
+    }))
+    x[["distribution"]][duplicated(x[["distribution"]])] <- NA
+    return(x)
+  }))
+  df[["subgroup"]][duplicated(df[["subgroup"]])] <- NA
+
+  # transform back to character
+  df[["model"]]        <- as.character(df[["model"]])
+  df[["distribution"]] <- as.character(df[["distribution"]])
+  df[["subgroup"]]     <- as.character(df[["subgroup"]])
+
   return(df)
 }
 isWholenumber            <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol

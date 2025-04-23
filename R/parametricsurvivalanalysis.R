@@ -24,6 +24,8 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   if (options[["modelSummary"]])
     .sapSummaryTable(jaspResults, options)
+  if (options[["coefficients"]])
+    .sapCoefficientsTable(jaspResults, options)
 
   return()
 }
@@ -81,7 +83,8 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   # fit the full dataset
   if (options[["subgroup"]] == "" || options[["includeFullDatasetInSubgroupAnalysis"]]) {
 
-    attr(dataset, "subgroup") <- gettext("Full dataset")
+    attr(dataset, "subgroup")      <- gettext("Full dataset")
+    attr(dataset, "subgroupLabel") <- gettext("Full dataset")
 
     for(i in seq_along(distributions)) {
       out[["fullDataset"]][[distributions[i]]] <- .sapFitDistribution(out[["fullDataset"]][[distributions[i]]], dataset, options, distributions[i])
@@ -102,7 +105,9 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
       subgroupDataset <- dataset[dataset[[options[["subgroup"]]]] == subgroupLevels[i],,drop=FALSE]
       subgroupDataset <- droplevels(subgroupDataset)
-      attr(subgroupDataset, "subgroup") <- gettextf("Subgroup: %1$s", subgroupLevels[i])
+
+      attr(subgroupDataset, "subgroup")      <- as.character(subgroupLevels[i])
+      attr(subgroupDataset, "subgroupLabel") <- gettextf("Subgroup: %1$s", subgroupLevels[i])
 
       for(j in seq_along(distributions)) {
         out[[paste0("subgroup", subgroupLevels[i])]][[distributions[j]]] <- .sapFitDistribution(out[[paste0("subgroup", subgroupLevels[i])]][[distributions[j]]], subgroupDataset, options, distributions[j])
@@ -159,11 +164,6 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     # fit the model
     out[[i]] <- .sapFitModel(dataset, options, distribution, options[["modelTerms"]][[i]])
 
-    # store attributes
-    attr(out[[i]], "subgroup")     <- attr(dataset, "subgroup")
-    attr(out[[i]], "model")        <- options[["modelTerms"]][[i]][["title"]]
-    attr(out[[i]], "modelTerms")   <- options[["modelTerms"]][[i]]
-    attr(out[[i]], "distribution") <- .sapOption2DistributionName(distribution)
   }
 
   # remove models that are not selected
@@ -186,9 +186,17 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]]
   ))
 
+  # store attributes
+  attr(fit, "subgroup")       <- attr(dataset, "subgroup")
+  attr(fit, "subgroupLabel")  <- attr(dataset, "subgroupLabel")
+  attr(fit, "modelTitle")     <- modelTerms[["title"]]
+  attr(fit, "modelId")        <- modelTerms[["name"]]
+  attr(fit, "modelTerms")     <- modelTerms
+  attr(fit, "distribution")   <- .sapOption2DistributionName(distribution)
+
   return(fit)
 }
-.sapExtractFit          <- function(jaspResults, options) {
+.sapExtractFit          <- function(jaspResults, options, type = "all") {
 
   if (!.saSurvivalReady(options))
     return()
@@ -242,34 +250,83 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   } else {
 
-    # single model
+    # join subgroups if they have a single model
     fit <- list(lapply(out, function(x) x[[1]][[1]]))
   }
 
+  # return all models in the restructured format
+  if (type == "all")
+    return(fit)
+
+  ### return only the selected models
+  selectDistributions <- length(.sapGetDistributions(options)) > 1 && options[["distribution"]]   %in% c("bestAic", "bestBic")
+  selectModels        <- .sapMultipleModels(options)               && options[["interpretModel"]] !=   "all"
+
+  # all models are selected
+  if (!selectModels && !selectDistributions)
+    return(fit)
+
+  # no selection is needed when only a single model & distribution is specified (those are already joined across subgroups)
+  if (!.sapMultipleModels(options) && !.sapMultiplDistributions(options))
+    return(fit)
+
+  # we don't need to worry whether we select across models / distributions since the output is already correctly structured
+  # select the best distribution:
+  if (selectDistributions) {
+    for (i in seq_along(fit)) {
+      # reuse the summary data function to obtain fit statistics
+      tempSummary      <- .saSafeRbind(lapply(fit[[i]], .sapRowSummaryTable))
+      bestDistribution <- tempSummary[["distribution"]][which.min(tempSummary[[switch(
+        options[["distribution"]],
+        "bestAic" = "aic",
+        "bestBic" = "bic"
+      )]])]
+      fit[[i]][which(tempSummary[["distribution"]] != bestDistribution, arr.ind = TRUE)] <- NULL
+    }
+  }
+
+  # select the best models:
+  if (selectModels) {
+    for (i in seq_along(fit)) {
+      # reuse the summary data function to obtain fit statistics
+      tempSummary      <- .saSafeRbind(lapply(fit[[i]], .sapRowSummaryTable))
+      if (options[["interpretModel"]] %in% c("bestAic", "bestBic")) {
+        bestModel <- tempSummary[["model"]][which.min(tempSummary[[switch(
+          options[["interpretModel"]],
+          "bestAic" = "aic",
+          "bestBic" = "bic"
+        )]])]
+        fit[[i]][which(tempSummary[["model"]] != bestModel, arr.ind = TRUE)] <- NULL
+      } else {
+        modelNames <- sapply(fit[[i]], attr, "modelId")
+        fit[[i]][which(modelNames != options[["interpretModel"]], arr.ind = TRUE)] <- NULL
+      }
+    }
+  }
 
   return(fit)
 }
 
 
 # summary tables
-.sapSummaryTable        <- function(jaspResults, options) {
+.sapSummaryTable         <- function(jaspResults, options) {
 
   if (!is.null(jaspResults[["summaryTable"]]))
     return()
 
   # the extract function automatically groups models by subgroup / distribution
   # (or joins them within subgroups if distributions / models are to be collapsed)
-  fit <- .sapExtractFit(jaspResults, options)
+  fit <- .sapExtractFit(jaspResults, options, type = "all")
 
   # output dependencies
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions",
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "alwaysDisplayModelInformation",
                           "modelSummary",
                           "modelSummaryRankModels", "modelSummaryRankModelsBy",
                           "modelSummaryAicWeighs", "modelSummaryBicWeighs")
 
   if (length(fit) > 1) {
 
-    summaryTable <- createJaspContainer(title = gettext("Model Summary Table"))
+    summaryTable <- createJaspContainer(title = gettext("Model Summary"))
     summaryTable$dependOn(outputDependencies)
     summaryTable$position <- 1
     jaspResults[["summaryTable"]] <- summaryTable
@@ -287,7 +344,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
     # only one table needed
     summaryTable          <- .sapSummaryTableFun(fit[[1]], options)
-    summaryTable$title    <- gettext("Model Summary Table")
+    summaryTable$title    <- gettext("Model Summary")
     summaryTable$dependOn(outputDependencies)
     summaryTable$position <- 1
     jaspResults[["summaryTable"]] <- summaryTable
@@ -296,13 +353,13 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return()
 }
-.sapSummaryTableFun     <- function(fit, options) {
+.sapSummaryTableFun      <- function(fit, options) {
 
   # create the table
   summaryTable <- createJaspTable()
   .sapAddColumnSubgroup(summaryTable, options)
-  .sapAddColumnModel(summaryTable, options)
   .sapAddColumnDistribution(summaryTable, options)
+  .sapAddColumnModel(summaryTable, options)
   summaryTable$addColumnInfo(name = "logLik",        title = gettext("Log Lik."),     type = "number")
   summaryTable$addColumnInfo(name = "df",            title = gettext("df"),           type = "integer")
   summaryTable$addColumnInfo(name = "aic",           title = gettext("AIC"),          type = "number", format="dp:3")
@@ -345,20 +402,93 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return(summaryTable)
 }
+.sapCoefficientsTable    <- function(jaspResults, options) {
+
+  if (!is.null(jaspResults[["coefficientsTable"]]))
+    return()
+
+  # the extract function automatically groups models by subgroup / distribution
+  # (or joins them within subgroups if distributions / models are to be collapsed)
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+
+  # output dependencies
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
+                          "coefficients")
+
+  if (length(fit) > 1) {
+
+    coefficientsTable <- createJaspContainer(title = gettext("Coefficients Summary"))
+    coefficientsTable$dependOn(outputDependencies)
+    coefficientsTable$position <- 1
+    jaspResults[["coefficientsTable"]] <- coefficientsTable
+
+    for (i in seq_along(fit)) {
+
+      # create a table for each model set
+      coefficientsTable[[paste0("table", i)]] <- .sapCoefficientsTableFun(fit[[i]], options)
+      coefficientsTable[[paste0("table", i)]]$position <- i
+      coefficientsTable[[paste0("table", i)]]$title    <- attr(fit[[i]], "label")
+
+    }
+
+  } else {
+
+    # only one table needed
+    coefficientsTable          <- .sapCoefficientsTableFun(fit[[1]], options)
+    coefficientsTable$title    <- gettext("Coefficients Summary")
+    coefficientsTable$dependOn(outputDependencies)
+    coefficientsTable$position <- 1
+    jaspResults[["coefficientsTable"]] <- coefficientsTable
+
+  }
+
+  return()
+}
+.sapCoefficientsTableFun <- function(fit, options) {
+
+  # create the table
+  estimatesTable <- createJaspTable()
+  .sapAddColumnSubgroup(estimatesTable, options)
+  .sapAddColumnDistribution(estimatesTable, options, modelSummary = FALSE)
+  .sapAddColumnModel(estimatesTable, options, modelSummary = FALSE)
+  estimatesTable$addColumnInfo(name = "coefficient",    title = "",                         type = "string")
+  estimatesTable$addColumnInfo(name = "est",            title = gettext("Estimate"),        type = "number")
+  estimatesTable$addColumnInfo(name = "se",             title = gettext("Standard Error"),  type = "number")
+  overtitleCi <- gettextf("%s%% CI", 100 * 0.95) # TODO: add options[["confidenceIntervalsLevel"]]
+  estimatesTable$addColumnInfo(name = "L95.", title = gettext("Lower"), type = "number", overtitle = overtitleCi)
+  estimatesTable$addColumnInfo(name = "U95.", title = gettext("Upper"), type = "number", overtitle = overtitleCi)
 
 
-.sapRowSummaryTable <- function(fit) {
+  if (!.saSurvivalReady(options))
+    return(estimatesTable)
+
+  # extract the data
+  data <- .saSafeRbind(lapply(fit, .sapRowCoefficientsTable))
+  data <- .saSafeSimplify(data)
+
+  # add footnotes
+  messages <- .sapSelectedModelMessage(fit, options)
+  for (i in seq_along(messages))
+    estimatesTable$addFootnote(messages[[i]])
+
+  estimatesTable$setData(data)
+  estimatesTable$showSpecifiedColumnsOnly <- TRUE
+
+  return(estimatesTable)
+}
+
+.sapRowSummaryTable      <- function(fit) {
 
   if (jaspBase::isTryError(fit))
     return(data.frame(
       subgroup     = attr(fit, "subgroup"),
-      model        = attr(fit, "model"),
+      model        = attr(fit, "modelTitle"),
       distribution = attr(fit, "distribution")
     ))
 
   return(data.frame(
     subgroup     = attr(fit, "subgroup"),
-    model        = attr(fit, "model"),
+    model        = attr(fit, "modelTitle"),
     distribution = attr(fit, "distribution"),
     logLik = as.numeric(logLik(fit)),
     df     = attr(logLik(fit), "df"),
@@ -366,19 +496,61 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     bic    = BIC(fit)
   ))
 }
+.sapRowCoefficientsTable <- function(fit) {
 
-.sapAddColumnSubgroup     <- function(tempTable, options) {
+  if (jaspBase::isTryError(fit))
+    return(data.frame(
+      subgroup     = attr(fit, "subgroup"),
+      model        = attr(fit, "modelTitle"),
+      distribution = attr(fit, "distribution")
+    ))
+
+  return(data.frame(
+    subgroup     = attr(fit, "subgroup"),
+    model        = attr(fit, "modelTitle"),
+    distribution = attr(fit, "distribution"),
+    coefficient  = rownames(fit[["res"]]),
+    fit[["res"]]
+  ))
+}
+
+.sapAddColumnSubgroup     <- function(tempTable, options, modelSummary = TRUE) {
   if (options[["subgroup"]] != "" && !.sapMultiplDistributions(options) && !.sapMultipleModels(options))
     tempTable$addColumnInfo(name = "subgroup", title = gettext("Subgroup"), type = "string")
 }
-.sapAddColumnModel        <- function(tempTable, options) {
-  if (.sapMultipleModels(options))
+.sapAddColumnModel        <- function(tempTable, options, modelSummary = TRUE) {
+
+  if(options[["alwaysDisplayModelInformation"]]) {
     tempTable$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
+    return()
+  }
+
+  if (modelSummary && .sapMultipleModels(options)) {
+    tempTable$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
+    return()
+  }
+
+  if (!modelSummary && .sapMultipleModels(options) && options[["interpretModel"]] == "all") {
+    tempTable$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
+    return()
+  }
 }
-.sapAddColumnDistribution <- function(tempTable, options) {
-  if ((options[["compareModelsAcrossDistributions"]] && .sapMultipleModels(options) && .sapMultiplDistributions(options)) ||
-      (!.sapMultipleModels(options) && .sapMultiplDistributions(options)))
+.sapAddColumnDistribution <- function(tempTable, options, modelSummary = TRUE) {
+
+  if(options[["alwaysDisplayModelInformation"]]) {
     tempTable$addColumnInfo(name = "distribution", title = gettext("Distribution"), type = "string")
+    return()
+  }
+
+  if (modelSummary && .sapMultiplDistributions(options)) {
+    tempTable$addColumnInfo(name = "distribution", title = gettext("Distribution"), type = "string")
+    return()
+  }
+
+  if (!modelSummary && options[["distribution"]] == "all") {
+    tempTable$addColumnInfo(name = "distribution", title = gettext("Distribution"), type = "string")
+    return()
+  }
 }
 
 .sapInformationCriteria2Weights <- function(ic) {
@@ -407,12 +579,65 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
         "%1$s model %2$s%3$s failed with the following message: %4$s.",
         distribution = attr(fit[[i]], "distribution"),
         model        = attr(fit[[i]], "model"),
-        subgroup     = if (options[["subgroup"]] != "") paste0(" (", attr(fit[[i]], "subgroup"), ")") else "",
+        subgroup     = if (options[["subgroup"]] != "") paste0(" (", attr(fit[[i]], "subgroupLabel"), ")") else "",
         error        = fit[[i]]
       ))
   }
 
   return(errors)
+}
+.sapSelectedModelMessage  <- function(fit, options) {
+
+  message <- NULL
+
+  # check whether selection rules were applied
+  multipleModels        <- .sapMultipleModels(options)
+  multipleDistributions <- .sapMultiplDistributions(options)
+
+  selectModels        <- multipleModels        && options[["interpretModel"]] != "all"
+  selectDistributions <- multipleDistributions && options[["distribution"]]   %in% c("bestAic", "bestBic")
+
+  if (!multipleModels) {
+    # only a single model is specified
+
+    if (selectDistributions) {
+      message <- gettextf("Results are based on %1$s distribution which was the best fitting distribution.", attr(fit[[1]], "distribution"))
+    } else {
+      message <- NULL
+    }
+
+  } else {
+    # multiple models are specified
+
+    if (!options[["interpretModel"]] %in% c("all", "bestAic", "bestBic") && !selectDistributions) {
+      # hand chosen model for all distributions is shown
+      message <- gettextf("Results are based on %1$s.", attr(fit[[1]], "modelTitle"))
+    } else if (!options[["interpretModel"]] %in% c("all", "bestAic", "bestBic") && selectDistributions) {
+      # hand chosen model for the best distribution is shown
+      message <- gettextf("Results are based on %1$s with distribution %2$s which is the best fitting distribution across models.", attr(fit[[1]], "modelTitle"), attr(fit[[1]], "distribution"))
+    } else if (!selectModels && !selectDistributions) {
+      # all models for all distributions are shown
+      message <- NULL
+    } else if (!selectModels && selectDistributions) {
+      # all models for the best distribution are shown
+      message <- gettextf("Results are based on %1$s distribution which was the best fitting distribution.", attr(fit[[1]], "distribution"))
+    } else if (selectModels && !selectDistributions && options[["distribution"]] != "all") {
+      # best fitting model for the selected distribution is shown
+      message <- gettext("Results are based on best fitting models.")
+    }  else if (selectModels && !selectDistributions && options[["distribution"]] == "all") {
+      # best fitting model for all distributions is shown
+      message <- gettext("Results are based on best fitting models within each distribution.")
+    } else if (selectModels && selectDistributions && !options[["compareModelsAcrossDistributions"]]) {
+      # best fitting model for the given distribution is shown
+      message <- gettext("Results are based on best fitting models within each distribution.")
+    } else if (selectModels && selectDistributions && options[["compareModelsAcrossDistributions"]]) {
+      # best fitting model for the best distribution is shown
+      message <- gettextf("Results are based on %1$s with %2$s distribution which was the best fitting model across all models and distributions.", attr(fit[[1]], "modelTitle"), attr(fit[[1]], "distribution"))
+    }
+
+  }
+
+  return(message)
 }
 
 # add the model names
@@ -420,7 +645,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   return(length(options[["modelTerms"]]) > 1)
 }
 .sapMultiplDistributions    <- function(options) {
-  return(options[["distribution"]] == "all" && length(.sapGetDistributions(options)) > 1)
+  return(options[["distribution"]] %in% c("all", "bestAic", "bestBic") && length(.sapGetDistributions(options)) > 1)
 }
 .sapMultipleOutputs         <- function(options) {
 
@@ -475,7 +700,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 }
 .sapGetDistributions        <- function(options) {
 
-  if (options[["distribution"]] %in% c("all", "bestAIC", "bestBIC")) {
+  if (options[["distribution"]] %in% c("all", "bestAic", "bestBic")) {
 
     distributions <- list()
     if (options[["selectedParametricDistributionExponential"]])
@@ -511,6 +736,3 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return(distributions)
 }
-
-
-

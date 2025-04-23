@@ -209,6 +209,29 @@ Form
 			label:		qsTr("Include intercept")
 			checked:	true
 		}
+
+		DropDown
+		{
+			name:				"interpretModel"
+			label:				qsTr("Interpret model")
+			enabled:			modelTerms.count > 1
+			onCountChanged:		if (!(value === "bestAic" || value === "bestBic" || value === "all")) currentIndex = count - 1
+			info: qsTr("Select the model to interpret. Defaults to the last specified model. Alternatives are 'All' which produces results for all of the specified models or 'Best' which produces results for the best fitting model based on either AIC or BIC.")
+			startValue:			"model1"
+			source: 			
+			[	
+				{
+					values: [
+						{label: qsTr("All"),		value: "all"},
+						{label: qsTr("Best AIC"),	value: "bestAic"},
+						{label: qsTr("Best BIC"),	value: "bestBic"}
+					]
+				},
+				{
+					values: modelTerms.factorsTitles
+				}
+			]
+		}
 	}
 
 	Section
@@ -270,6 +293,26 @@ Form
 				info: qsTr("Include BIC weights in the model summary.")
 			}
 		}
+
+		Group
+		{
+			CheckBox
+			{
+				label:		qsTr("Coefficients")
+				name:		"coefficients"
+				checked:	false
+				info: qsTr("Include a table with coefficients estimates.")
+			}
+
+			CheckBox
+			{
+				label:		qsTr("Coefficients covariance matrix")
+				name:		"coefficientsCovarianceMatrix"
+				checked:	false
+				info: qsTr("Include a table with the covariance matrix of the coefficients estimates.")
+			}
+		}
+
 	}
 
 	Section
@@ -278,24 +321,26 @@ Form
 
 		Group
 		{
-			title:		qsTr("Selected parametric distributions")
+			title:		qsTr("Selected Parametric Distributions")
 			enabled:	distribution.value == "all" || distribution.value == "bestAIC" || distribution.value == "bestBIC"
 
 
-			CheckBox { name: "selectedParametricDistributionExponential";					label: qsTr("Exponential");						checked: true }
+			CheckBox { name: "selectedParametricDistributionExponential";				label: qsTr("Exponential");						checked: true }
 			CheckBox { name: "selectedParametricDistributionGamma";						label: qsTr("Gamma");							checked: true }
 			CheckBox { name: "selectedParametricDistributionGeneralizedF";				label: qsTr("Generalized F");					checked: true }
 			CheckBox { name: "selectedParametricDistributionGeneralizedGamma";			label: qsTr("Generalized gamma");				checked: true }
 			CheckBox { name: "selectedParametricDistributionGompertz";					label: qsTr("Gompertz");						checked: true }
-			CheckBox { name: "selectedParametricDistributionLogLogistic";					label: qsTr("Log-logistic");					checked: true }
+			CheckBox { name: "selectedParametricDistributionLogLogistic";				label: qsTr("Log-logistic");					checked: true }
 			CheckBox { name: "selectedParametricDistributionLogNormal";					label: qsTr("Log-normal");						checked: true }
-			CheckBox { name: "selectedParametricDistributionWeibull";						label: qsTr("Weibull");							checked: true }
+			CheckBox { name: "selectedParametricDistributionWeibull";					label: qsTr("Weibull");							checked: true }
 			CheckBox { name: "selectedParametricDistributionGeneralizedGammaOriginal"; 	label: qsTr("Generalized gamma (original)");	checked: false }
 			CheckBox { name: "selectedParametricDistributionGeneralizedFOriginal"; 		label: qsTr("Generalized F (original)");		checked: false }
 		}
 
 		Group
 		{
+			title:		qsTr("Output Formatting")
+
 			CheckBox
 			{
 				name:		"includeFullDatasetInSubgroupAnalysis"
@@ -309,9 +354,17 @@ Form
 			{
 				name:		"compareModelsAcrossDistributions"
 				text:		qsTr("Compare models across distributions")
-				enabled:	(distribution.value == "all" || distribution.value == "bestAIC" || distribution.value == "bestBIC") && modelTerms.count > 1
-				checked:	false
+				enabled:	(distribution.value == "all" || distribution.value == "bestAic" || distribution.value == "bestBic") && modelTerms.count > 1
+				checked:	true
 				info: qsTr("Compare models across distributions. This option is only available when the multiple models and parametric distributions are specified.")
+			}
+
+			CheckBox
+			{
+				name:		"alwaysDisplayModelInformation"
+				text:		qsTr("Always display model information")
+				checked:	false
+				info: qsTr("Always display model information (distribution and model name) in output tables.")
 			}
 		}
 	}
