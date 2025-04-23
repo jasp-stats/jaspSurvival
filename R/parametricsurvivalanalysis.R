@@ -20,12 +20,19 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   if (.saSurvivalReady(options))
     dataset <- .saCheckDataset(dataset, options, type = "parametric")
 
+  # Fit the models
   .sapFit(jaspResults, dataset, options)
 
+  # Statistics
   if (options[["modelSummary"]])
     .sapSummaryTable(jaspResults, options)
   if (options[["coefficients"]])
     .sapCoefficientsTable(jaspResults, options)
+  if (options[["coefficientsCovarianceMatrix"]])
+    .sapCoefficientsCovarianceMatrixTable(jaspResults, options)
+
+
+
 
   return()
 }
@@ -357,9 +364,9 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   # create the table
   summaryTable <- createJaspTable()
-  .sapAddColumnSubgroup(summaryTable, options)
-  .sapAddColumnDistribution(summaryTable, options)
-  .sapAddColumnModel(summaryTable, options)
+  .sapAddColumnSubgroup(     summaryTable, options, output = "modelSummary")
+  .sapAddColumnDistribution( summaryTable, options, output = "modelSummary")
+  .sapAddColumnModel(        summaryTable, options, output = "modelSummary")
   summaryTable$addColumnInfo(name = "logLik",        title = gettext("Log Lik."),     type = "number")
   summaryTable$addColumnInfo(name = "df",            title = gettext("df"),           type = "integer")
   summaryTable$addColumnInfo(name = "aic",           title = gettext("AIC"),          type = "number", format="dp:3")
@@ -448,9 +455,9 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   # create the table
   estimatesTable <- createJaspTable()
-  .sapAddColumnSubgroup(estimatesTable, options)
-  .sapAddColumnDistribution(estimatesTable, options, modelSummary = FALSE)
-  .sapAddColumnModel(estimatesTable, options, modelSummary = FALSE)
+  .sapAddColumnSubgroup(     estimatesTable, options, output = "coefficients")
+  .sapAddColumnDistribution( estimatesTable, options, output = "coefficients")
+  .sapAddColumnModel(        estimatesTable, options, output = "coefficients")
   estimatesTable$addColumnInfo(name = "coefficient",    title = "",                         type = "string")
   estimatesTable$addColumnInfo(name = "est",            title = gettext("Estimate"),        type = "number")
   estimatesTable$addColumnInfo(name = "se",             title = gettext("Standard Error"),  type = "number")
@@ -476,20 +483,98 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return(estimatesTable)
 }
+.sapCoefficientsCovarianceMatrixTable    <- function(jaspResults, options) {
 
-.sapRowSummaryTable      <- function(fit) {
+  if (!is.null(jaspResults[["coefficientsTable"]]))
+    return()
 
-  if (jaspBase::isTryError(fit))
-    return(data.frame(
-      subgroup     = attr(fit, "subgroup"),
-      model        = attr(fit, "modelTitle"),
-      distribution = attr(fit, "distribution")
-    ))
+  # the extract function automatically groups models by subgroup / distribution
+  # (or joins them within subgroups if distributions / models are to be collapsed)
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+  # flatten the list - each model has to get its own matrix because they might differ in parameters etc...
+  fit <- list(lapply(out, function(x) x[[1]][[1]]))
 
+  # output dependencies
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
+                          "coefficientsCovarianceMatrix")
+
+  if (length(fit) > 1) {
+
+    covarianceMatrixTableTable <- createJaspContainer(title = gettext("Coefficients Covariance Matrix"))
+    covarianceMatrixTableTable$dependOn(outputDependencies)
+    covarianceMatrixTableTable$position <- 1
+    jaspResults[["covarianceMatrixTableTable"]] <- covarianceMatrixTableTable
+
+    for (i in seq_along(fit)) {
+
+      # create a table for each model set
+      covarianceMatrixTableTable[[paste0("table", i)]] <- .sapCoefficientsCovarianceMatrixTableFun(fit[[i]], options)
+      covarianceMatrixTableTable[[paste0("table", i)]]$position <- i
+      covarianceMatrixTableTable[[paste0("table", i)]]$title    <- attr(fit[[i]], "label")
+
+    }
+
+  } else {
+
+    # only one table needed
+    covarianceMatrixTableTable          <- .sapCoefficientsCovarianceMatrixTableFun(fit[[1]], options)
+    covarianceMatrixTableTable$title    <- gettext("Coefficients Covariance Matrix")
+    covarianceMatrixTableTable$dependOn(outputDependencies)
+    covarianceMatrixTableTable$position <- 1
+    jaspResults[["covarianceMatrixTableTable"]] <- covarianceMatrixTableTable
+
+  }
+
+  return()
+}
+.sapCoefficientsCovarianceMatrixTableFun <- function(fit, options) {
+
+  # create the table
+  covarianceMatrixTableTable <- createJaspTable()
+  .sapAddColumnSubgroup(     covarianceMatrixTableTable, options, output = "coefficientsCovarianceMatrix")
+  .sapAddColumnDistribution( covarianceMatrixTableTable, options, output = "coefficientsCovarianceMatrix")
+  .sapAddColumnModel(        covarianceMatrixTableTable, options, output = "coefficientsCovarianceMatrix")
+  covarianceMatrixTableTable$addColumnInfo(name = "coefficient",    title = "",                         type = "string")
+
+  if (!.saSurvivalReady(options))
+    return(covarianceMatrixTableTable)
+
+  # extract the data
+  data <- .sapRowcovarianceMatrixTableTable(fit[[1]])
+
+  if (jaspBase::isTryError(fit[[1]]))
+    return(covarianceMatrixTableTable)
+
+  # add columns for each parameter
+  for (i in 1:nrow(data)) {
+    covarianceMatrixTableTable$addColumnInfo(name = rownames(data)[i], title = rownames(data)[i], type = "number")
+  }
+
+  # add footnotes
+  messages <- .sapSelectedModelMessage(fit, options)
+  for (i in seq_along(messages))
+    estimatesTable$addFootnote(messages[[i]])
+
+  covarianceMatrixTableTable$setData(data)
+  covarianceMatrixTableTable$showSpecifiedColumnsOnly <- TRUE
+
+  return(covarianceMatrixTableTable)
+}
+
+.sapRowModelInformation  <- function(fit) {
   return(data.frame(
     subgroup     = attr(fit, "subgroup"),
     model        = attr(fit, "modelTitle"),
-    distribution = attr(fit, "distribution"),
+    distribution = attr(fit, "distribution")
+  ))
+}
+.sapRowSummaryTable      <- function(fit) {
+
+  if (jaspBase::isTryError(fit))
+    return(.sapRowModelInformation(fit))
+
+  return(data.frame(
+    .sapRowModelInformation(fit),
     logLik = as.numeric(logLik(fit)),
     df     = attr(logLik(fit), "df"),
     aic    = AIC(fit),
@@ -499,55 +584,79 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 .sapRowCoefficientsTable <- function(fit) {
 
   if (jaspBase::isTryError(fit))
-    return(data.frame(
-      subgroup     = attr(fit, "subgroup"),
-      model        = attr(fit, "modelTitle"),
-      distribution = attr(fit, "distribution")
-    ))
+    return(.sapRowModelInformation(fit))
 
   return(data.frame(
-    subgroup     = attr(fit, "subgroup"),
-    model        = attr(fit, "modelTitle"),
-    distribution = attr(fit, "distribution"),
+    .sapRowModelInformation(fit),
     coefficient  = rownames(fit[["res"]]),
     fit[["res"]]
   ))
 }
+.sapRowcovarianceMatrixTableTable <- function(fit) {
 
-.sapAddColumnSubgroup     <- function(tempTable, options, modelSummary = TRUE) {
-  if (options[["subgroup"]] != "" && !.sapMultiplDistributions(options) && !.sapMultipleModels(options))
+  if (jaspBase::isTryError(fit))
+    return(.sapRowModelInformation(fit))
+
+  return(data.frame(
+    .sapRowModelInformation(fit),
+    coefficient  = rownames(fit[["cov"]]),
+    fit[["cov"]]
+  ))
+}
+
+.sapAddColumnSubgroup     <- function(tempTable, options, output) {
+
+  if (output %in% c("modelSummary", "coefficients")) {
+    if (options[["subgroup"]] != "" && !.sapMultiplDistributions(options) && !.sapMultipleModels(options))
+      tempTable$addColumnInfo(name = "subgroup", title = gettext("Subgroup"), type = "string")
+    return()
+  }
+
+  if (output == "coefficientsCovarianceMatrix" && options[["subgroup"]] != "" && options[["alwaysDisplayModelInformation"]]) {
     tempTable$addColumnInfo(name = "subgroup", title = gettext("Subgroup"), type = "string")
+    return()
+  }
 }
-.sapAddColumnModel        <- function(tempTable, options, modelSummary = TRUE) {
+.sapAddColumnModel        <- function(tempTable, options, output) {
 
   if(options[["alwaysDisplayModelInformation"]]) {
     tempTable$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
     return()
   }
 
-  if (modelSummary && .sapMultipleModels(options)) {
+  if (output == "modelSummary" && .sapMultipleModels(options)) {
     tempTable$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
     return()
   }
 
-  if (!modelSummary && .sapMultipleModels(options) && options[["interpretModel"]] == "all") {
+  if (output == "coefficients" && .sapMultipleModels(options) && options[["interpretModel"]] == "all") {
+    tempTable$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
+    return()
+  }
+
+  if (output == "coefficientsCovarianceMatrix" && options[["alwaysDisplayModelInformation"]]) {
     tempTable$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
     return()
   }
 }
-.sapAddColumnDistribution <- function(tempTable, options, modelSummary = TRUE) {
+.sapAddColumnDistribution <- function(tempTable, options, output) {
 
   if(options[["alwaysDisplayModelInformation"]]) {
     tempTable$addColumnInfo(name = "distribution", title = gettext("Distribution"), type = "string")
     return()
   }
 
-  if (modelSummary && .sapMultiplDistributions(options)) {
+  if (output == "modelSummary" && .sapMultiplDistributions(options)) {
     tempTable$addColumnInfo(name = "distribution", title = gettext("Distribution"), type = "string")
     return()
   }
 
-  if (!modelSummary && options[["distribution"]] == "all") {
+  if (output == "coefficients" && options[["distribution"]] == "all") {
+    tempTable$addColumnInfo(name = "distribution", title = gettext("Distribution"), type = "string")
+    return()
+  }
+
+  if (output == "coefficientsCovarianceMatrix" && options[["alwaysDisplayModelInformation"]]) {
     tempTable$addColumnInfo(name = "distribution", title = gettext("Distribution"), type = "string")
     return()
   }
