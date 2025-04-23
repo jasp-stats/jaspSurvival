@@ -48,7 +48,10 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   "includeFullDatasetInSubgroupAnalysis"
 )
 
-# model fitting functions
+# model fitting and extraction functions
+# these are pretty much the workhorse of the analysis:
+# they make sure that you obtain exactly the models you want
+# (all the following output just uses the models extracted in the correct format)
 .sapFit                 <- function(jaspResults, dataset, options) {
 
   if (!.saSurvivalReady(options))
@@ -313,7 +316,39 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return(fit)
 }
+.sapFlattenFit          <- function(fit, options) {
 
+  out <- list()
+
+  # check the output type
+  multipleModels        <- .sapMultipleModels(options)
+  multipleDistributions <- .sapMultiplDistributions(options)
+
+  for(i in seq_along(fit)) {
+    for(j in seq_along(fit[[i]])) {
+      out[[length(out) + 1]] <- fit[[i]][[j]]
+
+      if (options[["subgroup"]] != "") {
+        prefix <- paste0(attr(fit[[i]][[j]], "subgroupLabel"), " | ")
+      } else {
+        prefix <- ""
+      }
+
+      if (multipleModels && multipleDistributions) {
+        attr(out[[length(out)]], "label") <- paste0(prefix, attr(fit[[i]][[j]], "distribution"), " distribution | ", attr(fit[[i]][[j]], "modelTitle"))
+      } else if (multipleModels) {
+        attr(out[[length(out)]], "label") <- paste0(prefix, attr(fit[[i]][[j]], "modelTitle"))
+      } else if (multipleDistributions) {
+        attr(out[[length(out)]], "label") <- paste0(prefix, attr(fit[[i]][[j]], "distribution"), " distribution")
+      } else {
+        attr(out[[length(out)]], "label") <- prefix
+      }
+
+    }
+  }
+
+  return(out)
+}
 
 # summary tables
 .sapSummaryTable         <- function(jaspResults, options) {
@@ -485,14 +520,16 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 }
 .sapCoefficientsCovarianceMatrixTable    <- function(jaspResults, options) {
 
-  if (!is.null(jaspResults[["coefficientsTable"]]))
+  if (!is.null(jaspResults[["covarianceMatrixTableTable"]]))
     return()
 
   # the extract function automatically groups models by subgroup / distribution
   # (or joins them within subgroups if distributions / models are to be collapsed)
   fit <- .sapExtractFit(jaspResults, options, type = "selected")
   # flatten the list - each model has to get its own matrix because they might differ in parameters etc...
-  fit <- list(lapply(out, function(x) x[[1]][[1]]))
+  fit <- .sapFlattenFit(fit, options)
+
+
 
   # output dependencies
   outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
@@ -534,26 +571,26 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   .sapAddColumnSubgroup(     covarianceMatrixTableTable, options, output = "coefficientsCovarianceMatrix")
   .sapAddColumnDistribution( covarianceMatrixTableTable, options, output = "coefficientsCovarianceMatrix")
   .sapAddColumnModel(        covarianceMatrixTableTable, options, output = "coefficientsCovarianceMatrix")
-  covarianceMatrixTableTable$addColumnInfo(name = "coefficient",    title = "",                         type = "string")
+  covarianceMatrixTableTable$addColumnInfo(name = "coefficient",    title = "", type = "string")
 
   if (!.saSurvivalReady(options))
     return(covarianceMatrixTableTable)
 
   # extract the data
-  data <- .sapRowcovarianceMatrixTableTable(fit[[1]])
+  data <- .sapRowcovarianceMatrixTableTable(fit)
+  data <- .saSafeSimplify(data)
 
-  if (jaspBase::isTryError(fit[[1]]))
+  if (jaspBase::isTryError(fit))
     return(covarianceMatrixTableTable)
 
   # add columns for each parameter
   for (i in 1:nrow(data)) {
-    covarianceMatrixTableTable$addColumnInfo(name = rownames(data)[i], title = rownames(data)[i], type = "number")
+    covarianceMatrixTableTable$addColumnInfo(name = data[["coefficient"]][i], title = data[["coefficient"]][i], type = "number")
   }
 
   # add footnotes
-  messages <- .sapSelectedModelMessage(fit, options)
-  for (i in seq_along(messages))
-    estimatesTable$addFootnote(messages[[i]])
+  if (!is.null(attr(fit, "label")))
+    covarianceMatrixTableTable$addFootnote(attr(fit, "label"))
 
   covarianceMatrixTableTable$setData(data)
   covarianceMatrixTableTable$showSpecifiedColumnsOnly <- TRUE
@@ -597,10 +634,15 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   if (jaspBase::isTryError(fit))
     return(.sapRowModelInformation(fit))
 
+  # one has recreate the matrix and use the names from the coefficients from the res table because
+  # the the covariance matrix drops names if there is only a single parameter
+  covMat <- data.frame(fit[["cov"]])
+  colnames(covMat) <- rownames(fit[["res"]]) -> rownames(covMat)
+
   return(data.frame(
     .sapRowModelInformation(fit),
-    coefficient  = rownames(fit[["cov"]]),
-    fit[["cov"]]
+    coefficient  = rownames(fit[["res"]]),
+    covMat
   ))
 }
 
