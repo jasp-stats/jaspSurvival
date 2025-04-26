@@ -423,8 +423,8 @@ Form
 				label:		qsTr("Merge plots across distributions")
 				name:		"survivalTimeMergePlotsAcrossDistributions"
 				checked:	false
-				enabled:	distribution.value == "all" && (modelTerms.count > 1 && interpretModel.value != "bestAic" && interpretModel.value != "bestBic") 
-				info: qsTr("Merge the plots for survival time across distributions into a single plot. Only available when no model selection is being performed.")
+				enabled:	distribution.value == "all" && (modelTerms.count  == 1 || (modelTerms.count > 1 && interpretModel.value != "bestAic" && interpretModel.value != "bestBic"))
+				info: qsTr("Merge the plots for survival probability across distributions into a single plot. Only available when no model selection is being performed.")
 			}	
 
 		}
@@ -438,14 +438,14 @@ Form
 				CheckBox
 				{
 					label:		qsTr("Table")
-					name:		"survivalProbabilitiesTable"
+					name:		"survivalProbabilityTable"
 					info: qsTr("Include a table with the predicted survival probabilities.")
 				}
 
 				CheckBox
 				{
 					label:		qsTr("Plot")
-					name:		"survivalProbabilitiesPlot"
+					name:		"survivalProbabilityPlot"
 					info: qsTr("Include a plot with the predicted survival probabilities.")
 				}
 			}
@@ -506,14 +506,6 @@ Form
 					info: qsTr("Include a plot with the restricted mean survival time estimates.")
 				}
 			}
-
-			CheckBox
-			{
-				label:		qsTr("Merge tables across measures")
-				name:		"lifeTimeMergeTablesAcrossMeasures"
-				checked:	false
-				info: qsTr("Merge the tables for survival time, survival probabilities, hazard, cumulative hazard, and restricted mean survival time into a single table.")
-			}	
 
 			DropDown
 			{
@@ -589,6 +581,23 @@ Form
 				defaultValue:	"0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9"
 				info: qsTr("Specify custom steps of the life time.")
 			}
+
+			CheckBox
+			{
+				label:		qsTr("Merge tables across measures")
+				name:		"lifeTimeMergeTablesAcrossMeasures"
+				checked:	false
+				info: qsTr("Merge the tables for survival time, survival probabilities, hazard, cumulative hazard, and restricted mean survival time into a single table.")
+			}	
+
+			CheckBox
+			{
+				label:		qsTr("Merge plots across distributions")
+				name:		"lifeTimeMergePlotsAcrossDistributions"
+				checked:	false
+				enabled:	distribution.value == "all" && (modelTerms.count  == 1 || (modelTerms.count > 1 && interpretModel.value != "bestAic" && interpretModel.value != "bestBic")) 
+				info: qsTr("Merge the plots for survival time, survival probabilities, hazard, cumulative hazard, and restricted mean survival across distributions into a single plot. Only available when no model selection is being performed.")
+			}	
 
 		}
 
