@@ -37,6 +37,16 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   # Predictions
   if (options[["survivalTimeTable"]])
     .sapSurvivalTimeTable(jaspResults, options)
+  if (!options[["predictionsMergeTables"]] && options[["survivalProbabilitiesTable"]])
+    .sapSurvivalProbabilityTable(jaspResults, options)
+  if (!options[["predictionsMergeTables"]] && options[["hazardTable"]])
+    .sapHazardTable(jaspResults, options)
+  if (!options[["predictionsMergeTables"]] && options[["cumulativeHazardTable"]])
+    .sapCumHazardTable(jaspResults, options)
+  if (!options[["predictionsMergeTables"]] && options[["restrictedMeanSurvivalTimeTable"]])
+    .sapRmstTable(jaspResults, options)
+  if (options[["predictionsMergeTables"]])
+    .sapLifeTimeTable(jaspResults, options)
 
   return()
 }
@@ -656,7 +666,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 }
 
 # predictions tables
-.sapSurvivalTimeTable <- function(jaspResults, options) {
+.sapSurvivalTimeTable        <- function(jaspResults, options) {
 
   if (!is.null(jaspResults[["survivalTimeTable"]]))
     return()
@@ -686,21 +696,195 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return()
 }
+.sapSurvivalProbabilityTable <- function(jaspResults, options) {
 
+  if (!is.null(jaspResults[["survivalProbabilityTable"]]))
+    return()
 
-.sapSurvivalTimeTableFun <- function(fit, options) {
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+  fit <- .sapFlattenFit(fit, options)
 
-  # create the table
-  tempTable <- .sapCreatePredictionTable(options, atTitle = "Quantile", estimateTitle = gettext("Survival Time"))
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
+                          "survivalProbabilitiesTable", "predictionsMergeTables", "predictionsConfidenceInterval",
+                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
+                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
+  )
 
-  if (!.saSurvivalReady(options))
-    return(covarianceMatrixTableTable)
+  .sapTableSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapSurvivalProbabilityTableFun,
+    name          = "survivalProbabilityTable",
+    title         = gettext("Predicted Survival Probability"),
+    dependencies  = outputDependencies,
+    position      = 3.11
+  )
 
-  # compute the predictions
-  data   <- summary(fit, type = "quantile", quantiles = .sapOptions2PredictionQuantile(options), ci = TRUE)[[1]]
-  colnames(data) <- c("at", "estimate", "lCi", "uCi")
+  return()
+}
+.sapHazardTable              <- function(jaspResults, options) {
 
-  # add auxiliary information
+  if (!is.null(jaspResults[["hazardTable"]]))
+    return()
+
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+  fit <- .sapFlattenFit(fit, options)
+
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
+                          "hazardTable", "predictionsMergeTables", "predictionsConfidenceInterval",
+                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
+                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
+  )
+
+  .sapTableSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapHazardTableFun,
+    name          = "hazardTable",
+    title         = gettext("Predicted Hazard"),
+    dependencies  = outputDependencies,
+    position      = 3.21
+  )
+
+  return()
+}
+.sapCumHazardTable           <- function(jaspResults, options) {
+
+  if (!is.null(jaspResults[["cumHazardTable"]]))
+    return()
+
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+  fit <- .sapFlattenFit(fit, options)
+
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
+                          "cumulativeHazardTable", "predictionsMergeTables", "predictionsConfidenceInterval",
+                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
+                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
+  )
+
+  .sapTableSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapCumHazardTableFun,
+    name          = "cumHazardTable",
+    title         = gettext("Predicted Cumulative Hazard"),
+    dependencies  = outputDependencies,
+    position      = 3.31
+  )
+
+  return()
+}
+.sapRmstTable                <- function(jaspResults, options) {
+
+  if (!is.null(jaspResults[["rmstTable"]]))
+    return()
+
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+  fit <- .sapFlattenFit(fit, options)
+
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
+                          "restrictedMeanSurvivalTimeTable", "predictionsMergeTables", "predictionsConfidenceInterval",
+                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
+                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
+  )
+
+  .sapTableSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapRmstTableFun,
+    name          = "rmstTable",
+    title         = gettext("Predicted Restricted Mean Survival Time"),
+    dependencies  = outputDependencies,
+    position      = 3.41
+  )
+
+  return()
+}
+.sapLifeTimeTable            <- function(jaspResults, options) {
+
+  if (!is.null(jaspResults[["lifeTimeTable"]]))
+    return()
+
+  if (!options[["survivalProbabilitiesTable"]] && !options[["hazardTable"]] && !options[["cumulativeHazardTable"]] && !options[["restrictedMeanSurvivalTimeTable"]])
+    return()
+
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+  fit <- .sapFlattenFit(fit, options)
+
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation", "predictionsConfidenceInterval",
+                          "survivalProbabilitiesTable", "hazardTable", "cumulativeHazardTable", "restrictedMeanSurvivalTimeTable", "predictionsMergeTables",
+                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
+                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
+  )
+
+  .sapTableSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapLifeTimeTableFun,
+    name          = "lifeTimeTable",
+    title         = gettext("Life Time Table"),
+    dependencies  = outputDependencies,
+    position      = 3.11
+  )
+
+  return()
+}
+
+.sapCreatePredictionTableWrapper <- function(fit, options, type) {
+
+  if (type == "quantile") {
+    atTitle <- gettext("Quantile")
+    optionsSequence <- .sapOptions2PredictionQuantile(options)
+  } else {
+    atTitle <- gettext("Time")
+    optionsSequence <- .sapOptions2PredictionTime(options, fit)
+  }
+
+  estimateTitle <- switch(
+    type,
+    "quantile"  = gettext("Survival Time"),
+    "survival"  = gettext("Survival Probability"),
+    "hazard"    = gettext("Hazard"),
+    "cumhaz"    = gettext("Cumulative Hazard"),
+    "rmst"      = gettext("Restricted Mean Survival Time")
+  )
+
+  if (!.saSurvivalReady(options)) {
+    tempTable <- .sapCreatePredictionTable(options, atTitle = atTitle, estimateTitles = gettextestimateTitle)
+    return(tempTable)
+  }
+
+  # if there is any continuous predictor, the output is averaged across the predictors matrix
+  if (type == "quantile") {
+    data  <- summary(fit, type = type, quantiles = optionsSequence, ci = TRUE)
+  } else {
+    data  <- summary(fit, type = type, t = optionsSequence, ci = TRUE)
+  }
+  dataLength <- length(data)
+
+  for (i in seq_along(data)) {
+    data[[i]]           <- data[[i]][,-1]
+    colnames(data[[i]]) <- c("estimate", "lCi", "uCi")
+  }
+
+  estimateTitles <- names(data)
+  names(data)    <- paste0("par", seq_along(data))
+  data           <- do.call(cbind, data)
+
+  tempTable <- .sapCreatePredictionTable(
+    options        = options,
+    atTitle        = atTitle,
+    estimateNames  = paste0("par", 1:dataLength, "."),
+    estimateTitles = if (dataLength == 1) estimateTitle else estimateTitles
+  )
+
+  # add remaining information
+  data$at              <- optionsSequence
   data$subgroup        <- NA
   data$distribution    <- NA
   data$model           <- NA
@@ -708,7 +892,6 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   data$distribution[1] <- attr(fit, "distribution")
   data$model[1]        <- attr(fit, "modelTitle")
 
-  # add footnotes
   if (!is.null(attr(fit, "label")))
     tempTable$addFootnote(attr(fit, "label"))
 
@@ -717,7 +900,120 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return(tempTable)
 }
+.sapSurvivalTimeTableFun         <- function(fit, options) {
 
+  tempTable <- .sapCreatePredictionTableWrapper(fit, options, type = "quantile")
+  return(tempTable)
+}
+.sapSurvivalProbabilityTableFun  <- function(fit, options) {
+
+  tempTable <- .sapCreatePredictionTableWrapper(fit, options, type = "survival")
+  return(tempTable)
+}
+.sapHazardTableFun               <- function(fit, options) {
+
+  tempTable <- .sapCreatePredictionTableWrapper(fit, options, type = "hazard")
+  return(tempTable)
+}
+.sapCumHazardTableFun            <- function(fit, options) {
+
+  tempTable <- .sapCreatePredictionTableWrapper(fit, options, type = "cumhaz")
+  return(tempTable)
+}
+.sapRmstTableFun                 <- function(fit, options) {
+
+  tempTable <- .sapCreatePredictionTableWrapper(fit, options, type = "rmst")
+  return(tempTable)
+}
+.sapLifeTimeTableFun             <- function(fit, options) {
+
+  timeSequence <-  .sapOptions2PredictionTime(options, fit)
+
+  tempTable <- createJaspTable()
+  .sapAddColumnSubgroup(     tempTable, options, output = "coefficientsCovarianceMatrix")
+  .sapAddColumnDistribution( tempTable, options, output = "coefficientsCovarianceMatrix")
+  .sapAddColumnModel(        tempTable, options, output = "coefficientsCovarianceMatrix")
+  tempTable$addColumnInfo(name = "at", title = gettext("Time"), type = "number")
+
+  if (!.saSurvivalReady(options))
+    return(tempTable)
+
+  data <- list()
+
+  if (options[["survivalProbabilitiesTable"]]) {
+    # add dots to column names since cbind merges names with collapse = "."
+    .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Survival Probability"), estimateName = "survivalProbability.")
+
+    tempData           <- summary(fit, type = "survival", t = timeSequence, ci = TRUE)
+    if (length(tempData) > 1) {
+      tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
+      return(tempTable)
+    }
+    tempData           <- tempData[[1]][,-1]
+    colnames(tempData) <- c("estimate", "lCi", "uCi")
+    data[["survivalProbability"]] <- tempData
+  }
+
+  if (options[["hazardTable"]]) {
+
+    .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Hazard"), estimateName = "hazard.")
+
+    tempData           <- summary(fit, type = "hazard", t = timeSequence, ci = TRUE)
+    if (length(tempData) > 1) {
+      tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
+      return(tempTable)
+    }
+    tempData           <- tempData[[1]][,-1]
+    colnames(tempData) <- c("estimate", "lCi", "uCi")
+    data[["hazard"]]   <- tempData
+  }
+
+  if (options[["cumulativeHazardTable"]]) {
+
+    .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Cumulative Hazard"), estimateName = "cumulativeHazard.")
+
+    tempData           <- summary(fit, type = "cumhaz", t = timeSequence, ci = TRUE)
+    if (length(tempData) > 1) {
+      tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
+      return(tempTable)
+    }
+    tempData           <- tempData[[1]][,-1]
+    colnames(tempData) <- c("estimate", "lCi", "uCi")
+    data[["cumulativeHazard"]] <- tempData
+  }
+
+  if (options[["restrictedMeanSurvivalTimeTable"]]) {
+
+    .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Restricted Mean Survival Time"), estimateName = "restrictedMeanSurvivalTime.")
+
+    tempData           <- summary(fit, type = "rmst", t = timeSequence, ci = TRUE)
+    if (length(tempData) > 1) {
+      tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
+      return(tempTable)
+    }
+    tempData           <- tempData[[1]][,-1]
+    colnames(tempData) <- c("estimate", "lCi", "uCi")
+    data[["restrictedMeanSurvivalTime"]] <- tempData
+  }
+
+  data <- do.call(cbind, data)
+
+  data$at              <- timeSequence
+  data$subgroup        <- NA
+  data$distribution    <- NA
+  data$model           <- NA
+  data$subgroup[1]     <- attr(fit, "subgroup")
+  data$distribution[1] <- attr(fit, "distribution")
+  data$model[1]        <- attr(fit, "modelTitle")
+
+  if (!is.null(attr(fit, "label")))
+    tempTable$addFootnote(attr(fit, "label"))
+
+  tempTable$setData(data)
+  tempTable$showSpecifiedColumnsOnly <- TRUE
+
+  return(tempTable)
+}
 
 # adding rows to the output
 .sapRowModelInformation               <- function(fit) {
@@ -854,22 +1150,53 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     return()
   }
 }
-.sapCreatePredictionTable <- function(options, atTitle, estimateTitle) {
+.sapCreatePredictionTable     <- function(options, atTitle, estimateNames, estimateTitles) {
 
   tempTable <- createJaspTable()
   .sapAddColumnSubgroup(     tempTable, options, output = "coefficientsCovarianceMatrix")
   .sapAddColumnDistribution( tempTable, options, output = "coefficientsCovarianceMatrix")
   .sapAddColumnModel(        tempTable, options, output = "coefficientsCovarianceMatrix")
+  tempTable$addColumnInfo(name = "at", title = atTitle, type = "number")
 
-  tempTable$addColumnInfo(name = "at",       title = atTitle,       type = "number")
-  tempTable$addColumnInfo(name = "estimate", title = estimateTitle, type = "number")
-  if (options[["predictionsConfidenceInterval"]]) {
-    overtitleCi <- gettextf("%s%% CI", 100 * 0.95) # TODO: add options[["confidenceIntervalsLevel"]]
-    tempTable$addColumnInfo(name = "lCi", title = gettext("Lower"), type = "number", overtitle = overtitleCi)
-    tempTable$addColumnInfo(name = "uCi", title = gettext("Upper"), type = "number", overtitle = overtitleCi)
+  for (i in seq_along(estimateNames)) {
+    .sapAddColumnsPredictionTable(
+      tempTable     = tempTable,
+      options       = options,
+      estimateName  = estimateNames[i],
+      estimateTitle = estimateTitles[i],
+      ciOvertitle   = length(estimateNames) == 1
+    )
   }
 
+
   return(tempTable)
+}
+.sapAddColumnsPredictionTable <- function(tempTable, options, estimateTitle, estimateName = "", ciOvertitle = TRUE) {
+
+  if (isTRUE(ciOvertitle)) {
+
+    tempTable$addColumnInfo(name = paste0(estimateName, "estimate"), title = estimateTitle, type = "number")
+
+    if (options[["predictionsConfidenceInterval"]]) {
+      ciOvertitle <- gettextf("%s%% CI", 100 * 0.95) # TODO: add options[["confidenceIntervalsLevel"]]
+      tempTable$addColumnInfo(name = paste0(estimateName, "lCi"), title = gettext("Lower"), type = "number", overtitle = ciOvertitle)
+      tempTable$addColumnInfo(name = paste0(estimateName, "uCi"), title = gettext("Upper"), type = "number", overtitle = ciOvertitle)
+    }
+  } else {
+
+    tempTable$addColumnInfo(name = paste0(estimateName, "estimate"), title = gettext("Estimate"), type = "number", overtitle = estimateTitle)
+
+    if (options[["predictionsConfidenceInterval"]]) {
+      overtitleCi <- gettextf("%s%% CI", 100 * 0.95) # TODO: add options[["confidenceIntervalsLevel"]]
+      tempTable$addColumnInfo(name = paste0(estimateName, "lCi"), title = gettext("Lower CI"), type = "number", overtitle = estimateTitle)
+      tempTable$addColumnInfo(name = paste0(estimateName, "uCi"), title = gettext("Upper CI"), type = "number", overtitle = estimateTitle)
+    }
+
+  }
+
+
+
+  return()
 }
 
 # additional helper functions
@@ -892,12 +1219,12 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   if (options[["predictionsSurvivalTimeStepsType"]] == "quantiles") {
 
-    setQuantiles <- seq(0, 1, length.out = options[["predictionsSurvivalTimeStepsNumber"]])
+    setQuantiles <- seq(0, 1, length.out = options[["predictionsSurvivalTimeStepsNumber"]] + 1)
     setQuantiles <- setQuantiles[-length(setQuantiles)] # don't predict for 1 as it is infinity
 
   } else if (options[["predictionsSurvivalTimeStepsType"]] == "sequence") {
 
-    setQuantiles <- seq(options[["predictionsSurvivalTimeStepsFrom"]], options[["predictionsSurvivalTimeStepsTo"]], options[["predictionsSurvivalTimeStepsSize"]] + 1)
+    setQuantiles <- seq(options[["predictionsSurvivalTimeStepsFrom"]], options[["predictionsSurvivalTimeStepsTo"]], options[["predictionsSurvivalTimeStepsSize"]])
     setQuantiles <- setQuantiles[-length(setQuantiles)]
 
   } else if (options[["predictionsSurvivalTimeStepsType"]] == "custom") {
@@ -911,6 +1238,53 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   }
 
   return(setQuantiles)
+}
+.sapOptions2PredictionTime      <- function(options, fit) {
+
+  dataset <- attr(fit, "dataset")
+  maxTime <- max(fit$data[["Y"]][,"time"]) # TODO: dispatch with different types of survival
+
+  if (options[["predictionsLifeTimeStepsType"]] == "quantiles") {
+
+    setTime <- seq(0, maxTime, length.out = options[["predictionsLifeTimeStepsNumber"]])
+    if (options[["predictionsLifeTimeRoundSteps"]])
+      setTime <- unique(round(setTime))
+
+  } else if (options[["predictionsLifeTimeStepsType"]] == "sequence") {
+
+    stepSize <- options[["predictionsLifeTimeStepsSize"]]
+    stepTo   <- options[["predictionsLifeTimeStepsTo"]]
+
+    if (stepTo != "") {
+      stepTo <- as.numeric(trimws(stepTo, which = "both"))
+      if (is.na(stepTo) || stepTo <= 0)
+        .quitAnalysis(gettext("Step to for predicted survival time must be a positive number."))
+    } else {
+      stepTo <- maxTime
+    }
+    if (stepSize != "") {
+      stepSize <- as.numeric(trimws(stepSize, which = "both"))
+      if (is.na(stepSize) || stepSize <= 0)
+        .quitAnalysis(gettext("Step size for predicted survival time must be a positive number."))
+    } else {
+      stepSize <- stepTo / 10
+    }
+
+    setTime <- seq(options[["predictionsLifeTimeStepsFrom"]], stepTo, stepSize)
+    if (options[["predictionsLifeTimeRoundSteps"]])
+      setTime <- unique(round(setTime))
+
+  } else if (options[["predictionsLifeTimeStepsType"]] == "custom") {
+
+    setTime <- options[["predictionsLifeTimeCustom"]]
+    setTime <- .sapCleanCustomOptions(setTime, gettext("Custom steps for predicted survival time were specified in an incorrect format. Try '0.25, 0.50, 0.75'."))
+    setTime <- sort(setTime)
+    if (any(setTime < 0))
+      .quitAnalysis(gettext("Custom steps for predicted survival time must be greater than or equal to 0."))
+
+  }
+
+  return(setTime)
 }
 .sapCleanCustomOptions          <- function(x, message) {
 

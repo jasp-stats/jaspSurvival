@@ -495,9 +495,9 @@ Form
 
 			CheckBox
 			{
-				label:		qsTr("Merged tables")
-				name:		"predictionsMergedTables"
-				checked:	true
+				label:		qsTr("Merge tables")
+				name:		"predictionsMergeTables"
+				checked:	false
 				info: qsTr("Merge the tables for survival time, survival probabilities, hazard, cumulative hazard, and restricted mean survival time into a single table.")
 			}	
 
@@ -544,15 +544,17 @@ Form
 				label:			qsTr("Size")
 				defaultValue:	""
 				visible:		predictionsLifeTimeStepsType.value == "sequence"
+				fieldWidth:		40 * jaspTheme.uiScale
 				info: qsTr("Define the size of each quantile of the life time when using Sence steps. The default '' correspoonds to 1/10 of the maximum observed time.")
 			}
 
 			FormulaField
 			{
-				name:			"predictionsLifeTimeTo"
+				name:			"predictionsLifeTimeStepsTo"
 				label:			qsTr("To")
-				visible:		predictionsLifeTimeStepsType.value == "sequence"
 				defaultValue:	""
+				visible:		predictionsLifeTimeStepsType.value == "sequence"
+				fieldWidth:		40 * jaspTheme.uiScale
 				info: qsTr("Set the final step of the life time when using Sequence steps. The default '' correspoonds to the maximum observed time.")
 			}
 
@@ -561,7 +563,7 @@ Form
 				name:		"predictionsLifeTimeRoundSteps"
 				label:		qsTr("Round steps")
 				checked:	true
-				visible:	predictionsLifeTimeStepsType.value == "quantiles" || lifeTableStepsType.value == "sequence"
+				visible:	predictionsLifeTimeStepsType.value == "quantiles" || predictionsLifeTimeStepsType.value == "sequence"
 				info: qsTr("Round the interval boundaries to the nearest integer when using Quantiles or Sequence steps.")
 			}
 
