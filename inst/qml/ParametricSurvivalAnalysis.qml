@@ -313,6 +313,15 @@ Form
 			}
 		}
 
+		CheckBox
+		{
+			label:		qsTr("Sequential model comparison")
+			name:		"sequentialModelComparison"
+			checked:	false
+			enabled:	modelTerms.count > 1
+			info: qsTr("Include a table with the results of the sequential model comparison.")
+		}
+
 	}
 
 	Section

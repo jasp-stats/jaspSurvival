@@ -26,6 +26,8 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   # Statistics
   if (options[["modelSummary"]])
     .sapSummaryTable(jaspResults, options)
+  if (options[["sequentialModelComparison"]])
+    .sapSequentialModelComparisonTable(jaspResults, options)
   if (options[["coefficients"]])
     .sapCoefficientsTable(jaspResults, options)
   if (options[["coefficientsCovarianceMatrix"]])
@@ -218,6 +220,65 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     out <- out[names(out) != "fullDataset"]
   }
 
+  # extract models by subgroups
+  fit <- .sapExtractFitGroups(out, options)
+
+  # return all models in the restructured format
+  if (type == "all")
+    return(fit)
+
+  ### return only the selected models
+  selectDistributions <- length(.sapGetDistributions(options)) > 1 && options[["distribution"]]   %in% c("bestAic", "bestBic")
+  selectModels        <- .sapMultipleModels(options)               && options[["interpretModel"]] !=   "all"
+
+  # all models are selected
+  if (!selectModels && !selectDistributions)
+    return(fit)
+
+  # no selection is needed when only a single model & distribution is specified (those are already joined across subgroups)
+  if (!.sapMultipleModels(options) && !.sapMultiplDistributions(options))
+    return(fit)
+
+  # we don't need to worry whether we select across models / distributions since the output is already correctly structured
+  # select the best distribution:
+  if (selectDistributions) {
+    for (i in seq_along(fit)) {
+      # reuse the summary data function to obtain fit statistics
+      tempSummary      <- .saSafeRbind(lapply(fit[[i]], .sapRowSummaryTable))
+      bestDistribution <- tempSummary[["distribution"]][which.min(tempSummary[[switch(
+        options[["distribution"]],
+        "bestAic" = "aic",
+        "bestBic" = "bic"
+      )]])]
+      fit[[i]][which(tempSummary[["distribution"]] != bestDistribution, arr.ind = TRUE)] <- NULL
+    }
+  }
+
+  # select the best models:
+  if (type != "byDistribution" && selectModels) {
+    for (i in seq_along(fit)) {
+      # reuse the summary data function to obtain fit statistics
+      tempSummary      <- .saSafeRbind(lapply(fit[[i]], .sapRowSummaryTable))
+      if (options[["interpretModel"]] %in% c("bestAic", "bestBic")) {
+        bestModel <- tempSummary[["model"]][which.min(tempSummary[[switch(
+          options[["interpretModel"]],
+          "bestAic" = "aic",
+          "bestBic" = "bic"
+        )]])]
+        fit[[i]][which(tempSummary[["model"]] != bestModel, arr.ind = TRUE)] <- NULL
+      } else {
+        modelNames <- sapply(fit[[i]], attr, "modelId")
+        fit[[i]][which(modelNames != options[["interpretModel"]], arr.ind = TRUE)] <- NULL
+      }
+    }
+  }
+
+  return(fit)
+}
+.sapExtractFitGroups    <- function(out, options) {
+
+  fit <- list()
+
   # automatically extract models by subgroup
   # subgroups are collapsed only if the user specifies one distribution and one model
   # distributions are collapsed if the user specifies one model (or asks for joining distributions/models)
@@ -262,56 +323,6 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
     # join subgroups if they have a single model
     fit <- list(lapply(out, function(x) x[[1]][[1]]))
-  }
-
-  # return all models in the restructured format
-  if (type == "all")
-    return(fit)
-
-  ### return only the selected models
-  selectDistributions <- length(.sapGetDistributions(options)) > 1 && options[["distribution"]]   %in% c("bestAic", "bestBic")
-  selectModels        <- .sapMultipleModels(options)               && options[["interpretModel"]] !=   "all"
-
-  # all models are selected
-  if (!selectModels && !selectDistributions)
-    return(fit)
-
-  # no selection is needed when only a single model & distribution is specified (those are already joined across subgroups)
-  if (!.sapMultipleModels(options) && !.sapMultiplDistributions(options))
-    return(fit)
-
-  # we don't need to worry whether we select across models / distributions since the output is already correctly structured
-  # select the best distribution:
-  if (selectDistributions) {
-    for (i in seq_along(fit)) {
-      # reuse the summary data function to obtain fit statistics
-      tempSummary      <- .saSafeRbind(lapply(fit[[i]], .sapRowSummaryTable))
-      bestDistribution <- tempSummary[["distribution"]][which.min(tempSummary[[switch(
-        options[["distribution"]],
-        "bestAic" = "aic",
-        "bestBic" = "bic"
-      )]])]
-      fit[[i]][which(tempSummary[["distribution"]] != bestDistribution, arr.ind = TRUE)] <- NULL
-    }
-  }
-
-  # select the best models:
-  if (selectModels) {
-    for (i in seq_along(fit)) {
-      # reuse the summary data function to obtain fit statistics
-      tempSummary      <- .saSafeRbind(lapply(fit[[i]], .sapRowSummaryTable))
-      if (options[["interpretModel"]] %in% c("bestAic", "bestBic")) {
-        bestModel <- tempSummary[["model"]][which.min(tempSummary[[switch(
-          options[["interpretModel"]],
-          "bestAic" = "aic",
-          "bestBic" = "bic"
-        )]])]
-        fit[[i]][which(tempSummary[["model"]] != bestModel, arr.ind = TRUE)] <- NULL
-      } else {
-        modelNames <- sapply(fit[[i]], attr, "modelId")
-        fit[[i]][which(modelNames != options[["interpretModel"]], arr.ind = TRUE)] <- NULL
-      }
-    }
   }
 
   return(fit)
@@ -434,7 +445,12 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     data$rank[is.na(data$rank)] <- NA
   }
 
+
   # add footnotes
+  messages <- .sapSelectionFootnote(data, options)
+  for (i in seq_along(messages))
+    summaryTable$addFootnote(messages[[i]])
+
   errors <- .sapCollectFitErrors(fit, options)
   for (i in seq_along(errors))
     summaryTable$addFootnote(errors[[i]], symbol = gettext("Error: "))
@@ -443,6 +459,76 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   summaryTable$showSpecifiedColumnsOnly <- TRUE
 
   return(summaryTable)
+}
+.sapSequentialModelComparisonTable    <- function(jaspResults, options) {
+
+  if (!is.null(jaspResults[["sequentialModelComparisonTable"]]) || length(options[["modelTerms"]]) < 2)
+    return()
+
+  # the extract function automatically groups models by subgroup / distribution
+  fit <- .sapExtractFit(jaspResults, options, type = "byDistribution")
+  # output dependencies
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "alwaysDisplayModelInformation",
+                          "sequentialModelComparison")
+
+  if (length(fit) > 1) {
+
+    sequentialModelComparisonTable <- createJaspContainer(title = gettext("Sequential Model Comparison"))
+    sequentialModelComparisonTable$dependOn(outputDependencies)
+    sequentialModelComparisonTable$position <- 1.1
+    jaspResults[["sequentialModelComparisonTable"]] <- sequentialModelComparisonTable
+
+    for (i in seq_along(fit)) {
+
+      # create a table for each model set
+      sequentialModelComparisonTable[[paste0("table", i)]] <- .sapSequentialModelComparisonTableFun(fit[[i]], options)
+      sequentialModelComparisonTable[[paste0("table", i)]]$position <- i
+      sequentialModelComparisonTable[[paste0("table", i)]]$title    <- attr(fit[[i]], "label")
+
+    }
+
+  } else {
+
+    # only one table needed
+    sequentialModelComparisonTable          <- .sapSequentialModelComparisonTableFun(fit[[1]], options)
+    sequentialModelComparisonTable$title    <- gettext("Sequential Model Comparison")
+    sequentialModelComparisonTable$dependOn(outputDependencies)
+    sequentialModelComparisonTable$position <- 1.1
+    jaspResults[["sequentialModelComparisonTable"]] <- sequentialModelComparisonTable
+
+  }
+
+  return()
+}
+.sapSequentialModelComparisonTableFun <- function(fit, options) {
+
+  # create the table
+  sequentialModelComparisonTable <- createJaspTable()
+  .sapAddColumnSubgroup(     sequentialModelComparisonTable, options, output = "coefficients")
+  .sapAddColumnDistribution( sequentialModelComparisonTable, options, output = "coefficients")
+  sequentialModelComparisonTable$addColumnInfo(name = "model0", title = gettext("H\U2080"),      type = "string")
+  sequentialModelComparisonTable$addColumnInfo(name = "model1", title = gettext("H\U2081"),      type = "string")
+  sequentialModelComparisonTable$addColumnInfo(name = "chi2",   title = gettext("\U03C7\U00B2"), type = "number")
+  sequentialModelComparisonTable$addColumnInfo(name = "df",     title = gettext("df"),           type = "integer")
+  sequentialModelComparisonTable$addColumnInfo(name = "pValue", title = gettext("p"),            type = "pvalue")
+
+
+  if (!.saSurvivalReady(options))
+    return(sequentialModelComparisonTable)
+
+  data <- list()
+  for(i in 1:(length(fit) - 1)) {
+    data[[i]] <- .sapRowSequentialModelComparisonTable(fit[[i]], fit[[i + 1]])
+  }
+  data <- .saSafeRbind(data)
+
+  # add footnotes
+  sequentialModelComparisonTable$addFootnote(gettext("Likelihood ratio test for nested models based on \U03C7\U00B2 distribution."))
+
+  sequentialModelComparisonTable$setData(data)
+  sequentialModelComparisonTable$showSpecifiedColumnsOnly <- TRUE
+
+  return(sequentialModelComparisonTable)
 }
 .sapCoefficientsTable    <- function(jaspResults, options) {
 
@@ -598,14 +684,14 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   return(covarianceMatrixTableTable)
 }
 
-.sapRowModelInformation  <- function(fit) {
+.sapRowModelInformation               <- function(fit) {
   return(data.frame(
     subgroup     = attr(fit, "subgroup"),
     model        = attr(fit, "modelTitle"),
     distribution = attr(fit, "distribution")
   ))
 }
-.sapRowSummaryTable      <- function(fit) {
+.sapRowSummaryTable                   <- function(fit) {
 
   if (jaspBase::isTryError(fit))
     return(.sapRowModelInformation(fit))
@@ -618,7 +704,35 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     bic    = BIC(fit)
   ))
 }
-.sapRowCoefficientsTable <- function(fit) {
+.sapRowSequentialModelComparisonTable <- function(fit0, fit1) {
+
+  if (jaspBase::isTryError(fit0) || jaspBase::isTryError(fit1))
+    return(data.frame(
+      subgroup     = attr(fit0, "subgroup"),
+      model0       = attr(fit0, "modelTitle"),
+      model1       = attr(fit1, "modelTitle"),
+      distribution = attr(fit0, "distribution")
+    ))
+
+  # flexsurv did not implement anova, so we compute the LRT manually
+  ll0 <- fit0$loglik
+  ll1 <- fit1$loglik
+
+  chi2   <- 2 * (ll1 - ll0)
+  df     <- fit1$npars - fit0$npars
+  pValue <- pchisq(chi2, df = df, lower.tail = FALSE)
+
+  return(data.frame(
+    subgroup     = attr(fit0, "subgroup"),
+    model0       = attr(fit0, "modelTitle"),
+    model1       = attr(fit1, "modelTitle"),
+    distribution = attr(fit0, "distribution"),
+    chi2         = chi2,
+    df           = df,
+    pValue       = pValue
+  ))
+}
+.sapRowCoefficientsTable              <- function(fit) {
 
   if (jaspBase::isTryError(fit))
     return(.sapRowModelInformation(fit))
@@ -629,7 +743,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     fit[["res"]]
   ))
 }
-.sapRowcovarianceMatrixTableTable <- function(fit) {
+.sapRowcovarianceMatrixTableTable     <- function(fit) {
 
   if (jaspBase::isTryError(fit))
     return(.sapRowModelInformation(fit))
@@ -736,6 +850,26 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   }
 
   return(errors)
+}
+.sapSelectionFootnote     <- function(data, options) {
+
+  if (options[["distribution"]] %in% c("bestAic", "bestBic") && !options[["interpretModel"]] %in% c("bestAic", "bestBic") && options[["compareModelsAcrossDistributions"]]) {
+
+    selected <- which.min(data[[switch(
+      options[["distribution"]],
+      "bestAic" = "aic",
+      "bestBic" = "bic"
+    )]])
+    message <- gettextf("All following output is based on the best fitting %1$s distribution.", data[["distribution"]][selected])
+
+  } else {
+
+    message <- NULL
+
+  }
+
+  return(message)
+
 }
 .sapSelectedModelMessage  <- function(fit, options) {
 
