@@ -38,7 +38,7 @@
   covariatesVariable <- Filter(function(s) s != "", options[["covariates"]])
   factorsVariable    <- Filter(function(s) s != "", options[["factors"]])
   # only for parametric
-  subgroupVariable   <- if (options[["subgroup"]] != "") options[["subgroup"]]
+  subgroupVariable   <- if (!is.null(options[["subgroup"]]) && options[["subgroup"]] != "") options[["subgroup"]]
 
   # clean from NAs
   dataset <- na.omit(dataset)

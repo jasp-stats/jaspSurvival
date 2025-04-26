@@ -326,6 +326,267 @@ Form
 
 	Section
 	{
+		title: qsTr("Predictions")
+
+		Group
+		{
+			title:		qsTr("Survival Time")
+
+			CheckBox
+			{
+				label:		qsTr("Table")
+				name:		"survivalTimeTable"
+				info: qsTr("Include a table with the predicted survival estimates.")
+			}
+
+			CheckBox
+			{
+				label:		qsTr("Plot")
+				name:		"survivalTimePlot"
+				info: qsTr("Include a plot with the predicted survival estimates.")
+			}
+
+			DropDown
+			{
+				name:		"predictionsSurvivalTimeStepsType"
+				id:			predictionsSurvivalTimeStepsType
+				label:		qsTr("Steps type")
+				info: qsTr("Select the method to define intervals for the life table: Default, Quantiles, or Fixed size.")
+				values:
+				[
+					{ label: qsTr("Quantilies"),	value: "quantiles"},
+					{ label: qsTr("Sequence"),		value: "sequence"},
+					{ label: qsTr("Custom"),		value: "custom"}
+				]
+			}
+
+			IntegerField
+			{
+				name:			"predictionsSurvivalTimeStepsNumber"
+				label:			qsTr("Number")
+				defaultValue:	10
+				min:			2
+				visible:		predictionsSurvivalTimeStepsType.value == "quantiles"
+				info: qsTr("Specify the number of quantiles of the predicted surival when using Quantiles as the steps type.")
+			}
+
+			DoubleField
+			{
+				name:			"predictionsSurvivalTimeStepsFrom"
+				id:				predictionsSurvivalTimeStepsFrom
+				label:			qsTr("From")
+				defaultValue:	0
+				min:			0
+				max:			predictionsSurvivalTimeStepsTo.value
+				visible:		predictionsSurvivalTimeStepsType.value == "sequence"
+				info: qsTr("Set the starting quantile of the predicted survival when using Sequence steps.")
+			}
+
+			DoubleField
+			{
+				name:			"predictionsSurvivalTimeStepsSize"
+				id:				predictionsSurvivalTimeStepsSize
+				label:			qsTr("Size")
+				defaultValue:	0.1
+				max:			1
+				visible:		predictionsSurvivalTimeStepsType.value == "sequence"
+				info: qsTr("Define the size of each quantile of the predicted survival when using Sence steps.")
+			}
+
+			DoubleField
+			{
+				name:			"predictionsSurvivalTimeStepsTo"
+				id:				predictionsSurvivalTimeStepsTo
+				label:			qsTr("To")
+				defaultValue:	1
+				min:			predictionsSurvivalTimeStepsFrom.value + predictionsSurvivalTimeStepsSize.value
+				max:			1
+				visible:		predictionsSurvivalTimeStepsType.value == "sequence"
+				info: qsTr("Set the ending quantile of the predicted survival when using Sequence steps.")
+			}
+
+			FormulaField
+			{
+				name:			"predictionsSurvivalTimeCustom"
+				label:			qsTr("Steps")
+				visible:		predictionsSurvivalTimeStepsType.value == "custom"
+				defaultValue:	"0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9"
+				info: qsTr("Specify custom steps of the predicted survival.")
+			}
+		}
+
+		Group
+		{
+			Group
+			{
+				title:		qsTr("Survival Probabilities")
+
+				CheckBox
+				{
+					label:		qsTr("Table")
+					name:		"survivalProbabilitiesTable"
+					info: qsTr("Include a table with the predicted survival probabilities.")
+				}
+
+				CheckBox
+				{
+					label:		qsTr("Plot")
+					name:		"survivalProbabilitiesPlot"
+					info: qsTr("Include a plot with the predicted survival probabilities.")
+				}
+			}
+
+			Group
+			{
+				title: qsTr("Hazard")
+
+				CheckBox
+				{
+					label: qsTr("Table")
+					name: "hazardTable"
+					info: qsTr("Include a table with the predicted hazard estimates.")
+				}
+
+				CheckBox
+				{
+					label: qsTr("Plot")
+					name: "hazardPlot"
+					info: qsTr("Include a plot with the predicted hazard estimates.")
+				}
+			}
+
+			Group
+			{
+				title: qsTr("Cumulative Hazard")
+
+				CheckBox
+				{
+					label: qsTr("Table")
+					name: "cumulativeHazardTable"
+					info: qsTr("Include a table with the predicted cumulative hazard estimates.")
+				}
+
+				CheckBox
+				{
+					label: qsTr("Plot")
+					name: "cumulativeHazardPlot"
+					info: qsTr("Include a plot with the predicted cumulative hazard estimates.")
+				}
+			}
+
+			Group
+			{
+				title: qsTr("Restricted Mean Survival Time")
+
+				CheckBox
+				{
+					label: qsTr("Table")
+					name: "restrictedMeanSurvivalTimeTable"
+					info: qsTr("Include a table with the restricted mean survival time estimates.")
+				}
+
+				CheckBox
+				{
+					label: qsTr("Plot")
+					name: "restrictedMeanSurvivalTimePlot"
+					info: qsTr("Include a plot with the restricted mean survival time estimates.")
+				}
+			}
+
+			CheckBox
+			{
+				label:		qsTr("Merged tables")
+				name:		"predictionsMergedTables"
+				checked:	true
+				info: qsTr("Merge the tables for survival time, survival probabilities, hazard, cumulative hazard, and restricted mean survival time into a single table.")
+			}	
+
+			DropDown
+			{
+				name:		"predictionsLifeTimeStepsType"
+				id:			predictionsLifeTimeStepsType
+				label:		qsTr("Steps type")
+				info: qsTr("Select the method to define intervals for the life table: Default, Quantiles, or Fixed size.")
+				values:
+				[
+					{ label: qsTr("Quantilies"),	value: "quantiles"},
+					{ label: qsTr("Sequence"),		value: "sequence"},
+					{ label: qsTr("Custom"),		value: "custom"}
+				]
+			}
+
+			IntegerField
+			{
+				name:			"predictionsLifeTimeStepsNumber"
+				label:			qsTr("Number")
+				defaultValue:	10
+				min:			2
+				visible:		predictionsLifeTimeStepsType.value == "quantiles"
+				info: qsTr("Specify the number of quantiles of the life time when using Quantiles as the steps type.")
+			}
+
+			DoubleField
+			{
+				name:			"predictionsLifeTimeStepsFrom"
+				id:				predictionsLifeTimeStepsFrom
+				label:			qsTr("From")
+				defaultValue:	0
+				min:			0
+				max:			predictionsLifeTimeStepsTo.value
+				visible:		predictionsLifeTimeStepsType.value == "sequence"
+				info: qsTr("Set the starting quantile of the life time when using Sequence steps.")
+			}
+
+			FormulaField
+			{
+				name:			"predictionsLifeTimeStepsSize"
+				id:				predictionsLifeTimeStepsSize
+				label:			qsTr("Size")
+				defaultValue:	""
+				visible:		predictionsLifeTimeStepsType.value == "sequence"
+				info: qsTr("Define the size of each quantile of the life time when using Sence steps. The default '' correspoonds to 1/10 of the maximum observed time.")
+			}
+
+			FormulaField
+			{
+				name:			"predictionsLifeTimeTo"
+				label:			qsTr("To")
+				visible:		predictionsLifeTimeStepsType.value == "sequence"
+				defaultValue:	""
+				info: qsTr("Set the final step of the life time when using Sequence steps. The default '' correspoonds to the maximum observed time.")
+			}
+
+			CheckBox
+			{
+				name:		"predictionsLifeTimeRoundSteps"
+				label:		qsTr("Round steps")
+				checked:	true
+				visible:	predictionsLifeTimeStepsType.value == "quantiles" || lifeTableStepsType.value == "sequence"
+				info: qsTr("Round the interval boundaries to the nearest integer when using Quantiles or Sequence steps.")
+			}
+
+			FormulaField
+			{
+				name:			"predictionsLifeTimeCustom"
+				label:			qsTr("Steps")
+				visible:		predictionsLifeTimeStepsType.value == "custom"
+				defaultValue:	"0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9"
+				info: qsTr("Specify custom steps of the life time.")
+			}
+
+		}
+
+		CheckBox
+		{
+			label:		qsTr("Confidence intervals")
+			name:		"predictionsConfidenceInterval"
+			checked:	true
+			info: qsTr("Include confidence intervals for the tables.")
+		}
+	}
+
+	Section
+	{
 		title: qsTr("Advanced")
 
 		Group

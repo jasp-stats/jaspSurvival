@@ -34,7 +34,9 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     .sapCoefficientsCovarianceMatrixTable(jaspResults, options)
 
 
-
+  # Predictions
+  if (options[["survivalTimeTable"]])
+    .sapSurvivalTimeTable(jaspResults, options)
 
   return()
 }
@@ -361,8 +363,41 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   return(out)
 }
 
+# all tables are created in the same way
+.sapTableSectionWrapper <- function(jaspResults, options, fit, tableFunction, name, title, dependencies, position) {
+
+  if (length(fit) > 1) {
+
+    tempContainer <- createJaspContainer(title = title)
+    tempContainer$dependOn(dependencies)
+    tempContainer$position <- position
+    jaspResults[[name]]    <- tempContainer
+
+    for (i in seq_along(fit)) {
+
+      # create a table for each model set
+      tempContainer[[paste0("table", i)]] <- do.call(tableFunction, list(fit = fit[[i]], options = options))
+      tempContainer[[paste0("table", i)]]$position <- i
+      tempContainer[[paste0("table", i)]]$title    <- attr(fit[[i]], "label")
+
+    }
+
+  } else {
+
+    # only one table needed
+    tempTable           <- do.call(tableFunction, list(fit = fit[[1]], options = options))
+    tempTable$title     <- title
+    tempTable$dependOn(dependencies)
+    tempTable$position  <- position
+    jaspResults[[name]] <- tempTable
+
+  }
+
+  return()
+}
+
 # summary tables
-.sapSummaryTable         <- function(jaspResults, options) {
+.sapSummaryTable                      <- function(jaspResults, options) {
 
   if (!is.null(jaspResults[["summaryTable"]]))
     return()
@@ -377,36 +412,100 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
                           "modelSummaryRankModels", "modelSummaryRankModelsBy",
                           "modelSummaryAicWeighs", "modelSummaryBicWeighs")
 
-  if (length(fit) > 1) {
-
-    summaryTable <- createJaspContainer(title = gettext("Model Summary"))
-    summaryTable$dependOn(outputDependencies)
-    summaryTable$position <- 1
-    jaspResults[["summaryTable"]] <- summaryTable
-
-    for (i in seq_along(fit)) {
-
-      # create a table for each model set
-      summaryTable[[paste0("table", i)]] <- .sapSummaryTableFun(fit[[i]], options)
-      summaryTable[[paste0("table", i)]]$position <- i
-      summaryTable[[paste0("table", i)]]$title    <- attr(fit[[i]], "label")
-
-    }
-
-  } else {
-
-    # only one table needed
-    summaryTable          <- .sapSummaryTableFun(fit[[1]], options)
-    summaryTable$title    <- gettext("Model Summary")
-    summaryTable$dependOn(outputDependencies)
-    summaryTable$position <- 1
-    jaspResults[["summaryTable"]] <- summaryTable
-
-  }
+  .sapTableSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapSummaryTableFun,
+    name          = "summaryTable",
+    title         = gettext("Model Summary"),
+    dependencies  = outputDependencies,
+    position      = 1
+  )
 
   return()
 }
-.sapSummaryTableFun      <- function(fit, options) {
+.sapSequentialModelComparisonTable    <- function(jaspResults, options) {
+
+  if (!is.null(jaspResults[["sequentialModelComparisonTable"]]) || length(options[["modelTerms"]]) < 2)
+    return()
+
+  # the extract function automatically groups models by subgroup / distribution
+  fit <- .sapExtractFit(jaspResults, options, type = "byDistribution")
+
+  # output dependencies
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "alwaysDisplayModelInformation",
+                          "sequentialModelComparison")
+
+  .sapTableSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapSequentialModelComparisonTableFun,
+    name          = "sequentialModelComparisonTable",
+    title         = gettext("Sequential Model Comparison"),
+    dependencies  = outputDependencies,
+    position      = 1.1
+  )
+
+  return()
+}
+.sapCoefficientsTable                 <- function(jaspResults, options) {
+
+  if (!is.null(jaspResults[["coefficientsTable"]]))
+    return()
+
+  # the extract function automatically groups models by subgroup / distribution
+  # (or joins them within subgroups if distributions / models are to be collapsed)
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+
+  # output dependencies
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
+                          "coefficients")
+
+  .sapTableSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapCoefficientsTableFun,
+    name          = "coefficientsTable",
+    title         = gettext("Coefficients Summary"),
+    dependencies  = outputDependencies,
+    position      = 2
+  )
+
+  return()
+}
+.sapCoefficientsCovarianceMatrixTable <- function(jaspResults, options) {
+
+  if (!is.null(jaspResults[["covarianceMatrixTableTable"]]))
+    return()
+
+  # the extract function automatically groups models by subgroup / distribution
+  # (or joins them within subgroups if distributions / models are to be collapsed)
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+  # flatten the list - each model has to get its own matrix because they might differ in parameters etc...
+  fit <- .sapFlattenFit(fit, options)
+
+  # output dependencies
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
+                          "coefficientsCovarianceMatrix")
+
+  .sapTableSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapCoefficientsCovarianceMatrixTableFun,
+    name          = "coefficientsCovarianceMatrixTable",
+    title         = gettext("Coefficients Covariance Matrix"),
+    dependencies  = outputDependencies,
+    position      = 2.1
+  )
+
+  return()
+}
+
+.sapSummaryTableFun                      <- function(fit, options) {
 
   # create the table
   summaryTable <- createJaspTable()
@@ -460,47 +559,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return(summaryTable)
 }
-.sapSequentialModelComparisonTable    <- function(jaspResults, options) {
-
-  if (!is.null(jaspResults[["sequentialModelComparisonTable"]]) || length(options[["modelTerms"]]) < 2)
-    return()
-
-  # the extract function automatically groups models by subgroup / distribution
-  fit <- .sapExtractFit(jaspResults, options, type = "byDistribution")
-  # output dependencies
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "alwaysDisplayModelInformation",
-                          "sequentialModelComparison")
-
-  if (length(fit) > 1) {
-
-    sequentialModelComparisonTable <- createJaspContainer(title = gettext("Sequential Model Comparison"))
-    sequentialModelComparisonTable$dependOn(outputDependencies)
-    sequentialModelComparisonTable$position <- 1.1
-    jaspResults[["sequentialModelComparisonTable"]] <- sequentialModelComparisonTable
-
-    for (i in seq_along(fit)) {
-
-      # create a table for each model set
-      sequentialModelComparisonTable[[paste0("table", i)]] <- .sapSequentialModelComparisonTableFun(fit[[i]], options)
-      sequentialModelComparisonTable[[paste0("table", i)]]$position <- i
-      sequentialModelComparisonTable[[paste0("table", i)]]$title    <- attr(fit[[i]], "label")
-
-    }
-
-  } else {
-
-    # only one table needed
-    sequentialModelComparisonTable          <- .sapSequentialModelComparisonTableFun(fit[[1]], options)
-    sequentialModelComparisonTable$title    <- gettext("Sequential Model Comparison")
-    sequentialModelComparisonTable$dependOn(outputDependencies)
-    sequentialModelComparisonTable$position <- 1.1
-    jaspResults[["sequentialModelComparisonTable"]] <- sequentialModelComparisonTable
-
-  }
-
-  return()
-}
-.sapSequentialModelComparisonTableFun <- function(fit, options) {
+.sapSequentialModelComparisonTableFun    <- function(fit, options) {
 
   # create the table
   sequentialModelComparisonTable <- createJaspTable()
@@ -530,49 +589,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return(sequentialModelComparisonTable)
 }
-.sapCoefficientsTable    <- function(jaspResults, options) {
-
-  if (!is.null(jaspResults[["coefficientsTable"]]))
-    return()
-
-  # the extract function automatically groups models by subgroup / distribution
-  # (or joins them within subgroups if distributions / models are to be collapsed)
-  fit <- .sapExtractFit(jaspResults, options, type = "selected")
-
-  # output dependencies
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "coefficients")
-
-  if (length(fit) > 1) {
-
-    coefficientsTable <- createJaspContainer(title = gettext("Coefficients Summary"))
-    coefficientsTable$dependOn(outputDependencies)
-    coefficientsTable$position <- 1
-    jaspResults[["coefficientsTable"]] <- coefficientsTable
-
-    for (i in seq_along(fit)) {
-
-      # create a table for each model set
-      coefficientsTable[[paste0("table", i)]] <- .sapCoefficientsTableFun(fit[[i]], options)
-      coefficientsTable[[paste0("table", i)]]$position <- i
-      coefficientsTable[[paste0("table", i)]]$title    <- attr(fit[[i]], "label")
-
-    }
-
-  } else {
-
-    # only one table needed
-    coefficientsTable          <- .sapCoefficientsTableFun(fit[[1]], options)
-    coefficientsTable$title    <- gettext("Coefficients Summary")
-    coefficientsTable$dependOn(outputDependencies)
-    coefficientsTable$position <- 1
-    jaspResults[["coefficientsTable"]] <- coefficientsTable
-
-  }
-
-  return()
-}
-.sapCoefficientsTableFun <- function(fit, options) {
+.sapCoefficientsTableFun                 <- function(fit, options) {
 
   # create the table
   estimatesTable <- createJaspTable()
@@ -603,52 +620,6 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   estimatesTable$showSpecifiedColumnsOnly <- TRUE
 
   return(estimatesTable)
-}
-.sapCoefficientsCovarianceMatrixTable    <- function(jaspResults, options) {
-
-  if (!is.null(jaspResults[["covarianceMatrixTableTable"]]))
-    return()
-
-  # the extract function automatically groups models by subgroup / distribution
-  # (or joins them within subgroups if distributions / models are to be collapsed)
-  fit <- .sapExtractFit(jaspResults, options, type = "selected")
-  # flatten the list - each model has to get its own matrix because they might differ in parameters etc...
-  fit <- .sapFlattenFit(fit, options)
-
-
-
-  # output dependencies
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "coefficientsCovarianceMatrix")
-
-  if (length(fit) > 1) {
-
-    covarianceMatrixTableTable <- createJaspContainer(title = gettext("Coefficients Covariance Matrix"))
-    covarianceMatrixTableTable$dependOn(outputDependencies)
-    covarianceMatrixTableTable$position <- 1
-    jaspResults[["covarianceMatrixTableTable"]] <- covarianceMatrixTableTable
-
-    for (i in seq_along(fit)) {
-
-      # create a table for each model set
-      covarianceMatrixTableTable[[paste0("table", i)]] <- .sapCoefficientsCovarianceMatrixTableFun(fit[[i]], options)
-      covarianceMatrixTableTable[[paste0("table", i)]]$position <- i
-      covarianceMatrixTableTable[[paste0("table", i)]]$title    <- attr(fit[[i]], "label")
-
-    }
-
-  } else {
-
-    # only one table needed
-    covarianceMatrixTableTable          <- .sapCoefficientsCovarianceMatrixTableFun(fit[[1]], options)
-    covarianceMatrixTableTable$title    <- gettext("Coefficients Covariance Matrix")
-    covarianceMatrixTableTable$dependOn(outputDependencies)
-    covarianceMatrixTableTable$position <- 1
-    jaspResults[["covarianceMatrixTableTable"]] <- covarianceMatrixTableTable
-
-  }
-
-  return()
 }
 .sapCoefficientsCovarianceMatrixTableFun <- function(fit, options) {
 
@@ -684,6 +655,71 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   return(covarianceMatrixTableTable)
 }
 
+# predictions tables
+.sapSurvivalTimeTable <- function(jaspResults, options) {
+
+  if (!is.null(jaspResults[["survivalTimeTable"]]))
+    return()
+
+  # the extract function automatically groups models by subgroup / distribution
+  # (or joins them within subgroups if distributions / models are to be collapsed)
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+  # flatten the list - each model has to get its own matrix because they might differ in parameters etc...
+  fit <- .sapFlattenFit(fit, options)
+
+  # output dependencies
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
+                          "survivalTimeTable", "predictionsSurvivalTimeStepsType", "predictionsSurvivalTimeStepsNumber", "predictionsSurvivalTimeStepsFrom",
+                          "predictionsSurvivalTimeStepsSize", "predictionsSurvivalTimeStepsTo", "predictionsSurvivalTimeCustom", "predictionsConfidenceInterval"
+                          )
+
+  .sapTableSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapSurvivalTimeTableFun,
+    name          = "survivalTimeTable",
+    title         = gettext("Predicted Survival Time"),
+    dependencies  = outputDependencies,
+    position      = 3.01
+  )
+
+  return()
+}
+
+
+.sapSurvivalTimeTableFun <- function(fit, options) {
+
+  # create the table
+  tempTable <- .sapCreatePredictionTable(options, atTitle = "Quantile", estimateTitle = gettext("Survival Time"))
+
+  if (!.saSurvivalReady(options))
+    return(covarianceMatrixTableTable)
+
+  # compute the predictions
+  data   <- summary(fit, type = "quantile", quantiles = .sapOptions2PredictionQuantile(options), ci = TRUE)[[1]]
+  colnames(data) <- c("at", "estimate", "lCi", "uCi")
+
+  # add auxiliary information
+  data$subgroup        <- NA
+  data$distribution    <- NA
+  data$model           <- NA
+  data$subgroup[1]     <- attr(fit, "subgroup")
+  data$distribution[1] <- attr(fit, "distribution")
+  data$model[1]        <- attr(fit, "modelTitle")
+
+  # add footnotes
+  if (!is.null(attr(fit, "label")))
+    tempTable$addFootnote(attr(fit, "label"))
+
+  tempTable$setData(data)
+  tempTable$showSpecifiedColumnsOnly <- TRUE
+
+  return(tempTable)
+}
+
+
+# adding rows to the output
 .sapRowModelInformation               <- function(fit) {
   return(data.frame(
     subgroup     = attr(fit, "subgroup"),
@@ -760,6 +796,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   ))
 }
 
+# adding columns to tables
 .sapAddColumnSubgroup     <- function(tempTable, options, output) {
 
   if (output %in% c("modelSummary", "coefficients")) {
@@ -817,7 +854,25 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     return()
   }
 }
+.sapCreatePredictionTable <- function(options, atTitle, estimateTitle) {
 
+  tempTable <- createJaspTable()
+  .sapAddColumnSubgroup(     tempTable, options, output = "coefficientsCovarianceMatrix")
+  .sapAddColumnDistribution( tempTable, options, output = "coefficientsCovarianceMatrix")
+  .sapAddColumnModel(        tempTable, options, output = "coefficientsCovarianceMatrix")
+
+  tempTable$addColumnInfo(name = "at",       title = atTitle,       type = "number")
+  tempTable$addColumnInfo(name = "estimate", title = estimateTitle, type = "number")
+  if (options[["predictionsConfidenceInterval"]]) {
+    overtitleCi <- gettextf("%s%% CI", 100 * 0.95) # TODO: add options[["confidenceIntervalsLevel"]]
+    tempTable$addColumnInfo(name = "lCi", title = gettext("Lower"), type = "number", overtitle = overtitleCi)
+    tempTable$addColumnInfo(name = "uCi", title = gettext("Upper"), type = "number", overtitle = overtitleCi)
+  }
+
+  return(tempTable)
+}
+
+# additional helper functions
 .sapInformationCriteria2Weights <- function(ic) {
 
   isValidIc <- !is.na(ic)
@@ -833,7 +888,50 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return(out)
 }
+.sapOptions2PredictionQuantile  <- function(options) {
 
+  if (options[["predictionsSurvivalTimeStepsType"]] == "quantiles") {
+
+    setQuantiles <- seq(0, 1, length.out = options[["predictionsSurvivalTimeStepsNumber"]])
+    setQuantiles <- setQuantiles[-length(setQuantiles)] # don't predict for 1 as it is infinity
+
+  } else if (options[["predictionsSurvivalTimeStepsType"]] == "sequence") {
+
+    setQuantiles <- seq(options[["predictionsSurvivalTimeStepsFrom"]], options[["predictionsSurvivalTimeStepsTo"]], options[["predictionsSurvivalTimeStepsSize"]] + 1)
+    setQuantiles <- setQuantiles[-length(setQuantiles)]
+
+  } else if (options[["predictionsSurvivalTimeStepsType"]] == "custom") {
+
+    setQuantiles <- options[["predictionsSurvivalTimeCustom"]]
+    setQuantiles <- .sapCleanCustomOptions(setQuantiles, gettext("Custom steps for predicted survival time were specified in an incorrect format. Try '0.25, 0.50, 0.75'."))
+    setQuantiles <- sort(setQuantiles)
+    if (any(setQuantiles < 0 | setQuantiles > 1))
+      .quitAnalysis(gettext("Custom steps for predicted survival time must be between 0 and 1."))
+
+  }
+
+  return(setQuantiles)
+}
+.sapCleanCustomOptions          <- function(x, message) {
+
+  x <- trimws(x, which = "both")
+  x <- trimws(x, which = "both", whitespace = "c")
+  x <- trimws(x, which = "both", whitespace = "\\(")
+  x <- trimws(x, which = "both", whitespace = "\\)")
+  x <- trimws(x, which = "both", whitespace = ",")
+
+  x <- strsplit(x, ",", fixed = TRUE)[[1]]
+
+  x <- trimws(x, which = "both")
+  x <- x[x != ""]
+
+  if (anyNA(as.numeric(x)))
+    .quitAnalysis(message)
+
+  return(as.numeric(x))
+}
+
+# table messages
 .sapCollectFitErrors      <- function(fit, options) {
 
   errors <- NULL
