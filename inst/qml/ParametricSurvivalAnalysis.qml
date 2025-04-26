@@ -330,20 +330,24 @@ Form
 
 		Group
 		{
-			title:		qsTr("Survival Time")
 
-			CheckBox
+			Group
 			{
-				label:		qsTr("Table")
-				name:		"survivalTimeTable"
-				info: qsTr("Include a table with the predicted survival estimates.")
-			}
+				title:		qsTr("Survival Time")
 
-			CheckBox
-			{
-				label:		qsTr("Plot")
-				name:		"survivalTimePlot"
-				info: qsTr("Include a plot with the predicted survival estimates.")
+				CheckBox
+				{
+					label:		qsTr("Table")
+					name:		"survivalTimeTable"
+					info: qsTr("Include a table with the predicted survival estimates.")
+				}
+
+				CheckBox
+				{
+					label:		qsTr("Plot")
+					name:		"survivalTimePlot"
+					info: qsTr("Include a plot with the predicted survival estimates.")
+				}
 			}
 
 			DropDown
@@ -413,6 +417,16 @@ Form
 				defaultValue:	"0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9"
 				info: qsTr("Specify custom steps of the predicted survival.")
 			}
+
+			CheckBox
+			{
+				label:		qsTr("Merge plots across distributions")
+				name:		"survivalTimeMergePlotsAcrossDistributions"
+				checked:	false
+				enabled:	distribution.value == "all" && (modelTerms.count > 1 && interpretModel.value != "bestAic" && interpretModel.value != "bestBic") 
+				info: qsTr("Merge the plots for survival time across distributions into a single plot. Only available when no model selection is being performed.")
+			}	
+
 		}
 
 		Group
@@ -495,8 +509,8 @@ Form
 
 			CheckBox
 			{
-				label:		qsTr("Merge tables")
-				name:		"predictionsMergeTables"
+				label:		qsTr("Merge tables across measures")
+				name:		"lifeTimeMergeTablesAcrossMeasures"
 				checked:	false
 				info: qsTr("Merge the tables for survival time, survival probabilities, hazard, cumulative hazard, and restricted mean survival time into a single table.")
 			}	
@@ -578,13 +592,19 @@ Form
 
 		}
 
-		CheckBox
+		Group 
 		{
-			label:		qsTr("Confidence intervals")
-			name:		"predictionsConfidenceInterval"
-			checked:	true
-			info: qsTr("Include confidence intervals for the tables.")
+			CheckBox
+			{
+				label:		qsTr("Confidence intervals")
+				name:		"predictionsConfidenceInterval"
+				checked:	true
+				info: qsTr("Include confidence intervals for the tables.")
+			}
+
+			ColorPalette {}
 		}
+
 	}
 
 	Section
