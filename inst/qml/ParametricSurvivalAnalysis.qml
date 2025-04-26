@@ -427,6 +427,54 @@ Form
 				info: qsTr("Merge the plots for survival probability across distributions into a single plot. Only available when no model selection is being performed.")
 			}	
 
+
+			Group 
+			{
+				title:		qsTr("Options")
+
+				CheckBox
+				{
+					label:		qsTr("Confidence intervals")
+					name:		"predictionsConfidenceInterval"
+					checked:	true
+					info: qsTr("Include confidence intervals for the tables.")
+				}
+
+				DropDown
+				{
+					name:		"plotLegend"
+					label:		qsTr("Legend")
+					startValue:	"right"
+					info: qsTr("Choose the position of the legend on the plot: Bottom, Right, Left, Top, or None. Only available when predictors or multiple distributions are specified.")
+					values:
+					[
+						{ label: qsTr("Bottom"),	value: "bottom"},
+						{ label: qsTr("Right"),		value: "right"},
+						{ label: qsTr("Left"),		value: "left"},
+						{ label: qsTr("Top"),		value: "top"},
+						{ label: qsTr("None"),		value: "none"}
+					]
+				}
+
+				ColorPalette {}
+				
+				DropDown
+				{
+					name:		"plotTheme"
+					label:		qsTr("Theme")
+					startValue:	"jasp"
+					info: qsTr("Select the theme for the plot's appearance.")
+					values:
+					[
+						{ label: "JASP",					value: "jasp"},
+						{ label: qsTr("White background"),	value: "whiteBackground"},
+						{ label: qsTr("Light"),				value: "light"},
+						{ label: qsTr("Minimal")	,		value: "minimal"},
+						{ label: "APA",						value: "apa"},
+						{ label: "pubr",					value: "pubr"}
+					]
+				}
+			}
 		}
 
 		Group
@@ -447,6 +495,40 @@ Form
 					label:		qsTr("Plot")
 					name:		"survivalProbabilityPlot"
 					info: qsTr("Include a plot with the predicted survival probabilities.")
+
+					CheckBox
+					{
+						name:		"survivalProbabilityPlotAddKaplanMeier"
+						label:		qsTr("Add Kaplan-Meier")
+						info: qsTr("Add a Kaplan-Meier curve to the plot.")
+					}
+
+					DropDown
+					{
+						name:		"survivalProbabilityPlotTransformXAxis"
+						label:		qsTr("X-axis transformation")
+						startValue:	"none"
+						info: qsTr("Select the transformation for the x-axis of the plot")
+						values:
+						[
+							{ label: qsTr("None"),			value: "none"},
+							{ label: qsTr("Log"),			value: "log"},
+							{ label: qsTr("Log(1-p)"),		value: "log1p"}
+						]
+					}
+
+					DropDown
+					{
+						name:		"survivalProbabilityPlotTransformYAxis"
+						label:		qsTr("Y-axis transformation")
+						startValue:	"none"
+						info: qsTr("Select the transformation for the y-axis of the plot")
+						values:
+						[
+							{ label: qsTr("None"),			value: "none"},
+							{ label: qsTr("Log"),			value: "log"}
+						]
+					}
 				}
 			}
 
@@ -599,19 +681,6 @@ Form
 				info: qsTr("Merge the plots for survival time, survival probabilities, hazard, cumulative hazard, and restricted mean survival across distributions into a single plot. Only available when no model selection is being performed.")
 			}	
 
-		}
-
-		Group 
-		{
-			CheckBox
-			{
-				label:		qsTr("Confidence intervals")
-				name:		"predictionsConfidenceInterval"
-				checked:	true
-				info: qsTr("Include confidence intervals for the tables.")
-			}
-
-			ColorPalette {}
 		}
 
 	}

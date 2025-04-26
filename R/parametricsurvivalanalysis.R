@@ -239,7 +239,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   out <- jaspResults[["fit"]][["object"]]
   fit <- list()
-
+  saveRDS(out, file = "C:/JASP-Packages/out.RDS")
   if (options[["subgroup"]] != "" && !options[["includeFullDatasetInSubgroupAnalysis"]]) {
     out <- out[names(out) != "fullDataset"]
   }
@@ -905,7 +905,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
                           "survivalTimePlot", "predictionsSurvivalTimeStepsType", "predictionsSurvivalTimeStepsNumber", "predictionsSurvivalTimeStepsFrom",
                           "predictionsSurvivalTimeStepsSize", "predictionsSurvivalTimeStepsTo", "predictionsSurvivalTimeCustom",
-                          "predictionsConfidenceInterval", "survivalTimeMergePlotsAcrossDistributions", "colorPalette"
+                          "predictionsConfidenceInterval", "survivalTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme"
   )
 
   .sapSectionWrapper(
@@ -940,7 +940,8 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
                           "survivalProbabilityPlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom",
-                          "predictionsConfidenceInterval", "lifeTimeMergePlotsAcrossDistributions", "colorPalette"
+                          "predictionsConfidenceInterval", "lifeTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme",
+                          "survivalProbabilityPlotAddKaplanMeier", "survivalProbabilityPlotTransformXAxis", "survivalProbabilityPlotTransformYAxis"
   )
 
   .sapSectionWrapper(
@@ -975,7 +976,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
                           "hazardPlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom",
-                          "predictionsConfidenceInterval", "lifeTimeMergePlotsAcrossDistributions", "colorPalette"
+                          "predictionsConfidenceInterval", "lifeTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme"
   )
 
   .sapSectionWrapper(
@@ -1010,7 +1011,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
                           "cumulativeHazardPlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom",
-                          "predictionsConfidenceInterval", "lifeTimeMergePlotsAcrossDistributions", "colorPalette"
+                          "predictionsConfidenceInterval", "lifeTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme"
   )
 
   .sapSectionWrapper(
@@ -1243,6 +1244,8 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
 .sapCreatePredictionPlotWrapper <- function(fit, options, type) {
 
+  saveRDS(fit, file = "C:/JASP-Packages/fit.RDS")
+
   if (type == "quantile") {
     atTitle <- gettext("Quantile")
   } else {
@@ -1315,8 +1318,67 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   hasDistribution <- length(unique(out[["Distribution"]])) > 1
   hasLevel        <- length(unique(out[["Level"]])) > 1
 
+  xTicks <- jaspGraphs::getPrettyAxisBreaks(range(out[["at"]], na.rm = TRUE))
+  yTicks <- jaspGraphs::getPrettyAxisBreaks(range(c(
+    out[["estimate"]],
+    if (options[["predictionsConfidenceInterval"]]) out[["lCi"]],
+    if (options[["predictionsConfidenceInterval"]]) out[["uCi"]]), na.rm = TRUE))
+
+  # compute Kaplan-Meier if needed
+  if (type == "survival" && options[["survivalProbabilityPlotAddKaplanMeier"]]) {
+
+    tempData <- attr(fit[[which.min(sapply(fit, jaspBase::isTryError))]], "dataset")
+    kmFit    <- try(survfit(
+      formula = .saGetFormula(options, type = "KM"),
+      type    = "kaplan-meier",
+      data    = tempData
+    ))
+    kmTable <- summary(kmFit) # , times = optionsSequence
+    kmTable <- with(kmTable, data.frame(
+      at       = time,
+      estimate = surv,
+      lCi      = lower,
+      uCi      = upper
+    ))
+
+    # transform into a step function
+    kmTable    <- kmTable[rep(1:nrow(kmTable), each=2), ]
+    kmTable$at[1:(nrow(kmTable)-1)] <- kmTable$at[2:nrow(kmTable)]
+
+    if (max(kmTable$at) < max(xTicks)) {
+      kmTable <- rbind(kmTable, data.frame(
+        at       = max(xTicks),
+        estimate = kmTable[["estimate"]][nrow(kmTable)],
+        lCi      = kmTable[["lCi"]][nrow(kmTable)],
+        uCi      = kmTable[["uCi"]][nrow(kmTable)]
+      ))
+    }
+  }
+
   # create a plot
   plot <- ggplot2::ggplot(data = out)
+
+  # add Kaplan-Meier if needed
+  if (type == "survival" && options[["survivalProbabilityPlotAddKaplanMeier"]]) {
+
+    if (options[["predictionsConfidenceInterval"]]) {
+      aesCall <- list(
+        x        = as.name("at"),
+        ymin     = as.name("lCi"),
+        ymax     = as.name("uCi")
+      )
+      geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]), data = kmTable, fill = "grey60",  color = "grey60", alpha = 0.10)
+      plot <- plot + do.call(ggplot2::geom_ribbon, geomCall)
+    }
+
+    aesCall <- list(
+      x        = as.name("at"),
+      y        = as.name("estimate")
+    )
+    geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]), data = kmTable, color = "grey60")
+    plot <- plot + do.call(jaspGraphs::geom_line, geomCall)
+
+  }
 
   # add CI
   if (options[["predictionsConfidenceInterval"]]) {
@@ -1352,17 +1414,31 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   plot <- plot + ggplot2::ylab(estimateTitle) + ggplot2::xlab(atTitle)
 
   # scale axis
-  xTicks <- jaspGraphs::getPrettyAxisBreaks(range(out[["at"]], na.rm = TRUE))
-  yTicks <- jaspGraphs::getPrettyAxisBreaks(range(c(
-    out[["estimate"]],
-    if (options[["predictionsConfidenceInterval"]]) out[["lCi"]],
-    if (options[["predictionsConfidenceInterval"]]) out[["uCi"]]), na.rm = TRUE))
   plot <- plot + jaspGraphs::scale_x_continuous(breaks = xTicks, limits = range(xTicks)) +
     jaspGraphs::scale_y_continuous(breaks = yTicks, limits = range(yTicks))
 
-  # jasp theme
-  plot <- plot + jaspGraphs::geom_rangeframe() +
-    jaspGraphs::themeJaspRaw(legend.position = "right")
+  # themes
+  if (options[["plotTheme"]] == "jasp") {
+    plot <- plot + jaspGraphs::geom_rangeframe() +
+      jaspGraphs::themeJaspRaw(legend.position = options[["plotLegend"]])
+  } else {
+    plot <- plot +
+      switch(
+        options[["plotTheme"]],
+        "whiteBackground" = ggplot2::theme_bw()       + ggplot2::theme(legend.position = options[["plotLegend"]]),
+        "light"           = ggplot2::theme_light()    + ggplot2::theme(legend.position = options[["plotLegend"]]),
+        "minimal"         = ggplot2::theme_minimal()  + ggplot2::theme(legend.position = options[["plotLegend"]]),
+        "pubr"            = jaspGraphs::themePubrRaw(legend = options[["plotLegend"]]),
+        "apa"             = jaspGraphs::themeApaRaw(legend.pos = switch(
+          options[["plotTheme"]],
+          "none"   = "none",
+          "bottom" = "bottommiddle",
+          "right"  = "bottomright",
+          "top"    = "topmiddle",
+          "left"   = "bottomleft"
+        ))
+      )
+  }
 
   tempPlot <- createJaspPlot(width = if (hasDistribution || hasLevel) 550 else 400, height = 320)
   tempPlot$plotObject <- plot
