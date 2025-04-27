@@ -216,7 +216,7 @@ Form
 			label:				qsTr("Interpret model")
 			enabled:			modelTerms.count > 1
 			onCountChanged:		if (!(value === "bestAic" || value === "bestBic" || value === "all")) currentIndex = count - 1
-			info: qsTr("Select the model to interpret. Defaults to the last specified model. Alternatives are 'All' which produces results for all of the specified models or 'Best' which produces results for the best fitting model based on either AIC or BIC.")
+			info: qsTr("Select the model to interpret. Defaults to the last specified model. Alternatives are 'All' which produces results for all of the specified models or 'Best' which produces results for the best fitting model based on either AIC or BIC. If distribution and model selection is specified simultanously, the best model within the best performing distribution is going to be selected. If model selection is specified while all distributions are selected, the best model within each distribution is going to be selected.")
 			startValue:			"model1"
 			source: 			
 			[	
@@ -463,7 +463,7 @@ Form
 					name:		"plotTheme"
 					label:		qsTr("Theme")
 					startValue:	"jasp"
-					info: qsTr("Select the theme for the plot's appearance.")
+					info: qsTr("Select the theme for the plot's appearance. The detailed theme works only for 'Survival probabilities' plots")
 					values:
 					[
 						{ label: "JASP",					value: "jasp"},
@@ -471,7 +471,8 @@ Form
 						{ label: qsTr("Light"),				value: "light"},
 						{ label: qsTr("Minimal")	,		value: "minimal"},
 						{ label: "APA",						value: "apa"},
-						{ label: "pubr",					value: "pubr"}
+						{ label: "pubr",					value: "pubr"},
+						{ label: "Detailed",				value: "detailed"}
 					]
 				}
 			}
@@ -503,6 +504,13 @@ Form
 						info: qsTr("Add a Kaplan-Meier curve to the plot.")
 					}
 
+					CheckBox
+					{
+						name:		"survivalProbabilityPlotAddCensoringEvents"
+						label:		qsTr("Add censoring events")
+						info: qsTr("Add censoring events as rug marks to the plot.")
+					}
+
 					DropDown
 					{
 						name:		"survivalProbabilityPlotTransformXAxis"
@@ -512,8 +520,7 @@ Form
 						values:
 						[
 							{ label: qsTr("None"),			value: "none"},
-							{ label: qsTr("Log"),			value: "log"},
-							{ label: qsTr("Log(1-p)"),		value: "log1p"}
+							{ label: qsTr("Log"),			value: "log"}
 						]
 					}
 
@@ -526,7 +533,9 @@ Form
 						values:
 						[
 							{ label: qsTr("None"),			value: "none"},
-							{ label: qsTr("Log"),			value: "log"}
+							{ label: qsTr("Log"),			value: "log"},
+							{ label: qsTr("Log(1-p)"),		value: "log1mp"},
+							{ label: qsTr("Log(-log(p))"),	value: "logmlogp"}
 						]
 					}
 				}
