@@ -60,6 +60,16 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   if (options[["restrictedMeanSurvivalTimePlot"]])
     .sapRmstPlot(jaspResults, options)
 
+  # Diagnostics
+  if (options[["residualPlotResidualVsTime"]])
+    .sapResidualsVsTimePlot(jaspResults, options)
+  if (options[["residualPlotResidualVsPredictors"]])
+    .sapResidualsVsPredictorsPlot(jaspResults, options)
+  if (options[["residualPlotResidualVsPredicted"]])
+    .sapResidualsVsPredictedPlot(jaspResults, options)
+  if (options[["residualPlotResidualHistogram"]])
+    .sapResidualHistogramPlot(jaspResults, options)
+
   return()
 }
 
@@ -1596,6 +1606,215 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 .sapRmstPlotFun                 <- function(fit, options) {
 
   tempPlot <- .sapCreatePredictionPlotWrapper(fit, options, type = "rmst")
+  return(tempPlot)
+}
+
+# diagnostics plots
+.sapResidualsVsTimePlot                <- function(jaspResults, options) {
+
+  if (!is.null(jaspResults[["residualsVsTimePlot"]]) || options[["censoringType"]] != "right")
+    return()
+
+  # extract all models individually
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+  fit <- .sapFlattenFit(fit, options)
+
+  # output dependencies
+  outputDependencies <- c(.sapDependencies, "interpretModel", "residualPlotResidualVsTime", "residualPlotResidualType")
+
+  .sapSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapResidualsVsTimePlotFun,
+    name          = "residualsVsTimePlot",
+    title         = gettext("Residuals vs. Time"),
+    dependencies  = outputDependencies,
+    position      = 5.1
+  )
+
+  return()
+}
+.sapResidualsVsPredictorsPlot          <- function(jaspResults, options) {
+
+  if (!is.null(jaspResults[["residualsVsPredictorsPlot"]]))
+    return()
+
+  # extract all models individually
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+  fit <- .sapFlattenFit(fit, options)
+
+  # output dependencies
+  outputDependencies <- c(.sapDependencies, "interpretModel", "residualPlotResidualVsPredictors", "residualPlotResidualType")
+
+  .sapSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapResidualsVsPredictorsPlotFun,
+    name          = "residualsVsPredictorsPlot",
+    title         = gettext("Residuals vs. Predictors"),
+    dependencies  = outputDependencies,
+    position      = 5.2
+  )
+
+  return()
+}
+.sapResidualsVsPredictedPlot           <- function(jaspResults, options) {
+
+  if (!is.null(jaspResults[["residualVsPredictedPlot"]]))
+    return()
+
+  # extract all models individually
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+  fit <- .sapFlattenFit(fit, options)
+
+  # output dependencies
+  outputDependencies <- c(.sapDependencies, "interpretModel", "residualPlotResidualVsPredicted", "residualPlotResidualType")
+
+  .sapSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapResidualsVsPredictedPlotFun,
+    name          = "residualVsPredictedPlot",
+    title         = gettext("Residuals vs. Predicted"),
+    dependencies  = outputDependencies,
+    position      = 5.3
+  )
+
+  return()
+}
+.sapResidualHistogramPlot              <- function(jaspResults, options) {
+
+  if (!is.null(jaspResults[["residualHistogram"]]))
+    return()
+
+  # extract all models individually
+  fit <- .sapExtractFit(jaspResults, options, type = "selected")
+  fit <- .sapFlattenFit(fit, options)
+
+  # output dependencies
+  outputDependencies <- c(.sapDependencies, "interpretModel", "residualPlotResidualHistogram", "residualPlotResidualType")
+
+  .sapSectionWrapper(
+    jaspResults   = jaspResults,
+    options       = options,
+    fit           = fit,
+    tableFunction = .sapResidualHistogramPlotFun,
+    name          = "residualHistogram",
+    title         = gettext("Residual Histogram"),
+    dependencies  = outputDependencies,
+    position      = 5.4
+  )
+
+  return()
+}
+
+.sapResidualsVsTimePlotFun       <- function(fit, options) {
+
+  tempPlot <- createJaspPlot()
+
+  if (jaspBase::isTryError(fit)) {
+    return(tempPlot)
+  }
+
+  # extract the dataset and compute residuals
+  dataset <- attr(fit, "dataset")
+  time    <- .saExtractSurvTimes(dataset, options)
+  res     <- residuals(fit, type = switch(
+    options[["residualPlotResidualType"]],
+    "response" = "response",
+    "coxSnell" = "coxsnell"
+  ))
+
+  tempPlot$plotObject <- try(.saspResidualsPlot(time, res, gettext("Time"), switch(
+    options[["residualPlotResidualType"]],
+    "response" = gettext("Response"),
+    "coxSnell" = gettext("Cox-Snell")
+  )))
+
+  return(tempPlot)
+}
+.sapResidualsVsPredictorsPlotFun <- function(fit, options) {
+
+  if (jaspBase::isTryError(fit))
+    return()
+
+  # extract the dataset and compute residuals
+  predictorsFit <- model.matrix(fit)
+  res           <- residuals(fit, type = switch(
+    options[["residualPlotResidualType"]],
+    "response" = "response",
+    "coxSnell" = "coxsnell"
+  ))
+
+  if (ncol(predictorsFit) == 0)
+    return()
+
+  residualPlotResidualVsPredictors <- createJaspContainer()
+
+  for (i in 1:ncol(predictorsFit)) {
+    residualPlotResidualVsPredictors[[paste0("residualPlotResidualVsPredictors", i)]] <- createJaspPlot(
+      plot         = .saspResidualsPlot(x = predictorsFit[,i], y = res, xlab = colnames(predictorsFit)[i], ylab = switch(
+        options[["residualPlotResidualType"]],
+        "response" = gettext("Response"),
+        "coxSnell" = gettext("Cox-Snell")
+      )),
+      title        = gettextf("Residuals vs. %1$s", colnames(predictorsFit)[i]),
+      position     = i,
+      width        = 450,
+      height       = 320
+    )
+  }
+
+  return(residualPlotResidualVsPredictors)
+}
+.sapResidualsVsPredictedPlotFun  <- function(fit, options) {
+
+  tempPlot <- createJaspPlot()
+
+  if (jaspBase::isTryError(fit)) {
+    return(tempPlot)
+  }
+
+  # extract the dataset and compute residuals
+  pred    <- unlist(predict(fit))
+  res     <- residuals(fit, type = switch(
+    options[["residualPlotResidualType"]],
+    "response" = "response",
+    "coxSnell" = "coxsnell"
+  ))
+
+  tempPlot$plotObject <- try(.saspResidualsPlot(pred, res, gettext("Predicted Time"), switch(
+    options[["residualPlotResidualType"]],
+    "response" = gettext("Response"),
+    "coxSnell" = gettext("Cox-Snell")
+  )))
+
+  return(tempPlot)
+}
+.sapResidualHistogramPlotFun     <- function(fit, options) {
+
+  tempPlot <- createJaspPlot()
+
+  if (jaspBase::isTryError(fit)) {
+    return(tempPlot)
+  }
+
+  # extract the dataset and compute residuals
+  res     <- residuals(fit, type = switch(
+    options[["residualPlotResidualType"]],
+    "response" = "response",
+    "coxSnell" = "coxsnell"
+  ))
+
+  tempPlot$plotObject <- try(jaspGraphs::jaspHistogram(res, xName =switch(
+    options[["residualPlotResidualType"]],
+    "response" = gettext("Response"),
+    "coxSnell" = gettext("Cox-Snell")
+  )))
+
   return(tempPlot)
 }
 

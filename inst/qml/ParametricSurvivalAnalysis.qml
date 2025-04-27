@@ -703,6 +703,57 @@ Form
 
 	Section
 	{
+		title:	qsTr("Diagnostics")
+
+		Group
+		{
+			title: qsTr("Residual Plots")
+
+			CheckBox
+			{
+				name:		"residualPlotResidualVsTime"
+				label:		qsTr("Residuals vs. time")
+				enabled:	censoringTypeRight.checked
+				info: qsTr("Plot residuals versus time. Only available when Censoring Type is set to Right.")
+			}
+
+			CheckBox
+			{
+				name:		"residualPlotResidualVsPredictors"
+				label:		qsTr("Residuals vs. predictors")
+				info: qsTr("Plot residuals versus predictors to assess model fit. Available when model terms are specified.")
+			}
+
+			CheckBox
+			{
+				name:		"residualPlotResidualVsPredicted"
+				label:		qsTr("Residuals vs. predicted survival")
+				info: qsTr("Plot residuals versus predicted survival probabilities.")
+			}
+
+			CheckBox
+			{
+				name:		"residualPlotResidualHistogram"
+				label:		qsTr("Residuals histogram")
+				info: qsTr("Display a histogram of residuals to assess their distribution.")
+			}
+
+			DropDown
+			{
+				name:		"residualPlotResidualType"
+				id:			residualPlotResidualType
+				label:		qsTr("Type")
+				info: qsTr("Select the type of residuals to plot")
+				values:		[
+					{ label: qsTr("Response"),				value: "response"},
+					{ label: qsTr("Cox-Snell"),				value: "coxSnell"}
+				]
+			}
+		}
+	}
+
+	Section
+	{
 		title: qsTr("Advanced")
 
 		Group
