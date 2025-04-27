@@ -27,7 +27,7 @@ Form
 	VariablesForm
 	{
 		removeInvisibles:	true
-		preferredHeight:	((censoringTypeRight.checked  || censoringTypeLeft.checked) ? 450 : 500 ) * jaspTheme.uiScale
+		preferredHeight:	((censoringTypeRight.checked  || censoringTypeInterval.checked) ? 450 : 525 ) * jaspTheme.uiScale
 
 		AvailableVariablesList
 		{
@@ -40,10 +40,10 @@ Form
 			title:				qsTr("Interval Start")
 			allowedColumns:		["scale"]
 			singleVariable:		true
-			visible:			censoringTypeInterval.checked
-			property bool active:	censoringTypeInterval.checked
+			visible:			censoringTypeInterval.checked || censoringTypeCounting.checked
+			property bool active:	censoringTypeInterval.checked  || censoringTypeCounting.checked
 			onActiveChanged: 		if (!active && count > 0) itemDoubleClicked(0)
-			info: qsTr("Select the variable that represents the start time of the observation interval. Only available when Censoring Type is set to Interval.")
+			info: qsTr("Select the variable that represents the start time of the observation interval. Only available when Censoring Type is set to Interval or Counting.")
 		}
 
 		AssignedVariablesList
@@ -52,10 +52,10 @@ Form
 			title:				qsTr("Interval End")
 			allowedColumns:		["scale"]
 			singleVariable:		true
-			visible:			censoringTypeInterval.checked
-			property bool active:	censoringTypeInterval.checked
+			visible:			censoringTypeInterval.checked || censoringTypeCounting.checked
+			property bool active:	censoringTypeInterval.checked || censoringTypeCounting.checked
 			onActiveChanged: 		if (!active && count > 0) itemDoubleClicked(0)
-			info: qsTr("Select the variable that represents the end time of the observation interval. Only available when Censoring Type is set to Interval.")
+			info: qsTr("Select the variable that represents the end time of the observation interval. Only available when Censoring Type is set to Interval or Counting.")
 		}
 
 		AssignedVariablesList
@@ -64,10 +64,10 @@ Form
 			title:				qsTr("Time to Event")
 			allowedColumns:		["scale"]
 			singleVariable:		true
-			visible:			censoringTypeRight.checked || censoringTypeLeft.checked
-			property bool active:	censoringTypeRight.checked || censoringTypeLeft.checked
+			visible:			censoringTypeRight.checked
+			property bool active:	censoringTypeRight.checked
 			onActiveChanged: 		if (!active && count > 0) itemDoubleClicked(0)
-			info: qsTr("Select the variable that represents the time until the event or censoring occurs. Only available when Censoring Type is set to Right or Left.")
+			info: qsTr("Select the variable that represents the time until the event or censoring occurs. Only available when Censoring Type is set to Right or Counting.")
 		}
 
 		AssignedVariablesList
@@ -75,6 +75,8 @@ Form
 			id:					eventStatusId
 			name:				"eventStatus"
 			title:				qsTr("Event Status")
+			visible:			censoringTypeRight.checked || censoringTypeCounting.checked
+			property bool active:	censoringTypeRight.checked || censoringTypeCounting.checked
 			allowedColumns:		["nominal"]
 			singleVariable:		true
 			info: qsTr("Choose the variable that indicates the event status, specifying whether each observation is an event or censored.")
@@ -84,6 +86,8 @@ Form
 		{
 			name:				"eventIndicator"
 			label:				qsTr("Event Indicator")
+			visible:			censoringTypeRight.checked || censoringTypeCounting.checked
+			property bool active:	censoringTypeRight.checked || censoringTypeCounting.checked
 			source:				[{name: "eventStatus", use: "levels"}]
 			onCountChanged:		currentIndex = 1
 			info: qsTr("Specify the value in the Event Status variable that indicates the occurrence of the event.")
@@ -146,9 +150,9 @@ Form
 
 		RadioButton
 		{
-			label:		qsTr("Left")
-			value:		"left"
-			id:			censoringTypeLeft
+			label:		qsTr("Counting")
+			value:		"counting"
+			id:			censoringTypeCounting
 		}
 
 		RadioButton
@@ -156,6 +160,7 @@ Form
 			label:		qsTr("Interval")
 			value:		"interval"
 			id:			censoringTypeInterval
+			info: qsTr("If interval censoring is selected, the following coding needs to be used: left-censored data is represented as (NA, t2), right-censored data as (t1, NA), exact data as (t, t), and interval-censored data as (t1, t2).")
 		}
 	}
 
@@ -501,14 +506,16 @@ Form
 					{
 						name:		"survivalProbabilityPlotAddKaplanMeier"
 						label:		qsTr("Add Kaplan-Meier")
-						info: qsTr("Add a Kaplan-Meier curve to the plot.")
+						enabled:	censoringTypeRight.checked
+						info: qsTr("Add a Kaplan-Meier curve to the plot. Only available when Censoring Type is set to Right.")
 					}
 
 					CheckBox
 					{
 						name:		"survivalProbabilityPlotAddCensoringEvents"
 						label:		qsTr("Add censoring events")
-						info: qsTr("Add censoring events as rug marks to the plot.")
+						enabled:	censoringTypeRight.checked
+						info: qsTr("Add censoring events as rug marks to the plot. Only available when Censoring Type is set to Right.")
 					}
 
 					DropDown

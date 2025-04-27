@@ -64,7 +64,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 }
 
 .sapDependencies <- c(
-  "timeToEvent", "eventStatus", "eventIndicator", "censoringType", "subgroup",
+  "intervalStart", "intervalEnd", "timeToEvent", "eventStatus", "eventIndicator", "censoringType", "subgroup",
   "factors", "covariates", "weights", "subgroup", "distribution", "includeFullDatasetInSubgroupAnalysis",
   "selectedParametricDistributionExponential" ,"selectedParametricDistributionGamma" ,"selectedParametricDistributionGeneralizedF" ,
   "selectedParametricDistributionGeneralizedGamma" ,"selectedParametricDistributionGompertz" ,"selectedParametricDistributionLogLogistic" ,
@@ -240,7 +240,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   out <- jaspResults[["fit"]][["object"]]
   fit <- list()
-  saveRDS(out, file = "C:/JASP-Packages/out.RDS")
+
   if (options[["subgroup"]] != "" && !options[["includeFullDatasetInSubgroupAnalysis"]]) {
     out <- out[names(out) != "fullDataset"]
   }
@@ -1245,8 +1245,6 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
 .sapCreatePredictionPlotWrapper <- function(fit, options, type) {
 
-  saveRDS(fit, file = "C:/JASP-Packages/fit.RDS")
-
   if (type == "quantile") {
     atTitle <- gettext("Quantile")
   } else {
@@ -1262,13 +1260,14 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     "rmst"      = gettext("Restricted Mean Survival Time")
   )
 
-  if (!.saSurvivalReady(options)) {
+  checkFit <- sapply(fit, jaspBase::isTryError)
+  if (!.saSurvivalReady(options) || all(checkFit)) {
     tempPlot <- createJaspPlot(title = estimateTitle)
     return(tempPlot)
   }
 
   # extract an example fit & dataset (make sure the fit converged)
-  tempFit  <- fit[[which.min(sapply(fit, jaspBase::isTryError))]]
+  tempFit  <- fit[[which.min(checkFit)]]
   tempData <- attr(tempFit, "dataset")
 
   if (type == "quantile") {
@@ -1324,7 +1323,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   hasLevel        <- length(unique(out[["Level"]])) > 1
 
   # compute Kaplan-Meier if needed
-  if (type == "survival" && options[["survivalProbabilityPlotAddKaplanMeier"]]) {
+  if (type == "survival" && options[["survivalProbabilityPlotAddKaplanMeier"]] && options[["censoringType"]] == "right") {
 
     kmFit    <- try(survfit(
       formula = .saGetFormula(options, type = "KM"),
@@ -1358,7 +1357,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   plot <- ggplot2::ggplot(data = out)
 
   # add censoring observations if requested
-  if (type == "survival" && options[["survivalProbabilityPlotAddCensoringEvents"]]) {
+  if (type == "survival" && options[["survivalProbabilityPlotAddCensoringEvents"]] && options[["censoringType"]] == "right") {
     plot <- plot + ggplot2::geom_rug(
       data    = data.frame(censoring = tempData[[options[["timeToEvent"]]]][!tempData[[options[["eventStatus"]]]]]),
       mapping = ggplot2::aes(x = censoring),
@@ -1367,7 +1366,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   }
 
   # add Kaplan-Meier if needed
-  if (type == "survival" && options[["survivalProbabilityPlotAddKaplanMeier"]]) {
+  if (type == "survival" && options[["survivalProbabilityPlotAddKaplanMeier"]] && options[["censoringType"]] == "right") {
 
     if (options[["predictionsConfidenceInterval"]]) {
       aesCall <- list(
@@ -1827,8 +1826,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 .sapOptions2PredictionTime      <- function(options, fit, type = "uknown") {
 
   dataset <- attr(fit, "dataset")
-  # TODO: dispatch with different types of survival
-  time <- dataset[[options[["timeToEvent"]]]]
+  time    <- .saExtractSurvTimes(dataset, options)
   minTime <- min(time[time > 0])
   maxTime <- max(time[time < Inf])
 
@@ -1921,7 +1919,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
       errors <- c(errors, gettextf(
         "%1$s model %2$s%3$s failed with the following message: %4$s.",
         distribution = attr(fit[[i]], "distribution"),
-        model        = attr(fit[[i]], "model"),
+        model        = attr(fit[[i]], "modelTitle"),
         subgroup     = if (options[["subgroup"]] != "") paste0(" (", attr(fit[[i]], "subgroupLabel"), ")") else "",
         error        = fit[[i]]
       ))

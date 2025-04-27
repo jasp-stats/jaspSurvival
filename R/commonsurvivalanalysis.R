@@ -7,10 +7,10 @@
 
   ready <- switch(
     options[["censoringType"]],
-    "counting" = options[["eventStatus"]] != "" && options[["intervalStart"]] != "" && options[["intervalEnd"]] != "",
-    "interval" = options[["eventStatus"]] != "" && options[["intervalStart"]] != "" && options[["intervalEnd"]] != "",
-    "right"    = options[["eventStatus"]] != "" && options[["timeToEvent"]] != "",
-    "left"     = options[["eventStatus"]] != "" && options[["timeToEvent"]] != ""
+    "counting" = options[["eventStatus"]]   != "" && options[["intervalStart"]] != "" && options[["intervalEnd"]] != "",
+    "interval" = options[["intervalStart"]] != "" && options[["intervalEnd"]] != "",
+    "right"    = options[["eventStatus"]]   != "" && options[["timeToEvent"]] != "",
+    "left"     = options[["eventStatus"]]   != "" && options[["timeToEvent"]] != ""
   )
 
   # check whether Cox regression is waiting for frailty
@@ -23,7 +23,7 @@
 .saCheckDataset       <- function(dataset, options, type) {
 
   # load the data
-  eventVariable <- options[["eventStatus"]]
+  eventVariable <- if (options[["censoringType"]] != "interval") options[["eventStatus"]]
   timeVariable  <- switch(
     options[["censoringType"]],
     "counting" = c(options[["intervalStart"]], options[["intervalEnd"]]),
@@ -41,11 +41,22 @@
   subgroupVariable   <- if (!is.null(options[["subgroup"]]) && options[["subgroup"]] != "") options[["subgroup"]]
 
   # clean from NAs
-  dataset <- na.omit(dataset)
-  dataset <- droplevels(dataset)
+  if (options[["censoringType"]] == "interval") {
+    # !!! interval data use NA's in the interval indication !!!
+    anyNas  <- apply(dataset[,which(!colnames(dataset) %in% c(timeVariable)),drop=FALSE], 1, anyNA)
+    dataset <- dataset[!anyNas,]
+    dataset <- droplevels(dataset)
 
-  # recode the event status variable
-  dataset[[eventVariable]] <- .saRecodeEventStatus(dataset, options)
+    # recode the time interval
+    dataset[[options[["intervalStart"]]]][is.nan(dataset[[options[["intervalStart"]]]]) | is.infinite(dataset[[options[["intervalStart"]]]])] <- NA
+    dataset[[options[["intervalEnd"]]]][is.nan(dataset[[options[["intervalEnd"]]]])     | is.infinite(dataset[[options[["intervalEnd"]]]])] <- NA
+  } else {
+    dataset <- na.omit(dataset)
+    dataset <- droplevels(dataset)
+
+    # recode the event status variable
+    dataset[[eventVariable]] <- .saRecodeEventStatus(dataset, options)
+  }
 
   # check of errors
   .hasErrors(
@@ -120,11 +131,9 @@
     "interval" = sprintf("Surv(
       time  = %1$s,
       time2 = %2$s,
-      event = %3$s,
       type  = 'interval2')",
       options[["intervalStart"]],
-      options[["intervalEnd"]],
-      options[["eventStatus"]]
+      options[["intervalEnd"]]
       ),
     "right"    = sprintf("Surv(
       time  = %1$s,
@@ -141,6 +150,20 @@
       options[["eventStatus"]]
       )
   ))
+}
+.saExtractSurvTimes   <- function(dataset, options) {
+
+  if (options[["censoringType"]] == "counting") {
+    times <- c(dataset[[options[["intervalStart"]]]], dataset[[options[["intervalEnd"]]]])
+  } else if (options[["censoringType"]] == "interval") {
+    times <- na.omit(c(dataset[[options[["intervalStart"]]]], dataset[[options[["intervalEnd"]]]]))
+  } else if (options[["censoringType"]] == "right") {
+    times <- dataset[[options[["timeToEvent"]]]]
+  } else if (options[["censoringType"]] == "left") {
+    times <- dataset[[options[["timeToEvent"]]]]
+  }
+
+  return(times)
 }
 .saGetFormula         <- function(options, type, null = FALSE) {
 
