@@ -679,9 +679,34 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   if (!.saSurvivalReady(options))
     return(estimatesTable)
 
+  # check whether any predictors are present
+  anyRegression <- any(sapply(fit, function(x) {
+    if (jaspBase::isTryError(x))
+      return(FALSE)
+    else
+      return(length(attr(x, "modelTerms")[["components"]]) > 0)
+  }))
+  if (anyRegression) {
+    estimatesTable$addColumnInfo(name = "z",              title = gettext("z"),               type = "number")
+    estimatesTable$addColumnInfo(name = "pValue",         title = gettext("p"),               type = "pvalue")
+  }
+
   # extract the data
   data <- .saSafeRbind(lapply(fit, .sapRowCoefficientsTable))
   data <- .saSafeSimplify(data)
+
+  # add test statistics and p-values
+  if (anyRegression) {
+
+    # add z-values and p-values
+    thisRegression <- grepl("JaspColumn", data[["coefficient"]])
+    data$z[thisRegression]      <- data$est[thisRegression] / data$se[thisRegression]
+    data$pValue[thisRegression] <- 2 * pnorm(-abs(data$z[thisRegression]))
+    estimatesTable$addFootnote(gettext("P-values are based on a Wald test."))
+
+    # fix coefficient names
+    data[["coefficient"]][thisRegression] <- sapply(data[["coefficient"]][thisRegression], .saTermNames, variables = c(options[["covariates"]], options[["factors"]]))
+  }
 
   # add footnotes
   messages <- .sapSelectedModelMessage(fit, options)
@@ -1715,9 +1740,8 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   tempPlot <- createJaspPlot()
 
-  if (jaspBase::isTryError(fit)) {
+  if (jaspBase::isTryError(fit) || length(fit) == 0)
     return(tempPlot)
-  }
 
   # extract the dataset and compute residuals
   dataset <- attr(fit, "dataset")
@@ -1738,8 +1762,10 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 }
 .sapResidualsVsPredictorsPlotFun <- function(fit, options) {
 
-  if (jaspBase::isTryError(fit))
-    return()
+  residualPlotResidualVsPredictors <- createJaspContainer()
+
+  if (jaspBase::isTryError(fit) || length(fit) == 0)
+    return(residualPlotResidualVsPredictors)
 
   # extract the dataset and compute residuals
   predictorsFit <- model.matrix(fit)
@@ -1750,18 +1776,17 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   ))
 
   if (ncol(predictorsFit) == 0)
-    return()
-
-  residualPlotResidualVsPredictors <- createJaspContainer()
+    return(residualPlotResidualVsPredictors)
 
   for (i in 1:ncol(predictorsFit)) {
+    tempPredictorName <- .saTermNames(colnames(predictorsFit)[i], variables = c(options[["covariates"]], options[["factors"]]))
     residualPlotResidualVsPredictors[[paste0("residualPlotResidualVsPredictors", i)]] <- createJaspPlot(
-      plot         = .saspResidualsPlot(x = predictorsFit[,i], y = res, xlab = colnames(predictorsFit)[i], ylab = switch(
+      plot         = .saspResidualsPlot(x = predictorsFit[,i], y = res, xlab = tempPredictorName, ylab = switch(
         options[["residualPlotResidualType"]],
         "response" = gettext("Response"),
         "coxSnell" = gettext("Cox-Snell")
       )),
-      title        = gettextf("Residuals vs. %1$s", colnames(predictorsFit)[i]),
+      title        = gettextf("Residuals vs. %1$s", tempPredictorName),
       position     = i,
       width        = 450,
       height       = 320
@@ -1774,9 +1799,8 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   tempPlot <- createJaspPlot()
 
-  if (jaspBase::isTryError(fit)) {
+  if (jaspBase::isTryError(fit) || length(fit) == 0)
     return(tempPlot)
-  }
 
   # extract the dataset and compute residuals
   pred    <- unlist(predict(fit))
@@ -1798,9 +1822,8 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   tempPlot <- createJaspPlot()
 
-  if (jaspBase::isTryError(fit)) {
+  if (jaspBase::isTryError(fit) || length(fit) == 0)
     return(tempPlot)
-  }
 
   # extract the dataset and compute residuals
   res     <- residuals(fit, type = switch(
