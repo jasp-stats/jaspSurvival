@@ -1172,6 +1172,19 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return(tempTable)
 }
+.sapLifeTimeTableWrapper         <- function(fit, options, type, timeSequence) {
+
+  tempData           <- summary(fit, type = type, t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
+  if (length(tempData) > 1) {
+    tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
+    return(tempTable)
+  }
+  tempData           <- tempData[[1]][,-1]
+  colnames(tempData) <- c("estimate", "lCi", "uCi")
+
+  return(tempData)
+}
+
 .sapSurvivalTimeTableFun         <- function(fit, options) {
 
   tempTable <- .sapCreatePredictionTableWrapper(fit, options, type = "quantile")
@@ -1211,60 +1224,26 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   timeSequence <- .sapOptions2PredictionTime(options, fit)
   data <- list()
 
-  if (options[["survivalProbabilityTable"]]) {
-    # add dots to column names since cbind merges names with collapse = "."
-    .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Survival Probability"), estimateName = "survivalProbability.")
+  # add dots to 'estimateName' since cbind merges names with collapse = "."
 
-    tempData           <- summary(fit, type = "survival", t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
-    if (length(tempData) > 1) {
-      tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
-      return(tempTable)
-    }
-    tempData           <- tempData[[1]][,-1]
-    colnames(tempData) <- c("estimate", "lCi", "uCi")
-    data[["survivalProbability"]] <- tempData
+  if (options[["survivalProbabilityTable"]]) {
+    .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Survival Probability"), estimateName = "survivalProbability.")
+    data[["survivalProbability"]] <- .sapLifeTimeTableWrapper(fit, options, type = "survival", timeSequence = timeSequence)
   }
 
   if (options[["hazardTable"]]) {
-
     .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Hazard"), estimateName = "hazard.")
-
-    tempData           <- summary(fit, type = "hazard", t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
-    if (length(tempData) > 1) {
-      tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
-      return(tempTable)
-    }
-    tempData           <- tempData[[1]][,-1]
-    colnames(tempData) <- c("estimate", "lCi", "uCi")
-    data[["hazard"]]   <- tempData
+    data[["hazard"]] <- .sapLifeTimeTableWrapper(fit, options, type = "hazard", timeSequence = timeSequence)
   }
 
   if (options[["cumulativeHazardTable"]]) {
-
     .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Cumulative Hazard"), estimateName = "cumulativeHazard.")
-
-    tempData           <- summary(fit, type = "cumhaz", t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
-    if (length(tempData) > 1) {
-      tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
-      return(tempTable)
-    }
-    tempData           <- tempData[[1]][,-1]
-    colnames(tempData) <- c("estimate", "lCi", "uCi")
-    data[["cumulativeHazard"]] <- tempData
+    data[["cumulativeHazard"]] <- .sapLifeTimeTableWrapper(fit, options, type = "cumhaz", timeSequence = timeSequence)
   }
 
   if (options[["restrictedMeanSurvivalTimeTable"]]) {
-
     .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Restricted Mean Survival Time"), estimateName = "restrictedMeanSurvivalTime.")
-
-    tempData           <- summary(fit, type = "rmst", t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
-    if (length(tempData) > 1) {
-      tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
-      return(tempTable)
-    }
-    tempData           <- tempData[[1]][,-1]
-    colnames(tempData) <- c("estimate", "lCi", "uCi")
-    data[["restrictedMeanSurvivalTime"]] <- tempData
+    data[["restrictedMeanSurvivalTime"]] <- .sapLifeTimeTableWrapper(fit, options, type = "rmst", timeSequence = timeSequence)
   }
 
   data <- do.call(cbind, data)
@@ -1285,6 +1264,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return(tempTable)
 }
+
 
 .sapCreatePredictionPlotWrapper <- function(fit, options, type) {
 
