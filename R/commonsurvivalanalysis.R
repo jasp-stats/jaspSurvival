@@ -43,8 +43,8 @@
   # clean from NAs
   if (options[["censoringType"]] == "interval") {
     # !!! interval data use NA's in the interval indication !!!
-    anyNas  <- apply(dataset[,which(!colnames(dataset) %in% c(timeVariable)),drop=FALSE], 1, anyNA)
-    dataset <- dataset[!anyNas,]
+    keep <- stats::complete.cases(dataset[setdiff(colnames(dataset), timeVariable)])
+    dataset <- dataset[keep, ]
     dataset <- droplevels(dataset)
 
     # recode the time interval
