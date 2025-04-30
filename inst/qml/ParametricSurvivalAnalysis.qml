@@ -254,7 +254,7 @@ Form
 			{
 				name:		"modelSummaryRankModels"
 				label:		qsTr("Rank models")
-				enabled:	distribution.value == "all" || modelTerms.count > 1
+				enabled:	distribution.value === "all" || modelTerms.count > 1
 				info: qsTr("Rank models based on the selected criterion.")
 
 				RadioButtonGroup
@@ -286,7 +286,7 @@ Form
 			{
 				name:		"modelSummaryAicWeighs"
 				label:		qsTr("AIC weights")
-				enabled:	distribution.value == "all" || modelTerms.count > 1
+				enabled:	distribution.value === "all" || modelTerms.count > 1
 				info: qsTr("Include AIC weights in the model summary.")
 			}
 
@@ -294,7 +294,7 @@ Form
 			{
 				name:		"modelSummaryBicWeighs"
 				label:		qsTr("BIC weights")
-				enabled:	distribution.value == "all" || modelTerms.count > 1
+				enabled:	distribution.value === "all" || modelTerms.count > 1
 				info: qsTr("Include BIC weights in the model summary.")
 			}
 		}
@@ -381,7 +381,7 @@ Form
 				label:			qsTr("Number")
 				defaultValue:	10
 				min:			2
-				visible:		predictionsSurvivalTimeStepsType.value == "quantiles"
+				visible:		predictionsSurvivalTimeStepsType.value === "quantiles"
 				info: qsTr("Specify the number of quantiles of the predicted surival when using Quantiles as the steps type.")
 			}
 
@@ -393,7 +393,7 @@ Form
 				defaultValue:	0
 				min:			0
 				max:			predictionsSurvivalTimeStepsTo.value
-				visible:		predictionsSurvivalTimeStepsType.value == "sequence"
+				visible:		predictionsSurvivalTimeStepsType.value === "sequence"
 				info: qsTr("Set the starting quantile of the predicted survival when using Sequence steps.")
 			}
 
@@ -404,7 +404,7 @@ Form
 				label:			qsTr("Size")
 				defaultValue:	0.1
 				max:			1
-				visible:		predictionsSurvivalTimeStepsType.value == "sequence"
+				visible:		predictionsSurvivalTimeStepsType.value === "sequence"
 				info: qsTr("Define the size of each quantile of the predicted survival when using Sence steps.")
 			}
 
@@ -416,7 +416,7 @@ Form
 				defaultValue:	1
 				min:			predictionsSurvivalTimeStepsFrom.value + predictionsSurvivalTimeStepsSize.value
 				max:			1
-				visible:		predictionsSurvivalTimeStepsType.value == "sequence"
+				visible:		predictionsSurvivalTimeStepsType.value === "sequence"
 				info: qsTr("Set the ending quantile of the predicted survival when using Sequence steps.")
 			}
 
@@ -424,7 +424,7 @@ Form
 			{
 				name:			"predictionsSurvivalTimeCustom"
 				label:			qsTr("Steps")
-				visible:		predictionsSurvivalTimeStepsType.value == "custom"
+				visible:		predictionsSurvivalTimeStepsType.value === "custom"
 				defaultValue:	"0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9"
 				info: qsTr("Specify custom steps of the predicted survival.")
 			}
@@ -434,7 +434,7 @@ Form
 				label:		qsTr("Merge plots across distributions")
 				name:		"survivalTimeMergePlotsAcrossDistributions"
 				checked:	false
-				enabled:	distribution.value == "all" && (modelTerms.count  == 1 || (modelTerms.count > 1 && interpretModel.value != "bestAic" && interpretModel.value != "bestBic"))
+				enabled:	distribution.value === "all" && (modelTerms.count  == 1 || (modelTerms.count > 1 && interpretModel.value != "bestAic" && interpretModel.value != "bestBic"))
 				info: qsTr("Merge the plots for survival probability across distributions into a single plot. Only available when no model selection is being performed.")
 			}	
 
@@ -631,7 +631,7 @@ Form
 				label:			qsTr("Number")
 				defaultValue:	10
 				min:			2
-				visible:		predictionsLifeTimeStepsType.value == "quantiles"
+				visible:		predictionsLifeTimeStepsType.value === "quantiles"
 				info: qsTr("Specify the number of quantiles of the life time when using Quantiles as the steps type.")
 			}
 
@@ -643,7 +643,7 @@ Form
 				defaultValue:	0
 				min:			0
 				max:			predictionsLifeTimeStepsTo.value
-				visible:		predictionsLifeTimeStepsType.value == "sequence"
+				visible:		predictionsLifeTimeStepsType.value === "sequence"
 				info: qsTr("Set the starting quantile of the life time when using Sequence steps.")
 			}
 
@@ -653,7 +653,7 @@ Form
 				id:				predictionsLifeTimeStepsSize
 				label:			qsTr("Size")
 				defaultValue:	""
-				visible:		predictionsLifeTimeStepsType.value == "sequence"
+				visible:		predictionsLifeTimeStepsType.value === "sequence"
 				fieldWidth:		40 * jaspTheme.uiScale
 				info: qsTr("Define the size of each quantile of the life time when using Sence steps. The default '' correspoonds to 1/10 of the maximum observed time.")
 			}
@@ -663,7 +663,7 @@ Form
 				name:			"predictionsLifeTimeStepsTo"
 				label:			qsTr("To")
 				defaultValue:	""
-				visible:		predictionsLifeTimeStepsType.value == "sequence"
+				visible:		predictionsLifeTimeStepsType.value === "sequence"
 				fieldWidth:		40 * jaspTheme.uiScale
 				info: qsTr("Set the final step of the life time when using Sequence steps. The default '' correspoonds to the maximum observed time.")
 			}
@@ -673,7 +673,7 @@ Form
 				name:		"predictionsLifeTimeRoundSteps"
 				label:		qsTr("Round steps")
 				checked:	true
-				visible:	predictionsLifeTimeStepsType.value == "quantiles" || predictionsLifeTimeStepsType.value == "sequence"
+				visible:	predictionsLifeTimeStepsType.value === "quantiles" || predictionsLifeTimeStepsType.value === "sequence"
 				info: qsTr("Round the interval boundaries to the nearest integer when using Quantiles or Sequence steps.")
 			}
 
@@ -681,7 +681,7 @@ Form
 			{
 				name:			"predictionsLifeTimeCustom"
 				label:			qsTr("Steps")
-				visible:		predictionsLifeTimeStepsType.value == "custom"
+				visible:		predictionsLifeTimeStepsType.value === "custom"
 				defaultValue:	"0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9"
 				info: qsTr("Specify custom steps of the life time.")
 			}
@@ -699,7 +699,7 @@ Form
 				label:		qsTr("Merge plots across distributions")
 				name:		"lifeTimeMergePlotsAcrossDistributions"
 				checked:	false
-				enabled:	distribution.value == "all" && (modelTerms.count  == 1 || (modelTerms.count > 1 && interpretModel.value != "bestAic" && interpretModel.value != "bestBic")) 
+				enabled:	distribution.value === "all" && (modelTerms.count == 1 || (modelTerms.count > 1 && interpretModel.value != "bestAic" && interpretModel.value != "bestBic")) 
 				info: qsTr("Merge the plots for survival time, survival probabilities, hazard, cumulative hazard, and restricted mean survival across distributions into a single plot. Only available when no model selection is being performed.")
 			}	
 
@@ -765,7 +765,7 @@ Form
 		Group
 		{
 			title:		qsTr("Selected Parametric Distributions")
-			enabled:	distribution.value == "all" || distribution.value == "bestAIC" || distribution.value == "bestBIC"
+			enabled:	distribution.value === "all" || distribution.value === "bestAIC" || distribution.value === "bestBIC"
 
 
 			CheckBox { name: "selectedParametricDistributionExponential";				label: qsTr("Exponential");						checked: true }
@@ -797,7 +797,7 @@ Form
 			{
 				name:		"compareModelsAcrossDistributions"
 				text:		qsTr("Compare models across distributions")
-				enabled:	(distribution.value == "all" || distribution.value == "bestAic" || distribution.value == "bestBic") && modelTerms.count > 1
+				enabled:	(distribution.value === "all" || distribution.value === "bestAic" || distribution.value === "bestBic") && modelTerms.count > 1
 				checked:	true
 				info: qsTr("Compare models across distributions. This option is only available when the multiple models and parametric distributions are specified.")
 			}
