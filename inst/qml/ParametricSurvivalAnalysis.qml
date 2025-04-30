@@ -306,7 +306,7 @@ Form
 				label:		qsTr("Coefficients")
 				name:		"coefficients"
 				checked:	false
-				info: qsTr("Include a table with coefficients estimates.")
+				info: qsTr("Include a table with coefficient estimates.")
 			}
 
 			CheckBox
@@ -314,7 +314,7 @@ Form
 				label:		qsTr("Coefficients covariance matrix")
 				name:		"coefficientsCovarianceMatrix"
 				checked:	false
-				info: qsTr("Include a table with the covariance matrix of the coefficients estimates.")
+				info: qsTr("Include a table with the covariance matrix of the coefficient estimates.")
 			}
 		}
 
@@ -366,7 +366,7 @@ Form
 				name:		"predictionsSurvivalTimeStepsType"
 				id:			predictionsSurvivalTimeStepsType
 				label:		qsTr("Steps type")
-				info: qsTr("Select the method to define intervals for the life table: Default, Quantiles, or Fixed size.")
+				info: qsTr("Select the method to define intervals for the life table: Default, Quantiles, or Custom.")
 				values:
 				[
 					{ label: qsTr("Quantilies"),	value: "quantiles"},
@@ -381,7 +381,7 @@ Form
 				label:			qsTr("Number")
 				defaultValue:	10
 				min:			2
-				visible:		predictionsSurvivalTimeStepsType.value == "quantiles"
+				visible:		predictionsSurvivalTimeStepsType.value === "quantiles"
 				info: qsTr("Specify the number of quantiles of the predicted surival when using Quantiles as the steps type.")
 			}
 
@@ -483,7 +483,7 @@ Form
 						{ label: qsTr("Minimal")	,		value: "minimal"},
 						{ label: "APA",						value: "apa"},
 						{ label: "pubr",					value: "pubr"},
-						{ label: "Detailed",				value: "detailed"}
+						{ label: qsTr("Detailed"),				value: "detailed"}
 					]
 				}
 			}
@@ -616,7 +616,7 @@ Form
 				name:		"predictionsLifeTimeStepsType"
 				id:			predictionsLifeTimeStepsType
 				label:		qsTr("Steps type")
-				info: qsTr("Select the method to define intervals for the life table: Default, Quantiles, or Fixed size.")
+				info: qsTr("Select the method to define intervals for the life table: Default, Quantiles, or Custom.")
 				values:
 				[
 					{ label: qsTr("Quantilies"),	value: "quantiles"},

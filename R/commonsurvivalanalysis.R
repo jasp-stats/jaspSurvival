@@ -199,7 +199,7 @@
   survival <- .saGetSurv(options)
 
   if (length(predictors) == 0 && !interceptTerm)
-    stop(gettext("We need at least one predictor, or an intercept to make a formula"))
+    stop(gettext("At least one predictor, or an intercept, is needed to fit the model."))
 
   if (length(predictors) == 0)
     formula <- paste(survival, "~", "1")
@@ -208,7 +208,7 @@
   else
     formula <- paste(survival, "~", paste(predictors, collapse = "+"), "-1")
 
-  return(as.formula(formula, env = parent.frame(1)))
+  return(stats::as.formula(formula, env = parent.frame(1)))
 }
 .saGetPredictors      <- function(options, null = FALSE) {
   # modified from jaspRegression::.createGlmFormula

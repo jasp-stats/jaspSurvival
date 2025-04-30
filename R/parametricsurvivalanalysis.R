@@ -646,9 +646,9 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   sequentialModelComparisonTable <- createJaspTable()
   .sapAddColumnSubgroup(     sequentialModelComparisonTable, options, output = "coefficients")
   .sapAddColumnDistribution( sequentialModelComparisonTable, options, output = "coefficients")
-  sequentialModelComparisonTable$addColumnInfo(name = "model0", title = gettext("H\U2080"),      type = "string")
-  sequentialModelComparisonTable$addColumnInfo(name = "model1", title = gettext("H\U2081"),      type = "string")
-  sequentialModelComparisonTable$addColumnInfo(name = "chi2",   title = gettext("\U03C7\U00B2"), type = "number")
+  sequentialModelComparisonTable$addColumnInfo(name = "model0", title = "H\U2080",      type = "string")
+  sequentialModelComparisonTable$addColumnInfo(name = "model1", title = "H\U2081",      type = "string")
+  sequentialModelComparisonTable$addColumnInfo(name = "chi2",   title = "\U03C7\U00B2", type = "number")
   sequentialModelComparisonTable$addColumnInfo(name = "df",     title = gettext("df"),           type = "integer")
   sequentialModelComparisonTable$addColumnInfo(name = "pValue", title = gettext("p"),            type = "pvalue")
 
@@ -662,7 +662,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   data <- .saSafeRbind(data)
 
   # add footnotes
-  sequentialModelComparisonTable$addFootnote(gettext("Likelihood ratio test for nested models based on \U03C7\U00B2 distribution."))
+  sequentialModelComparisonTable$addFootnote(gettextf("Likelihood ratio test for nested models based on %s distribution.", "\U03C7\U00B2"))
 
   sequentialModelComparisonTable$setData(data)
   sequentialModelComparisonTable$showSpecifiedColumnsOnly <- TRUE
@@ -1782,10 +1782,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     "coxSnell" = "coxsnell"
   ))
 
-  if (ncol(predictorsFit) == 0)
-    return(residualPlotResidualVsPredictors)
-
-  for (i in 1:ncol(predictorsFit)) {
+  for (i in seq_len(ncol(predictorsFit))) {
     tempPredictorName <- .saTermNames(colnames(predictorsFit)[i], variables = c(options[["covariates"]], options[["factors"]]))
     residualPlotResidualVsPredictors[[paste0("residualPlotResidualVsPredictors", i)]] <- createJaspPlot(
       plot         = .saspResidualsPlot(x = predictorsFit[,i], y = res, xlab = tempPredictorName, ylab = switch(
