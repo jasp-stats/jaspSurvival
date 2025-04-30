@@ -802,7 +802,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
                           "survivalProbabilityTable", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
-                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
+                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom", "survivalProbabilityAsFailureProbability"
   )
 
   .sapSectionWrapper(
@@ -811,7 +811,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     fit           = fit,
     tableFunction = .sapSurvivalProbabilityTableFun,
     name          = "survivalProbabilityTable",
-    title         = gettext("Predicted Survival Probability"),
+    title         = if (options[["survivalProbabilityAsFailureProbability"]]) gettext("Predicted Failure Probability") else gettext("Predicted Survival Probability"),
     dependencies  = outputDependencies,
     position      = 3.11
   )
@@ -985,7 +985,8 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom",
                           "lifeTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme",
-                          "survivalProbabilityPlotAddKaplanMeier", "survivalProbabilityPlotAddCensoringEvents", "survivalProbabilityPlotTransformXAxis", "survivalProbabilityPlotTransformYAxis"
+                          "survivalProbabilityPlotAddKaplanMeier", "survivalProbabilityPlotAddCensoringEvents", "survivalProbabilityPlotTransformXAxis", "survivalProbabilityPlotTransformYAxis",
+                          "survivalProbabilityAsFailureProbability"
   )
 
   .sapSectionWrapper(
@@ -994,7 +995,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     fit           = fit,
     tableFunction = .sapSurvivalProbabilityPlotFun,
     name          = "survivalProbabilityPlot",
-    title         = gettext("Predicted Survival Probability"),
+    title         = if (options[["survivalProbabilityAsFailureProbability"]]) gettext("Predicted Failure Probability") else gettext("Predicted Survival Probability"),
     dependencies  = outputDependencies,
     position      = 3.12
   )
@@ -1118,7 +1119,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   estimateTitle <- switch(
     type,
     "quantile"  = gettext("Survival Time"),
-    "survival"  = gettext("Survival Probability"),
+    "survival"  = if (options[["survivalProbabilityAsFailureProbability"]]) gettext("Failure Probability") else gettext("Survival Probability"),
     "hazard"    = gettext("Hazard"),
     "cumhaz"    = gettext("Cumulative Hazard"),
     "rmst"      = gettext("Restricted Mean Survival Time")
@@ -1142,6 +1143,13 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   for (i in seq_along(data)) {
     data[[i]]           <- data[[i]][,-1]
     colnames(data[[i]]) <- c("estimate", "lCi", "uCi")
+
+    # transform survival to failure if requested
+    if (type == "survival" && options[["survivalProbabilityAsFailureProbability"]]) {
+      data[[i]]$estimate <- 1 - data[[i]]$estimate
+      data[[i]]$lCi      <- 1 - data[[i]]$lCi
+      data[[i]]$uCi      <- 1 - data[[i]]$uCi
+    }
   }
 
   estimateTitles <- names(data)
@@ -1181,6 +1189,13 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   }
   tempData           <- tempData[[1]][,-1]
   colnames(tempData) <- c("estimate", "lCi", "uCi")
+
+  # transform survival to failure if requested
+  if (type == "survival" && options[["survivalProbabilityAsFailureProbability"]]) {
+    tempData$estimate <- 1 - tempData$estimate
+    tempData$lCi      <- 1 - tempData$lCi
+    tempData$uCi      <- 1 - tempData$uCi
+  }
 
   return(tempData)
 }
@@ -1227,7 +1242,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   # add dots to 'estimateName' since cbind merges names with collapse = "."
 
   if (options[["survivalProbabilityTable"]]) {
-    .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Survival Probability"), estimateName = "survivalProbability.")
+    .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = if (options[["survivalProbabilityAsFailureProbability"]]) gettext("Failure Probability") else gettext("Survival Probability"), estimateName = "survivalProbability.")
     data[["survivalProbability"]] <- .sapLifeTimeTableWrapper(fit, options, type = "survival", timeSequence = timeSequence)
   }
 
@@ -1265,7 +1280,6 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   return(tempTable)
 }
 
-
 .sapCreatePredictionPlotWrapper <- function(fit, options, type) {
 
   if (type == "quantile") {
@@ -1277,7 +1291,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   estimateTitle <- switch(
     type,
     "quantile"  = gettext("Survival Time"),
-    "survival"  = gettext("Survival Probability"),
+    "survival"  = if (options[["survivalProbabilityAsFailureProbability"]]) gettext("Failure Probability") else gettext("Survival Probability"),
     "hazard"    = gettext("Hazard"),
     "cumhaz"    = gettext("Cumulative Hazard"),
     "rmst"      = gettext("Restricted Mean Survival Time")
@@ -1296,7 +1310,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   if (type == "quantile") {
     optionsSequence <- .sapOptions2PredictionQuantile(options)
   } else {
-    optionsSequence <- .sapOptions2PredictionTime(options, tempFit, type)
+    optionsSequence <- .sapOptions2PredictionTime(options, tempFit, type, plot = TRUE)
   }
 
   out <- list()
@@ -1317,6 +1331,12 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
       # rename output
       colnames(data[[j]]) <- c("at", "estimate", "lCi", "uCi")
+
+      if (type == "survival" && options[["survivalProbabilityAsFailureProbability"]]) {
+        data[[j]]$estimate <- 1 - data[[j]]$estimate
+        data[[j]]$lCi      <- 1 - data[[j]]$lCi
+        data[[j]]$uCi      <- 1 - data[[j]]$uCi
+      }
 
       # add factor level
       if (length(data) > 1) {
@@ -1360,6 +1380,12 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
       lCi      = lower,
       uCi      = upper
     ))
+
+    if (options[["survivalProbabilityAsFailureProbability"]]) {
+      kmTable$estimate <- 1 - kmTable$estimate
+      kmTable$lCi      <- 1 - kmTable$lCi
+      kmTable$uCi      <- 1 - kmTable$uCi
+    }
 
     # transform into a step function
     kmTable    <- kmTable[rep(1:nrow(kmTable), each=2), ]
@@ -1440,129 +1466,24 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
       jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
   }
 
-  # scale axis
-  if (type == "survival") {
-
-    if (options[["survivalProbabilityPlotTransformXAxis"]] == "log") {
-
-      xRange <- range(out[["at"]], na.rm = TRUE)
-      atTitle <- paste0(atTitle, gettext(" (log scale)"))
-      plot <- plot + jaspGraphs::scale_x_continuous(breaks = exp(seq(log(xRange[1]), log(xRange[2]), length.out = 5)), limits = xRange,
-                                                    trans = "log", oob = scales::oob_keep)
-
-    } else {
-
-      xTicks <- jaspGraphs::getPrettyAxisBreaks(range(out[["at"]], na.rm = TRUE))
-      plot <- plot + jaspGraphs::scale_x_continuous(breaks = xTicks, limits = range(xTicks), oob = scales::oob_keep)
-
-    }
-
-    yTicks <- jaspGraphs::getPrettyAxisBreaks(range(c(
-      out[["estimate"]],
-      if (options[["predictionsConfidenceInterval"]]) out[["lCi"]],
-      if (options[["predictionsConfidenceInterval"]]) out[["uCi"]]), na.rm = TRUE))
-
-    if (options[["survivalProbabilityPlotTransformYAxis"]] == "log") {
-
-      estimateTitle <- gettext("Survival (log scale)")
-
-      if (options[["plotTheme"]] == "detailed") {
-
-        yRange    <- c(0.001, 1)
-        yTicks    <- c(0.001, 0.005, 0.01, 0.02, 0.05, 0.10, 0.50, 0.80, 0.90)
-
-        plot <- plot + ggplot2::scale_y_continuous(
-          breaks = yTicks, limits = yRange, oob = scales::oob_keep,
-          minor_breaks = c(1:20/1000, 2:10/100, 1:9/10),
-          transform = "log"
-        )
-
-      } else {
-
-        yRange    <- range(yTicks)
-        yRange[1] <- max(0.01, yRange[1])
-        yTicks    <- exp(seq(log(yRange[1]), log(yRange[2]), length.out = 7))
-        plot <- plot + jaspGraphs::scale_y_continuous(breaks = yTicks, limits = yRange, oob = scales::oob_keep, trans = "log")
-
-      }
-
-    } else if (options[["survivalProbabilityPlotTransformYAxis"]] == "log1mp") {
-
-      log1mp    <- function(x) log(1 - x)
-      log1mpInv <- function(x) 1 - exp(x)
-      estimateTitle <- gettext("Survival (log(1-p) scale)")
-
-      if (options[["plotTheme"]] == "detailed") {
-
-        yRange    <- c(0, 0.999)
-        yTicks    <- c(0, 0.10, 0.50, 0.80, 0.90, 0.95, 0.98, 0.99, 0.995, 0.999)
-
-        plot <- plot + ggplot2::scale_y_continuous(
-          breaks = rev(yTicks), limits = rev(yRange), oob = scales::oob_keep,
-          minor_breaks = 1-c(1:20/1000, 2:10/100, 1:9/10),
-          transform = scales::new_transform(name = "log1mp", transform = log1mp, inverse = log1mpInv)
-        )
-
-      } else {
-
-        yRange    <- range(yTicks)
-        yRange[2] <- min(0.99, yRange[2])
-        yTicks    <- log1mpInv(seq(log1mp(yRange[2]), log1mp(yRange[1]), length.out = 7))
-
-        plot <- plot + jaspGraphs::scale_y_continuous(
-          breaks = rev(yTicks), limits = rev(yRange), oob = scales::oob_keep,
-          trans = scales::new_transform(name = "log1mp", transform = log1mp, inverse = log1mpInv)
-        )
-      }
-
-    } else if (options[["survivalProbabilityPlotTransformYAxis"]] == "logmlogp") {
-
-      logmlogp    <- function(x) log(-log(x))
-      logmlogpInv <- function(x) exp(-exp(x))
-      estimateTitle <- gettext("Survival (log(-log(p)) scale)")
-
-      if (options[["plotTheme"]] == "detailed") {
-
-        yRange    <- c(0.001, 0.999)
-        yTicks    <- c(0.001, 0.005, 0.02, 0.05, 0.10, 0.50, 0.80, 0.90, 0.95, 0.98, 0.99, 0.999)
-
-        plot <- plot + ggplot2::scale_y_continuous(
-          breaks = rev(yTicks), limits = rev(yRange), oob = scales::oob_keep,
-          minor_breaks = c(99:90/100, 8:1/10, 9:1/100),
-          transform = scales::new_transform(name = "logmlogp", transform = logmlogp, inverse = logmlogpInv)
-        )
-
-      } else {
-
-        yRange    <- range(yTicks)
-        yRange[1] <- max(0.01, yRange[1])
-        yRange[2] <- min(0.99, yRange[2])
-        yTicks    <- logmlogpInv(seq(logmlogp(yRange[2]), logmlogp(yRange[1]), length.out = 7))
-
-        plot <- plot + jaspGraphs::scale_y_continuous(
-          breaks = rev(yTicks), limits = rev(yRange), oob = scales::oob_keep,
-          trans = scales::new_transform(name = "logmlogp", transform = logmlogp, inverse = logmlogpInv)
-        )
-      }
-
-    } else {
-      plot <- plot + jaspGraphs::scale_y_continuous(breaks = yTicks, limits = range(yTicks), oob = scales::oob_keep)
-    }
-
+  # scale axis & add labels
+  if (type == "survival" && options[["survivalProbabilityPlotTransformXAxis"]] == "log") {
+    xBreaks <- exp(seq(log(min(out[["at"]], na.rm = TRUE)), log(max(out[["at"]], na.rm = TRUE)), length.out = 5))
   } else {
-
-    xTicks <- jaspGraphs::getPrettyAxisBreaks(range(out[["at"]], na.rm = TRUE))
-    yTicks <- jaspGraphs::getPrettyAxisBreaks(range(c(
-      out[["estimate"]],
-      if (options[["predictionsConfidenceInterval"]]) out[["lCi"]],
-      if (options[["predictionsConfidenceInterval"]]) out[["uCi"]]), na.rm = TRUE))
-
-    plot <- plot + jaspGraphs::scale_x_continuous(breaks = xTicks, limits = range(xTicks), oob = scales::oob_keep) +
-      jaspGraphs::scale_y_continuous(breaks = yTicks, limits = range(yTicks), oob = scales::oob_keep)
+    xBreaks <- jaspGraphs::getPrettyAxisBreaks(range(out[["at"]], na.rm = TRUE))
   }
+  yBreaks <- jaspGraphs::getPrettyAxisBreaks(range(c(
+    out[["estimate"]],
+    if (options[["predictionsConfidenceInterval"]]) out[["lCi"]],
+    if (options[["predictionsConfidenceInterval"]]) out[["uCi"]]), na.rm = TRUE))
 
-  # add labels
-  plot <- plot + ggplot2::ylab(estimateTitle) + ggplot2::xlab(atTitle)
+  if (type == "survival") {
+    plot <- .sapPredictionPlotAddSurvivalAxis(plot, options, xBreaks, yBreaks, atTitle, estimateTitle)
+  } else {
+    plot <- plot + jaspGraphs::scale_x_continuous(breaks = xBreaks, limits = range(xBreaks), oob = scales::oob_keep) +
+      jaspGraphs::scale_y_continuous(breaks = yBreaks, limits = range(yBreaks), oob = scales::oob_keep) +
+      ggplot2::ylab(estimateTitle) + ggplot2::xlab(atTitle)
+  }
 
   # themes
   if (type != "survival" && options[["plotTheme"]] == "detailed") {
@@ -1596,6 +1517,101 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return(tempPlot)
 }
+
+.sapPredictionPlotAddSurvivalAxis <- function(plot, options, xBreaks, yBreaks, atTitle, estimateTitle) {
+
+  ### x-axis
+  if (options[["survivalProbabilityPlotTransformXAxis"]] == "none") {
+    # no transformation
+    plot <- plot + jaspGraphs::scale_x_continuous(breaks = xBreaks, limits = range(xBreaks), oob = scales::oob_keep)
+
+  } else if (options[["survivalProbabilityPlotTransformXAxis"]] == "log") {
+    # log transformation
+    atTitle <- gettextf("%1$s (log scale)", atTitle)
+    plot <- plot + jaspGraphs::scale_x_continuous(breaks = xBreaks, limits = range(xBreaks), trans = "log", oob = scales::oob_keep)
+
+  }
+
+  ### y-axis
+  if (options[["survivalProbabilityPlotTransformYAxis"]] == "none") {
+    # no transformation
+    if (options[["plotTheme"]] == "detailed") {
+
+      yRange    <- c(0, 1)
+      yBreaks   <- seq(0, 1, by = 0.1)
+
+      plot <- plot + ggplot2::scale_y_continuous(
+        breaks = yBreaks, limits = yRange, oob = scales::oob_keep,
+        minor_breaks = seq(0, 1, by = 0.05)
+      )
+
+    } else {
+
+      plot <- plot + jaspGraphs::scale_y_continuous(breaks = yBreaks, limits = range(yBreaks), oob = scales::oob_keep)
+
+    }
+
+  } else if (options[["survivalProbabilityPlotTransformYAxis"]] == "log") {
+    # log transformation
+    estimateTitle <- gettextf("%1$s (log scale)", estimateTitle)
+
+    if (options[["plotTheme"]] == "detailed") {
+
+      yRange    <- c(0.001, 1)
+      yBreaks   <- c(0.001, 0.005, 0.01, 0.02, 0.05, 0.10, 0.50, 0.80, 0.90)
+
+      plot <- plot + ggplot2::scale_y_continuous(
+        breaks = yBreaks, limits = yRange, oob = scales::oob_keep,
+        minor_breaks = c(1:20/1000, 2:10/100, 1:9/10),
+        transform = "log"
+      )
+
+    } else {
+
+      yRange    <- range(yBreaks)
+      yRange[1] <- max(0.01, yRange[1])
+      yBreaks   <- exp(seq(log(yRange[1]), log(yRange[2]), length.out = 7))
+
+      plot <- plot + jaspGraphs::scale_y_continuous(breaks = yBreaks, limits = yRange, oob = scales::oob_keep, trans = "log")
+
+    }
+
+  } else if (options[["survivalProbabilityPlotTransformYAxis"]] == "logmlogmp") {
+    # log-log transformation
+    logmlogmp    <- function(x) log(-log(1-x))
+    logmlogmpInv <- function(x) exp(-exp(x)) * (exp(exp(x))-1)
+    estimateTitle <- gettextf("%1$s (log(log(p)) scale)", estimateTitle)
+
+    if (options[["plotTheme"]] == "detailed") {
+
+      yRange    <- c(0.001, 0.999)
+      yBreaks   <- (c(0.001, 0.005, 0.02, 0.05, 0.10, 0.50, 0.80, 0.90, 0.95, 0.98, 0.99, 0.999))
+
+      plot <- plot + ggplot2::scale_y_continuous(
+        breaks = (yBreaks), limits = (yRange), oob = scales::oob_keep,
+        minor_breaks = c(99:90/100, 8:1/10, 9:1/100),
+        transform = scales::new_transform(name = "logmlogp", transform = logmlogmp, inverse = logmlogmpInv)
+      )
+
+    } else {
+
+      yRange    <- range(yBreaks)
+      yRange[1] <- max(0.01, yRange[1])
+      yRange[2] <- min(0.99, yRange[2])
+      yBreaks   <- logmlogmpInv(seq(logmlogmp(yRange[2]), logmlogmp(yRange[1]), length.out = 7))
+
+      plot <- plot + jaspGraphs::scale_y_continuous(
+        breaks = (yBreaks), limits = (yRange), oob = scales::oob_keep,
+        trans = scales::new_transform(name = "logmlogp", transform = logmlogmp, inverse = logmlogmpInv)
+      )
+    }
+  }
+
+  plot <- plot + ggplot2::ylab(estimateTitle) + ggplot2::xlab(atTitle)
+  return(plot)
+}
+
+
 .sapSurvivalTimePlotFun         <- function(fit, options) {
 
   tempPlot <- .sapCreatePredictionPlotWrapper(fit, options, type = "quantile")
@@ -2055,12 +2071,17 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   return(setQuantiles)
 }
-.sapOptions2PredictionTime      <- function(options, fit, type = "uknown") {
+.sapOptions2PredictionTime      <- function(options, fit, type = "uknown", plot = FALSE) {
 
   dataset <- attr(fit, "dataset")
   time    <- .saExtractSurvTimes(dataset, options)
   minTime <- min(time[time > 0])
   maxTime <- max(time[time < Inf])
+
+  # plotting preset which makes the plots look smoother than the generated tables
+  if (plot) {
+    options[["predictionsLifeTimeStepsNumber"]] <- 101
+  }
 
   if (options[["predictionsLifeTimeStepsType"]] == "quantiles") {
 
@@ -2079,6 +2100,13 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     stepSize <- options[["predictionsLifeTimeStepsSize"]]
     stepTo   <- options[["predictionsLifeTimeStepsTo"]]
 
+    if (stepFrom != "") {
+      stepFrom <- as.numeric(trimws(stepFrom, which = "both"))
+      if (is.na(stepFrom) || stepFrom <= 0)
+        .quitAnalysis(gettext("Step from for predicted survival time must be a positive number."))
+    } else {
+      stepTo <- 0
+    }
     if (stepTo != "") {
       stepTo <- as.numeric(trimws(stepTo, which = "both"))
       if (is.na(stepTo) || stepTo <= 0)
@@ -2099,11 +2127,23 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
       if (stepFrom == 0) {
         stepFrom <- minTime
       }
-      setTime <- seq(stepFrom, stepTo, stepSize)
+      if (plot) {
+        setTime <- seq(stepFrom, stepTo, length.out = options[["predictionsLifeTimeStepsNumber"]])
+      } else {
+        setTime <- seq(stepFrom, stepTo, stepSize)
+      }
     } else {
-      setTime <- seq(stepFrom, stepTo, stepSize)
-      if (options[["predictionsLifeTimeRoundSteps"]])
-        setTime <- unique(round(setTime))
+      if (plot) {
+        if (type == "survival" && options[["survivalProbabilityPlotTransformXAxis"]] %in% c("log")) {
+          setTime <- exp(seq(log(stepFrom), log(stepTo), length.out = options[["predictionsLifeTimeStepsNumber"]]))
+        } else {
+          setTime <- seq(stepFrom, stepTo, length.out = options[["predictionsLifeTimeStepsNumber"]])
+        }
+      } else {
+        setTime <- seq(stepFrom, stepTo, stepSize)
+        if (options[["predictionsLifeTimeRoundSteps"]])
+          setTime <- unique(round(setTime))
+      }
     }
 
   } else if (options[["predictionsLifeTimeStepsType"]] == "custom") {
@@ -2117,6 +2157,10 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     # special treatment for setting limits when survival plot with transformation is used
     if (type == "survival" && options[["survivalProbabilityPlotTransformXAxis"]] %in% c("log")) {
       setTime[setTime <= 0] <- minTime
+    }
+
+    if (plot) {
+      setTime <- seq(min(setTime), max(setTime), length.out = options[["predictionsLifeTimeStepsNumber"]])
     }
   }
 

@@ -489,7 +489,7 @@ Form
 						{ label: qsTr("Minimal")	,		value: "minimal"},
 						{ label: "APA",						value: "apa"},
 						{ label: "pubr",					value: "pubr"},
-						{ label: qsTr("Detailed"),				value: "detailed"}
+						{ label: qsTr("Detailed"),			value: "detailed"}
 					]
 				}
 			}
@@ -499,7 +499,7 @@ Form
 		{
 			Group
 			{
-				title:		qsTr("Survival Probabilities")
+				title:		qsTr("Survival Probability")
 
 				CheckBox
 				{
@@ -551,12 +551,18 @@ Form
 						info: qsTr("Select the transformation for the y-axis of the plot")
 						values:
 						[
-							{ label: qsTr("None"),			value: "none"},
-							{ label: qsTr("Log"),			value: "log"},
-							{ label: qsTr("Log(1-p)"),		value: "log1mp"},
-							{ label: qsTr("Log(-log(p))"),	value: "logmlogp"}
+							{ label: qsTr("None"),				value: "none"},
+							{ label: qsTr("Log"),				value: "log"},
+							{ label: qsTr("Log(-log(1-p))"),	value: "logmlogmp"}
 						]
 					}
+				}
+
+				CheckBox
+				{
+					label:		qsTr("As failure probability")
+					name:		"survivalProbabilityAsFailureProbability"
+					info: qsTr("Transform the output from survival probability to failure probability (i.e., 1 - Survival Probability).")
 				}
 			}
 
@@ -648,8 +654,9 @@ Form
 				label:			qsTr("From")
 				defaultValue:	0
 				min:			0
-				max:			predictionsLifeTimeStepsTo.value
+				max:			predictionsLifeTimeStepsTo
 				visible:		predictionsLifeTimeStepsType.value === "sequence"
+				fieldWidth:		40 * jaspTheme.uiScale
 				info: qsTr("Set the starting quantile of the life time when using Sequence steps.")
 			}
 
@@ -667,7 +674,9 @@ Form
 			FormulaField
 			{
 				name:			"predictionsLifeTimeStepsTo"
+				id:				predictionsLifeTimeStepsTo
 				label:			qsTr("To")
+				min:			predictionsLifeTimeStepsFrom
 				defaultValue:	""
 				visible:		predictionsLifeTimeStepsType.value === "sequence"
 				fieldWidth:		40 * jaspTheme.uiScale
