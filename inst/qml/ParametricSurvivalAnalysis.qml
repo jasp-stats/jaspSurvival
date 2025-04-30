@@ -327,6 +327,12 @@ Form
 			info: qsTr("Include a table with the results of the sequential model comparison.")
 		}
 
+		CIField
+		{
+			name: "confidenceIntervalLevel"
+			label: qsTr("Confidence interval")
+		}
+
 	}
 
 	Section
@@ -629,7 +635,7 @@ Form
 				info: qsTr("Specify the number of quantiles of the life time when using Quantiles as the steps type.")
 			}
 
-			DoubleField
+			FormulaField
 			{
 				name:			"predictionsLifeTimeStepsFrom"
 				id:				predictionsLifeTimeStepsFrom
