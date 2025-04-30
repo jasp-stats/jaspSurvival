@@ -84,7 +84,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   "includeFullDatasetInSubgroupAnalysis",
   # the CIs are not a simple multiplier of the standard error
   # as such, they need to be changed during the fitting process
-  "confidenceIntervalLevel"
+  "coefficientsConfidenceIntervalLevel"
 )
 
 # model fitting and extraction functions
@@ -110,7 +110,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
       "selectedParametricDistributionGeneralizedFOriginal",
       # the CIs are not a simple multiplier of the standard error
       # as such, they need to be changed during the fitting process
-      "confidenceIntervalLevel"
+      "coefficientsConfidenceIntervalLevel"
     ))
     jaspResults[["fit"]] <- fitContainer
     out                  <- NULL
@@ -236,7 +236,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     data    = dataset,
     dist    = distribution,
     weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]],
-    cl      = options[["confidenceIntervalLevel"]]
+    cl      = options[["coefficientsConfidenceIntervalLevel"]]
   ))
 
   # store attributes
@@ -679,7 +679,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   estimatesTable$addColumnInfo(name = "coefficient",    title = "",                         type = "string")
   estimatesTable$addColumnInfo(name = "est",            title = gettext("Estimate"),        type = "number")
   estimatesTable$addColumnInfo(name = "se",             title = gettext("Standard Error"),  type = "number")
-  overtitleCi <- gettextf("%s%% CI", 100 * options[["confidenceIntervalLevel"]])
+  overtitleCi <- gettextf("%s%% CI", 100 * options[["coefficientsConfidenceIntervalLevel"]])
   estimatesTable$addColumnInfo(name = "lower", title = gettext("Lower"), type = "number", overtitle = overtitleCi)
   estimatesTable$addColumnInfo(name = "upper", title = gettext("Upper"), type = "number", overtitle = overtitleCi)
 
@@ -774,7 +774,8 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   # output dependencies
   outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
                           "survivalTimeTable", "predictionsSurvivalTimeStepsType", "predictionsSurvivalTimeStepsNumber", "predictionsSurvivalTimeStepsFrom",
-                          "predictionsSurvivalTimeStepsSize", "predictionsSurvivalTimeStepsTo", "predictionsSurvivalTimeCustom", "predictionsConfidenceInterval", "confidenceIntervalLevel"
+                          "predictionsSurvivalTimeStepsSize", "predictionsSurvivalTimeStepsTo", "predictionsSurvivalTimeCustom",
+                          "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel"
                           )
 
   .sapSectionWrapper(
@@ -799,7 +800,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   fit <- .sapFlattenFit(fit, options)
 
   outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "survivalProbabilityTable", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "confidenceIntervalLevel",
+                          "survivalProbabilityTable", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
   )
@@ -826,7 +827,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   fit <- .sapFlattenFit(fit, options)
 
   outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "hazardTable", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "confidenceIntervalLevel",
+                          "hazardTable", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
   )
@@ -853,7 +854,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   fit <- .sapFlattenFit(fit, options)
 
   outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "cumulativeHazardTable", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "confidenceIntervalLevel",
+                          "cumulativeHazardTable", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
   )
@@ -880,7 +881,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   fit <- .sapFlattenFit(fit, options)
 
   outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "restrictedMeanSurvivalTimeTable", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "confidenceIntervalLevel",
+                          "restrictedMeanSurvivalTimeTable", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
   )
@@ -909,7 +910,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   fit <- .sapExtractFit(jaspResults, options, type = "selected")
   fit <- .sapFlattenFit(fit, options)
 
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation", "predictionsConfidenceInterval", "confidenceIntervalLevel",
+  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "survivalProbabilityTable", "hazardTable", "cumulativeHazardTable", "restrictedMeanSurvivalTimeTable", "lifeTimeMergeTablesAcrossMeasures",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
@@ -948,7 +949,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
                           "survivalTimePlot", "predictionsSurvivalTimeStepsType", "predictionsSurvivalTimeStepsNumber", "predictionsSurvivalTimeStepsFrom",
                           "predictionsSurvivalTimeStepsSize", "predictionsSurvivalTimeStepsTo", "predictionsSurvivalTimeCustom",
-                          "predictionsConfidenceInterval", "confidenceIntervalLevel", "survivalTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme"
+                          "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel", "survivalTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme"
   )
 
   .sapSectionWrapper(
@@ -980,7 +981,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   # output dependencies
   outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "survivalProbabilityPlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "confidenceIntervalLevel",
+                          "survivalProbabilityPlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom",
                           "lifeTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme",
@@ -1016,7 +1017,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   # output dependencies
   outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "hazardPlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "confidenceIntervalLevel",
+                          "hazardPlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom",
                           "lifeTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme"
@@ -1051,7 +1052,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   # output dependencies
   outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "cumulativeHazardPlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "confidenceIntervalLevel",
+                          "cumulativeHazardPlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom",
                           "lifeTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme"
@@ -1086,7 +1087,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   # output dependencies
   outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "restrictedMeanSurvivalTimePlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "confidenceIntervalLevel",
+                          "restrictedMeanSurvivalTimePlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom",
                           "lifeTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme"
@@ -1131,10 +1132,10 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   # if there is any continuous predictor, the output is averaged across the predictors matrix
   if (type == "quantile") {
     optionsSequence <- .sapOptions2PredictionQuantile(options)
-    data  <- summary(fit, type = type, quantiles = optionsSequence, ci = TRUE, cl = options[["confidenceIntervalLevel"]])
+    data  <- summary(fit, type = type, quantiles = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
   } else {
     optionsSequence <- .sapOptions2PredictionTime(options, fit)
-    data  <- summary(fit, type = type, t = optionsSequence, ci = TRUE, cl = options[["confidenceIntervalLevel"]])
+    data  <- summary(fit, type = type, t = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
   }
   dataLength <- length(data)
 
@@ -1214,7 +1215,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     # add dots to column names since cbind merges names with collapse = "."
     .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Survival Probability"), estimateName = "survivalProbability.")
 
-    tempData           <- summary(fit, type = "survival", t = timeSequence, ci = TRUE, cl = options[["confidenceIntervalLevel"]])
+    tempData           <- summary(fit, type = "survival", t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
     if (length(tempData) > 1) {
       tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
       return(tempTable)
@@ -1228,7 +1229,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
     .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Hazard"), estimateName = "hazard.")
 
-    tempData           <- summary(fit, type = "hazard", t = timeSequence, ci = TRUE, cl = options[["confidenceIntervalLevel"]])
+    tempData           <- summary(fit, type = "hazard", t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
     if (length(tempData) > 1) {
       tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
       return(tempTable)
@@ -1242,7 +1243,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
     .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Cumulative Hazard"), estimateName = "cumulativeHazard.")
 
-    tempData           <- summary(fit, type = "cumhaz", t = timeSequence, ci = TRUE, cl = options[["confidenceIntervalLevel"]])
+    tempData           <- summary(fit, type = "cumhaz", t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
     if (length(tempData) > 1) {
       tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
       return(tempTable)
@@ -1256,7 +1257,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
     .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Restricted Mean Survival Time"), estimateName = "restrictedMeanSurvivalTime.")
 
-    tempData           <- summary(fit, type = "rmst", t = timeSequence, ci = TRUE, cl = options[["confidenceIntervalLevel"]])
+    tempData           <- summary(fit, type = "rmst", t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
     if (length(tempData) > 1) {
       tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
       return(tempTable)
@@ -1326,9 +1327,9 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
       next
 
     if (type == "quantile") {
-      data  <- summary(fit[[i]], type = type, quantiles = optionsSequence, ci = TRUE, cl = options[["confidenceIntervalLevel"]])
+      data  <- summary(fit[[i]], type = type, quantiles = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
     } else {
-      data  <- summary(fit[[i]], type = type, t = optionsSequence, ci = TRUE, cl = options[["confidenceIntervalLevel"]])
+      data  <- summary(fit[[i]], type = type, t = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
     }
 
     # deal with potentially multiple predictions
@@ -2013,7 +2014,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     tempTable$addColumnInfo(name = paste0(estimateName, "estimate"), title = estimateTitle, type = "number")
 
     if (options[["predictionsConfidenceInterval"]]) {
-      ciOvertitle <- gettextf("%s%% CI", 100 * options[["confidenceIntervalLevel"]])
+      ciOvertitle <- gettextf("%s%% CI", 100 * options[["predictionsConfidenceIntervalLevel"]])
       tempTable$addColumnInfo(name = paste0(estimateName, "lCi"), title = gettext("Lower"), type = "number", overtitle = ciOvertitle)
       tempTable$addColumnInfo(name = paste0(estimateName, "uCi"), title = gettext("Upper"), type = "number", overtitle = ciOvertitle)
     }
@@ -2022,7 +2023,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     tempTable$addColumnInfo(name = paste0(estimateName, "estimate"), title = gettext("Estimate"), type = "number", overtitle = estimateTitle)
 
     if (options[["predictionsConfidenceInterval"]]) {
-      overtitleCi <- gettextf("%s%% CI", 100 * options[["confidenceIntervalLevel"]])
+      overtitleCi <- gettextf("%s%% CI", 100 * options[["predictionsConfidenceIntervalLevel"]])
       tempTable$addColumnInfo(name = paste0(estimateName, "lCi"), title = gettext("Lower CI"), type = "number", overtitle = estimateTitle)
       tempTable$addColumnInfo(name = paste0(estimateName, "uCi"), title = gettext("Upper CI"), type = "number", overtitle = estimateTitle)
     }

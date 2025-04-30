@@ -307,6 +307,12 @@ Form
 				name:		"coefficients"
 				checked:	false
 				info: qsTr("Include a table with coefficient estimates.")
+
+				CIField
+				{
+					name: "coefficientsConfidenceIntervalLevel"
+					label: qsTr("Confidence interval")
+				}
 			}
 
 			CheckBox
@@ -325,12 +331,6 @@ Form
 			checked:	false
 			enabled:	modelTerms.count > 1
 			info: qsTr("Include a table with the results of the sequential model comparison.")
-		}
-
-		CIField
-		{
-			name: "confidenceIntervalLevel"
-			label: qsTr("Confidence interval")
 		}
 
 	}
@@ -448,7 +448,13 @@ Form
 					label:		qsTr("Confidence intervals")
 					name:		"predictionsConfidenceInterval"
 					checked:	true
-					info: qsTr("Include confidence intervals for the tables.")
+					info: qsTr("Include confidence intervals for the figures and tables.")
+
+					CIField
+					{
+						name: "predictionsConfidenceIntervalLevel"
+						label: qsTr("Confidence interval")
+					}
 				}
 
 				DropDown
