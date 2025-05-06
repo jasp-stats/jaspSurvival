@@ -484,7 +484,7 @@ Form
 
 		Group
 		{
-			title: qsTr("Residuals Plots")
+			title: qsTr("Residual Plots")
 
 			CheckBox
 			{

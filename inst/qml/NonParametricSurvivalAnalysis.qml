@@ -69,6 +69,15 @@ Form
 			allowedColumns:		["nominal"]
 			info: qsTr("Select variables to define strata, allowing separate survival curves for each stratum.")
 		}
+
+		AssignedVariablesList
+		{
+			name:			 	"weights"
+			title:			 	qsTr("Weights")
+			allowedColumns:		["scale"]
+			singleVariable:		true
+			info: qsTr("Select a variable for case weights, weighting each observation accordingly in the model.")
+		}
 	}
 
 	Group
