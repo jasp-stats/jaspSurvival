@@ -1580,7 +1580,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     # log-log transformation
     logmlogmp    <- function(x) log(-log(1-x))
     logmlogmpInv <- function(x) exp(-exp(x)) * (exp(exp(x))-1)
-    estimateTitle <- gettextf("%1$s (log(log(p)) scale)", estimateTitle)
+    estimateTitle <- gettextf("%1$s (log(-log(1-p)) scale)", estimateTitle)
 
     if (options[["plotTheme"]] == "detailed") {
 
