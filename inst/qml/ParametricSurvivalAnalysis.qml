@@ -223,8 +223,8 @@ Form
 			onCountChanged:		if (!(value === "bestAic" || value === "bestBic" || value === "all")) currentIndex = count - 1
 			info: qsTr("Select the model to interpret. Defaults to the last specified model. Alternatives are 'All' which produces results for all of the specified models or 'Best' which produces results for the best fitting model based on either AIC or BIC. If distribution and model selection is specified simultanously, the best model within the best performing distribution is going to be selected. If model selection is specified while all distributions are selected, the best model within each distribution is going to be selected.")
 			startValue:			"model1"
-			source: 			
-			[	
+			source:
+			[
 				{
 					values: [
 						{label: qsTr("All"),		value: "all"},
@@ -250,7 +250,7 @@ Form
 			checked:	true
 			info: qsTr("Include a table with information about the model fit.")
 
-			CheckBox 
+			CheckBox
 			{
 				name:		"modelSummaryRankModels"
 				label:		qsTr("Rank models")
@@ -405,7 +405,7 @@ Form
 				defaultValue:	0.1
 				max:			1
 				visible:		predictionsSurvivalTimeStepsType.value === "sequence"
-				info: qsTr("Define the size of each quantile of the predicted survival when using Sence steps.")
+				info: qsTr("Define the size of each quantile of the predicted survival when using Sequence steps.")
 			}
 
 			DoubleField
@@ -436,10 +436,10 @@ Form
 				checked:	false
 				enabled:	distribution.value === "all" && (modelTerms.count  == 1 || (modelTerms.count > 1 && interpretModel.value != "bestAic" && interpretModel.value != "bestBic"))
 				info: qsTr("Merge the plots for survival probability across distributions into a single plot. Only available when no model selection is being performed.")
-			}	
+			}
 
 
-			Group 
+			Group
 			{
 				title:		qsTr("Options")
 
@@ -474,7 +474,7 @@ Form
 				}
 
 				ColorPalette {}
-				
+
 				DropDown
 				{
 					name:		"plotTheme"
@@ -654,7 +654,7 @@ Form
 				label:			qsTr("From")
 				defaultValue:	0
 				min:			0
-				max:			predictionsLifeTimeStepsTo
+				max:			predictionsLifeTimeStepsTo.value
 				visible:		predictionsLifeTimeStepsType.value === "sequence"
 				fieldWidth:		40 * jaspTheme.uiScale
 				info: qsTr("Set the starting quantile of the life time when using Sequence steps.")
@@ -668,7 +668,7 @@ Form
 				defaultValue:	""
 				visible:		predictionsLifeTimeStepsType.value === "sequence"
 				fieldWidth:		40 * jaspTheme.uiScale
-				info: qsTr("Define the size of each quantile of the life time when using Sence steps. The default '' correspoonds to 1/10 of the maximum observed time.")
+				info: qsTr("Define the size of each quantile of the life time when using Sequence steps. The default '' corresponds to 1/10 of the maximum observed time.")
 			}
 
 			FormulaField
@@ -676,11 +676,11 @@ Form
 				name:			"predictionsLifeTimeStepsTo"
 				id:				predictionsLifeTimeStepsTo
 				label:			qsTr("To")
-				min:			predictionsLifeTimeStepsFrom
+				min:			predictionsLifeTimeStepsFrom.value
 				defaultValue:	""
 				visible:		predictionsLifeTimeStepsType.value === "sequence"
 				fieldWidth:		40 * jaspTheme.uiScale
-				info: qsTr("Set the final step of the life time when using Sequence steps. The default '' correspoonds to the maximum observed time.")
+				info: qsTr("Set the final step of the life time when using Sequence steps. The default '' corresponds to the maximum observed time.")
 			}
 
 			CheckBox
@@ -707,16 +707,16 @@ Form
 				name:		"lifeTimeMergeTablesAcrossMeasures"
 				checked:	false
 				info: qsTr("Merge the tables for survival time, survival probabilities, hazard, cumulative hazard, and restricted mean survival time into a single table.")
-			}	
+			}
 
 			CheckBox
 			{
 				label:		qsTr("Merge plots across distributions")
 				name:		"lifeTimeMergePlotsAcrossDistributions"
 				checked:	false
-				enabled:	distribution.value === "all" && (modelTerms.count == 1 || (modelTerms.count > 1 && interpretModel.value != "bestAic" && interpretModel.value != "bestBic")) 
+				enabled:	distribution.value === "all" && (modelTerms.count == 1 || (modelTerms.count > 1 && interpretModel.value != "bestAic" && interpretModel.value != "bestBic"))
 				info: qsTr("Merge the plots for survival time, survival probabilities, hazard, cumulative hazard, and restricted mean survival across distributions into a single plot. Only available when no model selection is being performed.")
-			}	
+			}
 
 		}
 
