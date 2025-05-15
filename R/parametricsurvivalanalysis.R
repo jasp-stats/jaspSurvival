@@ -1133,11 +1133,19 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   # if there is any continuous predictor, the output is averaged across the predictors matrix
   if (type == "quantile") {
     optionsSequence <- .sapOptions2PredictionQuantile(options)
-    data  <- summary(fit, type = type, quantiles = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
+    data  <- try(summary(fit, type = type, quantiles = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]]))
   } else {
     optionsSequence <- .sapOptions2PredictionTime(options, fit)
-    data  <- summary(fit, type = type, t = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
+    data  <- try(summary(fit, type = type, t = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]]))
   }
+
+  # error handling for divergent integrals
+  if (jaspBase::isTryError(data)) {
+    tempTable <- .sapCreatePredictionTable(options, atTitle = atTitle, estimateNames = "", estimateTitles = estimateTitle)
+    tempTable$setError(gettext("The model failed to produce predictions. Consider simplifying the model."))
+    return(tempTable)
+  }
+
   dataLength <- length(data)
 
   for (i in seq_along(data)) {
@@ -1243,22 +1251,53 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   if (options[["survivalProbabilityTable"]]) {
     .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = if (options[["survivalProbabilityAsFailureProbability"]]) gettext("Failure Probability") else gettext("Survival Probability"), estimateName = "survivalProbability.")
-    data[["survivalProbability"]] <- .sapLifeTimeTableWrapper(fit, options, type = "survival", timeSequence = timeSequence)
+    data[["survivalProbability"]] <- try(.sapLifeTimeTableWrapper(fit, options, type = "survival", timeSequence = timeSequence))
+
+    # error handling for divergent integrals
+    if (jaspBase::isTryError(data[["survivalProbability"]])) {
+      tempTable <- createJaspTable()
+      tempTable$setError(gettext("The model failed to produce survival predictions. Consider simplifying the model."))
+      return(tempTable)
+    }
   }
 
   if (options[["hazardTable"]]) {
     .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Hazard"), estimateName = "hazard.")
-    data[["hazard"]] <- .sapLifeTimeTableWrapper(fit, options, type = "hazard", timeSequence = timeSequence)
+    data[["hazard"]] <- try(.sapLifeTimeTableWrapper(fit, options, type = "hazard", timeSequence = timeSequence))
+
+
+    # error handling for divergent integrals
+    if (jaspBase::isTryError(data[["hazard"]])) {
+      tempTable <- createJaspTable()
+      tempTable$setError(gettext("The model failed to produce hazard predictions. Consider simplifying the model."))
+      return(tempTable)
+    }
   }
 
   if (options[["cumulativeHazardTable"]]) {
     .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Cumulative Hazard"), estimateName = "cumulativeHazard.")
-    data[["cumulativeHazard"]] <- .sapLifeTimeTableWrapper(fit, options, type = "cumhaz", timeSequence = timeSequence)
+    data[["cumulativeHazard"]] <- try(.sapLifeTimeTableWrapper(fit, options, type = "cumhaz", timeSequence = timeSequence))
+
+
+    # error handling for divergent integrals
+    if (jaspBase::isTryError(data[["cumulativeHazard"]])) {
+      tempTable <- createJaspTable()
+      tempTable$setError(gettext("The model failed to produce cumulative predictions. Consider simplifying the model."))
+      return(tempTable)
+    }
   }
 
   if (options[["restrictedMeanSurvivalTimeTable"]]) {
     .sapAddColumnsPredictionTable(tempTable, options, estimateTitle = gettext("Restricted Mean Survival Time"), estimateName = "restrictedMeanSurvivalTime.")
-    data[["restrictedMeanSurvivalTime"]] <- .sapLifeTimeTableWrapper(fit, options, type = "rmst", timeSequence = timeSequence)
+    data[["restrictedMeanSurvivalTime"]] <- try(.sapLifeTimeTableWrapper(fit, options, type = "rmst", timeSequence = timeSequence))
+
+
+    # error handling for divergent integrals
+    if (jaspBase::isTryError(data[["restrictedMeanSurvivalTime"]])) {
+      tempTable <- createJaspTable()
+      tempTable$setError(gettext("The model failed to produce restricted mean survival time predictions. Consider simplifying the model."))
+      return(tempTable)
+    }
   }
 
   data <- do.call(cbind, data)
@@ -1321,9 +1360,16 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
       next
 
     if (type == "quantile") {
-      data  <- summary(fit[[i]], type = type, quantiles = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
+      data  <- try(summary(fit[[i]], type = type, quantiles = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]]))
     } else {
-      data  <- summary(fit[[i]], type = type, t = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
+      data  <- try(summary(fit[[i]], type = type, t = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]]))
+    }
+
+    # error handling for divergent integrals
+    if (jaspBase::isTryError(data)) {
+      tempPlot <- createJaspPlot(title = estimateTitle)
+      tempPlot$setError(gettext("The model failed to produce predictions. Consider simplifying the model."))
+      return(tempPlot)
     }
 
     # deal with potentially multiple predictions
