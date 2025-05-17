@@ -20,6 +20,10 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   if (.saSurvivalReady(options))
     dataset <- .saCheckDataset(dataset, options, type = "Cox")
 
+  # Censoring summary table
+  if (options[["censoringSummary"]])
+    .saCensoringSummaryTable(jaspResults, dataset, options)
+
   .saspFitCox(jaspResults, dataset, options)
   .saspFitCoxAssumptionTest(jaspResults, dataset, options)
 

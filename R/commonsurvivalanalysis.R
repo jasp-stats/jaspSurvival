@@ -151,6 +151,28 @@
       )
   ))
 }
+.saGetSurvObject      <- function(options, dataset) {
+  return(switch(
+    options[["censoringType"]],
+    "counting" = Surv(
+      time  = dataset[[options[["intervalStart"]]]],
+      time2 = dataset[[options[["intervalEnd"]]]],
+      event = dataset[[options[["eventStatus"]]]],
+      type  = 'counting'),
+    "interval" = Surv(
+      time  = dataset[[options[["intervalStart"]]]],
+      time2 = dataset[[options[["intervalEnd"]]]],
+      type  = 'interval2'),
+    "right"    = Surv(
+      time  = dataset[[options[["timeToEvent"]]]],
+      event = dataset[[options[["eventStatus"]]]],
+      type  = 'right'),
+    "left"    = Surv(
+      time  = dataset[[options[["timeToEvent"]]]],
+      event = dataset[[options[["eventStatus"]]]],
+      type  = 'left')
+  ))
+}
 .saExtractSurvTimes   <- function(dataset, options) {
 
   if (options[["censoringType"]] == "counting") {
@@ -333,6 +355,84 @@
   return(varName)
 }
 
+.saCensoringSummaryFun   <- function(dataset, options) {
+
+  if (options[["censoringType"]] %in% c("right", "left", "counting")) {
+
+    return(data.frame(
+      "type"    = c(gettext("Events"), gettext("Censored")),
+      "count"   = c(
+        if (options[["weights"]] == "") sum( dataset[[options[["eventStatus"]]]]) else sum( dataset[[options[["eventStatus"]]]] * dataset[[options[["weights"]]]]),
+        if (options[["weights"]] == "") sum(!dataset[[options[["eventStatus"]]]]) else sum(!dataset[[options[["eventStatus"]]]] * dataset[[options[["weights"]]]])
+      )
+    ))
+
+  } else if (options[["censoringType"]] == "interval") {
+
+    leftNa   <- is.na(dataset[[options[["intervalStart"]]]])
+    rightNa  <- is.na(dataset[[options[["intervalEnd"]]]])
+    event    <- !is.na(dataset[[options[["intervalStart"]]]]) & !is.na(dataset[[options[["intervalEnd"]]]]) & dataset[[options[["intervalStart"]]]] == dataset[[options[["intervalEnd"]]]]
+    interval <- !is.na(dataset[[options[["intervalStart"]]]]) & !is.na(dataset[[options[["intervalEnd"]]]]) & dataset[[options[["intervalStart"]]]] != dataset[[options[["intervalEnd"]]]]
+
+    return(data.frame(
+      "type"    = c(gettext("Events"), gettext("Left censored"), gettext("Right censored"), gettext("Interval censored")),
+      "count"   = c(
+        if (options[["weights"]] == "") sum(event)    else sum(event * dataset[[options[["weights"]]]]),
+        if (options[["weights"]] == "") sum(leftNa)   else sum(leftNa * dataset[[options[["weights"]]]]),
+        if (options[["weights"]] == "") sum(rightNa)  else sum(rightNa * dataset[[options[["weights"]]]]),
+        if (options[["weights"]] == "") sum(interval) else sum(interval * dataset[[options[["weights"]]]])
+      )
+    ))
+  }
+}
+.saCensoringSummaryTable <- function(jaspResults, dataset, options, weighted = FALSE) {
+
+  if (!is.null(jaspResults[["censoringSummaryTable"]]))
+    return()
+
+  censoringSummaryTable <- createJaspTable(title = gettext("Censoring Summary"))
+  censoringSummaryTable$dependOn(c("censoringType", "timeToEvent", "eventStatus", "eventIndicator", "intervalStart", "intervalEnd", "weights", "subgroup", "censoringSummary"))
+  censoringSummaryTable$position <- 0
+  jaspResults[["censoringSummaryTable"]] <- censoringSummaryTable
+
+  censoringSummaryTable$addColumnInfo(name = "type",  title = "", type = "string")
+  if (!is.null(options[["subgroup"]]) && options[["subgroup"]] != "")
+    censoringSummaryTable$addColumnInfo(name = "subgroup", title = gettext("Subgroup"), type = "string")
+  censoringSummaryTable$addColumnInfo(name = "count", title = gettext("Count"), type = "integer")
+
+  if (!.saSurvivalReady(options))
+    return()
+
+  if (weighted) {
+    # non-parametric survival repeats data for each weight
+    # - they are already weighted and shouldn't be re-weigted again
+    options[["weights"]] <- ""
+  }
+
+  if (!is.null(options[["subgroup"]]) && options[["subgroup"]] != "") {
+
+    subgroupLevels  <- unique(dataset[[options[["subgroup"]]]])
+    subgroupSummary <- lapply(subgroupLevels, function(subgroupLevel) {
+      out <- cbind("subgroup" = subgroupLevel, .saCensoringSummaryFun(dataset[dataset[[options[["subgroup"]]]] == subgroupLevel,,drop=FALSE], options))
+      out$order <- 1:nrow(out) # for sorting across subgroups
+      return(out)
+    })
+    summary <- .saSafeRbind(subgroupSummary)
+    summary <- summary[order(summary$order),]
+    summary$type[duplicated(summary$type)] <- NA
+    summary$order <- NULL
+
+  } else {
+
+    summary <- .saCensoringSummaryFun(dataset, options)
+
+  }
+
+  # add the summary to the table
+  censoringSummaryTable$setData(summary)
+
+  return()
+}
 .saGetSurvivalPlotHeight <- function(options) {
   if (!options[["plotRiskTable"]])
     return(400)

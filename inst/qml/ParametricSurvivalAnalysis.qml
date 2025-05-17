@@ -130,37 +130,47 @@ Form
 		}
 	}
 
-	RadioButtonGroup
+	Group
 	{
-		id:						censoringType
-		Layout.columnSpan:		1
-		name:					"censoringType"
-		title:					qsTr("Censoring Type")
-		radioButtonsOnSameRow:	true
-		columns:				3
-		info: qsTr("Select the type of censoring in your data: right, left, or interval censoring.")
-
-		RadioButton
+		RadioButtonGroup
 		{
-			label:		qsTr("Right")
-			value:		"right"
-			id:			censoringTypeRight
-			checked:	true
+			id:						censoringType
+			Layout.columnSpan:		1
+			name:					"censoringType"
+			title:					qsTr("Censoring Type")
+			radioButtonsOnSameRow:	true
+			columns:				3
+			info: qsTr("Select the type of censoring in your data: right, left, or interval censoring.")
+
+			RadioButton
+			{
+				label:		qsTr("Right")
+				value:		"right"
+				id:			censoringTypeRight
+				checked:	true
+			}
+
+			RadioButton
+			{
+				label:		qsTr("Counting")
+				value:		"counting"
+				id:			censoringTypeCounting
+			}
+
+			RadioButton
+			{
+				label:		qsTr("Interval")
+				value:		"interval"
+				id:			censoringTypeInterval
+				info: qsTr("If interval censoring is selected, the following coding needs to be used: left-censored data is represented as (NA, t2), right-censored data as (t1, NA), exact data as (t, t), and interval-censored data as (t1, t2).")
+			}
 		}
 
-		RadioButton
+		CheckBox
 		{
-			label:		qsTr("Counting")
-			value:		"counting"
-			id:			censoringTypeCounting
-		}
-
-		RadioButton
-		{
-			label:		qsTr("Interval")
-			value:		"interval"
-			id:			censoringTypeInterval
-			info: qsTr("If interval censoring is selected, the following coding needs to be used: left-censored data is represented as (NA, t2), right-censored data as (t1, NA), exact data as (t, t), and interval-censored data as (t1, t2).")
+			name:		"censoringSummary"
+			label:		qsTr("Censoring summary")
+			info: qsTr("Create a summary table with information about the censoring status of the data.")
 		}
 	}
 

@@ -20,6 +20,10 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   if (.saSurvivalReady(options))
     dataset <- .saCheckDataset(dataset, options, type = "parametric")
 
+  # Censoring summary table
+  if (options[["censoringSummary"]])
+    .saCensoringSummaryTable(jaspResults, dataset, options)
+
   # Fit the models
   .sapFit(jaspResults, dataset, options)
 
