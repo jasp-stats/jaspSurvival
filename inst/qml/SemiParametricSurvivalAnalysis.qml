@@ -118,6 +118,42 @@ Form
 		}
 	}
 
+	Group
+	{
+		RadioButtonGroup
+		{
+			id:						censoringType
+			Layout.columnSpan:		1
+			name:					"censoringType"
+			title:					qsTr("Censoring Type")
+			radioButtonsOnSameRow:	true
+			columns:				2
+			info: qsTr("Select the type of censoring in your data: Right censoring or Counting process.")
+
+			RadioButton
+			{
+				label:		qsTr("Right")
+				value:		"right"
+				id:			censoringTypeRight
+				checked:	true
+			}
+
+			RadioButton
+			{
+				label:		qsTr("Counting")
+				value:		"counting"
+				id:			censoringTypeCounting
+			}
+		}
+
+		CheckBox
+		{
+			name:		"censoringSummary"
+			label:		qsTr("Censoring summary")
+			info: qsTr("Create a summary table with information about the censoring status of the data.")
+		}
+	}
+
 	DropDown
 	{
 		name:		"method"
@@ -130,32 +166,6 @@ Form
 			{ label: qsTr("Exact"),			value: "exact"}
 		]
 		info: qsTr("Choose the method for handling tied event times: Efron, Breslow, or Exact.")
-	}
-
-	RadioButtonGroup
-	{
-		id:						censoringType
-		Layout.columnSpan:		1
-		name:					"censoringType"
-		title:					qsTr("Censoring Type")
-		radioButtonsOnSameRow:	true
-		columns:				2
-		info: qsTr("Select the type of censoring in your data: Right censoring or Counting process.")
-
-		RadioButton
-		{
-			label:		qsTr("Right")
-			value:		"right"
-			id:			censoringTypeRight
-			checked:	true
-		}
-
-		RadioButton
-		{
-			label:		qsTr("Counting")
-			value:		"counting"
-			id:			censoringTypeCounting
-		}
 	}
 
 	Section

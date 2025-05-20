@@ -25,6 +25,10 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     dataset <- .sanpWeightDataset(dataset, options)
   }
 
+  # Censoring summary table
+  if (options[["censoringSummary"]])
+    .saCensoringSummaryTable(jaspResults, dataset, options, weighted = TRUE)
+
   if (.saSurvivalReady(options)) {
     .sanpFitKaplanMeier(jaspResults, dataset, options)
     .sanpFitTests(jaspResults, dataset, options)

@@ -83,6 +83,13 @@ Form
 	Group
 	{
 
+		CheckBox
+		{
+			name:		"censoringSummary"
+			label:		qsTr("Censoring summary")
+			info: qsTr("Create a summary table with information about the censoring status of the data.")
+		}
+
 		Group
 		{
 			title:	qsTr("Tests")
