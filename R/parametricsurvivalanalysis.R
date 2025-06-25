@@ -1854,12 +1854,17 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     return(tempPlot)
 
   # extract the dataset and compute residuals
-  pred    <- unlist(predict(fit))
+  pred    <- try(unlist(predict(fit)))
   res     <- residuals(fit, type = switch(
     options[["residualPlotResidualType"]],
     "response" = "response",
     "coxSnell" = "coxsnell"
   ))
+
+  if (jaspBase::isTryError(pred)) {
+    tempPlot$setError(gettext("The model failed to produce predictions. Consider simplifying the model."))
+    return(tempPlot)
+  }
 
   tempPlot$plotObject <- try(.saspResidualsPlot(pred, res, gettext("Predicted Time"), switch(
     options[["residualPlotResidualType"]],
