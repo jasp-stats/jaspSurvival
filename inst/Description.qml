@@ -37,7 +37,7 @@ Description
 
   	Analysis
 	{
-		menu:			qsTr("Parametric (beta)")
+		menu:			qsTr("Parametric")
 		title:			qsTr("Parametric Survival Analysis")
 		func:			"ParametricSurvivalAnalysis"
 	}
