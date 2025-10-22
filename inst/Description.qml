@@ -3,18 +3,11 @@ import JASP.Module
 
 Description
 {
-	name:			"jaspSurvival"
 	title : 		qsTr("Survival")
 	description:	qsTr("Perform analyses of censored time to event data.")
-	requiresData:	true
-	preloadData: 	true
 	icon:			"survival-analysis.svg"
-	version			: "0.95.0"
-	author:			"JASP Team"
-	maintainer:		"JASP Team <info@jasp-stats.org>"
-	website:		"jasp-stats.org"
-	license:		"GPL (>= 2)"
-
+	hasWrappers: 	false
+	
 	GroupTitle
 	{
 		title:	qsTr("Classical")
