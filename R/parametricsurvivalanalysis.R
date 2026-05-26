@@ -2103,6 +2103,8 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     adjustedRank = adjustedRank[orderedData[["event"]]]
   )
 
+  # WeibullR follows the Minitab convention of moving a final complete failure
+  # just below 100%, so the point remains finite on probability paper.
   if (nrow(out) > 1 && isTRUE(all.equal(out[["adjustedRank"]][nrow(out)], 1)))
     out[["adjustedRank"]][nrow(out)] <- 1 - ((1 - out[["adjustedRank"]][nrow(out) - 1]) / 10)
 
@@ -2116,9 +2118,6 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   if (!tiesHandler %in% c("highest", "lowest", "mean", "sequential"))
     return(data)
 
-  if (tiesHandler == "sequential")
-    return(data[order(data[["time"]], data[["adjustedRank"]]), , drop = FALSE])
-
   tiedRanks <- stats::aggregate(
     data[["adjustedRank"]],
     by = list(time = data[["time"]]),
@@ -2131,9 +2130,10 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     time         = tiedRanks[["time"]],
     adjustedRank = switch(
       tiesHandler,
-      "highest" = highest,
-      "lowest"  = lowest,
-      "mean"    = (highest + lowest) / 2
+      "highest"    = highest,
+      "lowest"     = lowest,
+      "mean"       = (highest + lowest) / 2,
+      "sequential" = highest - cumsum(highest - lowest)
     )
   )
 
@@ -2144,6 +2144,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
   probability <- adjustedRank / n
 
+  # Same finite-endpoint convention as WeibullR/SuperSMITH for KM plotting positions.
   if (length(adjustedRank) > 0 && isTRUE(all.equal(adjustedRank[length(adjustedRank)], n)))
     probability[length(probability)] <- length(adjustedRank) / (n + 0.001)
 

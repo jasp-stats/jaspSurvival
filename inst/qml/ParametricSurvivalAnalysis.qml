@@ -798,7 +798,7 @@ Form
 			name:		"probabilityPlot"
 			label:		qsTr("Probability plot")
 			enabled:	censoringTypeRight.checked
-			info: qsTr("Create a probability plot to assess how well the selected parametric distribution describes the observed failure times. Only available when Censoring Type is set to Right.")
+			info: qsTr("Create a model-based probability plot to assess how well the selected parametric distribution describes the observed failure times. Only available when Censoring Type is set to Right.")
 
 			DropDown
 			{
@@ -835,7 +835,7 @@ Form
 				name:		"probabilityPlotFittedCurve"
 				label:		qsTr("Fitted curve")
 				checked:	true
-				info: qsTr("Plot the fitted parametric distribution curve.")
+				info: qsTr("Plot the fitted curve from the selected parametric model.")
 			}
 
 			CheckBox
@@ -893,7 +893,7 @@ Form
 				name:		"probabilityPlotRankAdjustment"
 				label:		qsTr("Rank adjustment")
 				startValue:	"johnson"
-				info: qsTr("Select the rank adjustment method for right-censored observations.")
+				info: qsTr("Select the rank adjustment method for right-censored observations. The Kaplan-Meier adjustment follows the WeibullR/Minitab convention, including the final-failure adjustment used to keep points finite on probability paper.")
 				values:
 				[
 					{ label: qsTr("Johnson"),		value: "johnson"},
