@@ -13,6 +13,9 @@
 
 
 ---
+# jaspSurvival 0.96.4
+## Features
+* Added probability plot to parametric survival
 
 # jaspSurvival 0.96.3
 ## Changed
