@@ -13,6 +13,10 @@
 
 
 ---
+# jaspSurvival 0.96.6
+## Fixed
+* Improved y-axis label and grid spacing for the exponential canvas in parametric survival probability plots.
+
 # jaspSurvival 0.96.5
 ## Added
 * Added an exponential canvas to the parametric survival probability plot.
