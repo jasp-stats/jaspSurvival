@@ -1217,10 +1217,9 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 .sapLifeTimeTableWrapper         <- function(fit, options, type, timeSequence) {
 
   tempData           <- summary(fit, type = type, t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
-  if (length(tempData) > 1) {
-    tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
-    return(tempTable)
-  }
+  if (length(tempData) > 1)
+    stop(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
+
   tempData           <- tempData[[1]][,-1]
   colnames(tempData) <- c("estimate", "lCi", "uCi")
 

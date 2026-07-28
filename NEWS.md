@@ -17,6 +17,7 @@
 ## Fixed
 * Fixed confidence intervals for failure-probability predictions so lower and upper bounds are correctly swapped when transforming from survival probabilities.
 * Fixed undefined `nullPredictors` references in Cox estimates and hazard-ratio table error handling; align null-model footnotes with the summary table.
+* Fixed undefined `tempTable` in parametric life-time table merge error handling by stopping with the intended message (caught by the existing `try()`).
 
 # jaspSurvival 0.96.6
 ## Fixed
