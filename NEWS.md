@@ -13,7 +13,7 @@
 
 
 ---
-# jaspSurvival (development version)
+# jaspSurvival 0.96.7
 ## Fixed
 * Fixed confidence intervals for failure-probability predictions so lower and upper bounds are correctly swapped when transforming from survival probabilities.
 * Fixed undefined `nullPredictors` references in Cox estimates and hazard-ratio table error handling; align null-model footnotes with the summary table.
