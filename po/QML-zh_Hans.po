@@ -1,0 +1,1674 @@
+msgid ""
+msgstr ""
+"X-Qt-Contexts: true\n"
+"X-Language: zh_Hans\n"
+"X-Source-Language: American English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_Hans\n"
+
+msgctxt "Description|"
+msgid "Survival"
+msgstr "生存分析"
+
+msgctxt "Description|"
+msgid "Perform analyses of censored time to event data."
+msgstr "对删失的至事件发生的时间数据进行生存分析。"
+
+msgctxt "Description|"
+msgid "Classical"
+msgstr "经典"
+
+msgctxt "Description|"
+msgid "Non-parametric"
+msgstr "非参数"
+
+msgctxt "Description|"
+msgid "Non-parametric Survival Analysis"
+msgstr "非参数生存分析"
+
+msgctxt "Description|"
+msgid "Semi-parametric"
+msgstr "半参数"
+
+msgctxt "Description|"
+msgid "Semi-parametric Survival Analysis"
+msgstr "半参数生存分析"
+
+msgctxt "Description|"
+msgid "Parametric"
+msgstr "参数"
+
+msgctxt "Description|"
+msgid "Parametric Survival Analysis"
+msgstr "参数生存分析"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Time to Event"
+msgstr "至事件发生时间"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the time until the event or censoring"
+"occurs."
+msgstr "选择代表直到事件发生或删失发生的时间的变量。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Event Status"
+msgstr "事件状态"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Choose the variable that indicates the event status, specifying whether each"
+"observation is an event or censored."
+msgstr "选择表示事件状态的变量，指明每个观测是事件还是删失。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Event Indicator"
+msgstr "事件指示值"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Specify the value in the Event Status variable that indicates the occurrence"
+"of the event."
+msgstr "指定“事件状态”变量中表示事件发生的值。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Strata"
+msgstr "分层"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Select variables to define strata, allowing separate survival curves for each"
+"stratum."
+msgstr "选择变量以定义分层，允许为每个分层分别绘制生存曲线。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Weights"
+msgstr "权重"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable for case weights, weighting each observation accordingly in"
+"the model."
+msgstr "选择用于案例权重的变量，据此在模型中为每个观测加权。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Censoring summary"
+msgstr "删失摘要"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Create a summary table with information about the censoring status of the"
+"data."
+msgstr "创建包含数据删失状态信息的摘要表。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Tests"
+msgstr "检验"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Peto and Peto"
+msgstr "Peto和Peto"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Include the Peto and Peto modification of the Gehan-Wilcoxon test to compare"
+"survival curves across strata."
+msgstr "包含Peto和Peto对Gehan-Wilcoxon检验的改进，以比较不同分层的生存曲线。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Flemming-Harrington"
+msgstr "Flemming-Harrington"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Include the Fleming-Harrington test to compare survival curves across strata.,"
+"with a customizable rho parameter."
+msgstr "包含Fleming-Harrington检验以比较不同分层的生存曲线，并带有可自定义的rho参数。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Rho"
+msgstr "Rho"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Life table"
+msgstr "寿命表"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Generate a life table summarizing survival data at specified time intervals."
+msgstr "生成一个在指定时间区间内汇总生存数据的寿命表。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Steps type"
+msgstr "步长类型"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Select the method to define intervals for the life table: Default, Quantiles,"
+"or Fixed size."
+msgstr "选择定义寿命表区间的方法：默认、分位数或固定大小。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Default"
+msgstr "默认"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Quantilies"
+msgstr "分位数"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Fixed size"
+msgstr "固定大小"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Number"
+msgstr "数量"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Specify the number of intervals when using Quantiles as the steps type."
+msgstr "当使用分位数作为步长类型时，指定区间的数量。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Round steps"
+msgstr "取整步长"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Round the interval boundaries to the nearest integer when using Quantiles"
+"steps."
+msgstr "当使用分位数步长时，将区间边界取整到最接近的整数。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "From"
+msgstr "从"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Set the starting time for intervals when using Fixed size steps."
+msgstr "当使用固定大小步长时，设置区间的起始时间。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Size"
+msgstr "大小"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Define the size of each interval when using Fixed size steps."
+msgstr "当使用固定大小步长时，定义每个区间的大小。"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "To"
+msgstr "到"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Set the ending time for intervals when using Fixed size steps."
+msgstr "当使用固定大小步长时，设置区间的结束时间。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "This analysis performs a parametric survival analysis."
+msgstr "此分析执行参数生存分析。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Interval Start"
+msgstr "区间开始"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the start time of the observation"
+"interval. Only available when Censoring Type is set to Interval or Counting."
+msgstr "选择代表观测区间开始时间的变量。仅当“删失类型”设置为“区间”或“计数”时可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Interval End"
+msgstr "区间结束"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the end time of the observation interval."
+"Only available when Censoring Type is set to Interval or Counting."
+msgstr "选择代表观测区间结束时间的变量。仅当“删失类型”设置为“区间”或“计数”时可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Time to Event"
+msgstr "至事件发生时间"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the time until the event or censoring"
+"occurs. Only available when Censoring Type is set to Right or Counting."
+msgstr "选择代表直到事件发生或删失发生的时间的变量。仅当“删失类型”设置为“右”或“计数”时可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Event Status"
+msgstr "事件状态"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the variable that indicates the event status, specifying whether each"
+"observation is an event or censored."
+msgstr "选择表示事件状态的变量，指明每个观测是事件还是删失。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Event Indicator"
+msgstr "事件指示值"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify the value in the Event Status variable that indicates the occurrence"
+"of the event."
+msgstr "指定“事件状态”变量中表示事件发生的值。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Covariates"
+msgstr "协变量"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Add continuous variables as covariates to include them in the Cox regression"
+"model."
+msgstr "添加连续变量作为协变量，以将其纳入Cox回归模型。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Factors"
+msgstr "因子"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Add categorical variables as factors to include them in the Cox regression"
+"model."
+msgstr "添加分类变量作为因子，以将其纳入Cox回归模型。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Weights"
+msgstr "权重"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable for case weights, weighting each observation accordingly in"
+"the model."
+msgstr "选择用于案例权重的变量，据此在模型中为每个观测加权。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Subgroup"
+msgstr "亚组"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable for subgroup analysis, allowing for separate analyses within"
+"each subgroup."
+msgstr "选择用于亚组分析的变量，允许在每个亚组内进行单独分析。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Censoring Type"
+msgstr "删失类型"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the type of censoring in your data: right, left, or interval censoring."
+msgstr "选择数据中的删失类型：右删失、左删失或区间删失。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Right"
+msgstr "右"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Counting"
+msgstr "计数"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Interval"
+msgstr "区间"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Censoring summary"
+msgstr "删失摘要"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Create a summary table with information about the censoring status of the"
+"data."
+msgstr "创建包含数据删失状态信息的摘要表。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Distribution"
+msgstr "分布"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the parametric distribution for the analysis. All fits and display"
+"results for all 'Selected parametric families' in the 'Advanced' section."
+"'Best AIC' and 'Best BIC' fit all `Selected parametric families` in the"
+"Advanced section and display the results only for a parametric family with the"
+"lowest AIC/BIC."
+msgstr ""
+"选择分析的参数分布。“全部”拟合“高级”部分的所有“已选参数族”并显示其结果。"
+"“最佳AIC”和“最佳BIC”拟合“高级”部分的所有“已选参数族”，且仅显示AIC/BIC最低的参数族的结果。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Exponential"
+msgstr "指数"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Gamma"
+msgstr "伽马"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Generalized F"
+msgstr "广义F"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Generalized gamma"
+msgstr "广义伽马"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Gompertz"
+msgstr "Gompertz"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log-logistic"
+msgstr "对数逻辑"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log-normal"
+msgstr "对数正态"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Weibull"
+msgstr "Weibull"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "All"
+msgstr "全部"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Best AIC"
+msgstr "最佳AIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Best BIC"
+msgstr "最佳BIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Model"
+msgstr "模型"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include intercept"
+msgstr "包含截距"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Interpret model"
+msgstr "解释模型"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the model to interpret. Defaults to the last specified model."
+"Alternatives are 'All' which produces results for all of the specified models"
+"or 'Best' which produces results for the best fitting model based on either"
+"AIC or BIC. If distribution and model selection is specified simultanously,"
+"the best model within the best performing distribution is going to be"
+"selected. If model selection is specified while all distributions are"
+"selected, the best model within each distribution is going to be selected."
+msgstr ""
+"选择要解释的模型。默认为最后指定的模型。备选方案为“全部”，即生成所有指定模型的结果，"
+"或“最佳”，即基于AIC或BIC生成最佳拟合模型的结果。如果同时指定了分布和模型选择，则选择表现最"
+"佳的分布内的最佳模型。如果在选择所有分布的同时指定了模型选择，则选择每种分布内的最佳模型。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Statistics"
+msgstr "统计"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Model summary"
+msgstr "模型摘要"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with information about the model fit."
+msgstr "包含一个带有模型拟合信息的表。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Rank models"
+msgstr "对模型排序"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Rank models based on the selected criterion."
+msgstr "根据所选准则对模型进行排序。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "AIC"
+msgstr "AIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "BIC"
+msgstr "BIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log lik."
+msgstr "对数似然"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "AIC weights"
+msgstr "AIC权重"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include AIC weights in the model summary."
+msgstr "在模型摘要中包含AIC权重。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "BIC weights"
+msgstr "BIC权重"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include BIC weights in the model summary."
+msgstr "在模型摘要中包含BIC权重。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Coefficients"
+msgstr "系数"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with coefficient estimates."
+msgstr "包含一个带有系数估计值的表。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Confidence intervals"
+msgstr "置信区间"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include confidence intervals for the coefficients."
+msgstr "包含系数的置信区间。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the confidence level for the confidence intervals."
+msgstr "设置置信区间的置信水平。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Coefficients covariance matrix"
+msgstr "系数协方差矩阵"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the covariance matrix of the coefficient estimates."
+msgstr "包含一个带有系数估计值协方差矩阵的表。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Sequential model comparison"
+msgstr "序贯模型比较"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the results of the sequential model comparison."
+msgstr "包含一个带有序贯模型比较结果的表。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predictions"
+msgstr "预测"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Survival Time"
+msgstr "生存时间"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Table"
+msgstr "表格"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the predicted survival estimates."
+msgstr "包含一个带有预测生存估计值的表。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Plot"
+msgstr "图表"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a plot with the predicted survival estimates."
+msgstr "包含一个带有预测生存估计值的图。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Steps type"
+msgstr "步长类型"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the method to define intervals for the life table: Default, Quantiles,"
+"or Custom."
+msgstr "选择定义寿命表区间的方法：默认、分位数或自定义。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Quantilies"
+msgstr "分位数"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Sequence"
+msgstr "序列"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Custom"
+msgstr "自定义"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Number"
+msgstr "数量"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify the number of quantiles of the predicted surival when using Quantiles"
+"as the steps type."
+msgstr "当使用分位数作为步长类型时，指定预测生存的分位数数量。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "From"
+msgstr "从"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the starting quantile of the predicted survival when using Sequence steps."
+msgstr "当使用序列步长时，设置预测生存的起始分位数。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Size"
+msgstr "大小"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Define the size of each quantile of the predicted survival when using Sequence"
+"steps."
+msgstr "当使用序列步长时，定义预测生存的每个分位数的大小。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "To"
+msgstr "到"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the ending quantile of the predicted survival when using Sequence steps."
+msgstr "当使用序列步长时，设置预测生存的结束分位数。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Steps"
+msgstr "步长"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Specify custom steps of the predicted survival."
+msgstr "指定预测生存的自定义步长。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Merge plots across distributions"
+msgstr "跨分布合并图"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Merge the plots for survival probability across distributions into a single"
+"plot. Only available when no model selection is being performed."
+msgstr "将不同分布的生存概率图合并为单个图。仅当未进行模型选择时可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Options"
+msgstr "选项"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include confidence intervals for the figures and tables."
+msgstr "为图形和表格包含置信区间。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Legend"
+msgstr "图例"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the position of the legend on prediction plots with multiple displayed"
+"curves."
+msgstr "在显示多条曲线的预测图中选择图例的位置。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Bottom"
+msgstr "底部"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Left"
+msgstr "左侧"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Top"
+msgstr "顶部"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "None"
+msgstr "无"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Customize the color palette used in prediction plots with multiple displayed"
+"curves."
+msgstr "自定义在显示多条曲线的预测图中使用的调色板。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Theme"
+msgstr "主题"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the theme for prediction plots. The detailed theme works only for"
+"'Survival probabilities' plots."
+msgstr "选择预测图的主题。详细主题仅适用于“生存概率”图。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "White background"
+msgstr "白色背景"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Light"
+msgstr "浅色"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Minimal"
+msgstr "极简"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Detailed"
+msgstr "详细"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Survival Probability"
+msgstr "生存概率"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the predicted survival probabilities."
+msgstr "包含一个带有预测生存概率的表。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a plot with the predicted survival probabilities."
+msgstr "包含一个带有预测生存概率的图。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Kaplan-Meier"
+msgstr "Kaplan-Meier"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Show a Kaplan-Meier curve in the plot. Only available when Censoring Type is"
+"set to Right."
+msgstr "在图中显示Kaplan-Meier曲线。仅当“删失类型”设置为“右”时可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Censoring events"
+msgstr "删失事件"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Show censoring events as rug marks in the plot. Only available when Censoring"
+"Type is set to Right."
+msgstr "在图中以地毯标记显示删失事件。仅当“删失类型”设置为“右”时可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "X-axis transformation"
+msgstr "X轴变换"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the transformation for the x-axis of the plot"
+msgstr "选择图x轴的变换"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log"
+msgstr "对数"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Y-axis transformation"
+msgstr "Y轴变换"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the transformation for the y-axis of the plot"
+msgstr "选择图y轴的变换"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "As failure probability"
+msgstr "作为失效概率"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Hazard"
+msgstr "风险"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the predicted hazard estimates."
+msgstr "包含一个带有预测风险估计值的表。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a plot with the predicted hazard estimates."
+msgstr "包含一个带有预测风险估计值的图。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Cumulative Hazard"
+msgstr "累积风险"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the predicted cumulative hazard estimates."
+msgstr "包含一个带有预测累积风险估计值的表。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a plot with the predicted cumulative hazard estimates."
+msgstr "包含一个带有预测累积风险估计值的图。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Restricted Mean Survival Time"
+msgstr "受限均值生存时间"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the restricted mean survival time estimates."
+msgstr "包含一个带有受限均值生存时间估计值的表。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a plot with the restricted mean survival time estimates."
+msgstr "包含一个带有受限均值生存时间估计值的图。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify the number of quantiles of the life time when using Quantiles as the"
+"steps type."
+msgstr "当使用分位数作为步长类型时，指定寿命的分位数数量。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the starting quantile of the life time when using Sequence steps."
+msgstr "当使用序列步长时，设置寿命的起始分位数。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Define the size of each quantile of the life time when using Sequence steps."
+"The default '' corresponds to 1/10 of the maximum observed time."
+msgstr ""
+"当使用序列步长时，定义寿命的每个分位数的大小。默认值''对应于最大观测时间的1/10。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the final step of the life time when using Sequence steps. The default ''"
+"corresponds to the maximum observed time."
+msgstr "当使用序列步长时，设置寿命的最终步长。默认值''对应于最大观测时间。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Round steps"
+msgstr "取整步长"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Round the interval boundaries to the nearest integer when using Quantiles or"
+"Sequence steps."
+msgstr "当使用分位数或序列步长时，将区间边界取整到最接近的整数。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Specify custom steps of the life time."
+msgstr "指定寿命的自定义步长。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Merge tables across measures"
+msgstr "跨度量合并表"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Merge the tables for survival time, survival probabilities, hazard, cumulative"
+"hazard, and restricted mean survival time into a single table."
+msgstr "将生存时间、生存概率、风险、累积风险和受限均值生存时间的表合并为单个表。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Merge the plots for survival time, survival probabilities, hazard, cumulative"
+"hazard, and restricted mean survival across distributions into a single plot."
+"Only available when no model selection is being performed."
+msgstr ""
+"将生存时间、生存概率、风险、累积风险和受限均值生存的跨分布图合并为单个图。"
+"仅当未进行模型选择时可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Diagnostics"
+msgstr "诊断"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residual Plots"
+msgstr "残差图"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals vs. time"
+msgstr "残差对时间"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus time. Only available when Censoring Type is set to"
+"Right."
+msgstr "绘制残差对时间的图。仅当“删失类型”设置为“右”时可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals vs. predictors"
+msgstr "残差对预测变量"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus predictors to assess model fit. Available when model"
+"terms are specified."
+msgstr "绘制残差对预测变量的图以评估模型拟合。当指定模型项时可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals vs. predicted survival"
+msgstr "残差对预测生存"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Plot residuals versus predicted survival probabilities."
+msgstr "绘制残差对预测生存概率的图。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals histogram"
+msgstr "残差直方图"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Display a histogram of residuals to assess their distribution."
+msgstr "显示残差的直方图以评估其分布。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Type"
+msgstr "类型"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the type of residuals to plot"
+msgstr "选择要绘制的残差类型"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Response"
+msgstr "响应"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Cox-Snell"
+msgstr "Cox-Snell"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Probability plot"
+msgstr "概率图"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Create a model-based probability plot to assess how well the selected"
+"parametric distribution describes the observed failure times. Only available"
+"when Censoring Type is set to Right."
+msgstr ""
+"创建基于模型的概率图，以评估所选参数分布对观测失效时间的拟合程度。"
+"仅当“删失类型”设置为“右”时可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Canvas"
+msgstr "画布"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the probability-paper scale. A distribution matching the selected"
+"canvas appears approximately as a straight line. The exponential canvas uses"
+"linear time and cumulative-hazard probability scaling; the other canvases use"
+"log time."
+msgstr ""
+"选择概率纸刻度。与所选画布匹配的分布近似呈一条直线。指数画布使用线性时间和累积风险概率刻度；"
+"其他画布使用对数时间。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Empirical points"
+msgstr "经验点"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Plot empirical failure probability points based on the observed failure times."
+msgstr "基于观测失效时间绘制经验失效概率点。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Coordinates"
+msgstr "坐标"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Display the time and failure probability next to each empirical point."
+msgstr "在每个经验点旁显示时间和失效概率。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Fitted curve"
+msgstr "拟合曲线"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Plot the fitted curve from the selected parametric model."
+msgstr "绘制所选参数模型的拟合曲线。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Show censored observations as rug marks at the bottom of the plot. Only"
+"available when Censoring Type is set to Right."
+msgstr "在图的底部以地毯标记显示删失观测。仅当“删失类型”设置为“右”时可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Merge the probability plots across distributions into a single plot. Only"
+"available when no model selection is being performed."
+msgstr "将不同分布的概率图合并为单个图。仅当未进行模型选择时可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include confidence interval bounds for the fitted probability curve."
+msgstr "为拟合的概率曲线包含置信区间边界。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the confidence level for the probability plot confidence intervals."
+msgstr "设置概率图置信区间的置信水平。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Grid"
+msgstr "网格"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Display probability-paper grid lines."
+msgstr "显示概率纸网格线。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Plotting position"
+msgstr "绘图位置"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the method used to compute empirical failure probability plotting"
+"positions."
+msgstr "选择用于计算经验失效概率绘图位置的方法。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Median"
+msgstr "中位数"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Benard"
+msgstr "Benard"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Hazen"
+msgstr "Hazen"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Mean"
+msgstr "均值"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Blom"
+msgstr "Blom"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Rank adjustment"
+msgstr "秩调整"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the rank adjustment method for right-censored observations. The Kaplan-"
+"Meier adjustment follows the WeibullR/Minitab convention, including the final-"
+"failure adjustment used to keep points finite on probability paper."
+msgstr ""
+"选择右删失观测的秩调整方法。Kaplan-Meier调整遵循WeibullR/Minitab约定，"
+"包括用于保持概率纸上点有限的最终失效调整。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Johnson"
+msgstr "Johnson"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Ties"
+msgstr "结"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select how tied failure times are handled when computing empirical plotting"
+"positions."
+msgstr "选择在计算经验绘图位置时如何处理并列的失效时间。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Highest"
+msgstr "最高"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lowest"
+msgstr "最低"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Sequential"
+msgstr "序贯"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the legend position for probability plots with multiple fitted curves."
+msgstr "为具有多条拟合曲线的概率图选择图例位置。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Customize the color palette used in probability plots with multiple fitted"
+"curves."
+msgstr "自定义在具有多条拟合曲线的概率图中使用的调色板。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the theme for the probability plot's appearance."
+msgstr "选择概率图外观的主题。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Advanced"
+msgstr "高级"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Selected Parametric Distributions"
+msgstr "已选参数分布"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Output Formatting"
+msgstr "输出格式"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include full dataset in subgroup analysis"
+msgstr "在亚组分析中包含完整数据集"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Include the full dataset output in the subgroup analysis. This option is only"
+"available when the subgroup analysis is selected."
+msgstr "在亚组分析中包含完整数据集的输出。仅当选择了亚组分析时此选项可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Compare models across distributions"
+msgstr "跨分布比较模型"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Compare models across distributions. This option is only available when the"
+"multiple models and parametric distributions are specified."
+msgstr "跨分布比较模型。仅当指定了多个模型和参数分布时此选项可用。"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Always display model information"
+msgstr "始终显示模型信息"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Interval Start"
+msgstr "区间开始"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the start time of the observation"
+"interval. Only available when Censoring Type is set to Counting."
+msgstr "选择代表观测区间开始时间的变量。仅当“删失类型”设置为“计数”时可用。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Interval End"
+msgstr "区间结束"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the end time of the observation interval."
+"Only available when Censoring Type is set to Counting."
+msgstr "选择代表观测区间结束时间的变量。仅当“删失类型”设置为“计数”时可用。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Time to Event"
+msgstr "至事件发生时间"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the time until the event or censoring"
+"occurs. Only available when Censoring Type is set to Right."
+msgstr "选择代表直到事件发生或删失发生的时间的变量。仅当“删失类型”设置为“右”时可用。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Event Status"
+msgstr "事件状态"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Choose the variable that indicates the event status, specifying whether each"
+"observation is an event or censored."
+msgstr "选择表示事件状态的变量，指明每个观测是事件还是删失。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Event Indicator"
+msgstr "事件指示值"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Specify the value in the Event Status variable that indicates the occurrence"
+"of the event."
+msgstr "指定“事件状态”变量中表示事件发生的值。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Covariates"
+msgstr "协变量"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Add continuous variables as covariates to include them in the Cox regression"
+"model."
+msgstr "添加连续变量作为协变量，以将其纳入Cox回归模型。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Factors"
+msgstr "因子"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Add categorical variables as factors to include them in the Cox regression"
+"model."
+msgstr "添加分类变量作为因子，以将其纳入Cox回归模型。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Weights"
+msgstr "权重"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable for case weights, weighting each observation accordingly in"
+"the model."
+msgstr "选择用于案例权重的变量，据此在模型中为每个观测加权。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Censoring Type"
+msgstr "删失类型"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the type of censoring in your data: Right censoring or Counting"
+"process."
+msgstr "选择数据中的删失类型：右删失或计数过程。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Right"
+msgstr "右"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Counting"
+msgstr "计数"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Censoring summary"
+msgstr "删失摘要"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Create a summary table with information about the censoring status of the"
+"data."
+msgstr "创建包含数据删失状态信息的摘要表。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Method"
+msgstr "方法"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Efron"
+msgstr "Efron"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Breslow"
+msgstr "Breslow"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Exact"
+msgstr "精确"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Choose the method for handling tied event times: Efron, Breslow, or Exact."
+msgstr "选择处理并列事件时间的方法：Efron、Breslow或精确。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Strata, Cluster, and Frailty"
+msgstr "分层、聚类与脆弱性"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Strata"
+msgstr "分层"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select variables to define strata, allowing separate baseline hazard functions"
+"for each stratum."
+msgstr "选择变量以定义分层，允许为每个分层建立单独的基线风险函数。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Cluster"
+msgstr "聚类"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable to define clusters of correlated observations for robust"
+"variance estimation. Disabled when a Frailty variable is specified or Method"
+"is set to Exact."
+msgstr ""
+"选择变量以定义相关观测的聚类，用于稳健方差估计。当指定脆弱性变量或将方法设置为“精确”时禁用。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Frailty"
+msgstr "脆弱性"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable for frailty to model unobserved heterogeneity using random"
+"effects. Disabled when a Cluster variable is specified."
+msgstr "选择脆弱性变量以使用随机效应建模未观测到的异质性。当指定聚类变量时禁用。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Distribution"
+msgstr "分布"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Choose the distribution for the frailty term: Gamma, Gaussian, or T"
+"distribution. Only available when a Frailty variable is specified."
+msgstr "选择脆弱性项的分布：伽马、高斯或t分布。仅当指定了脆弱性变量时可用。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Gamma"
+msgstr "伽马"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Gaussian"
+msgstr "高斯"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "T"
+msgstr "t"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the estimation method for the frailty distribution. Options vary based"
+"on the chosen Distribution."
+msgstr "选择脆弱性分布的估计方法。选项根据所选的分布而变化。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "EM"
+msgstr "EM"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "AIC"
+msgstr "AIC"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Fixed"
+msgstr "固定"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "REML"
+msgstr "REML"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Df"
+msgstr "Df"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Fix"
+msgstr "固定"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Choose the parameter to fix in the frailty model when Method is set to Fixed:"
+"Theta or Df."
+msgstr "当方法设置为“固定”时，选择脆弱性模型中要固定的参数：Theta或Df。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Theta"
+msgstr "Theta"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Specify the value of Theta to fix in the frailty model. Only visible when Fix"
+"is set to Theta."
+msgstr "指定脆弱性模型中要固定的Theta值。仅当“固定”设置为Theta时可见。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Model"
+msgstr "模型"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Components"
+msgstr "分量"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Statistics"
+msgstr "统计"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Model fit"
+msgstr "模型拟合"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include overall model fit statistics in the output."
+msgstr "在输出中包含整体模型拟合统计量。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Tests"
+msgstr "检验"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Test all parameters of the H₁ model."
+msgstr "检验H₁模型的所有参数。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Likelihood ratio"
+msgstr "似然比"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include the Likelihood Ratio Test in the model summary."
+msgstr "在模型摘要中包括似然比检验。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Wald"
+msgstr "Wald"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Include the Wald Test in the model summary. Disabled when a Frailty variable"
+"is specified."
+msgstr "在模型摘要中包括Wald检验。当指定脆弱性变量时禁用。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Coefficients"
+msgstr "系数"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Estimates"
+msgstr "估计值"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Display the estimated coefficients in the model output."
+msgstr "在模型输出中显示估计系数。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Vovk-Sellke maximum p-ratio"
+msgstr "Vovk-Sellke最大p值比"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include the Vovk-Sellke maximum p-ratio for each coefficient."
+msgstr "为每个系数包含Vovk-Sellke最大p值比。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Hazard ratio estimates"
+msgstr "风险比估计"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include frailty"
+msgstr "包含脆弱性"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Include the effect of frailty in hazard ratio estimates. Only available when a"
+"Frailty variable is specified."
+msgstr "在风险比估计中包含脆弱性的影响。仅当指定了脆弱性变量时可用。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Confidence intervals"
+msgstr "置信区间"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include confidence intervals for the coefficients."
+msgstr "包含系数的置信区间。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Plot"
+msgstr "图表"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Diagnostics"
+msgstr "诊断"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Proportional Hazards"
+msgstr "比例风险"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Table"
+msgstr "表格"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Provide a table to test the proportional hazards assumption."
+msgstr "提供用于检验比例风险假设的表。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Generate plots to assess the proportional hazards assumption."
+msgstr "生成用于评估比例风险假设的图。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Transformation"
+msgstr "变换"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the transformation for time in proportional hazards testing: KM, Rank,"
+"or Identity."
+msgstr "选择比例风险检验中时间的变换：KM、秩或恒等。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "KM"
+msgstr "KM"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Rank"
+msgstr "秩"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Identity"
+msgstr "恒等"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Test terms"
+msgstr "检验项"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residual Plots"
+msgstr "残差图"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residuals vs. time"
+msgstr "残差对时间"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus time to detect non-proportional hazards. Available only"
+"for Martingale or Deviance residuals."
+msgstr "绘制残差对时间的图以检测非比例风险。仅适用于鞅或偏差残差。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residuals vs. predictors"
+msgstr "残差对预测变量"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus predictors to assess model fit. Available when model"
+"terms are specified."
+msgstr "绘制残差对预测变量的图以评估模型拟合。当指定模型项时可用。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residuals vs. predicted survival"
+msgstr "残差对预测生存"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus predicted survival probabilities. Available only for"
+"Martingale or Deviance residuals."
+msgstr "绘制残差对预测生存概率的图。仅适用于鞅或偏差残差。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residuals histogram"
+msgstr "残差直方图"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Display a histogram of residuals to assess their distribution. Available only"
+"for Martingale or Deviance residuals."
+msgstr "显示残差的直方图以评估其分布。仅适用于鞅或偏差残差。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Type"
+msgstr "类型"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the type of residuals to plot: Martingale, Deviance, Score, Schoenfeld,"
+"or Scaled Schoenfeld."
+msgstr "选择要绘制的残差类型：鞅、偏差、得分、Schoenfeld或缩放Schoenfeld。"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Martingale"
+msgstr "鞅"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Deviance"
+msgstr "偏差"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Score"
+msgstr "得分"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Schoenfeld"
+msgstr "Schoenfeld"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Scaled Schoenfeld"
+msgstr "缩放Schoenfeld"
+
+msgctxt "SurvivalPlot|"
+msgid "Plot"
+msgstr "图表"
+
+msgctxt "SurvivalPlot|"
+msgid "Type"
+msgstr "类型"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Select the type of statistic to plot: Survival, Risk, Cumulative Hazard, or"
+"Complementary Log-Log."
+msgstr "选择要绘制的统计量类型：生存、风险、累积风险或互补对数对数。"
+
+msgctxt "SurvivalPlot|"
+msgid "Survival"
+msgstr "生存"
+
+msgctxt "SurvivalPlot|"
+msgid "Risk"
+msgstr "风险"
+
+msgctxt "SurvivalPlot|"
+msgid "Cumulative hazard"
+msgstr "累积风险"
+
+msgctxt "SurvivalPlot|"
+msgid "Complementary log-log"
+msgstr "互补对数对数"
+
+msgctxt "SurvivalPlot|"
+msgid "Confidence interval"
+msgstr "置信区间"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Include confidence intervals in the survival plot to show the variability"
+"around the estimates."
+msgstr "在生存图中包含置信区间，以显示估计值周围的变异性。"
+
+msgctxt "SurvivalPlot|"
+msgid "Risk table"
+msgstr "风险表"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Add a risk table below the plot to display additional information about the"
+"number of subjects at risk over time."
+msgstr "在图下方添加风险表，以显示随时间处于风险中的被试数量的附加信息。"
+
+msgctxt "SurvivalPlot|"
+msgid "Number at risk"
+msgstr "处于风险中的数量"
+
+msgctxt "SurvivalPlot|"
+msgid "Display the number of subjects at risk at each time point in the risk table."
+msgstr "在风险表中显示每个时间点处于风险中的被试数量。"
+
+msgctxt "SurvivalPlot|"
+msgid "Cum. number of observed events"
+msgstr "观测事件的累积数量"
+
+msgctxt "SurvivalPlot|"
+msgid "Cum. number of censored obs."
+msgstr "删失观测的累积数量"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Display the cumulative number of censored observations at each time point in"
+"the risk table."
+msgstr "在风险表中显示每个时间点删失观测的累积数量。"
+
+msgctxt "SurvivalPlot|"
+msgid "Number of events in time interval"
+msgstr "时间区间内的事件数"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Display the number of events that occurred within each time interval in the"
+"risk table."
+msgstr "在风险表中显示每个时间区间内发生的事件数。"
+
+msgctxt "SurvivalPlot|"
+msgid "Number of censored obs. in time interval"
+msgstr "时间区间内的删失观测数"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Display the number of censored observations within each time interval in the"
+"risk table."
+msgstr "在风险表中显示每个时间区间内的删失观测数。"
+
+msgctxt "SurvivalPlot|"
+msgid "As a single line"
+msgstr "作为单行"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Combine all selected risk table statistics into a single line for a more"
+"compact display."
+msgstr "将所有选定的风险表统计量合并为单行，以获得更紧凑的显示。"
+
+msgctxt "SurvivalPlot|"
+msgid "Add quantile"
+msgstr "添加分位数"
+
+msgctxt "SurvivalPlot|"
+msgid "Legend"
+msgstr "图例"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Choose the position of the legend on the plot: Bottom, Right, Left, Top, or"
+"None. Only available when Strata variables are specified."
+msgstr "选择图中图例的位置：底部、右侧、左侧、顶部或无。仅当指定分层变量时可用。"
+
+msgctxt "SurvivalPlot|"
+msgid "Bottom"
+msgstr "底部"
+
+msgctxt "SurvivalPlot|"
+msgid "Right"
+msgstr "右侧"
+
+msgctxt "SurvivalPlot|"
+msgid "Left"
+msgstr "左侧"
+
+msgctxt "SurvivalPlot|"
+msgid "Top"
+msgstr "顶部"
+
+msgctxt "SurvivalPlot|"
+msgid "None"
+msgstr "无"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Customize the color palette used in the plot. Only available when Strata"
+"variables are specified."
+msgstr "自定义图中使用的调色板。仅当指定分层变量时可用。"
+
+msgctxt "SurvivalPlot|"
+msgid "Theme"
+msgstr "主题"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Select the theme for the plot's appearance: JASP for the default look or"
+"ggsurvfit for the ggsurvfit package style."
+msgstr "选择图外观的主题：JASP为默认外观，或ggsurvfit为ggsurvfit包样式。"
+
+msgctxt "SurvivalPlot|"
+msgid "JASP"
+msgstr "JASP"
+
+msgctxt "SurvivalPlot|"
+msgid "ggsurvfit"
+msgstr "ggsurvfit"

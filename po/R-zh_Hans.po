@@ -1,0 +1,550 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: jaspSurvival 0.1\n"
+"Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
+"POT-Creation-Date: 2026-01-01 00:00+0000\n"
+"PO-Revision-Date: 2026-01-01 00:00+0000\n"
+"Last-Translator: JASP translators\n"
+"Language-Team: Chinese (Simplified)\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "The end time must be larger than the start time."
+msgstr "结束时间必须大于开始时间。"
+
+msgid "The weights variable must be an integer."
+msgstr "权重变量必须为整数。"
+
+msgid "The weights variable must not contain missing values."
+msgstr "权重变量不能包含缺失值。"
+
+msgid "The weights variable must be positive."
+msgstr "权重变量必须为正数。"
+
+#, qt-format
+msgid "%1$i observations omitted due to missing values."
+msgstr "因缺失值而省略了%1$i个观测。"
+
+msgid "We need at least one predictor, or an intercept to make a formula"
+msgstr "至少需要一个预测变量或一个截距来构建公式"
+
+msgid "At least one predictor, or an intercept, is needed to fit the model."
+msgstr "拟合模型至少需要一个预测变量或一个截距。"
+
+msgid "Events"
+msgstr "事件"
+
+msgid "Censored"
+msgstr "删失"
+
+msgid "Left censored"
+msgstr "左删失"
+
+msgid "Right censored"
+msgstr "右删失"
+
+msgid "Interval censored"
+msgstr "区间删失"
+
+msgid "Censoring Summary"
+msgstr "删失摘要"
+
+msgid "Subgroup"
+msgstr "亚组"
+
+msgid "Count"
+msgstr "计数"
+
+msgid "Survival Plot"
+msgstr "生存曲线图"
+
+msgid "Risk Plot"
+msgstr "风险图"
+
+msgid "Cumulative Hazard Plot"
+msgstr "累积风险图"
+
+msgid "Complementary Log-Log Plot"
+msgstr "互补对数对数图"
+
+msgid "log(Time)"
+msgstr "log(时间)"
+
+msgid "Kaplan-Meier Summary Table"
+msgstr "Kaplan-Meier摘要表"
+
+msgid "%s%% CI"
+msgstr "%s%% CI"
+
+msgid "Strata"
+msgstr "分层"
+
+msgid "N"
+msgstr "N"
+
+msgid "Restricted Mean"
+msgstr "受限均值"
+
+msgid "Standard Error"
+msgstr "标准误"
+
+msgid "Median Survival"
+msgstr "中位生存时间"
+
+msgid "Lower"
+msgstr "下限"
+
+msgid "Upper"
+msgstr "上限"
+
+msgid "Tests Table"
+msgstr "检验表"
+
+msgid "Test"
+msgstr "检验"
+
+msgid "Chi Square"
+msgstr "卡方"
+
+msgid "df"
+msgstr "df"
+
+msgid "p"
+msgstr "p"
+
+msgid "At least one strata needs to be specified"
+msgstr "至少需要指定一个分层变量"
+
+msgid "Log-rank (Mantel-Haenszel)"
+msgstr "对数秩检验（Mantel-Haenszel）"
+
+msgid "Peto and Peto"
+msgstr "Peto和Peto"
+
+msgid "Flemming-Harrington"
+msgstr "Flemming-Harrington"
+
+msgid "Life Table"
+msgstr "寿命表"
+
+msgid "Time"
+msgstr "时间"
+
+msgid "Survival"
+msgstr "生存"
+
+msgid "At Risk"
+msgstr "风险数"
+
+msgid "Full dataset"
+msgstr "完整数据集"
+
+#, qt-format
+msgid "Subgroup: %1$s"
+msgstr "亚组：%1$s"
+
+msgid "Model Summary"
+msgstr "模型摘要"
+
+msgid "Sequential Model Comparison"
+msgstr "序贯模型比较"
+
+msgid "Coefficients Summary"
+msgstr "系数摘要"
+
+msgid "Coefficients Covariance Matrix"
+msgstr "系数协方差矩阵"
+
+msgid "Log Lik."
+msgstr "对数似然"
+
+msgid "AIC"
+msgstr "AIC"
+
+msgid "BIC"
+msgstr "BIC"
+
+msgid "AIC Weight"
+msgstr "AIC权重"
+
+msgid "BIC Weight"
+msgstr "BIC权重"
+
+msgid "Rank"
+msgstr "排序"
+
+msgid "Error: "
+msgstr "错误："
+
+msgid "Likelihood ratio test for nested models based on %s distribution."
+msgstr "基于%s分布的嵌套模型的似然比检验。"
+
+msgid "Estimate"
+msgstr "估计值"
+
+msgid "z"
+msgstr "z"
+
+msgid "P-values are based on a Wald test."
+msgstr "p值基于Wald检验。"
+
+msgid "Predicted Survival Time"
+msgstr "预测生存时间"
+
+msgid "Predicted Failure Probability"
+msgstr "预测失效概率"
+
+msgid "Predicted Survival Probability"
+msgstr "预测生存概率"
+
+msgid "Predicted Hazard"
+msgstr "预测风险"
+
+msgid "Predicted Cumulative Hazard"
+msgstr "预测累积风险"
+
+msgid "Predicted Restricted Mean Survival Time"
+msgstr "预测受限均值生存时间"
+
+msgid "Life Time Table"
+msgstr "寿命时间表"
+
+msgid "Quantile"
+msgstr "分位数"
+
+msgid "Survival Time"
+msgstr "生存时间"
+
+msgid "Failure Probability"
+msgstr "失效概率"
+
+msgid "Survival Probability"
+msgstr "生存概率"
+
+msgid "Hazard"
+msgstr "风险"
+
+msgid "Cumulative Hazard"
+msgstr "累积风险"
+
+msgid "Restricted Mean Survival Time"
+msgstr "受限均值生存时间"
+
+msgid "The model failed to produce predictions. Consider simplifying the model."
+msgstr "模型未能产生预测结果。请考虑简化模型。"
+
+msgid ""
+"Life time tables cannot be merged if there is more than a one prediction from"
+"a given model."
+msgstr "如果给定模型产生多个预测结果，则无法合并寿命时间表。"
+
+msgid ""
+"The model failed to produce survival predictions. Consider simplifying the"
+"model."
+msgstr "模型未能产生生存预测结果。请考虑简化模型。"
+
+msgid ""
+"The model failed to produce hazard predictions. Consider simplifying the"
+"model."
+msgstr "模型未能产生风险预测结果。请考虑简化模型。"
+
+msgid ""
+"The model failed to produce cumulative predictions. Consider simplifying the"
+"model."
+msgstr "模型未能产生累积预测结果。请考虑简化模型。"
+
+msgid ""
+"The model failed to produce restricted mean survival time predictions."
+"Consider simplifying the model."
+msgstr "模型未能产生受限均值生存时间预测结果。请考虑简化模型。"
+
+#, qt-format
+msgid "%1$s (log scale)"
+msgstr "%1$s（对数尺度）"
+
+#, qt-format
+msgid "%1$s (log(-log(1-p)) scale)"
+msgstr "%1$s（log(-log(1-p))尺度）"
+
+msgid "Residuals vs. Time"
+msgstr "残差对时间"
+
+msgid "Residuals vs. Predictors"
+msgstr "残差对预测变量"
+
+msgid "Residuals vs. Predicted"
+msgstr "残差对预测值"
+
+msgid "Residual Histogram"
+msgstr "残差直方图"
+
+msgid "Probability Plot"
+msgstr "概率图"
+
+msgid ""
+"The model failed to produce a probability plot. Consider simplifying the"
+"model."
+msgstr "模型未能产生概率图。请考虑简化模型。"
+
+msgid "The probability plot requires at least one fitted model."
+msgstr "概率图至少需要一个拟合的模型。"
+
+msgid ""
+"The probability plot requires at least one positive observed failure time,"
+"censored observation, or fitted curve."
+msgstr "概率图至少需要一个正的观测失效时间、删失观测或拟合曲线。"
+
+msgid "Fitted"
+msgstr "拟合"
+
+msgid "Failure Probability (%s scale)"
+msgstr "失效概率（%s尺度）"
+
+msgid "exponential"
+msgstr "指数"
+
+msgid "log-normal"
+msgstr "对数正态"
+
+msgid "Time (log scale)"
+msgstr "时间（对数尺度）"
+
+msgid "log-logistic"
+msgstr "对数逻辑"
+
+msgid "Weibull"
+msgstr "Weibull"
+
+msgid "The probability plot requires positive time values."
+msgstr "概率图需要正的数值。"
+
+msgid "Response"
+msgstr "响应"
+
+msgid "Cox-Snell"
+msgstr "Cox-Snell"
+
+#, qt-format
+msgid "Residuals vs. %1$s"
+msgstr "残差对%1$s"
+
+msgid "Predicted Time"
+msgstr "预测时间"
+
+msgid "Model"
+msgstr "模型"
+
+msgid "Distribution"
+msgstr "分布"
+
+msgid "Lower CI"
+msgstr "CI下限"
+
+msgid "Upper CI"
+msgstr "CI上限"
+
+msgid ""
+"Custom steps for predicted survival time were specified in an incorrect"
+"format. Try '0.25, 0.50, 0.75'."
+msgstr "预测生存时间的自定义步长的格式不正确。请尝试'0.25, 0.50, 0.75'。"
+
+msgid "Custom steps for predicted survival time must be between 0 and 1."
+msgstr "预测生存时间的自定义步长必须在0到1之间。"
+
+msgid "Step from for predicted survival time must be a positive number."
+msgstr "预测生存时间的起始步长必须为正数。"
+
+msgid "Step to for predicted survival time must be a positive number."
+msgstr "预测生存时间的结束步长必须为正数。"
+
+msgid "Step size for predicted survival time must be a positive number."
+msgstr "预测生存时间的步长大小必须为正数。"
+
+msgid "Custom steps for predicted survival time must be greater than or equal to 0."
+msgstr "预测生存时间的自定义步长必须大于或等于0。"
+
+#, qt-format
+msgid "%1$s model %2$s%3$s failed with the following message: %4$s."
+msgstr "%1$s模型%2$s%3$s失败，消息如下：%4$s。"
+
+#, qt-format
+msgid "All following output is based on the best fitting %1$s distribution."
+msgstr "以下所有输出均基于最佳拟合的%1$s分布。"
+
+#, qt-format
+msgid ""
+"Results are based on %1$s distribution which was the best fitting"
+"distribution."
+msgstr "结果基于最佳拟合的%1$s分布。"
+
+#, qt-format
+msgid "Results are based on %1$s."
+msgstr "结果基于%1$s。"
+
+#, qt-format
+msgid ""
+"Results are based on %1$s with distribution %2$s which is the best fitting"
+"distribution across models."
+msgstr "结果基于%1$s及其%2$s分布，该分布是所有模型中最佳拟合的分布。"
+
+msgid "Results are based on best fitting models."
+msgstr "结果基于最佳拟合的模型。"
+
+msgid "Results are based on best fitting models within each distribution."
+msgstr "结果基于每种分布内最佳拟合的模型。"
+
+#, qt-format
+msgid ""
+"Results are based on %1$s with %2$s distribution which was the best fitting"
+"model across all models and distributions."
+msgstr "结果基于%1$s及其%2$s分布，该模型是所有模型和分布中最佳拟合的。"
+
+msgid "Model Tests Table"
+msgstr "模型检验表"
+
+msgid "At least one factor or covariate needs to be specified"
+msgstr "至少需要指定一个因子或协变量"
+
+msgid "Likelihood ratio"
+msgstr "似然比"
+
+msgid "Wald"
+msgstr "Wald"
+
+msgid "Score"
+msgstr "得分"
+
+msgid "Tests are based on the H\\u2081 model."
+msgstr "检验基于H₁模型。"
+
+msgid "Cox Proportional Hazards Summary Table"
+msgstr "Cox比例风险摘要表"
+
+msgid ""
+"Either 'theta' of 'df' must be set to a value larger than zero when using"
+"'Fixed' frailty method."
+msgstr "使用“Fixed”脆弱性方法时，'theta'或'df'必须设置为大于零的值。"
+
+msgid "The null model failed with the following message:"
+msgstr "零模型失败，消息如下："
+
+#, qt-format
+msgid "The model failed with the following message: %1$s."
+msgstr "模型失败，消息如下：%1$s。"
+
+#, qt-format
+msgid "%1$i observations with %2$i events."
+msgstr "%1$i个观测，%2$i个事件。"
+
+#, qt-format
+msgid "Null model contains nuisance parameters: %1$s"
+msgstr "零模型包含干扰参数：%1$s"
+
+#, qt-format
+msgid "Robust variance estimation based on %1$s."
+msgstr "基于%1$s的稳健方差估计。"
+
+#, qt-format
+msgid "Frailty based on %1$s."
+msgstr "基于%1$s的脆弱性。"
+
+#, qt-format
+msgid "Subject identification based on %1$s."
+msgstr "基于%1$s的被试识别。"
+
+msgid "Model Fit Summary Table"
+msgstr "模型拟合摘要表"
+
+msgid "Concordance"
+msgstr "一致性指标"
+
+msgid "Frailty Summary Table"
+msgstr "脆弱性摘要表"
+
+msgid "Variance"
+msgstr "方差"
+
+msgid "Cox Proportional Hazards Estimates Table"
+msgstr "Cox比例风险估计表"
+
+msgid "Robust Standard Error"
+msgstr "稳健标准误"
+
+msgid "%.0f%% CI"
+msgstr "%.0f%% CI"
+
+msgid "VS-MPR%s"
+msgstr "VS-MPR%s"
+
+#, qt-format
+msgid ""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value,   the"
+"maximum possible odds in favor of H%1$s over H%2$s equals   1/(-e <em>p</em>"
+"log(<em>p</em>)) for <em>p</em> %3$s .37   (Sellke, Bayarri, & Berger, 2001)."
+msgstr ""
+"Vovk-Sellke最大<em>p</em>值比：基于<em>p</em>值，当<em>p</em>%3$s .37时，"
+"H%1$s相对于H%2$s的最大可能比值为1/(-e <em>p</em> log(<em>p</em>))"
+"（Sellke, Bayarri, & Berger, 2001）。"
+
+msgid "Null model contains nuisance parameters: %s"
+msgstr "零模型包含干扰参数：%s"
+
+#, qt-format
+msgid "Results are stratified via: %1$s."
+msgstr "结果通过%1$s进行分层。"
+
+msgid "Hazard Ratios Estimates Table"
+msgstr "风险比估计表"
+
+msgid "Hazard Ratio"
+msgstr "风险比"
+
+msgid "Proporational Hazards Assumption Test Table"
+msgstr "比例风险假设检验表"
+
+#, qt-format
+msgid "The model test failed with the following message: %1$s"
+msgstr "模型检验失败，消息如下：%1$s"
+
+msgid "Global"
+msgstr "整体"
+
+#, qt-format
+msgid "Tests are performed using the %1$s survival times transformation."
+msgstr "检验使用%1$s生存时间变换进行。"
+
+msgid "Proporational Hazards Assumption Test Plots"
+msgstr "比例风险假设检验图"
+
+msgid "Beta(t)"
+msgstr "Beta(t)"
+
+msgid "Residual Plots"
+msgstr "残差图"
+
+msgid "No predictors in the model."
+msgstr "模型中无预测变量。"
+
+msgid "Predicted Survival"
+msgstr "预测生存"
+
+msgid "Residuals Histogram"
+msgstr "残差直方图"
+
+msgid "Martingale Residuals"
+msgstr "鞅残差"
+
+msgid "Deviance Residuals"
+msgstr "偏差残差"
+
+msgid "Score Residuals"
+msgstr "得分残差"
+
+msgid "Schoenfeld Residuals"
+msgstr "Schoenfeld残差"
+
+msgid "Scaled Schoenfeld Residuals"
+msgstr "缩放Schoenfeld残差"
