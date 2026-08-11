@@ -1,0 +1,592 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: jaspSurvival 0.1\n"
+"Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
+"POT-Creation-Date: 2026-01-01 00:00+0000\n"
+"PO-Revision-Date: 2026-01-01 00:00+0000\n"
+"Last-Translator: JASP translators\n"
+"Language-Team: Dutch\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+
+msgid "The end time must be larger than the start time."
+msgstr "De eindtijd moet groter zijn dan de starttijd."
+
+msgid "The weights variable must be an integer."
+msgstr "De gewichtenvariabele moet een geheel getal zijn."
+
+msgid "The weights variable must not contain missing values."
+msgstr "De gewichtenvariabele mag geen ontbrekende waarden bevatten."
+
+msgid "The weights variable must be positive."
+msgstr "De gewichtenvariabele moet positief zijn."
+
+msgid "%1$i observations omitted due to missing values."
+msgstr "%1$i waarnemingen weggelaten vanwege ontbrekende waarden."
+
+msgid "We need at least one predictor, or an intercept to make a formula"
+msgstr ""
+"We hebben minstens één voorspeller of een intercept nodig om een"
+"formule te maken"
+
+msgid "At least one predictor, or an intercept, is needed to fit the model."
+msgstr ""
+"Er is minstens één voorspeller of een intercept nodig om het model te"
+"schatten."
+
+msgid "Events"
+msgstr "Gebeurtenissen"
+
+msgid "Censored"
+msgstr "Gecensureerd"
+
+msgid "Left censored"
+msgstr "Links gecensureerd"
+
+msgid "Right censored"
+msgstr "Rechts gecensureerd"
+
+msgid "Interval censored"
+msgstr "Interval gecensureerd"
+
+msgid "Censoring Summary"
+msgstr "Censureringssamenvatting"
+
+msgid "Subgroup"
+msgstr "Subgroep"
+
+msgid "Count"
+msgstr "Aantal"
+
+msgid "Survival Plot"
+msgstr "Overlevingsgrafiek"
+
+msgid "Risk Plot"
+msgstr "Risicografiek"
+
+msgid "Cumulative Hazard Plot"
+msgstr "Grafiek van cumulatieve hazard"
+
+msgid "Complementary Log-Log Plot"
+msgstr "Complementaire log-log-grafiek"
+
+msgid "log(Time)"
+msgstr "log(tijd)"
+
+msgid "Kaplan-Meier Summary Table"
+msgstr "Kaplan-Meier-samenvattingstabel"
+
+msgid "%s%% CI"
+msgstr "%s%% BI"
+
+msgid "Strata"
+msgstr "Strata"
+
+msgid "N"
+msgstr "N"
+
+msgid "Restricted Mean"
+msgstr "Beperkt gemiddelde"
+
+msgid "Standard Error"
+msgstr "Standaardfout"
+
+msgid "Median Survival"
+msgstr "Mediane overleving"
+
+msgid "Lower"
+msgstr "Onder"
+
+msgid "Upper"
+msgstr "Boven"
+
+msgid "Tests Table"
+msgstr "Toetsentabel"
+
+msgid "Test"
+msgstr "Toets"
+
+msgid "Chi Square"
+msgstr "Chi-kwadraat"
+
+msgid "df"
+msgstr "df"
+
+msgid "p"
+msgstr "p"
+
+msgid "At least one strata needs to be specified"
+msgstr "Er moet minstens één stratum worden gespecificeerd"
+
+msgid "Log-rank (Mantel-Haenszel)"
+msgstr "Log-rank (Mantel-Haenszel)"
+
+msgid "Peto and Peto"
+msgstr "Peto en Peto"
+
+msgid "Flemming-Harrington"
+msgstr "Fleming-Harrington"
+
+msgid "Life Table"
+msgstr "Overlevingstabel"
+
+msgid "Time"
+msgstr "Tijd"
+
+msgid "Survival"
+msgstr "Overleving"
+
+msgid "At Risk"
+msgstr "At risk"
+
+msgid "Full dataset"
+msgstr "Volledige dataset"
+
+msgid "Subgroup: %1$s"
+msgstr "Subgroep: %1$s"
+
+msgid "Model Summary"
+msgstr "Modelsamenvatting"
+
+msgid "Sequential Model Comparison"
+msgstr "Sequentiële modelvergelijking"
+
+msgid "Coefficients Summary"
+msgstr "Samenvatting coëfficiënten"
+
+msgid "Coefficients Covariance Matrix"
+msgstr "Covariantiematrix coëfficiënten"
+
+msgid "Log Lik."
+msgstr "Log-kans."
+
+msgid "AIC"
+msgstr "AIC"
+
+msgid "BIC"
+msgstr "BIC"
+
+msgid "AIC Weight"
+msgstr "AIC-gewicht"
+
+msgid "BIC Weight"
+msgstr "BIC-gewicht"
+
+msgid "Rank"
+msgstr "Rang"
+
+msgid "Error: "
+msgstr "Fout:"
+
+msgid "Likelihood ratio test for nested models based on %s distribution."
+msgstr ""
+"Likelihoodratio-toets voor geneste modellen op basis van de"
+"%s-verdeling."
+
+msgid "Estimate"
+msgstr "Schatting"
+
+msgid "z"
+msgstr "z"
+
+msgid "P-values are based on a Wald test."
+msgstr "P-waarden zijn gebaseerd op een Wald-toets."
+
+msgid "Predicted Survival Time"
+msgstr "Voorspelde overlevingstijd"
+
+msgid "Predicted Failure Probability"
+msgstr "Voorspelde faalkans"
+
+msgid "Predicted Survival Probability"
+msgstr "Voorspelde overlevingskans"
+
+msgid "Predicted Hazard"
+msgstr "Voorspelde hazard"
+
+msgid "Predicted Cumulative Hazard"
+msgstr "Voorspelde cumulatieve hazard"
+
+msgid "Predicted Restricted Mean Survival Time"
+msgstr "Voorspelde beperkte gemiddelde overlevingstijd"
+
+msgid "Life Time Table"
+msgstr "Overlevingstijdtabel"
+
+msgid "Quantile"
+msgstr "Kwantiel"
+
+msgid "Survival Time"
+msgstr "Overlevingstijd"
+
+msgid "Failure Probability"
+msgstr "Faalkans"
+
+msgid "Survival Probability"
+msgstr "Overlevingskans"
+
+msgid "Hazard"
+msgstr "Hazard"
+
+msgid "Cumulative Hazard"
+msgstr "Cumulatieve hazard"
+
+msgid "Restricted Mean Survival Time"
+msgstr "Beperkte gemiddelde overlevingstijd"
+
+msgid "The model failed to produce predictions. Consider simplifying the model."
+msgstr ""
+"Het model is er niet in geslaagd voorspellingen te genereren. Overweeg"
+"het model te vereenvoudigen."
+
+msgid ""
+""
+"Life time tables cannot be merged if there is more than a one prediction from"
+"a given model."
+msgstr ""
+"Overlevingstijdtabellen kunnen niet worden samengevoegd als er meer"
+"dan één voorspelling uit een bepaald model komt."
+
+msgid ""
+""
+"The model failed to produce survival predictions. Consider simplifying the"
+"model."
+msgstr ""
+"Het model is er niet in geslaagd overlevingsvoorspellingen te"
+"genereren. Overweeg het model te vereenvoudigen."
+
+msgid ""
+""
+"The model failed to produce hazard predictions. Consider simplifying the"
+"model."
+msgstr ""
+"Het model is er niet in geslaagd hazardvoorspellingen te genereren."
+"Overweeg het model te vereenvoudigen."
+
+msgid ""
+""
+"The model failed to produce cumulative predictions. Consider simplifying the"
+"model."
+msgstr ""
+"Het model is er niet in geslaagd cumulatieve voorspellingen te"
+"genereren. Overweeg het model te vereenvoudigen."
+
+msgid ""
+""
+"The model failed to produce restricted mean survival time predictions."
+"Consider simplifying the model."
+msgstr ""
+"Het model is er niet in geslaagd voorspellingen van de beperkte"
+"gemiddelde overlevingstijd te genereren. Overweeg het model te"
+"vereenvoudigen."
+
+msgid "%1$s (log scale)"
+msgstr "%1$s (logschaal)"
+
+msgid "%1$s (log(-log(1-p)) scale)"
+msgstr "%1$s (log(-log(1-p))-schaal)"
+
+msgid "Residuals vs. Time"
+msgstr "Residuen vs. tijd"
+
+msgid "Residuals vs. Predictors"
+msgstr "Residuen vs. voorspellers"
+
+msgid "Residuals vs. Predicted"
+msgstr "Residuen vs. voorspelde waarden"
+
+msgid "Residual Histogram"
+msgstr "Residuenhistogram"
+
+msgid "Probability Plot"
+msgstr "Kansgrafiek"
+
+msgid ""
+""
+"The model failed to produce a probability plot. Consider simplifying the"
+"model."
+msgstr ""
+"Het model is er niet in geslaagd een kansgrafiek te genereren."
+"Overweeg het model te vereenvoudigen."
+
+msgid "The probability plot requires at least one fitted model."
+msgstr "De kansgrafiek vereist minstens één geschat model."
+
+msgid ""
+""
+"The probability plot requires at least one positive observed failure time,"
+"censored observation, or fitted curve."
+msgstr ""
+"De kansgrafiek vereist minstens één positieve waargenomen faaltijd,"
+"gecensureerde waarneming of geschatte curve."
+
+msgid "Fitted"
+msgstr "Gefit"
+
+msgid "Failure Probability (%s scale)"
+msgstr "Faalkans (%s-schaal)"
+
+msgid "exponential"
+msgstr "exponentieel"
+
+msgid "log-normal"
+msgstr "log-normaal"
+
+msgid "Time (log scale)"
+msgstr "Tijd (logschaal)"
+
+msgid "log-logistic"
+msgstr "log-logistisch"
+
+msgid "Weibull"
+msgstr "Weibull"
+
+msgid "The probability plot requires positive time values."
+msgstr "De kansgrafiek vereist positieve tijdwaarden."
+
+msgid "Response"
+msgstr "Respons"
+
+msgid "Cox-Snell"
+msgstr "Cox-Snell"
+
+msgid "Residuals vs. %1$s"
+msgstr "Residuen vs. %1$s"
+
+msgid "Predicted Time"
+msgstr "Voorspelde tijd"
+
+msgid "Model"
+msgstr "Model"
+
+msgid "Distribution"
+msgstr "Verdeling"
+
+msgid "Lower CI"
+msgstr "Onder BI"
+
+msgid "Upper CI"
+msgstr "Boven BI"
+
+msgid ""
+""
+"Custom steps for predicted survival time were specified in an incorrect"
+"format. Try '0.25, 0.50, 0.75'."
+msgstr ""
+"Aangepaste stappen voor de voorspelde overlevingstijd zijn in een"
+"onjuiste indeling gespecificeerd. Probeer '0,25; 0,50; 0,75'."
+
+msgid "Custom steps for predicted survival time must be between 0 and 1."
+msgstr ""
+"Aangepaste stappen voor de voorspelde overlevingstijd moeten tussen 0"
+"en 1 liggen."
+
+msgid "Step from for predicted survival time must be a positive number."
+msgstr ""
+"Stap vanaf voor de voorspelde overlevingstijd moet een positief getal"
+"zijn."
+
+msgid "Step to for predicted survival time must be a positive number."
+msgstr ""
+"Stap tot voor de voorspelde overlevingstijd moet een positief getal"
+"zijn."
+
+msgid "Step size for predicted survival time must be a positive number."
+msgstr ""
+"Stapgrootte voor de voorspelde overlevingstijd moet een positief getal"
+"zijn."
+
+msgid "Custom steps for predicted survival time must be greater than or equal to 0."
+msgstr ""
+"Aangepaste stappen voor de voorspelde overlevingstijd moeten groter"
+"dan of gelijk aan 0 zijn."
+
+msgid "%1$s model %2$s%3$s failed with the following message: %4$s."
+msgstr "Het %1$s-model %2$s%3$s is mislukt met de volgende melding: %4$s."
+
+msgid "All following output is based on the best fitting %1$s distribution."
+msgstr "Alle volgende uitvoer is gebaseerd op de best passende %1$s-verdeling."
+
+msgid ""
+""
+"Results are based on %1$s distribution which was the best fitting"
+"distribution."
+msgstr ""
+"De resultaten zijn gebaseerd op de %1$s-verdeling die de best passende"
+"verdeling was."
+
+msgid "Results are based on %1$s."
+msgstr "De resultaten zijn gebaseerd op %1$s."
+
+msgid ""
+""
+"Results are based on %1$s with distribution %2$s which is the best fitting"
+"distribution across models."
+msgstr ""
+"De resultaten zijn gebaseerd op %1$s met verdeling %2$s die de best"
+"passende verdeling over de modellen is."
+
+msgid "Results are based on best fitting models."
+msgstr "De resultaten zijn gebaseerd op de best passende modellen."
+
+msgid "Results are based on best fitting models within each distribution."
+msgstr ""
+"De resultaten zijn gebaseerd op de best passende modellen binnen elke"
+"verdeling."
+
+msgid ""
+""
+"Results are based on %1$s with %2$s distribution which was the best fitting"
+"model across all models and distributions."
+msgstr ""
+"De resultaten zijn gebaseerd op %1$s met %2$s-verdeling die het best"
+"passende model over alle modellen en verdelingen was."
+
+msgid "Model Tests Table"
+msgstr "Tabel met modeltoetsen"
+
+msgid "At least one factor or covariate needs to be specified"
+msgstr "Er moet minstens één factor of covariaat worden gespecificeerd"
+
+msgid "Likelihood ratio"
+msgstr "Likelihoodratio"
+
+msgid "Wald"
+msgstr "Wald"
+
+msgid "Score"
+msgstr "Score"
+
+msgid "Tests are based on the H\\u2081 model."
+msgstr "De toetsen zijn gebaseerd op het H\\u2081-model."
+
+msgid "Cox Proportional Hazards Summary Table"
+msgstr "Samenvattingstabel Cox-proportionele-hazard"
+
+msgid ""
+""
+"Either 'theta' of 'df' must be set to a value larger than zero when using"
+"'Fixed' frailty method."
+msgstr ""
+"Ofwel 'theta' ofwel 'df' moet op een waarde groter dan nul worden"
+"ingesteld wanneer de 'Fixed'-frailtymethode wordt gebruikt."
+
+msgid "The null model failed with the following message:"
+msgstr "Het nulmodel is mislukt met de volgende melding:"
+
+msgid "The model failed with the following message: %1$s."
+msgstr "Het model is mislukt met de volgende melding: %1$s."
+
+msgid "%1$i observations with %2$i events."
+msgstr "%1$i waarnemingen met %2$i gebeurtenissen."
+
+msgid "Null model contains nuisance parameters: %1$s"
+msgstr "Het nulmodel bevat nuisanceparameters: %1$s"
+
+msgid "Robust variance estimation based on %1$s."
+msgstr "Robuuste variantschatting op basis van %1$s."
+
+msgid "Frailty based on %1$s."
+msgstr "Frailty op basis van %1$s."
+
+msgid "Subject identification based on %1$s."
+msgstr "Identificatie van de proefpersoon op basis van %1$s."
+
+msgid "Model Fit Summary Table"
+msgstr "Samenvattingstabel modelfit"
+
+msgid "Concordance"
+msgstr "Concordantie"
+
+msgid "Frailty Summary Table"
+msgstr "Frailty-samenvattingstabel"
+
+msgid "Variance"
+msgstr "Variantie"
+
+msgid "Cox Proportional Hazards Estimates Table"
+msgstr "Tabel met schattingen Cox-proportionele-hazard"
+
+msgid "Robust Standard Error"
+msgstr "Robuuste standaardfout"
+
+msgid "%.0f%% CI"
+msgstr "%.0f%% BI"
+
+msgid "VS-MPR%s"
+msgstr "VS-MPR%s"
+
+msgid ""
+""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value,   the"
+"maximum possible odds in favor of H%1$s over H%2$s equals   1/(-e <em>p</em>"
+"log(<em>p</em>)) for <em>p</em> %3$s .37   (Sellke, Bayarri, & Berger, 2001)."
+msgstr ""
+"Vovk-Sellke maximum <em>p</em>-ratio: op basis van de"
+"<em>p</em>-waarde is de maximaal mogelijke kansverhouding ten gunste"
+"van H%1$s ten opzichte van H%2$s gelijk aan 1/(-e"
+"<em>p</em>log(<em>p</em>)) voor <em>p</em> %3$s, 37 (Sellke, Bayarri,"
+"& Berger, 2001)."
+
+msgid "Null model contains nuisance parameters: %s"
+msgstr "Het nulmodel bevat nuisanceparameters: %s"
+
+msgid "Results are stratified via: %1$s."
+msgstr "De resultaten zijn gestratificeerd via: %1$s."
+
+msgid "Hazard Ratios Estimates Table"
+msgstr "Tabel met schattingen van hazardratio's"
+
+msgid "Hazard Ratio"
+msgstr "Hazardratio"
+
+msgid "Proporational Hazards Assumption Test Table"
+msgstr "Toetstabel aanname proportionele hazards"
+
+msgid "The model test failed with the following message: %1$s"
+msgstr "De modeltoets is mislukt met de volgende melding: %1$s"
+
+msgid "Global"
+msgstr "Globaal"
+
+msgid "Tests are performed using the %1$s survival times transformation."
+msgstr ""
+"De toetsen worden uitgevoerd met behulp van de transformatie van de"
+"%1$s-overlevingstijden."
+
+msgid "Proporational Hazards Assumption Test Plots"
+msgstr "Grafieken toets aanname proportionele hazards"
+
+msgid "Beta(t)"
+msgstr "Beta(t)"
+
+msgid "Residual Plots"
+msgstr "Residuen-grafieken"
+
+msgid "No predictors in the model."
+msgstr "Geen voorspellers in het model."
+
+msgid "Predicted Survival"
+msgstr "Voorspelde overleving"
+
+msgid "Residuals Histogram"
+msgstr "Residuenhistogram"
+
+msgid "Martingale Residuals"
+msgstr "Martingale-residuen"
+
+msgid "Deviance Residuals"
+msgstr "Deviance-residuen"
+
+msgid "Score Residuals"
+msgstr "Score-residuen"
+
+msgid "Schoenfeld Residuals"
+msgstr "Schoenfeld-residuen"
+
+msgid "Scaled Schoenfeld Residuals"
+msgstr "Geschaalde Schoenfeld-residuen"
