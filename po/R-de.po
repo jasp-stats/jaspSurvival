@@ -1,0 +1,582 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: jaspSurvival 0.1\n"
+"Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
+"POT-Creation-Date: 2026-01-01 00:00+0000\n"
+"PO-Revision-Date: 2026-01-01 00:00+0000\n"
+"Last-Translator: JASP translators\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+msgid "The end time must be larger than the start time."
+msgstr "Die Endzeit muss größer als die Startzeit sein."
+
+msgid "The weights variable must be an integer."
+msgstr "Die Gewichtungsvariable muss eine Ganzzahl sein."
+
+msgid "The weights variable must not contain missing values."
+msgstr "Die Gewichtungsvariable darf keine fehlenden Werte enthalten."
+
+msgid "The weights variable must be positive."
+msgstr "Die Gewichtungsvariable muss positiv sein."
+
+#, qt-format
+msgid "%1$i observations omitted due to missing values."
+msgstr "%1$i Beobachtungen wurden aufgrund fehlender Werte ausgeschlossen."
+
+msgid "We need at least one predictor, or an intercept to make a formula"
+msgstr "Wir benötigen mindestens einen Prädiktor oder einen Intercept, um eine Formel zu erstellen"
+
+msgid "At least one predictor, or an intercept, is needed to fit the model."
+msgstr "Um das Modell anzupassen, ist mindestens ein Prädiktor oder ein Intercept erforderlich."
+
+msgid "Events"
+msgstr "Ereignisse"
+
+msgid "Censored"
+msgstr "Zensiert"
+
+msgid "Left censored"
+msgstr "Linkszensiert"
+
+msgid "Right censored"
+msgstr "Rechtszensiert"
+
+msgid "Interval censored"
+msgstr "Intervallzensiert"
+
+msgid "Censoring Summary"
+msgstr "Zensierungs-Zusammenfassung"
+
+msgid "Subgroup"
+msgstr "Untergruppe"
+
+msgid "Count"
+msgstr "Anzahl"
+
+msgid "Survival Plot"
+msgstr "Überlebensdiagramm"
+
+msgid "Risk Plot"
+msgstr "Risikodiagramm"
+
+msgid "Cumulative Hazard Plot"
+msgstr "Diagramm der kumulativen Hazard-Rate"
+
+msgid "Complementary Log-Log Plot"
+msgstr "Komplementär-Log-Log-Diagramm"
+
+msgid "log(Time)"
+msgstr "log(Zeit)"
+
+msgid "Kaplan-Meier Summary Table"
+msgstr "Kaplan-Meier-Zusammenfassungstabelle"
+
+msgid "%s%% CI"
+msgstr "%s%% KI"
+
+msgid "Strata"
+msgstr "Schichten"
+
+msgid "N"
+msgstr "N"
+
+msgid "Restricted Mean"
+msgstr "Restriktiver Mittelwert"
+
+msgid "Standard Error"
+msgstr "Standardfehler"
+
+msgid "Median Survival"
+msgstr "Medianüberleben"
+
+msgid "Lower"
+msgstr "Untere"
+
+msgid "Upper"
+msgstr "Obere"
+
+msgid "Tests Table"
+msgstr "Tabelle der Tests"
+
+msgid "Test"
+msgstr "Test"
+
+msgid "Chi Square"
+msgstr "Chi-Quadrat"
+
+msgid "df"
+msgstr "df"
+
+msgid "p"
+msgstr "p"
+
+msgid "At least one strata needs to be specified"
+msgstr "Es muss mindestens eine Schicht angegeben werden"
+
+msgid "Log-rank (Mantel-Haenszel)"
+msgstr "Log-Rank (Mantel-Haenszel)"
+
+msgid "Peto and Peto"
+msgstr "Peto und Peto"
+
+msgid "Flemming-Harrington"
+msgstr "Flemming-Harrington"
+
+msgid "Life Table"
+msgstr "Sterbetafel"
+
+msgid "Time"
+msgstr "Zeit"
+
+msgid "Survival"
+msgstr "Überleben"
+
+msgid "At Risk"
+msgstr "Gefährdet (At Risk)"
+
+msgid "Full dataset"
+msgstr "Gesamter Datensatz"
+
+#, qt-format
+msgid "Subgroup: %1$s"
+msgstr "Untergruppe: %1$s"
+
+msgid "Model Summary"
+msgstr "Modellzusammenfassung"
+
+msgid "Sequential Model Comparison"
+msgstr "Sequentielle Modellvergleiche"
+
+msgid "Coefficients Summary"
+msgstr "Zusammenfassung der Koeffizienten"
+
+msgid "Coefficients Covariance Matrix"
+msgstr "Kovarianzmatrix der Koeffizienten"
+
+msgid "Log Lik."
+msgstr "Log-Likelihood"
+
+msgid "AIC"
+msgstr "AIC"
+
+msgid "BIC"
+msgstr "BIC"
+
+msgid "AIC Weight"
+msgstr "AIC-Gewicht"
+
+msgid "BIC Weight"
+msgstr "BIC-Gewicht"
+
+msgid "Rank"
+msgstr "Rang"
+
+msgid "Error: "
+msgstr "Fehler: "
+
+msgid "Likelihood ratio test for nested models based on %s distribution."
+msgstr "Likelihood-Ratio-Test für genestete Modelle auf Basis der %s-Verteilung."
+
+msgid "Estimate"
+msgstr "Schätzung"
+
+msgid "z"
+msgstr "z"
+
+msgid "P-values are based on a Wald test."
+msgstr "Die P-Werte basieren auf einem Wald-Test."
+
+msgid "Predicted Survival Time"
+msgstr "Vorhergesagte Überlebenszeit"
+
+msgid "Predicted Failure Probability"
+msgstr "Vorhergesagte Ausfallwahrscheinlichkeit"
+
+msgid "Predicted Survival Probability"
+msgstr "Vorhergesagte Überlebenswahrscheinlichkeit"
+
+msgid "Predicted Hazard"
+msgstr "Vorhergesagte Hazard-Rate"
+
+msgid "Predicted Cumulative Hazard"
+msgstr "Vorhergesagte kumulative Hazard-Rate"
+
+msgid "Predicted Restricted Mean Survival Time"
+msgstr "Vorhergesagte restriktive mittlere Überlebenszeit"
+
+msgid "Life Time Table"
+msgstr "Sterbetafeltabelle"
+
+msgid "Quantile"
+msgstr "Quantil"
+
+msgid "Survival Time"
+msgstr "Überlebenszeit"
+
+msgid "Failure Probability"
+msgstr "Ausfallwahrscheinlichkeit"
+
+msgid "Survival Probability"
+msgstr "Überlebenswahrscheinlichkeit"
+
+msgid "Hazard"
+msgstr "Hazard-Rate"
+
+msgid "Cumulative Hazard"
+msgstr "Kumulative Hazard-Rate"
+
+msgid "Restricted Mean Survival Time"
+msgstr "Restriktive mittlere Überlebenszeit"
+
+msgid "The model failed to produce predictions. Consider simplifying the model."
+msgstr ""
+"Das Modell konnte keine Vorhersagen erzeugen. Erwägen Sie, das Modell zu "
+"vereinfachen."
+
+msgid ""
+"Life time tables cannot be merged if there is more than a one prediction from"
+"a given model."
+msgstr ""
+"Sterbetafeltabellen können nicht zusammengeführt werden, wenn von einem "
+"gegebenen Modell mehr als eine Vorhersage stammt."
+
+msgid ""
+"The model failed to produce survival predictions. Consider simplifying the"
+"model."
+msgstr ""
+"Das Modell konnte keine Überlebensvorhersagen erzeugen. Erwägen Sie, das "
+"Modell zu vereinfachen."
+
+msgid ""
+"The model failed to produce hazard predictions. Consider simplifying the"
+"model."
+msgstr ""
+"Das Modell konnte keine Hazard-Vorhersagen erzeugen. Erwägen Sie, das Modell "
+"zu vereinfachen."
+
+msgid ""
+"The model failed to produce cumulative predictions. Consider simplifying the"
+"model."
+msgstr ""
+"Das Modell konnte keine kumulativen Vorhersagen erzeugen. Erwägen Sie, das "
+"Modell zu vereinfachen."
+
+msgid ""
+"The model failed to produce restricted mean survival time predictions."
+"Consider simplifying the model."
+msgstr ""
+"Das Modell konnte keine Vorhersagen der restriktiven mittleren Überlebenszeit "
+"erzeugen. Erwägen Sie, das Modell zu vereinfachen."
+
+#, qt-format
+msgid "%1$s (log scale)"
+msgstr "%1$s (log-Skala)"
+
+#, qt-format
+msgid "%1$s (log(-log(1-p)) scale)"
+msgstr "%1$s (log(-log(1-p))-Skala)"
+
+msgid "Residuals vs. Time"
+msgstr "Residuen vs. Zeit"
+
+msgid "Residuals vs. Predictors"
+msgstr "Residuen vs. Prädiktoren"
+
+msgid "Residuals vs. Predicted"
+msgstr "Residuen vs. Vorhergesagtes"
+
+msgid "Residual Histogram"
+msgstr "Residualhistogramm"
+
+msgid "Probability Plot"
+msgstr "Wahrscheinlichkeitsdiagramm"
+
+msgid ""
+"The model failed to produce a probability plot. Consider simplifying the"
+"model."
+msgstr ""
+"Das Modell konnte kein Wahrscheinlichkeitsdiagramm erzeugen. Erwägen Sie, das "
+"Modell zu vereinfachen."
+
+msgid "The probability plot requires at least one fitted model."
+msgstr "Das Wahrscheinlichkeitsdiagramm erfordert mindestens ein angepasstes Modell."
+
+msgid ""
+"The probability plot requires at least one positive observed failure time,"
+"censored observation, or fitted curve."
+msgstr ""
+"Das Wahrscheinlichkeitsdiagramm erfordert mindestens eine positive beobachtete "
+"Ausfallzeit, eine zensierte Beobachtung oder eine angepasste Kurve."
+
+msgid "Fitted"
+msgstr "Angepasst"
+
+msgid "Failure Probability (%s scale)"
+msgstr "Ausfallwahrscheinlichkeit (%s-Skala)"
+
+msgid "exponential"
+msgstr "exponentiell"
+
+msgid "log-normal"
+msgstr "log-normal"
+
+msgid "Time (log scale)"
+msgstr "Zeit (log-Skala)"
+
+msgid "log-logistic"
+msgstr "log-logistisch"
+
+msgid "Weibull"
+msgstr "Weibull"
+
+msgid "The probability plot requires positive time values."
+msgstr "Das Wahrscheinlichkeitsdiagramm erfordert positive Zeitwerte."
+
+msgid "Response"
+msgstr "Response"
+
+msgid "Cox-Snell"
+msgstr "Cox-Snell"
+
+#, qt-format
+msgid "Residuals vs. %1$s"
+msgstr "Residuen vs. %1$s"
+
+msgid "Predicted Time"
+msgstr "Vorhergesagte Zeit"
+
+msgid "Model"
+msgstr "Modell"
+
+msgid "Distribution"
+msgstr "Verteilung"
+
+msgid "Lower CI"
+msgstr "Unteres KI"
+
+msgid "Upper CI"
+msgstr "Oberes KI"
+
+msgid ""
+"Custom steps for predicted survival time were specified in an incorrect"
+"format. Try '0.25, 0.50, 0.75'."
+msgstr ""
+"Benutzerdefinierte Schritte für die vorhergesagte Überlebenszeit wurden in "
+"einem falschen Format angegeben. Versuchen Sie '0.25, 0.50, 0.75'."
+
+msgid "Custom steps for predicted survival time must be between 0 and 1."
+msgstr ""
+"Benutzerdefinierte Schritte für die vorhergesagte Überlebenszeit müssen "
+"zwischen 0 und 1 liegen."
+
+msgid "Step from for predicted survival time must be a positive number."
+msgstr "Der Startschritt für die vorhergesagte Überlebenszeit muss eine positive Zahl sein."
+
+msgid "Step to for predicted survival time must be a positive number."
+msgstr "Der Endschritt für die vorhergesagte Überlebenszeit muss eine positive Zahl sein."
+
+msgid "Step size for predicted survival time must be a positive number."
+msgstr "Die Schrittgröße für die vorhergesagte Überlebenszeit muss eine positive Zahl sein."
+
+msgid "Custom steps for predicted survival time must be greater than or equal to 0."
+msgstr ""
+"Benutzerdefinierte Schritte für die vorhergesagte Überlebenszeit müssen größer "
+"oder gleich 0 sein."
+
+#, qt-format
+msgid "%1$s model %2$s%3$s failed with the following message: %4$s."
+msgstr ""
+"Das %1$s-Modell %2$s%3$s ist mit der folgenden Meldung fehlgeschlagen: %4$s."
+
+#, qt-format
+msgid "All following output is based on the best fitting %1$s distribution."
+msgstr "Die gesamte folgende Ausgabe basiert auf der am besten angepassten %1$s-Verteilung."
+
+#, qt-format
+msgid ""
+"Results are based on %1$s distribution which was the best fitting"
+"distribution."
+msgstr ""
+"Die Ergebnisse basieren auf der %1$s-Verteilung, die die am besten angepasste "
+"Verteilung war."
+
+#, qt-format
+msgid "Results are based on %1$s."
+msgstr "Die Ergebnisse basieren auf %1$s."
+
+#, qt-format
+msgid ""
+"Results are based on %1$s with distribution %2$s which is the best fitting"
+"distribution across models."
+msgstr ""
+"Die Ergebnisse basieren auf %1$s mit der Verteilung %2$s, die die am besten "
+"angepasste Verteilung über alle Modelle hinweg ist."
+
+msgid "Results are based on best fitting models."
+msgstr "Die Ergebnisse basieren auf den am besten angepassten Modellen."
+
+msgid "Results are based on best fitting models within each distribution."
+msgstr "Die Ergebnisse basieren auf den am besten angepassten Modellen innerhalb jeder Verteilung."
+
+#, qt-format
+msgid ""
+"Results are based on %1$s with %2$s distribution which was the best fitting"
+"model across all models and distributions."
+msgstr ""
+"Die Ergebnisse basieren auf %1$s mit der Verteilung %2$s, das das am besten "
+"angepasste Modell über alle Modelle und Verteilungen hinweg war."
+
+msgid "Model Tests Table"
+msgstr "Tabelle der Modelltests"
+
+msgid "At least one factor or covariate needs to be specified"
+msgstr "Es muss mindestens ein Faktor oder eine Kovariate angegeben werden"
+
+msgid "Likelihood ratio"
+msgstr "Likelihood-Ratio"
+
+msgid "Wald"
+msgstr "Wald"
+
+msgid "Score"
+msgstr "Score"
+
+msgid "Tests are based on the H\\u2081 model."
+msgstr "Die Tests basieren auf dem H\\u2081-Modell."
+
+msgid "Cox Proportional Hazards Summary Table"
+msgstr "Zusammenfassungstabelle der Cox-Proportional-Hazards"
+
+msgid ""
+"Either 'theta' of 'df' must be set to a value larger than zero when using"
+"'Fixed' frailty method."
+msgstr ""
+"Beim Verwenden der 'Fixed'-Frailty-Methode muss entweder 'theta' oder 'df' "
+"auf einen Wert größer als null gesetzt werden."
+
+msgid "The null model failed with the following message:"
+msgstr "Das Nullmodell ist mit der folgenden Meldung fehlgeschlagen:"
+
+#, qt-format
+msgid "The model failed with the following message: %1$s."
+msgstr "Das Modell ist mit der folgenden Meldung fehlgeschlagen: %1$s."
+
+#, qt-format
+msgid "%1$i observations with %2$i events."
+msgstr "%1$i Beobachtungen mit %2$i Ereignissen."
+
+#, qt-format
+msgid "Null model contains nuisance parameters: %1$s"
+msgstr "Das Nullmodell enthält Störparameter: %1$s"
+
+#, qt-format
+msgid "Robust variance estimation based on %1$s."
+msgstr "Robuste Varianzschätzung auf Basis von %1$s."
+
+#, qt-format
+msgid "Frailty based on %1$s."
+msgstr "Frailty auf Basis von %1$s."
+
+#, qt-format
+msgid "Subject identification based on %1$s."
+msgstr "Identifikation der Versuchspersonen auf Basis von %1$s."
+
+msgid "Model Fit Summary Table"
+msgstr "Zusammenfassungstabelle der Modellanpassung"
+
+msgid "Concordance"
+msgstr "Konkordanz"
+
+msgid "Frailty Summary Table"
+msgstr "Frailty-Zusammenfassungstabelle"
+
+msgid "Variance"
+msgstr "Varianz"
+
+msgid "Cox Proportional Hazards Estimates Table"
+msgstr "Schätztabelle der Cox-Proportional-Hazards"
+
+msgid "Robust Standard Error"
+msgstr "Robuster Standardfehler"
+
+msgid "%.0f%% CI"
+msgstr "%.0f%% KI"
+
+msgid "VS-MPR%s"
+msgstr "VS-MPR%s"
+
+#, qt-format
+msgid ""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value,   the"
+"maximum possible odds in favor of H%1$s over H%2$s equals   1/(-e <em>p</em>"
+"log(<em>p</em>)) for <em>p</em> %3$s .37   (Sellke, Bayarri, & Berger, 2001)."
+msgstr ""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Auf Grundlage des <em>p</em>-Werts "
+"beträgt die maximal mögliche Odds zugunsten von H%1$s gegenüber H%2$s   "
+"1/(-e <em>p</em> log(<em>p</em>)) für <em>p</em> %3$s .37   (Sellke, "
+"Bayarri, & Berger, 2001)."
+
+msgid "Null model contains nuisance parameters: %s"
+msgstr "Das Nullmodell enthält Störparameter: %s"
+
+#, qt-format
+msgid "Results are stratified via: %1$s."
+msgstr "Die Ergebnisse sind geschichtet über: %1$s."
+
+msgid "Hazard Ratios Estimates Table"
+msgstr "Schätztabelle der Hazard-Ratios"
+
+msgid "Hazard Ratio"
+msgstr "Hazard-Ratio"
+
+msgid "Proporational Hazards Assumption Test Table"
+msgstr "Tabelle des Tests der Proportional-Hazards-Annahme"
+
+#, qt-format
+msgid "The model test failed with the following message: %1$s"
+msgstr "Der Modelltest ist mit der folgenden Meldung fehlgeschlagen: %1$s"
+
+msgid "Global"
+msgstr "Global"
+
+#, qt-format
+msgid "Tests are performed using the %1$s survival times transformation."
+msgstr "Die Tests werden unter Verwendung der %1$s-Transformation der Überlebenszeiten durchgeführt."
+
+msgid "Proporational Hazards Assumption Test Plots"
+msgstr "Diagramme des Tests der Proportional-Hazards-Annahme"
+
+msgid "Beta(t)"
+msgstr "Beta(t)"
+
+msgid "Residual Plots"
+msgstr "Residualdiagramme"
+
+msgid "No predictors in the model."
+msgstr "Keine Prädiktoren im Modell."
+
+msgid "Predicted Survival"
+msgstr "Vorhergesagtes Überleben"
+
+msgid "Residuals Histogram"
+msgstr "Residualhistogramm"
+
+msgid "Martingale Residuals"
+msgstr "Martingale-Residuen"
+
+msgid "Deviance Residuals"
+msgstr "Devianz-Residuen"
+
+msgid "Score Residuals"
+msgstr "Score-Residuen"
+
+msgid "Schoenfeld Residuals"
+msgstr "Schoenfeld-Residuen"
+
+msgid "Scaled Schoenfeld Residuals"
+msgstr "Skalierte Schoenfeld-Residuen"
