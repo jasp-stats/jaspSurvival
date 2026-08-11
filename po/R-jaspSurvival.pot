@@ -1,0 +1,540 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "The end time must be larger than the start time."
+msgstr ""
+
+msgid "The weights variable must be an integer."
+msgstr ""
+
+msgid "The weights variable must not contain missing values."
+msgstr ""
+
+msgid "The weights variable must be positive."
+msgstr ""
+
+#, qt-format
+msgid "%1$i observations omitted due to missing values."
+msgstr ""
+
+msgid "We need at least one predictor, or an intercept to make a formula"
+msgstr ""
+
+msgid "At least one predictor, or an intercept, is needed to fit the model."
+msgstr ""
+
+msgid "Events"
+msgstr ""
+
+msgid "Censored"
+msgstr ""
+
+msgid "Left censored"
+msgstr ""
+
+msgid "Right censored"
+msgstr ""
+
+msgid "Interval censored"
+msgstr ""
+
+msgid "Censoring Summary"
+msgstr ""
+
+msgid "Subgroup"
+msgstr ""
+
+msgid "Count"
+msgstr ""
+
+msgid "Survival Plot"
+msgstr ""
+
+msgid "Risk Plot"
+msgstr ""
+
+msgid "Cumulative Hazard Plot"
+msgstr ""
+
+msgid "Complementary Log-Log Plot"
+msgstr ""
+
+msgid "log(Time)"
+msgstr ""
+
+msgid "Kaplan-Meier Summary Table"
+msgstr ""
+
+msgid "%s%% CI"
+msgstr ""
+
+msgid "Strata"
+msgstr ""
+
+msgid "N"
+msgstr ""
+
+msgid "Restricted Mean"
+msgstr ""
+
+msgid "Standard Error"
+msgstr ""
+
+msgid "Median Survival"
+msgstr ""
+
+msgid "Lower"
+msgstr ""
+
+msgid "Upper"
+msgstr ""
+
+msgid "Tests Table"
+msgstr ""
+
+msgid "Test"
+msgstr ""
+
+msgid "Chi Square"
+msgstr ""
+
+msgid "df"
+msgstr ""
+
+msgid "p"
+msgstr ""
+
+msgid "At least one strata needs to be specified"
+msgstr ""
+
+msgid "Log-rank (Mantel-Haenszel)"
+msgstr ""
+
+msgid "Peto and Peto"
+msgstr ""
+
+msgid "Flemming-Harrington"
+msgstr ""
+
+msgid "Life Table"
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+msgid "Survival"
+msgstr ""
+
+msgid "At Risk"
+msgstr ""
+
+msgid "Full dataset"
+msgstr ""
+
+#, qt-format
+msgid "Subgroup: %1$s"
+msgstr ""
+
+msgid "Model Summary"
+msgstr ""
+
+msgid "Sequential Model Comparison"
+msgstr ""
+
+msgid "Coefficients Summary"
+msgstr ""
+
+msgid "Coefficients Covariance Matrix"
+msgstr ""
+
+msgid "Log Lik."
+msgstr ""
+
+msgid "AIC"
+msgstr ""
+
+msgid "BIC"
+msgstr ""
+
+msgid "AIC Weight"
+msgstr ""
+
+msgid "BIC Weight"
+msgstr ""
+
+msgid "Rank"
+msgstr ""
+
+msgid "Error: "
+msgstr ""
+
+msgid "Likelihood ratio test for nested models based on %s distribution."
+msgstr ""
+
+msgid "Estimate"
+msgstr ""
+
+msgid "z"
+msgstr ""
+
+msgid "P-values are based on a Wald test."
+msgstr ""
+
+msgid "Predicted Survival Time"
+msgstr ""
+
+msgid "Predicted Failure Probability"
+msgstr ""
+
+msgid "Predicted Survival Probability"
+msgstr ""
+
+msgid "Predicted Hazard"
+msgstr ""
+
+msgid "Predicted Cumulative Hazard"
+msgstr ""
+
+msgid "Predicted Restricted Mean Survival Time"
+msgstr ""
+
+msgid "Life Time Table"
+msgstr ""
+
+msgid "Quantile"
+msgstr ""
+
+msgid "Survival Time"
+msgstr ""
+
+msgid "Failure Probability"
+msgstr ""
+
+msgid "Survival Probability"
+msgstr ""
+
+msgid "Hazard"
+msgstr ""
+
+msgid "Cumulative Hazard"
+msgstr ""
+
+msgid "Restricted Mean Survival Time"
+msgstr ""
+
+msgid "The model failed to produce predictions. Consider simplifying the model."
+msgstr ""
+
+msgid ""
+"Life time tables cannot be merged if there is more than a one prediction from"
+"a given model."
+msgstr ""
+
+msgid ""
+"The model failed to produce survival predictions. Consider simplifying the"
+"model."
+msgstr ""
+
+msgid ""
+"The model failed to produce hazard predictions. Consider simplifying the"
+"model."
+msgstr ""
+
+msgid ""
+"The model failed to produce cumulative predictions. Consider simplifying the"
+"model."
+msgstr ""
+
+msgid ""
+"The model failed to produce restricted mean survival time predictions."
+"Consider simplifying the model."
+msgstr ""
+
+#, qt-format
+msgid "%1$s (log scale)"
+msgstr ""
+
+#, qt-format
+msgid "%1$s (log(-log(1-p)) scale)"
+msgstr ""
+
+msgid "Residuals vs. Time"
+msgstr ""
+
+msgid "Residuals vs. Predictors"
+msgstr ""
+
+msgid "Residuals vs. Predicted"
+msgstr ""
+
+msgid "Residual Histogram"
+msgstr ""
+
+msgid "Probability Plot"
+msgstr ""
+
+msgid ""
+"The model failed to produce a probability plot. Consider simplifying the"
+"model."
+msgstr ""
+
+msgid "The probability plot requires at least one fitted model."
+msgstr ""
+
+msgid ""
+"The probability plot requires at least one positive observed failure time,"
+"censored observation, or fitted curve."
+msgstr ""
+
+msgid "Fitted"
+msgstr ""
+
+msgid "Failure Probability (%s scale)"
+msgstr ""
+
+msgid "exponential"
+msgstr ""
+
+msgid "log-normal"
+msgstr ""
+
+msgid "Time (log scale)"
+msgstr ""
+
+msgid "log-logistic"
+msgstr ""
+
+msgid "Weibull"
+msgstr ""
+
+msgid "The probability plot requires positive time values."
+msgstr ""
+
+msgid "Response"
+msgstr ""
+
+msgid "Cox-Snell"
+msgstr ""
+
+#, qt-format
+msgid "Residuals vs. %1$s"
+msgstr ""
+
+msgid "Predicted Time"
+msgstr ""
+
+msgid "Model"
+msgstr ""
+
+msgid "Distribution"
+msgstr ""
+
+msgid "Lower CI"
+msgstr ""
+
+msgid "Upper CI"
+msgstr ""
+
+msgid ""
+"Custom steps for predicted survival time were specified in an incorrect"
+"format. Try '0.25, 0.50, 0.75'."
+msgstr ""
+
+msgid "Custom steps for predicted survival time must be between 0 and 1."
+msgstr ""
+
+msgid "Step from for predicted survival time must be a positive number."
+msgstr ""
+
+msgid "Step to for predicted survival time must be a positive number."
+msgstr ""
+
+msgid "Step size for predicted survival time must be a positive number."
+msgstr ""
+
+msgid "Custom steps for predicted survival time must be greater than or equal to 0."
+msgstr ""
+
+#, qt-format
+msgid "%1$s model %2$s%3$s failed with the following message: %4$s."
+msgstr ""
+
+#, qt-format
+msgid "All following output is based on the best fitting %1$s distribution."
+msgstr ""
+
+#, qt-format
+msgid ""
+"Results are based on %1$s distribution which was the best fitting"
+"distribution."
+msgstr ""
+
+#, qt-format
+msgid "Results are based on %1$s."
+msgstr ""
+
+#, qt-format
+msgid ""
+"Results are based on %1$s with distribution %2$s which is the best fitting"
+"distribution across models."
+msgstr ""
+
+msgid "Results are based on best fitting models."
+msgstr ""
+
+msgid "Results are based on best fitting models within each distribution."
+msgstr ""
+
+#, qt-format
+msgid ""
+"Results are based on %1$s with %2$s distribution which was the best fitting"
+"model across all models and distributions."
+msgstr ""
+
+msgid "Model Tests Table"
+msgstr ""
+
+msgid "At least one factor or covariate needs to be specified"
+msgstr ""
+
+msgid "Likelihood ratio"
+msgstr ""
+
+msgid "Wald"
+msgstr ""
+
+msgid "Score"
+msgstr ""
+
+msgid "Tests are based on the H\\u2081 model."
+msgstr ""
+
+msgid "Cox Proportional Hazards Summary Table"
+msgstr ""
+
+msgid ""
+"Either 'theta' of 'df' must be set to a value larger than zero when using"
+"'Fixed' frailty method."
+msgstr ""
+
+msgid "The null model failed with the following message:"
+msgstr ""
+
+#, qt-format
+msgid "The model failed with the following message: %1$s."
+msgstr ""
+
+#, qt-format
+msgid "%1$i observations with %2$i events."
+msgstr ""
+
+#, qt-format
+msgid "Null model contains nuisance parameters: %1$s"
+msgstr ""
+
+#, qt-format
+msgid "Robust variance estimation based on %1$s."
+msgstr ""
+
+#, qt-format
+msgid "Frailty based on %1$s."
+msgstr ""
+
+#, qt-format
+msgid "Subject identification based on %1$s."
+msgstr ""
+
+msgid "Model Fit Summary Table"
+msgstr ""
+
+msgid "Concordance"
+msgstr ""
+
+msgid "Frailty Summary Table"
+msgstr ""
+
+msgid "Variance"
+msgstr ""
+
+msgid "Cox Proportional Hazards Estimates Table"
+msgstr ""
+
+msgid "Robust Standard Error"
+msgstr ""
+
+msgid "%.0f%% CI"
+msgstr ""
+
+msgid "VS-MPR%s"
+msgstr ""
+
+#, qt-format
+msgid ""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value,   the"
+"maximum possible odds in favor of H%1$s over H%2$s equals   1/(-e <em>p</em>"
+"log(<em>p</em>)) for <em>p</em> %3$s .37   (Sellke, Bayarri, & Berger, 2001)."
+msgstr ""
+
+msgid "Null model contains nuisance parameters: %s"
+msgstr ""
+
+#, qt-format
+msgid "Results are stratified via: %1$s."
+msgstr ""
+
+msgid "Hazard Ratios Estimates Table"
+msgstr ""
+
+msgid "Hazard Ratio"
+msgstr ""
+
+msgid "Proporational Hazards Assumption Test Table"
+msgstr ""
+
+#, qt-format
+msgid "The model test failed with the following message: %1$s"
+msgstr ""
+
+msgid "Global"
+msgstr ""
+
+#, qt-format
+msgid "Tests are performed using the %1$s survival times transformation."
+msgstr ""
+
+msgid "Proporational Hazards Assumption Test Plots"
+msgstr ""
+
+msgid "Beta(t)"
+msgstr ""
+
+msgid "Residual Plots"
+msgstr ""
+
+msgid "No predictors in the model."
+msgstr ""
+
+msgid "Predicted Survival"
+msgstr ""
+
+msgid "Residuals Histogram"
+msgstr ""
+
+msgid "Martingale Residuals"
+msgstr ""
+
+msgid "Deviance Residuals"
+msgstr ""
+
+msgid "Score Residuals"
+msgstr ""
+
+msgid "Schoenfeld Residuals"
+msgstr ""
+
+msgid "Scaled Schoenfeld Residuals"
+msgstr ""
+
