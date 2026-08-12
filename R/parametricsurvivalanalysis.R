@@ -1177,11 +1177,12 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     data[[i]]           <- data[[i]][,-1]
     colnames(data[[i]]) <- c("estimate", "lCi", "uCi")
 
-    # transform survival to failure if requested
+    # transform survival to failure if requested (swap CI bounds: F = 1 - S)
     if (type == "survival" && options[["survivalProbabilityAsFailureProbability"]]) {
       data[[i]]$estimate <- 1 - data[[i]]$estimate
-      data[[i]]$lCi      <- 1 - data[[i]]$lCi
-      data[[i]]$uCi      <- 1 - data[[i]]$uCi
+      lowerCi            <- data[[i]]$lCi
+      data[[i]]$lCi      <- 1 - data[[i]]$uCi
+      data[[i]]$uCi      <- 1 - lowerCi
     }
   }
 
@@ -1216,18 +1217,18 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 .sapLifeTimeTableWrapper         <- function(fit, options, type, timeSequence) {
 
   tempData           <- summary(fit, type = type, t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
-  if (length(tempData) > 1) {
-    tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
-    return(tempTable)
-  }
+  if (length(tempData) > 1)
+    stop(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
+
   tempData           <- tempData[[1]][,-1]
   colnames(tempData) <- c("estimate", "lCi", "uCi")
 
-  # transform survival to failure if requested
+  # transform survival to failure if requested (swap CI bounds: F = 1 - S)
   if (type == "survival" && options[["survivalProbabilityAsFailureProbability"]]) {
     tempData$estimate <- 1 - tempData$estimate
-    tempData$lCi      <- 1 - tempData$lCi
-    tempData$uCi      <- 1 - tempData$uCi
+    lowerCi           <- tempData$lCi
+    tempData$lCi      <- 1 - tempData$uCi
+    tempData$uCi      <- 1 - lowerCi
   }
 
   return(tempData)
@@ -1405,8 +1406,9 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
       if (type == "survival" && options[["survivalProbabilityAsFailureProbability"]]) {
         data[[j]]$estimate <- 1 - data[[j]]$estimate
-        data[[j]]$lCi      <- 1 - data[[j]]$lCi
-        data[[j]]$uCi      <- 1 - data[[j]]$uCi
+        lowerCi            <- data[[j]]$lCi
+        data[[j]]$lCi      <- 1 - data[[j]]$uCi
+        data[[j]]$uCi      <- 1 - lowerCi
       }
 
       # add factor level
@@ -1460,8 +1462,9 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
 
     if (options[["survivalProbabilityAsFailureProbability"]]) {
       kmTable$estimate <- 1 - kmTable$estimate
-      kmTable$lCi      <- 1 - kmTable$lCi
-      kmTable$uCi      <- 1 - kmTable$uCi
+      lowerCi          <- kmTable$lCi
+      kmTable$lCi      <- 1 - kmTable$uCi
+      kmTable$uCi      <- 1 - lowerCi
     }
 
     # transform into a step function
