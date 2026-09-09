@@ -1,5 +1,11 @@
 msgid ""
 msgstr ""
+"Project-Id-Version: jaspSurvival 0.96.6\n"
+"POT-Creation-Date: 2026-09-09 14:27\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -16,7 +22,6 @@ msgstr ""
 msgid "The weights variable must be positive."
 msgstr ""
 
-#, qt-format
 msgid "%1$i observations omitted due to missing values."
 msgstr ""
 
@@ -134,7 +139,6 @@ msgstr ""
 msgid "Full dataset"
 msgstr ""
 
-#, qt-format
 msgid "Subgroup: %1$s"
 msgstr ""
 
@@ -168,7 +172,7 @@ msgstr ""
 msgid "Rank"
 msgstr ""
 
-msgid "Error: "
+msgid "Error:"
 msgstr ""
 
 msgid "Likelihood ratio test for nested models based on %s distribution."
@@ -228,36 +232,24 @@ msgstr ""
 msgid "The model failed to produce predictions. Consider simplifying the model."
 msgstr ""
 
-msgid ""
-"Life time tables cannot be merged if there is more than a one prediction from"
-"a given model."
+msgid "Life time tables cannot be merged if there is more than a one prediction from a given model."
 msgstr ""
 
-msgid ""
-"The model failed to produce survival predictions. Consider simplifying the"
-"model."
+msgid "The model failed to produce survival predictions. Consider simplifying the model."
 msgstr ""
 
-msgid ""
-"The model failed to produce hazard predictions. Consider simplifying the"
-"model."
+msgid "The model failed to produce hazard predictions. Consider simplifying the model."
 msgstr ""
 
-msgid ""
-"The model failed to produce cumulative predictions. Consider simplifying the"
-"model."
+msgid "The model failed to produce cumulative predictions. Consider simplifying the model."
 msgstr ""
 
-msgid ""
-"The model failed to produce restricted mean survival time predictions."
-"Consider simplifying the model."
+msgid "The model failed to produce restricted mean survival time predictions. Consider simplifying the model."
 msgstr ""
 
-#, qt-format
 msgid "%1$s (log scale)"
 msgstr ""
 
-#, qt-format
 msgid "%1$s (log(-log(1-p)) scale)"
 msgstr ""
 
@@ -276,17 +268,13 @@ msgstr ""
 msgid "Probability Plot"
 msgstr ""
 
-msgid ""
-"The model failed to produce a probability plot. Consider simplifying the"
-"model."
+msgid "The model failed to produce a probability plot. Consider simplifying the model."
 msgstr ""
 
 msgid "The probability plot requires at least one fitted model."
 msgstr ""
 
-msgid ""
-"The probability plot requires at least one positive observed failure time,"
-"censored observation, or fitted curve."
+msgid "The probability plot requires at least one positive observed failure time, censored observation, or fitted curve."
 msgstr ""
 
 msgid "Fitted"
@@ -319,7 +307,6 @@ msgstr ""
 msgid "Cox-Snell"
 msgstr ""
 
-#, qt-format
 msgid "Residuals vs. %1$s"
 msgstr ""
 
@@ -338,9 +325,7 @@ msgstr ""
 msgid "Upper CI"
 msgstr ""
 
-msgid ""
-"Custom steps for predicted survival time were specified in an incorrect"
-"format. Try '0.25, 0.50, 0.75'."
+msgid "Custom steps for predicted survival time were specified in an incorrect format. Try '0.25, 0.50, 0.75'."
 msgstr ""
 
 msgid "Custom steps for predicted survival time must be between 0 and 1."
@@ -358,28 +343,19 @@ msgstr ""
 msgid "Custom steps for predicted survival time must be greater than or equal to 0."
 msgstr ""
 
-#, qt-format
 msgid "%1$s model %2$s%3$s failed with the following message: %4$s."
 msgstr ""
 
-#, qt-format
 msgid "All following output is based on the best fitting %1$s distribution."
 msgstr ""
 
-#, qt-format
-msgid ""
-"Results are based on %1$s distribution which was the best fitting"
-"distribution."
+msgid "Results are based on %1$s distribution which was the best fitting distribution."
 msgstr ""
 
-#, qt-format
 msgid "Results are based on %1$s."
 msgstr ""
 
-#, qt-format
-msgid ""
-"Results are based on %1$s with distribution %2$s which is the best fitting"
-"distribution across models."
+msgid "Results are based on %1$s with distribution %2$s which is the best fitting distribution across models."
 msgstr ""
 
 msgid "Results are based on best fitting models."
@@ -388,10 +364,7 @@ msgstr ""
 msgid "Results are based on best fitting models within each distribution."
 msgstr ""
 
-#, qt-format
-msgid ""
-"Results are based on %1$s with %2$s distribution which was the best fitting"
-"model across all models and distributions."
+msgid "Results are based on %1$s with %2$s distribution which was the best fitting model across all models and distributions."
 msgstr ""
 
 msgid "Model Tests Table"
@@ -409,42 +382,31 @@ msgstr ""
 msgid "Score"
 msgstr ""
 
-msgid "Tests are based on the H\\u2081 model."
+msgid "Tests are based on the H₁ model."
 msgstr ""
 
 msgid "Cox Proportional Hazards Summary Table"
 msgstr ""
 
-msgid ""
-"Either 'theta' of 'df' must be set to a value larger than zero when using"
-"'Fixed' frailty method."
+msgid "Either 'theta' of 'df' must be set to a value larger than zero when using 'Fixed' frailty method."
 msgstr ""
 
 msgid "The null model failed with the following message:"
 msgstr ""
 
-#, qt-format
 msgid "The model failed with the following message: %1$s."
 msgstr ""
 
-#, qt-format
 msgid "%1$i observations with %2$i events."
 msgstr ""
 
-#, qt-format
 msgid "Null model contains nuisance parameters: %1$s"
 msgstr ""
 
-#, qt-format
 msgid "Robust variance estimation based on %1$s."
 msgstr ""
 
-#, qt-format
 msgid "Frailty based on %1$s."
-msgstr ""
-
-#, qt-format
-msgid "Subject identification based on %1$s."
 msgstr ""
 
 msgid "Model Fit Summary Table"
@@ -471,17 +433,12 @@ msgstr ""
 msgid "VS-MPR%s"
 msgstr ""
 
-#, qt-format
-msgid ""
-"Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value,   the"
-"maximum possible odds in favor of H%1$s over H%2$s equals   1/(-e <em>p</em>"
-"log(<em>p</em>)) for <em>p</em> %3$s .37   (Sellke, Bayarri, & Berger, 2001)."
+msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value,\n  the maximum possible odds in favor of H%1$s over H%2$s equals\n  1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37\n  (Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
 
 msgid "Null model contains nuisance parameters: %s"
 msgstr ""
 
-#, qt-format
 msgid "Results are stratified via: %1$s."
 msgstr ""
 
@@ -494,14 +451,12 @@ msgstr ""
 msgid "Proporational Hazards Assumption Test Table"
 msgstr ""
 
-#, qt-format
 msgid "The model test failed with the following message: %1$s"
 msgstr ""
 
 msgid "Global"
 msgstr ""
 
-#, qt-format
 msgid "Tests are performed using the %1$s survival times transformation."
 msgstr ""
 
@@ -537,4 +492,3 @@ msgstr ""
 
 msgid "Scaled Schoenfeld Residuals"
 msgstr ""
-
