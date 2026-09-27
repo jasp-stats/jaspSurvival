@@ -453,10 +453,8 @@
 .sapLifeTimeTableWrapper         <- function(fit, options, type, timeSequence) {
 
   tempData           <- summary(fit, type = type, t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
-  if (length(tempData) > 1) {
-    tempTable$setError(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
-    return(tempTable)
-  }
+  if (length(tempData) > 1)
+    stop(errorCondition(gettext("Life time tables cannot be merged when a model produces multiple predictions. Disable 'Merge tables across measures'."), class = "sapMultiplePredictionsError"))
   tempData           <- tempData[[1]][,-1]
   colnames(tempData) <- c("estimate", "lCi", "uCi")
 
@@ -467,6 +465,14 @@
   }
 
   return(tempData)
+}
+.sapLifeTimePredictionError <- function(prediction, message) {
+
+  condition <- attr(prediction, "condition")
+  if (inherits(condition, "sapMultiplePredictionsError"))
+    return(conditionMessage(condition))
+
+  return(message)
 }
 
 .sapSurvivalTimeTableFun         <- function(fit, options) {
@@ -518,7 +524,7 @@
     # error handling for divergent integrals
     if (jaspBase::isTryError(data[["survivalProbability"]])) {
       tempTable <- createJaspTable()
-      tempTable$setError(gettext("The model failed to produce survival predictions. Consider simplifying the model."))
+      tempTable$setError(.sapLifeTimePredictionError(data[["survivalProbability"]], gettext("The model failed to produce survival predictions. Consider simplifying the model.")))
       return(tempTable)
     }
   }
@@ -531,7 +537,7 @@
     # error handling for divergent integrals
     if (jaspBase::isTryError(data[["hazard"]])) {
       tempTable <- createJaspTable()
-      tempTable$setError(gettext("The model failed to produce hazard predictions. Consider simplifying the model."))
+      tempTable$setError(.sapLifeTimePredictionError(data[["hazard"]], gettext("The model failed to produce hazard predictions. Consider simplifying the model.")))
       return(tempTable)
     }
   }
@@ -544,7 +550,7 @@
     # error handling for divergent integrals
     if (jaspBase::isTryError(data[["cumulativeHazard"]])) {
       tempTable <- createJaspTable()
-      tempTable$setError(gettext("The model failed to produce cumulative predictions. Consider simplifying the model."))
+      tempTable$setError(.sapLifeTimePredictionError(data[["cumulativeHazard"]], gettext("The model failed to produce cumulative predictions. Consider simplifying the model.")))
       return(tempTable)
     }
   }
@@ -557,7 +563,7 @@
     # error handling for divergent integrals
     if (jaspBase::isTryError(data[["restrictedMeanSurvivalTime"]])) {
       tempTable <- createJaspTable()
-      tempTable$setError(gettext("The model failed to produce restricted mean survival time predictions. Consider simplifying the model."))
+      tempTable$setError(.sapLifeTimePredictionError(data[["restrictedMeanSurvivalTime"]], gettext("The model failed to produce restricted mean survival time predictions. Consider simplifying the model.")))
       return(tempTable)
     }
   }

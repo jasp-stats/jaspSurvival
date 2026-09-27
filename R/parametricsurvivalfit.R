@@ -494,6 +494,7 @@
       tempContainer[[paste0("table", i)]] <- do.call(tableFunction, list(fit = fit[[i]], options = options))
       tempContainer[[paste0("table", i)]]$position <- i
       tempContainer[[paste0("table", i)]]$title    <- attr(fit[[i]], "label")
+      .sapSectionFitError(tempContainer[[paste0("table", i)]], fit[[i]], options)
 
     }
 
@@ -505,8 +506,22 @@
     tempTable$dependOn(dependencies)
     tempTable$position  <- position
     jaspResults[[name]] <- tempTable
+    .sapSectionFitError(tempTable, fit[[1]], options)
 
   }
+
+  return()
+}
+.sapSectionFitError <- function(output, fit, options) {
+
+  # Fit failures must remain visible even when the model summary is disabled.
+  if (inherits(fit, "try-error"))
+    fit <- list(fit)
+  else if (inherits(fit, "flexsurvreg") || length(fit) == 0)
+    return()
+
+  if (all(vapply(fit, inherits, logical(1), what = "try-error")))
+    output$setError(paste(.sapCollectFitErrors(fit, options), collapse = "\n"))
 
   return()
 }
@@ -647,7 +662,7 @@
 
     distributions <- do.call(c, distributions)
     if (length(distributions) == 0)
-      .quitAnalysis(paste0("No parametric Distribution selected. Please select at least one parametric Distribution."))
+      .quitAnalysis(gettext("No parametric distribution selected. Please select at least one parametric distribution."))
 
   } else {
 

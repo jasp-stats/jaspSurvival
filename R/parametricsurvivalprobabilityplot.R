@@ -80,7 +80,7 @@
   if (is.null(fit))
     return(list())
 
-  if (jaspBase::isTryError(fit) || inherits(fit, "flexsurvreg"))
+  if (inherits(fit, "try-error") || inherits(fit, "flexsurvreg"))
     return(list(fit))
 
   return(fit)
