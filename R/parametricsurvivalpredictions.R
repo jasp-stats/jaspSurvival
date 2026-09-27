@@ -369,6 +369,49 @@
   return()
 }
 
+.sapPredictionPlotAddCaption <- function(plot, messages, width) {
+
+  if (length(messages) == 0)
+    return(plot)
+
+  lines <- strwrap(unique(messages), width = max(25L, floor((width - 40) / 7)))
+  return(plot + ggplot2::labs(caption = paste(lines, collapse = "\n")) + ggplot2::theme(
+    plot.caption = ggplot2::element_text(size = 8, hjust = 0, lineheight = 1.1, margin = ggplot2::margin(t = 8)),
+    plot.caption.position = "plot"
+  ))
+}
+.sapPredictionPlotCaptionHeight <- function(plot, height) {
+
+  caption <- plot$labels[["caption"]]
+  if (is.null(caption) || !nzchar(caption))
+    return(height)
+
+  # Reserve caption space instead of shrinking the original plotting area.
+  return(height + 16 + 16 * length(strsplit(caption, "\n", fixed = TRUE)[[1]]))
+}
+
+.sapSummaryPredictions <- function(fit, ..., ci) {
+
+  messages <- character(0)
+  data <- withCallingHandlers(summary(fit, ..., ci = ci && all(is.finite(fit[["cov"]]))), warning = function(w) {
+    messages <<- c(messages, conditionMessage(w))
+    invokeRestart("muffleWarning")
+  })
+  for (i in seq_along(data)) {
+    if (!"lcl" %in% names(data[[i]])) data[[i]][["lcl"]] <- rep(NA_real_, nrow(data[[i]]))
+    if (!"ucl" %in% names(data[[i]])) data[[i]][["ucl"]] <- rep(NA_real_, nrow(data[[i]]))
+    if (anyNA(data[[i]][["est"]]))
+      messages <- c(messages, gettext("Some predictions could not be evaluated and are shown as missing."))
+    if (any(is.infinite(data[[i]][["est"]])))
+      messages <- c(messages, gettext("Some requested quantities are infinite or exceed numerical range."))
+    if (ci && anyNA(data[[i]][c("lcl", "ucl")]))
+      messages <- c(messages, gettext("Some confidence intervals could not be evaluated and are shown as missing."))
+  }
+  attr(data, "predictionWarnings") <- unique(messages)
+
+  return(data)
+}
+
 .sapCreatePredictionTableWrapper <- function(fit, options, type) {
 
   if (type == "quantile") {
@@ -394,10 +437,10 @@
   # if there is any continuous predictor, the output is averaged across the predictors matrix
   if (type == "quantile") {
     optionsSequence <- .sapOptions2PredictionQuantile(options)
-    data  <- try(summary(fit, type = type, quantiles = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]]))
+    data  <- try(.sapSummaryPredictions(fit, type = type, quantiles = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]]))
   } else {
     optionsSequence <- .sapOptions2PredictionTime(options, fit)
-    data  <- try(summary(fit, type = type, t = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]]))
+    data  <- try(.sapSummaryPredictions(fit, type = type, t = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]]))
   }
 
   # error handling for divergent integrals
@@ -407,6 +450,7 @@
     return(tempTable)
   }
 
+  predictionWarnings <- attr(data, "predictionWarnings")
   dataLength <- length(data)
 
   for (i in seq_along(data)) {
@@ -444,6 +488,8 @@
 
   if (!is.null(attr(fit, "label")))
     tempTable$addFootnote(attr(fit, "label"))
+  for (message in predictionWarnings)
+    tempTable$addFootnote(message)
 
   tempTable$setData(data)
   tempTable$showSpecifiedColumnsOnly <- TRUE
@@ -452,7 +498,8 @@
 }
 .sapLifeTimeTableWrapper         <- function(fit, options, type, timeSequence) {
 
-  tempData           <- summary(fit, type = type, t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
+  tempData           <- .sapSummaryPredictions(fit, type = type, t = timeSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]])
+  predictionWarnings <- attr(tempData, "predictionWarnings")
   if (length(tempData) > 1)
     stop(errorCondition(gettext("Life time tables cannot be merged when a model produces multiple predictions. Disable 'Merge tables across measures'."), class = "sapMultiplePredictionsError"))
   tempData           <- tempData[[1]][,-1]
@@ -464,6 +511,7 @@
     tempData[c("lCi", "uCi")] <- 1 - tempData[c("uCi", "lCi")]
   }
 
+  attr(tempData, "predictionWarnings") <- predictionWarnings
   return(tempData)
 }
 .sapLifeTimePredictionError <- function(prediction, message) {
@@ -568,6 +616,8 @@
     }
   }
 
+  for (message in unique(unlist(lapply(data, attr, "predictionWarnings"))))
+    tempTable$addFootnote(message)
   data <- do.call(cbind, data)
 
   data$at              <- timeSequence
@@ -623,6 +673,7 @@
   }
 
   out <- list()
+  predictionWarnings <- character(0)
   for (i in seq_along(fit)) {
 
     # skip model on error
@@ -630,9 +681,9 @@
       next
 
     if (type == "quantile") {
-      data  <- try(summary(fit[[i]], type = type, quantiles = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]]))
+      data  <- try(.sapSummaryPredictions(fit[[i]], type = type, quantiles = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]]))
     } else {
-      data  <- try(summary(fit[[i]], type = type, t = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]]))
+      data  <- try(.sapSummaryPredictions(fit[[i]], type = type, t = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]]))
     }
 
     # error handling for divergent integrals
@@ -642,6 +693,7 @@
       return(tempPlot)
     }
 
+    predictionWarnings <- c(predictionWarnings, attr(data, "predictionWarnings"))
     # deal with potentially multiple predictions
     for (j in seq_along(data)) {
 
@@ -675,6 +727,12 @@
   out[["estimate"]][is.infinite(out[["estimate"]])] <- NA
   out[["lCi"]][is.infinite(out[["lCi"]])] <- NA
   out[["uCi"]][is.infinite(out[["uCi"]])] <- NA
+
+  if (!any(is.finite(out[["at"]]) & is.finite(out[["estimate"]]))) {
+    tempPlot <- createJaspPlot(title = estimateTitle)
+    tempPlot$setError(paste(unique(c(gettext("No finite predictions are available for this plot."), predictionWarnings)), collapse = "\n"))
+    return(tempPlot)
+  }
 
   # check how to distribute legend
   hasDistribution <- length(unique(out[["Distribution"]])) > 1
@@ -724,8 +782,8 @@
 
   }
 
-  # add CI
-  if (options[["predictionsConfidenceInterval"]]) {
+  # add available model intervals
+  if (options[["predictionsConfidenceInterval"]] && any(is.finite(out[["lCi"]]) & is.finite(out[["uCi"]]))) {
     aesCall <- list(
       x        = as.name("at"),
       ymin     = as.name("lCi"),
@@ -778,8 +836,10 @@
     options[["plotTheme"]] <- "jasp"
   }
   plot <- .sapPredictionPlotAddTheme(plot, options)
+  width <- if (hasDistribution || hasLevel) 550 else 400
+  plot  <- .sapPredictionPlotAddCaption(plot, predictionWarnings, width)
 
-  tempPlot <- createJaspPlot(width = if (hasDistribution || hasLevel) 550 else 400, height = 320)
+  tempPlot <- createJaspPlot(width = width, height = .sapPredictionPlotCaptionHeight(plot, 320))
   tempPlot$plotObject <- plot
 
   return(tempPlot)

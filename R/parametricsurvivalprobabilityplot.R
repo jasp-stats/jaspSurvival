@@ -67,10 +67,14 @@
   if (length(fitValid) == 0)
     return(tempPlot)
 
-  tempPlot$plotObject <- try(.sapCreateProbabilityPlot(fitList, options))
+  plot <- try(.sapCreateProbabilityPlot(fitList, options))
 
-  if (jaspBase::isTryError(tempPlot$plotObject))
+  if (jaspBase::isTryError(plot))
     tempPlot$setError(gettext("The model failed to produce a probability plot. Consider simplifying the model."))
+  else {
+    tempPlot$height     <- .sapPredictionPlotCaptionHeight(plot, 420)
+    tempPlot$plotObject <- plot
+  }
 
   return(tempPlot)
 }
@@ -146,6 +150,7 @@
   if (length(fitList) == 0)
     stop(gettext("The probability plot requires at least one fitted model."))
 
+  width <- .sapProbabilityPlotWidth(fitList, options)
   dataset <- attr(fitList[[1]], "dataset")
   observedTimeRange <- .sapProbabilityPlotTimeRange(.saExtractSurvTimes(dataset, options))
   timeSequence <- .sapProbabilityPlotTimeSequence(observedTimeRange, options)
@@ -161,6 +166,7 @@
   curveData <- .sapProbabilityPlotEmptyCurveData()
   if (options[["probabilityPlotFittedCurve"]])
     curveData <- .sapProbabilityPlotCurveData(fitList, options, timeSequence)
+  predictionWarnings <- attr(curveData, "predictionWarnings")
 
   if (nrow(empiricalData) == 0 && nrow(curveData) == 0 && nrow(censoringData) == 0)
     stop(gettext("The probability plot requires at least one positive observed failure time, censored observation, or fitted curve."))
@@ -177,7 +183,7 @@
 
   plot <- ggplot2::ggplot()
 
-  if (nrow(curveData) > 0 && options[["probabilityPlotConfidenceInterval"]]) {
+  if (nrow(curveData) > 0 && options[["probabilityPlotConfidenceInterval"]] && any(is.finite(curveData[["lCi"]]) & is.finite(curveData[["uCi"]]))) {
     aesCall <- list(
       x     = as.name("time"),
       ymin  = as.name("lCi"),
@@ -236,6 +242,7 @@
 
   plot <- .sapProbabilityPlotAddAxes(plot, empiricalData, curveData, censoringData, options, observedTimeRange)
   plot <- .sapProbabilityPlotAddTheme(plot, options)
+  plot <- .sapPredictionPlotAddCaption(plot, predictionWarnings, width)
 
   return(plot)
 }
@@ -456,9 +463,11 @@
   ciLevel <- .sapProbabilityPlotConfidenceIntervalLevel(options)
 
   out <- list()
+  predictionWarnings <- character(0)
   for (i in seq_along(fitList)) {
 
-    data <- summary(fitList[[i]], type = "survival", t = timeSequence, ci = TRUE, cl = ciLevel)
+    data <- .sapSummaryPredictions(fitList[[i]], type = "survival", t = timeSequence, ci = options[["probabilityPlotConfidenceInterval"]], cl = ciLevel)
+    predictionWarnings <- c(predictionWarnings, attr(data, "predictionWarnings"))
 
     for (j in seq_along(data)) {
       colnames(data[[j]]) <- c("time", "survival", "survivalLCI", "survivalUCI")
@@ -487,6 +496,7 @@
   out[["uCi"]][is.infinite(out[["uCi"]])]                 <- NA
   out <- out[stats::complete.cases(out[, c("time", "probability")]) & out[["time"]] > 0, , drop = FALSE]
   rownames(out) <- NULL
+  attr(out, "predictionWarnings") <- unique(predictionWarnings)
 
   return(out)
 }
