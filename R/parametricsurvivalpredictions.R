@@ -781,11 +781,13 @@
 
 .sapKaplanMeierStepData          <- function(dataset, options, failureProbability) {
 
-  kmFit    <- try(survfit(
+  kmFit    <- survival::survfit(
     formula = .saGetFormula(options, type = "KM"),
     type    = "kaplan-meier",
-    data    = dataset
-  ))
+    data    = dataset,
+    weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]],
+    conf.int = options[["predictionsConfidenceIntervalLevel"]]
+  )
   kmTable <- summary(kmFit) # , times = optionsSequence
   kmTable <- with(kmTable, data.frame(
     at       = time,
@@ -793,6 +795,7 @@
     lCi      = lower,
     uCi      = upper
   ))
+  kmTable <- rbind(data.frame(at = 0, estimate = 1, lCi = 1, uCi = 1), kmTable)
 
   if (failureProbability) {
     kmTable$estimate <- 1 - kmTable$estimate
@@ -800,8 +803,8 @@
   }
 
   # transform into a step function
-  kmTable    <- kmTable[rep(1:nrow(kmTable), each=2), ]
-  kmTable$at[1:(nrow(kmTable)-1)] <- kmTable$at[2:nrow(kmTable)]
+  kmTable <- kmTable[rep(seq_len(nrow(kmTable)), each = 2), ]
+  kmTable$at[seq_len(nrow(kmTable) - 1)] <- kmTable$at[seq_len(nrow(kmTable) - 1) + 1]
 
   # extend the last step to match the last data point
   if (max(kmTable$at) < max(dataset[[options[["timeToEvent"]]]])) {
