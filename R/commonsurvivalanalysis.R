@@ -483,7 +483,7 @@
       "cumulativeHazard"     = gettext("Cumulative Hazard Plot"),
       "complementaryLogLog"  = gettext("Complementary Log-Log Plot")
     ), width = 450, height = .saGetSurvivalPlotHeight(options))
-    surivalPlot$dependOn(c(.sanpDependencies, "plot", "plotType", "plotStrata", "plotCi", "plotRiskTable",
+    surivalPlot$dependOn(c(if (type == "Cox") .saspDependencies else .sanpDependencies, "plot", "plotType", "plotCi", "plotRiskTable",
                            "plotRiskTableNumberAtRisk", "plotRiskTableCumulativeNumberOfObservedEvents",
                            "plotRiskTableCumulativeNumberOfCensoredObservations", "plotRiskTableNumberOfEventsInTimeInterval",
                            "plotRiskTableNumberOfCensoredObservationsInTimeInterval", "plotRiskTableAsASingleLine",
@@ -512,7 +512,7 @@
       if (file.exists(f))
         file.remove(f)
     })
-    return(ggsurvfit:::ggsurvfit_build(tempPlot))
+    return(ggsurvfit::ggsurvfit_build(x))
   }
 
   if (type == "KM")
@@ -585,12 +585,13 @@
   else
     tempPlot <- tempPlot + ggsurvfit::scale_ggsurvfit()
 
+  tempPlot <- try(.ggsurvfit2JaspPlot(tempPlot))
   if (jaspBase::isTryError(tempPlot)) {
-    surivalCurvePlot$setError(tempPlot)
+    surivalPlot$setError(tempPlot)
     return()
   }
 
-  surivalPlot$plotObject <- .ggsurvfit2JaspPlot(tempPlot)
+  surivalPlot$plotObject <- tempPlot
 
   return()
 }
