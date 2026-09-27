@@ -1,6 +1,6 @@
 on:
-  #schedule:
-  #  - cron:  '*/5 * * * *'
+  schedule:
+    - cron:  '50 5 * * 6'
     
   workflow_dispatch:
 
@@ -12,8 +12,8 @@ jobs:
     env:
       REPO_KEY: ${{ secrets.REPOS_KEY }}
       WEBLATE_KEY: ${{ secrets.WEBLATE_KEY }}
-      QML_REPO: jasptestmodule-qml
-      R_REPO: jasttestmodule-r
+      QML_REPO: jaspsurvival-qml
+      R_REPO: jaspsurvival-r
 
     steps:
       - uses: jasp-stats/jasp-actions/wlcLock@master

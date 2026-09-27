@@ -1,0 +1,1873 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Language: de\n"
+"X-Source-Language: American English\n"
+"X-Qt-Contexts: true\n"
+
+msgctxt "Description|"
+msgid "Survival"
+msgstr "Überleben"
+
+msgctxt "Description|"
+msgid "Perform analyses of censored time to event data."
+msgstr "Analysen zensierter Zeit-bis-Ereignis-Daten durchführen."
+
+msgctxt "Description|"
+msgid "Classical"
+msgstr "Klassisch"
+
+msgctxt "Description|"
+msgid "Non-parametric"
+msgstr "Nicht-parametrisch"
+
+msgctxt "Description|"
+msgid "Non-parametric Survival Analysis"
+msgstr "Nicht-parametrische Überlebensanalyse"
+
+msgctxt "Description|"
+msgid "Semi-parametric"
+msgstr "Semiparametrisch"
+
+msgctxt "Description|"
+msgid "Semi-parametric Survival Analysis"
+msgstr "Semiparametrische Überlebensanalyse"
+
+msgctxt "Description|"
+msgid "Parametric"
+msgstr "Parametrisch"
+
+msgctxt "Description|"
+msgid "Parametric Survival Analysis"
+msgstr "Parametrische Überlebensanalyse"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Time to Event"
+msgstr "Zeit bis zum Ereignis"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Event Status"
+msgstr "Ereignisstatus"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Event Indicator"
+msgstr "Ereignisindikator"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Strata"
+msgstr "Schichten"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Weights"
+msgstr "Gewichte"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Censoring summary"
+msgstr "Zensierungs-Zusammenfassung"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Tests"
+msgstr "Tests"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Peto and Peto"
+msgstr "Peto und Peto"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Flemming-Harrington"
+msgstr "Flemming-Harrington"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Rho"
+msgstr "Rho"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Life table"
+msgstr "Sterbetafel"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Generate a life table summarizing survival data at specified time intervals."
+msgstr ""
+"Eine Sterbetafel erzeugen, die Überlebensdaten in angegebenen "
+"Zeitintervallen zusammenfasst."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Steps type"
+msgstr "Art der Schritte"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Default"
+msgstr "Standard"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Quantilies"
+msgstr "Quantile"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Fixed size"
+msgstr "Feste Größe"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Number"
+msgstr "Anzahl"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Specify the number of intervals when using Quantiles as the steps type."
+msgstr ""
+"Geben Sie die Anzahl der Intervalle an, wenn 'Quantile' als Art der Schritte "
+"verwendet wird."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Round steps"
+msgstr "Schritte runden"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "From"
+msgstr "Von"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Set the starting time for intervals when using Fixed size steps."
+msgstr ""
+"Die Startzeit für Intervalle festlegen, wenn Schritte mit fester Größe "
+"verwendet werden."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Size"
+msgstr "Größe"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Define the size of each interval when using Fixed size steps."
+msgstr ""
+"Die Größe jedes Intervalls festlegen, wenn Schritte mit fester Größe "
+"verwendet werden."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "To"
+msgstr "Bis"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Set the ending time for intervals when using Fixed size steps."
+msgstr ""
+"Die Endzeit für Intervalle festlegen, wenn Schritte mit fester Größe "
+"verwendet werden."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "This analysis performs a parametric survival analysis."
+msgstr "Diese Analyse führt eine parametrische Überlebensanalyse durch."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Interval Start"
+msgstr "Intervallbeginn"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Interval End"
+msgstr "Intervallende"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Time to Event"
+msgstr "Zeit bis zum Ereignis"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Event Status"
+msgstr "Ereignisstatus"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Event Indicator"
+msgstr "Ereignisindikator"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Covariates"
+msgstr "Kovariaten"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Factors"
+msgstr "Faktoren"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Weights"
+msgstr "Gewichte"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Subgroup"
+msgstr "Untergruppe"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Censoring Type"
+msgstr "Zensierungsart"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the type of censoring in your data: right, left, or interval "
+"censoring."
+msgstr ""
+"Wählen Sie die Art der Zensierung in Ihren Daten: rechts-, links- oder "
+"intervallzensiert."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Right"
+msgstr "Rechts"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Counting"
+msgstr "Counting"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Interval"
+msgstr "Intervall"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Censoring summary"
+msgstr "Zensierungs-Zusammenfassung"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Distribution"
+msgstr "Verteilung"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Exponential"
+msgstr "Exponential"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Gamma"
+msgstr "Gamma"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Generalized F"
+msgstr "Generalisierte F"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Generalized gamma"
+msgstr "Generalisierte Gamma"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Gompertz"
+msgstr "Gompertz"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log-logistic"
+msgstr "Log-logistisch"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log-normal"
+msgstr "Log-normal"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Weibull"
+msgstr "Weibull"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "All"
+msgstr "Alle"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Best AIC"
+msgstr "Bestes AIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Best BIC"
+msgstr "Bestes BIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Model"
+msgstr "Modell"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include intercept"
+msgstr "Intercept einschließen"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Interpret model"
+msgstr "Modell interpretieren"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Statistics"
+msgstr "Statistiken"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Model summary"
+msgstr "Modellzusammenfassung"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with information about the model fit."
+msgstr "Eine Tabelle mit Informationen über die Modellanpassung einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Rank models"
+msgstr "Modelle einstufen"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Rank models based on the selected criterion."
+msgstr "Modelle auf Basis des ausgewählten Kriteriums einstufen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "AIC"
+msgstr "AIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "BIC"
+msgstr "BIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log lik."
+msgstr "Log-Likelihood"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "AIC weights"
+msgstr "AIC-Gewichte"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include AIC weights in the model summary."
+msgstr "AIC-Gewichte in die Modellzusammenfassung aufnehmen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "BIC weights"
+msgstr "BIC-Gewichte"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include BIC weights in the model summary."
+msgstr "BIC-Gewichte in die Modellzusammenfassung aufnehmen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Coefficients"
+msgstr "Koeffizienten"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with coefficient estimates."
+msgstr "Eine Tabelle mit Koeffizientenschätzungen einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Confidence intervals"
+msgstr "Konfidenzintervalle"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include confidence intervals for the coefficients."
+msgstr "Konfidenzintervalle für die Koeffizienten einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the confidence level for the confidence intervals."
+msgstr "Das Konfidenzniveau für die Konfidenzintervalle festlegen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Coefficients covariance matrix"
+msgstr "Kovarianzmatrix der Koeffizienten"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Include a table with the covariance matrix of the coefficient estimates."
+msgstr ""
+"Eine Tabelle mit der Kovarianzmatrix der Koeffizientenschätzungen "
+"einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Sequential model comparison"
+msgstr "Sequentielle Modellvergleiche"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the results of the sequential model comparison."
+msgstr ""
+"Eine Tabelle mit den Ergebnissen der sequentiellen Modellvergleiche "
+"einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predictions"
+msgstr "Vorhersagen"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Survival Time"
+msgstr "Überlebenszeit"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Table"
+msgstr "Tabelle"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the predicted survival estimates."
+msgstr ""
+"Eine Tabelle mit den vorhergesagten Überlebensschätzungen einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Plot"
+msgstr "Diagramm"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a plot with the predicted survival estimates."
+msgstr ""
+"Ein Diagramm mit den vorhergesagten Überlebensschätzungen einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Steps type"
+msgstr "Art der Schritte"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Quantilies"
+msgstr "Quantile"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Sequence"
+msgstr "Folge"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Custom"
+msgstr "Benutzerdefiniert"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Number"
+msgstr "Anzahl"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "From"
+msgstr "Von"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the starting quantile of the predicted survival when using Sequence "
+"steps."
+msgstr ""
+"Das Startquantil des vorhergesagten Überlebens festlegen, wenn 'Folge'-"
+"Schritte verwendet werden."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Size"
+msgstr "Größe"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "To"
+msgstr "Bis"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the ending quantile of the predicted survival when using Sequence steps."
+msgstr ""
+"Das Endquantil des vorhergesagten Überlebens festlegen, wenn 'Folge'-"
+"Schritte verwendet werden."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Steps"
+msgstr "Schritte"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Specify custom steps of the predicted survival."
+msgstr "Benutzerdefinierte Schritte des vorhergesagten Überlebens angeben."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Merge plots across distributions"
+msgstr "Diagramme über Verteilungen hinweg zusammenführen"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Options"
+msgstr "Optionen"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include confidence intervals for the figures and tables."
+msgstr "Konfidenzintervalle für die Abbildungen und Tabellen einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Legend"
+msgstr "Legende"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Bottom"
+msgstr "Unten"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Left"
+msgstr "Links"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Top"
+msgstr "Oben"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "None"
+msgstr "Keine"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Theme"
+msgstr "Design"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "White background"
+msgstr "Weißer Hintergrund"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Light"
+msgstr "Hell"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Minimal"
+msgstr "Minimal"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Detailed"
+msgstr "Detailliert"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Survival Probability"
+msgstr "Überlebenswahrscheinlichkeit"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the predicted survival probabilities."
+msgstr ""
+"Eine Tabelle mit den vorhergesagten Überlebenswahrscheinlichkeiten "
+"einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a plot with the predicted survival probabilities."
+msgstr ""
+"Ein Diagramm mit den vorhergesagten Überlebenswahrscheinlichkeiten "
+"einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Kaplan-Meier"
+msgstr "Kaplan-Meier"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Censoring events"
+msgstr "Zensierungsereignisse"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "X-axis transformation"
+msgstr "Transformation der x-Achse"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the transformation for the x-axis of the plot"
+msgstr "Wählen Sie die Transformation für die x-Achse des Diagramms"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log"
+msgstr "Log"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Y-axis transformation"
+msgstr "Transformation der y-Achse"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the transformation for the y-axis of the plot"
+msgstr "Wählen Sie die Transformation für die y-Achse des Diagramms"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "As failure probability"
+msgstr "Als Ausfallwahrscheinlichkeit"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Hazard"
+msgstr "Hazard-Rate"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the predicted hazard estimates."
+msgstr "Eine Tabelle mit den vorhergesagten Hazard-Schätzungen einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a plot with the predicted hazard estimates."
+msgstr "Ein Diagramm mit den vorhergesagten Hazard-Schätzungen einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Cumulative Hazard"
+msgstr "Kumulative Hazard-Rate"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the predicted cumulative hazard estimates."
+msgstr ""
+"Eine Tabelle mit den vorhergesagten kumulativen Hazard-Schätzungen "
+"einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a plot with the predicted cumulative hazard estimates."
+msgstr ""
+"Ein Diagramm mit den vorhergesagten kumulativen Hazard-Schätzungen "
+"einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Restricted Mean Survival Time"
+msgstr "Restriktive mittlere Überlebenszeit"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the restricted mean survival time estimates."
+msgstr ""
+"Eine Tabelle mit den Schätzungen der restriktiven mittleren Überlebenszeit "
+"einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a plot with the restricted mean survival time estimates."
+msgstr ""
+"Ein Diagramm mit den Schätzungen der restriktiven mittleren Überlebenszeit "
+"einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the starting quantile of the life time when using Sequence steps."
+msgstr ""
+"Das Startquantil der Lebensdauer festlegen, wenn 'Folge'-Schritte verwendet "
+"werden."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Round steps"
+msgstr "Schritte runden"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Specify custom steps of the life time."
+msgstr "Benutzerdefinierte Schritte der Lebensdauer angeben."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Merge tables across measures"
+msgstr "Tabellen über Maße hinweg zusammenführen"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Diagnostics"
+msgstr "Diagnostik"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residual Plots"
+msgstr "Residualdiagramme"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals vs. time"
+msgstr "Residuen vs. Zeit"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals vs. predictors"
+msgstr "Residuen vs. Prädiktoren"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals vs. predicted survival"
+msgstr "Residuen vs. vorhergesagtes Überleben"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Plot residuals versus predicted survival probabilities."
+msgstr ""
+"Residuen gegen vorhergesagte Überlebenswahrscheinlichkeiten darstellen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals histogram"
+msgstr "Residualhistogramm"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Display a histogram of residuals to assess their distribution."
+msgstr ""
+"Ein Histogramm der Residuen anzeigen, um ihre Verteilung zu beurteilen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Type"
+msgstr "Typ"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the type of residuals to plot"
+msgstr "Wählen Sie die Art der darzustellenden Residuen"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Response"
+msgstr "Response"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Cox-Snell"
+msgstr "Cox-Snell"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Probability plot"
+msgstr "Wahrscheinlichkeitsdiagramm"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Canvas"
+msgstr "Leinwand"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Empirical points"
+msgstr "Empirische Punkte"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Plot empirical failure probability points based on the observed failure "
+"times."
+msgstr ""
+"Empirische Ausfallwahrscheinlichkeitspunkte auf Basis der beobachteten "
+"Ausfallzeiten darstellen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Coordinates"
+msgstr "Koordinaten"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Display the time and failure probability next to each empirical point."
+msgstr ""
+"Die Zeit und die Ausfallwahrscheinlichkeit neben jedem empirischen Punkt "
+"anzeigen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Fitted curve"
+msgstr "Angepasste Kurve"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Plot the fitted curve from the selected parametric model."
+msgstr ""
+"Die angepasste Kurve aus dem ausgewählten parametrischen Modell darstellen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include confidence interval bounds for the fitted probability curve."
+msgstr ""
+"Konfidenzintervallgrenzen für die angepasste Wahrscheinlichkeitskurve "
+"einschließen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the confidence level for the probability plot confidence intervals."
+msgstr ""
+"Das Konfidenzniveau für die Konfidenzintervalle des "
+"Wahrscheinlichkeitsdiagramms festlegen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Grid"
+msgstr "Gitter"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Display probability-paper grid lines."
+msgstr "Gitterlinien des Wahrscheinlichkeitspapiers anzeigen."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Plotting position"
+msgstr "Plotposition"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Median"
+msgstr "Median"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Benard"
+msgstr "Benard"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Hazen"
+msgstr "Hazen"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Mean"
+msgstr "Mittelwert"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Blom"
+msgstr "Blom"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Rank adjustment"
+msgstr "Ranganpassung"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the rank adjustment method for right-censored observations. The "
+"Kaplan-Meier adjustment follows the WeibullR/Minitab convention, including "
+"the final-failure adjustment used to keep points finite on probability paper."
+msgstr ""
+"Wählen Sie die Methode der Ranganpassung für rechtszensierte Beobachtungen. "
+"Die Kaplan-Meier-Anpassung folgt der WeibullR/Minitab-Konvention, "
+"einschließlich der Anpassung für den letzten Ausfall, die verwendet wird, um "
+"die Punkte auf dem Wahrscheinlichkeitspapier endlich zu halten."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Johnson"
+msgstr "Johnson"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Ties"
+msgstr "Bindungen"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Highest"
+msgstr "Höchste"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lowest"
+msgstr "Niedrigste"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Sequential"
+msgstr "Sequentiell"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the legend position for probability plots with multiple fitted curves."
+msgstr ""
+"Wählen Sie die Position der Legende für Wahrscheinlichkeitsdiagramme mit "
+"mehreren angepassten Kurven."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the theme for the probability plot's appearance."
+msgstr ""
+"Wählen Sie das Design für das Erscheinungsbild des "
+"Wahrscheinlichkeitsdiagramms."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Advanced"
+msgstr "Erweitert"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Selected Parametric Distributions"
+msgstr "Ausgewählte parametrische Verteilungen"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Output Formatting"
+msgstr "Ausgabeformatierung"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include full dataset in subgroup analysis"
+msgstr "Gesamten Datensatz in die Untergruppenanalyse aufnehmen"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Compare models across distributions"
+msgstr "Modelle über Verteilungen hinweg vergleichen"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Always display model information"
+msgstr "Modellinformationen immer anzeigen"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Interval Start"
+msgstr "Intervallbeginn"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Interval End"
+msgstr "Intervallende"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Time to Event"
+msgstr "Zeit bis zum Ereignis"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Event Status"
+msgstr "Ereignisstatus"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Event Indicator"
+msgstr "Ereignisindikator"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Covariates"
+msgstr "Kovariaten"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Factors"
+msgstr "Faktoren"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Weights"
+msgstr "Gewichte"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Censoring Type"
+msgstr "Zensierungsart"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Right"
+msgstr "Rechts"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Counting"
+msgstr "Counting"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Censoring summary"
+msgstr "Zensierungs-Zusammenfassung"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Method"
+msgstr "Methode"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Efron"
+msgstr "Efron"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Breslow"
+msgstr "Breslow"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Exact"
+msgstr "Exakt"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Choose the method for handling tied event times: Efron, Breslow, or Exact."
+msgstr ""
+"Wählen Sie die Methode zur Behandlung gebundener Ereigniszeiten: Efron, "
+"Breslow oder Exakt."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Strata, Cluster, and Frailty"
+msgstr "Schichten, Cluster und Frailty"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Strata"
+msgstr "Schichten"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Cluster"
+msgstr "Cluster"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Frailty"
+msgstr "Frailty"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Distribution"
+msgstr "Verteilung"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Gamma"
+msgstr "Gamma"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Gaussian"
+msgstr "Gauß"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "T"
+msgstr "t"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "EM"
+msgstr "EM"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "AIC"
+msgstr "AIC"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Fixed"
+msgstr "Fest"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "REML"
+msgstr "REML"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Df"
+msgstr "Df"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Fix"
+msgstr "Fixieren"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Theta"
+msgstr "Theta"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Model"
+msgstr "Modell"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Components"
+msgstr "Komponenten"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Statistics"
+msgstr "Statistiken"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Model fit"
+msgstr "Modellanpassung"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include overall model fit statistics in the output."
+msgstr "Gesamtstatistiken der Modellanpassung in die Ausgabe aufnehmen."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Tests"
+msgstr "Tests"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Test all parameters of the H₁ model."
+msgstr "Alle Parameter des H₁-Modells testen."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Likelihood ratio"
+msgstr "Likelihood-Ratio"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include the Likelihood Ratio Test in the model summary."
+msgstr "Den Likelihood-Ratio-Test in die Modellzusammenfassung aufnehmen."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Wald"
+msgstr "Wald"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Coefficients"
+msgstr "Koeffizienten"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Estimates"
+msgstr "Schätzungen"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Display the estimated coefficients in the model output."
+msgstr "Die geschätzten Koeffizienten in der Modellausgabe anzeigen."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Vovk-Sellke maximum p-ratio"
+msgstr "Vovk-Sellke Maximum p-Ratio"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include the Vovk-Sellke maximum p-ratio for each coefficient."
+msgstr "Das Vovk-Sellke Maximum p-Ratio für jeden Koeffizienten aufnehmen."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Hazard ratio estimates"
+msgstr "Schätzungen der Hazard-Ratios"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include frailty"
+msgstr "Frailty einschließen"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Confidence intervals"
+msgstr "Konfidenzintervalle"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include confidence intervals for the coefficients."
+msgstr "Konfidenzintervalle für die Koeffizienten einschließen."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Plot"
+msgstr "Diagramm"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Diagnostics"
+msgstr "Diagnostik"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Proportional Hazards"
+msgstr "Proportionale Hazards"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Table"
+msgstr "Tabelle"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Provide a table to test the proportional hazards assumption."
+msgstr ""
+"Eine Tabelle zum Testen der Proportional-Hazards-Annahme bereitstellen."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Generate plots to assess the proportional hazards assumption."
+msgstr "Diagramme zur Beurteilung der Proportional-Hazards-Annahme erzeugen."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Transformation"
+msgstr "Transformation"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "KM"
+msgstr "KM"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Rank"
+msgstr "Rang"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Identity"
+msgstr "Identität"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Test terms"
+msgstr "Testterme"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residual Plots"
+msgstr "Residualdiagramme"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residuals vs. time"
+msgstr "Residuen vs. Zeit"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residuals vs. predictors"
+msgstr "Residuen vs. Prädiktoren"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residuals vs. predicted survival"
+msgstr "Residuen vs. vorhergesagtes Überleben"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residuals histogram"
+msgstr "Residualhistogramm"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Type"
+msgstr "Typ"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Martingale"
+msgstr "Martingale"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Deviance"
+msgstr "Devianz"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Score"
+msgstr "Score"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Schoenfeld"
+msgstr "Schoenfeld"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Scaled Schoenfeld"
+msgstr "Skalierte Schoenfeld"
+
+msgctxt "SurvivalPlot|"
+msgid "Plot"
+msgstr "Diagramm"
+
+msgctxt "SurvivalPlot|"
+msgid "Type"
+msgstr "Typ"
+
+msgctxt "SurvivalPlot|"
+msgid "Survival"
+msgstr "Überleben"
+
+msgctxt "SurvivalPlot|"
+msgid "Risk"
+msgstr "Risiko"
+
+msgctxt "SurvivalPlot|"
+msgid "Cumulative hazard"
+msgstr "Kumulative Hazard"
+
+msgctxt "SurvivalPlot|"
+msgid "Complementary log-log"
+msgstr "Komplementär-Log-Log"
+
+msgctxt "SurvivalPlot|"
+msgid "Confidence interval"
+msgstr "Konfidenzintervall"
+
+msgctxt "SurvivalPlot|"
+msgid "Risk table"
+msgstr "Risikotabelle"
+
+msgctxt "SurvivalPlot|"
+msgid "Number at risk"
+msgstr "Anzahl gefährdet"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Display the number of subjects at risk at each time point in the risk table."
+msgstr ""
+"Die Anzahl der gefährdeten Versuchspersonen zu jedem Zeitpunkt in der "
+"Risikotabelle anzeigen."
+
+msgctxt "SurvivalPlot|"
+msgid "Cum. number of observed events"
+msgstr "Kum. Anzahl beobachteter Ereignisse"
+
+msgctxt "SurvivalPlot|"
+msgid "Cum. number of censored obs."
+msgstr "Kum. Anzahl zensierter Beob."
+
+msgctxt "SurvivalPlot|"
+msgid "Number of events in time interval"
+msgstr "Anzahl der Ereignisse im Zeitintervall"
+
+msgctxt "SurvivalPlot|"
+msgid "Number of censored obs. in time interval"
+msgstr "Anzahl zensierter Beob. im Zeitintervall"
+
+msgctxt "SurvivalPlot|"
+msgid "As a single line"
+msgstr "Als einzelne Linie"
+
+msgctxt "SurvivalPlot|"
+msgid "Add quantile"
+msgstr "Quantil hinzufügen"
+
+msgctxt "SurvivalPlot|"
+msgid "Legend"
+msgstr "Legende"
+
+msgctxt "SurvivalPlot|"
+msgid "Bottom"
+msgstr "Unten"
+
+msgctxt "SurvivalPlot|"
+msgid "Right"
+msgstr "Rechts"
+
+msgctxt "SurvivalPlot|"
+msgid "Left"
+msgstr "Links"
+
+msgctxt "SurvivalPlot|"
+msgid "Top"
+msgstr "Oben"
+
+msgctxt "SurvivalPlot|"
+msgid "None"
+msgstr "Keine"
+
+msgctxt "SurvivalPlot|"
+msgid "Theme"
+msgstr "Design"
+
+msgctxt "SurvivalPlot|"
+msgid "JASP"
+msgstr "JASP"
+
+msgctxt "SurvivalPlot|"
+msgid "ggsurvfit"
+msgstr "ggsurvfit"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"This analysis computes a survival curve for censored data using the Kaplan-"
+"Meier estimator for single-event survival data. It estimates the probability "
+"of survival over time, allowing you to understand and visualize the "
+"distribution of survival times within your data. The analysis accommodates "
+"censored observations (subjects for whom the event has not occurred during "
+"the study period) and enables comparison of survival curves across different "
+"groups using statistical tests such as the Log-Rank test, Peto and Peto "
+"test, and Fleming-Harrington test. Additionally, you can generate life "
+"tables to summarize survival data at specified intervals."
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the time until the event or censoring "
+"occurs."
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Choose the variable that indicates the event status, specifying whether each "
+"observation is an event or censored."
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Specify the value in the Event Status variable that indicates the occurrence "
+"of the event."
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Select variables to define strata, allowing separate survival curves for "
+"each stratum."
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable for case weights, weighting each observation accordingly "
+"in the model."
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Create a summary table with information about the censoring status of the "
+"data."
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Log-rank (Mantel-Haenszel)"
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Include the Log-Rank (Mantel-Haenszel) test to compare survival curves "
+"across strata."
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Include the Peto and Peto modification of the Gehan-Wilcoxon test to compare "
+"survival curves across strata."
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Include the Fleming-Harrington test to compare survival curves across "
+"strata., with a customizable rho parameter."
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Set the rho parameter for the Fleming-Harrington test, controlling the "
+"weight given to different time points (values between 0 and 1)."
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Select the method to define intervals for the life table: Default, "
+"Quantiles, or Fixed size."
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Round the interval boundaries to the nearest integer when using Quantiles "
+"steps."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the start time of the observation "
+"interval. Only available when Censoring Type is set to Interval or Counting."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the end time of the observation "
+"interval. Only available when Censoring Type is set to Interval or Counting."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the time until the event or censoring "
+"occurs. Only available when Censoring Type is set to Right or Counting."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the variable that indicates the event status, specifying whether each "
+"observation is an event or censored."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify the value in the Event Status variable that indicates the occurrence "
+"of the event."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Add continuous variables as covariates to include them in the Cox regression "
+"model."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Add categorical variables as factors to include them in the Cox regression "
+"model."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable for case weights, weighting each observation accordingly "
+"in the model."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable for subgroup analysis, allowing for separate analyses "
+"within each subgroup."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"If interval censoring is selected, the following coding needs to be used: "
+"left-censored data is represented as (NA, t2), right-censored data as (t1, "
+"NA), exact data as (t, t), and interval-censored data as (t1, t2)."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Create a summary table with information about the censoring status of the "
+"data."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the parametric distribution for the analysis. All fits and display "
+"results for all 'Selected parametric families' in the 'Advanced' section. "
+"'Best AIC' and 'Best BIC' fit all `Selected parametric families` in the "
+"Advanced section and display the results only for a parametric family with "
+"the lowest AIC/BIC."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Generalized gamma (original)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Generalized F (original)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the model to interpret. Defaults to the last specified model. "
+"Alternatives are 'All' which produces results for all of the specified "
+"models or 'Best' which produces results for the best fitting model based on "
+"either AIC or BIC. If distribution and model selection is specified "
+"simultanously, the best model within the best performing distribution is "
+"going to be selected. If model selection is specified while all "
+"distributions are selected, the best model within each distribution is going "
+"to be selected."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the method to define intervals for the life table: Default, "
+"Quantiles, or Custom."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify the number of quantiles of the predicted surival when using "
+"Quantiles as the steps type."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Define the size of each quantile of the predicted survival when using "
+"Sequence steps."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Merge the plots for survival probability across distributions into a single "
+"plot. Only available when no model selection is being performed."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the position of the legend on prediction plots with multiple "
+"displayed curves."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Customize the color palette used in prediction plots with multiple displayed "
+"curves."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the theme for prediction plots. The detailed theme works only for "
+"'Survival probabilities' plots."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Show a Kaplan-Meier curve in the plot. Only available when Censoring Type is "
+"set to Right."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Show censoring events as rug marks in the plot. Only available when "
+"Censoring Type is set to Right."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log(-log(1-p))"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Transform the output from survival probability to failure probability (i.e., "
+"1 - Survival Probability)."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify the number of quantiles of the life time when using Quantiles as the "
+"steps type."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Define the size of each quantile of the life time when using Sequence steps. "
+"The default '' corresponds to 1/10 of the maximum observed time."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the final step of the life time when using Sequence steps. The default "
+"'' corresponds to the maximum observed time."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Round the interval boundaries to the nearest integer when using Quantiles or "
+"Sequence steps."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Merge the tables for survival time, survival probabilities, hazard, "
+"cumulative hazard, and restricted mean survival time into a single table."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Merge the plots for survival time, survival probabilities, hazard, "
+"cumulative hazard, and restricted mean survival across distributions into a "
+"single plot. Only available when no model selection is being performed."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus time. Only available when Censoring Type is set to "
+"Right."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus predictors to assess model fit. Available when model "
+"terms are specified."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Create a model-based probability plot to assess how well the selected "
+"parametric distribution describes the observed failure times. Only available "
+"when Censoring Type is set to Right."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the probability-paper scale. A distribution matching the selected "
+"canvas appears approximately as a straight line. The exponential canvas uses "
+"linear time and cumulative-hazard probability scaling; the other canvases "
+"use log time."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Show censored observations as rug marks at the bottom of the plot. Only "
+"available when Censoring Type is set to Right."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Merge the probability plots across distributions into a single plot. Only "
+"available when no model selection is being performed."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the method used to compute empirical failure probability plotting "
+"positions."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select how tied failure times are handled when computing empirical plotting "
+"positions."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Customize the color palette used in probability plots with multiple fitted "
+"curves."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Include the full dataset output in the subgroup analysis. This option is "
+"only available when the subgroup analysis is selected."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Compare models across distributions. This option is only available when the "
+"multiple models and parametric distributions are specified."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Always display model information (distribution and model name) in output "
+"tables."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"This option generates a customizable survival plot to visualize the "
+"estimated survival probabilities over time from your survival analysis. You "
+"can choose different transformations of the survival probabilities to "
+"display, such as Survival, Risk, Cumulative Hazard, or Complementary Log-Log "
+"functions, depending on your analytical needs. The plot allows you to "
+"include confidence intervals to assess the precision of the estimates and "
+"add a risk table to provide detailed information about the number of "
+"subjects at risk and events over time. You can further enhance the plot by "
+"adding quantile lines to highlight specific survival times (e.g., median "
+"survival time) and adjust the legend position, color palette, and overall "
+"theme to suit your preferences."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Select the type of statistic to plot: Survival, Risk, Cumulative Hazard, or "
+"Complementary Log-Log."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Include confidence intervals in the survival plot to show the variability "
+"around the estimates."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Add a risk table below the plot to display additional information about the "
+"number of subjects at risk over time."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Display the cumulative number of observed events (e.g., deaths) at each time "
+"point in the risk table."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Display the cumulative number of censored observations at each time point in "
+"the risk table."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Display the number of events that occurred within each time interval in the "
+"risk table."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Display the number of censored observations within each time interval in the "
+"risk table."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Combine all selected risk table statistics into a single line for a more "
+"compact display."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Add a vertical line on the plot at a specified quantile (e.g., median "
+"survival time)."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Specify the quantile value (between 0 and 1) at which to add the vertical "
+"line on the plot."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Choose the position of the legend on the plot: Bottom, Right, Left, Top, or "
+"None. Only available when Strata variables are specified."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Customize the color palette used in the plot. Only available when Strata "
+"variables are specified."
+msgstr ""
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Select the theme for the plot's appearance: JASP for the default look or "
+"ggsurvfit for the ggsurvfit package style."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"This analysis performs a Cox proportional hazards regression, a statistical "
+"method used in survival analysis to examine the relationship between the "
+"time until an event occurs (such as death or failure) and one or more "
+"predictor variables. It helps you understand how different factors influence "
+"the risk or hazard of the event happening at any given time. The Cox model "
+"is particularly useful because it can handle censored data (when the event "
+"has not occurred for some subjects during the study period) and does not "
+"require assumptions about the baseline hazard function."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the start time of the observation "
+"interval. Only available when Censoring Type is set to Counting."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the end time of the observation "
+"interval. Only available when Censoring Type is set to Counting."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the time until the event or censoring "
+"occurs. Only available when Censoring Type is set to Right."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Choose the variable that indicates the event status, specifying whether each "
+"observation is an event or censored."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Specify the value in the Event Status variable that indicates the occurrence "
+"of the event."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Add continuous variables as covariates to include them in the Cox regression "
+"model."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Add categorical variables as factors to include them in the Cox regression "
+"model."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable for case weights, weighting each observation accordingly "
+"in the model."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the type of censoring in your data: Right censoring or Counting "
+"process."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Create a summary table with information about the censoring status of the "
+"data."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select variables to define strata, allowing separate baseline hazard "
+"functions for each stratum."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable to define clusters of correlated observations for robust "
+"variance estimation. Disabled when a Frailty variable is specified or Method "
+"is set to Exact."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable for frailty to model unobserved heterogeneity using random "
+"effects. Disabled when a Cluster variable is specified."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Choose the distribution for the frailty term: Gamma, Gaussian, or T "
+"distribution. Only available when a Frailty variable is specified."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the estimation method for the frailty distribution. Options vary "
+"based on the chosen Distribution."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Set the degrees of freedom (Df) for the T frailty distribution. Only visible "
+"when Distribution is set to T."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Choose the parameter to fix in the frailty model when Method is set to "
+"Fixed: Theta or Df."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Specify the value of Theta to fix in the frailty model. Only visible when "
+"Fix is set to Theta."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Specify the degrees of freedom (Df) to fix in the frailty model. Only "
+"visible when Fix is set to Df."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Include the Wald Test in the model summary. Disabled when a Frailty variable "
+"is specified."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Score (log-rank)"
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Include the Score (Log-Rank) Test in the model summary. Disabled when a "
+"Frailty variable is specified."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Display the hazard ratio estimates (exponentiated coefficients)."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Include the effect of frailty in hazard ratio estimates. Only available when "
+"a Frailty variable is specified."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Set the confidence level (e.g., 95%) for the confidence intervals."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the transformation for time in proportional hazards testing: KM, "
+"Rank, or Identity."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Test the proportional hazards assumption for individual model terms (instead "
+"of coefficients)."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus time to detect non-proportional hazards. Available "
+"only for Martingale or Deviance residuals."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus predictors to assess model fit. Available when model "
+"terms are specified."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus predicted survival probabilities. Available only for "
+"Martingale or Deviance residuals."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Display a histogram of residuals to assess their distribution. Available "
+"only for Martingale or Deviance residuals."
+msgstr ""
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the type of residuals to plot: Martingale, Deviance, Score, "
+"Schoenfeld, or Scaled Schoenfeld."
+msgstr ""

@@ -403,7 +403,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
 
   if (jaspBase::isTryError(fitNull)) {
-    estimatesTable$addFootnote(gettextf("The null model failed with the following message: %1$s.", fitNull))
+    estimatesTable$addFootnote(fitNull, symbol = gettext("The null model failed with the following message:"))
     estimates <- NULL
   } else
     estimates <- .saspCoxFitSummary(fitNull, options, "H\u2080")
@@ -421,6 +421,10 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   if (length(options[["strata"]]) > 0)
     estimatesTable$addFootnote(gettextf("Results are stratified via: %1$s.", paste0(options[["strata"]], collapse = ", ")))
+
+  nullPredictors <- .saGetPredictors(options, null = TRUE)
+  if (length(nullPredictors) != 0)
+    estimatesTable$addFootnote(gettextf("Null model contains nuisance parameters: %1$s", paste(nullPredictors, collapse = ", ")))
 
   estimatesTable$setData(estimates)
 
@@ -454,7 +458,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
 
   if (jaspBase::isTryError(fitNull)) {
-    hazardRatioTable$addFootnote(gettextf("The null model failed with the following message: %1$s.", fitNull))
+    hazardRatioTable$addFootnote(fitNull, symbol = gettext("The null model failed with the following message:"))
     estimates <- NULL
   } else
     estimates <- .saspCoxFitSummary(fitNull, options, "H\u2080", HR = TRUE)
@@ -466,6 +470,10 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   estimates <- rbind(estimates, .saspCoxFitSummary(fit, options, "H\u2081", HR = TRUE))
 
+
+  nullPredictors <- .saGetPredictors(options, null = TRUE)
+  if (length(nullPredictors) != 0)
+    hazardRatioTable$addFootnote(gettextf("Null model contains nuisance parameters: %1$s", paste(nullPredictors, collapse = ", ")))
 
   hazardRatioTable$setData(estimates)
 
