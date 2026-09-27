@@ -625,7 +625,15 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   residuals          <- try(residuals(fit, type = switch(options[["residualPlotResidualType"]], "scaledSchoenfeld" = "scaledsch", options[["residualPlotResidualType"]])))
   predictorsFit      <- model.matrix(fit)
   if (options[["residualPlotResidualType"]] %in% c("schoenfeld", "scaledSchoenfeld")) {
-    varIndx <- dataset[[options[["eventStatus"]]]]
+    # Schoenfeld residuals are returned in event-time order within strata.
+    response <- fit[["y"]]
+    status   <- response[, ncol(response)]
+    times    <- response[, ncol(response) - 1]
+    if (is.null(fit[["strata"]]))
+      rowOrder <- order(times, -status)
+    else
+      rowOrder <- order(as.integer(fit[["strata"]]), times, -status)
+    varIndx <- rowOrder[status[rowOrder] == 1]
   } else {
     varIndx <- rep(TRUE, nrow(dataset))
   }
@@ -641,7 +649,8 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     if (jaspBase::isTryError(residuals)) {
       residualPlotResidualVsTime$setError(residuals)
     } else {
-      tempPlot <- try(.saspResidualsPlot(x = dataset[[options[["timeToEvent"]]]][varIndx], y = residuals, xlab = gettext("Time"), ylab = .saspResidualsPlotName(options)))
+      timeVariable <- if (options[["censoringType"]] == "counting") options[["intervalEnd"]] else options[["timeToEvent"]]
+      tempPlot <- try(.saspResidualsPlot(x = dataset[[timeVariable]][varIndx], y = residuals, xlab = gettext("Time"), ylab = .saspResidualsPlotName(options)))
 
       if (jaspBase::isTryError(tempPlot))
         residualsPlots$setError(tempPlot)
@@ -660,13 +669,12 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
     if (dim(predictorsFit)[2] == 0) {
       tempPlot <- createJaspPlot()
-      tempPlot$setError(gettext("No predictors in the model."))
       residualPlotResidualVsPredictors[["waitingPlot"]] <- tempPlot
+      tempPlot$setError(gettext("No predictors in the model."))
     } else if (jaspBase::isTryError(residuals)) {
       tempPlot <- createJaspPlot()
-      tempPlot$setError(residuals)
       residualPlotResidualVsPredictors[["waitingPlot"]] <- tempPlot
-      residualPlotResidualVsTime$setError(residuals)
+      tempPlot$setError(residuals)
     } else {
       for (i in 1:ncol(predictorsFit)) {
 
