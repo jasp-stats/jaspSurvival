@@ -41,7 +41,8 @@
       "coefficientsConfidenceIntervalLevel",
       # the numbers of components are not included as the fits are updated only if the corresponding number of components changes
       if (options[["analysisType"]] == "mixture") c("mixtureStartKmeans", "mixtureStartQuantiles", "mixtureStartSplit",
-                                                    "mixtureStartRandom", "mixtureStartRandomCount", "mixtureEmIterations", "setSeed", "seed")
+                                                    "mixtureStartRandom", "mixtureStartRandomCount", "mixtureEmIterations", "setSeed", "seed",
+                                                    "mixtureConstrainSpread", "mixtureMinimumLogTimeSd")
     ))
     jaspResults[["fit"]] <- fitContainer
     out                  <- NULL
@@ -225,6 +226,8 @@
 
   if (components > 1) {
     fit <- .sapmFitModel(dataset, options, distribution, modelTerms, components, previous)
+  } else if (options[["analysisType"]] == "mixture" && options[["mixtureConstrainSpread"]]) {
+    fit <- try(.sapmFitSingle(dataset, options, distribution, modelTerms))
   } else {
     fit <- try(flexsurv::flexsurvreg(
       formula = .sapGetFormula(options, modelTerms),

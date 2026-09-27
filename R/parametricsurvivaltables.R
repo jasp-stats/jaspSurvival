@@ -215,7 +215,17 @@
   data <- .saSafeRbind(data)
 
   # add footnotes
-  sequentialModelComparisonTable$addFootnote(gettextf("Likelihood ratio test for nested models based on %s distribution.", "\U03C7\U00B2"))
+  if (any(vapply(fit, .sapConstraintActive, logical(1))))
+    sequentialModelComparisonTable$addFootnote(gettextf("Comparisons involving an active spread bound have no likelihood-ratio statistic or p-value; other comparisons use the %1$s approximation.", "\U03C7\U00B2"))
+  else
+    sequentialModelComparisonTable$addFootnote(gettextf("Likelihood ratio test for nested models based on %s distribution.", "\U03C7\U00B2"))
+  for (message in unique(unlist(lapply(fit, .sapConstraintNote))))
+    sequentialModelComparisonTable$addFootnote(message)
+  for (model in fit) {
+    message <- paste(c(.sapConstraintWarning(model), .sapNativeFitWarnings(model)), collapse = " ")
+    if (message != "")
+      sequentialModelComparisonTable$addFootnote(paste0(.sapmCellLabel(model, options), ": ", message), symbol = gettext("Warning:"))
+  }
 
   sequentialModelComparisonTable$setData(data)
   sequentialModelComparisonTable$showSpecifiedColumnsOnly <- TRUE
@@ -290,6 +300,8 @@
   messages <- .sapSelectedModelMessage(fit, options)
   for (i in seq_along(messages))
     estimatesTable$addFootnote(messages[[i]])
+  for (message in unique(unlist(lapply(fit, .sapConstraintNote))))
+    estimatesTable$addFootnote(message)
 
   if (options[["analysisType"]] == "mixture") {
     mixtureWarnings <- .sapmSummaryMessages(fit, options)[["warnings"]]
@@ -339,6 +351,12 @@
   covarianceMatrixTableTable$addFootnote(gettext("The covariance matrix uses the estimation scale: distribution parameters constrained to be positive are log-transformed. This scale can differ from the coefficients table."))
   if (!is.null(attr(fit, "mixture")))
     covarianceMatrixTableTable$addFootnote(gettext("The v parameters are conditional stick-breaking weights on the logit scale, not the component mixing probabilities reported in the coefficients table."))
+  for (message in .sapConstraintNote(fit))
+    covarianceMatrixTableTable$addFootnote(message)
+  for (message in .sapConstraintWarning(fit))
+    covarianceMatrixTableTable$addFootnote(message, symbol = gettext("Warning:"))
+  for (message in .sapNativeFitWarnings(fit))
+    covarianceMatrixTableTable$addFootnote(message, symbol = gettext("Warning:"))
 
   covarianceMatrixTableTable$setData(data)
   covarianceMatrixTableTable$showSpecifiedColumnsOnly <- TRUE
@@ -383,9 +401,13 @@
   ll0 <- fit0$loglik
   ll1 <- fit1$loglik
 
-  chi2   <- 2 * (ll1 - ll0)
-  df     <- fit1$npars - fit0$npars
-  pValue <- pchisq(chi2, df = df, lower.tail = FALSE)
+  df <- fit1$npars - fit0$npars
+  if (.sapConstraintActive(fit0) || .sapConstraintActive(fit1)) {
+    chi2 <- pValue <- NA_real_
+  } else {
+    chi2   <- 2 * (ll1 - ll0)
+    pValue <- pchisq(chi2, df = df, lower.tail = FALSE)
+  }
 
   return(data.frame(
     subgroup     = attr(fit0, "subgroup"),
@@ -416,6 +438,8 @@
   # label the parameters of mixture components
   if (!is.null(attr(fit, "mixture")))
     coeffTable <- .sapmCoefficientsNames(coeffTable, fit)
+  if (.sapConstraintActive(fit))
+    coeffTable[c("se", "lower", "upper")] <- NA_real_
 
   return(coeffTable)
 }
@@ -427,6 +451,8 @@
   # one has recreate the matrix and use the names from the coefficients from the res table because
   # the the covariance matrix drops names if there is only a single parameter
   covMat <- data.frame(fit[["cov"]])
+  if (.sapConstraintActive(fit))
+    covMat[,] <- NA_real_
   colnames(covMat) <- rownames(fit[["res"]]) -> rownames(covMat)
 
   return(data.frame(
@@ -559,6 +585,32 @@
 
 
   return()
+}
+
+# Boundaries invalidate the regular interior-model uncertainty calculations.
+.sapConstraintActive <- function(fit) {
+  constraints <- attr(fit, "constraints", exact = TRUE)
+  return(!is.null(constraints) && constraints[["active"]])
+}
+.sapConstraintNote <- function(fit) {
+  constraints <- attr(fit, "constraints", exact = TRUE)
+  if (is.null(constraints))
+    return(NULL)
+  return(gettextf("The standard deviation of the natural logarithm of survival time was constrained to be at least %1$g in each component.", constraints[["minimumLogTimeSd"]]))
+}
+.sapConstraintWarning <- function(fit) {
+  if (!.sapConstraintActive(fit))
+    return(NULL)
+  return(gettextf("The minimum log-time standard deviation bound (%1$g) is active. Standard errors, confidence intervals, covariance estimates, Wald tests, and likelihood-ratio tests involving this fit are unavailable.", attr(fit, "constraints")[["minimumLogTimeSd"]]))
+}
+.sapNativeFitWarnings <- function(fit) {
+  messages <- character(0)
+  for (message in attr(fit, "nativeWarnings", exact = TRUE))
+    messages <- c(messages, gettextf("Estimation warning: %1$s", message))
+  hessianWarning <- attr(fit, "nativeHessianWarning", exact = TRUE)
+  if (!is.null(hessianWarning) && hessianWarning)
+    messages <- c(messages, gettext("The Hessian or parameter covariance could not be used reliably; standard errors and confidence intervals may be unavailable or unreliable."))
+  return(messages)
 }
 
 # table messages

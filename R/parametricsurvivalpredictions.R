@@ -392,8 +392,9 @@
 
 .sapSummaryPredictions <- function(fit, ..., ci) {
 
-  messages <- character(0)
-  data <- withCallingHandlers(summary(fit, ..., ci = ci && all(is.finite(fit[["cov"]]))), warning = function(w) {
+  activeBound <- .sapConstraintActive(fit)
+  messages <- c(.sapConstraintNote(fit), .sapConstraintWarning(fit), .sapNativeFitWarnings(fit))
+  data <- withCallingHandlers(summary(fit, ..., ci = ci && !activeBound && all(is.finite(fit[["cov"]]))), warning = function(w) {
     messages <<- c(messages, conditionMessage(w))
     invokeRestart("muffleWarning")
   })
@@ -404,7 +405,7 @@
       messages <- c(messages, gettext("Some predictions could not be evaluated and are shown as missing."))
     if (any(is.infinite(data[[i]][["est"]])))
       messages <- c(messages, gettext("Some requested quantities are infinite or exceed numerical range."))
-    if (ci && anyNA(data[[i]][c("lcl", "ucl")]))
+    if (ci && !activeBound && anyNA(data[[i]][c("lcl", "ucl")]))
       messages <- c(messages, gettext("Some confidence intervals could not be evaluated and are shown as missing."))
   }
   attr(data, "predictionWarnings") <- unique(messages)
@@ -782,7 +783,7 @@
 
   }
 
-  # add available model intervals
+  # add available model intervals; active-bound fits retain point predictions only
   if (options[["predictionsConfidenceInterval"]] && any(is.finite(out[["lCi"]]) & is.finite(out[["uCi"]]))) {
     aesCall <- list(
       x        = as.name("at"),

@@ -20,15 +20,17 @@
 .sapmDependencies <- c(
   "mixtureComponents", "mixtureMaximumComponents",
   "mixtureStartKmeans", "mixtureStartQuantiles", "mixtureStartSplit", "mixtureStartRandom", "mixtureStartRandomCount",
-  "mixtureEmIterations", "setSeed", "seed", "compareModelsAcrossComponents"
+  "mixtureEmIterations", "setSeed", "seed", "compareModelsAcrossComponents",
+  "mixtureConstrainSpread", "mixtureMinimumLogTimeSd"
 )
 
 .sapmCheckDataset               <- function(dataset, options) {
 
-  if (!any(.sapComponents(options) > 1))
+  hasMixtures <- any(.sapComponents(options) > 1)
+  if (!hasMixtures && !options[["mixtureConstrainSpread"]])
     return()
 
-  if (!options[["mixtureStartKmeans"]] && !options[["mixtureStartQuantiles"]] && !options[["mixtureStartSplit"]] && !options[["mixtureStartRandom"]])
+  if (hasMixtures && !options[["mixtureStartKmeans"]] && !options[["mixtureStartQuantiles"]] && !options[["mixtureStartSplit"]] && !options[["mixtureStartRandom"]])
     .quitAnalysis(gettext("At least one starting value method must be selected."))
 
   # the starting values cluster log event times
@@ -61,6 +63,7 @@
   jaspBase::.setSeedJASP(options)
 
   family      <- .sapmFamily(distribution)
+  constraint  <- .sapmConstraintSpec(options, distribution)
   formula     <- .sapGetFormula(options, modelTerms)
   survObject  <- .saGetSurvObject(options, dataset)
   caseWeights <- if (options[["weights"]] != "") dataset[[options[["weights"]]]] else rep(1, nrow(dataset))
@@ -106,7 +109,8 @@
       components  = components,
       caseWeights = caseWeights,
       posterior   = start[["posterior"]],
-      iterations  = options[["mixtureEmIterations"]]
+      iterations  = options[["mixtureEmIterations"]],
+      constraint  = constraint
     ), silent = TRUE)
 
     if (jaspBase::isTryError(states)) {
@@ -119,7 +123,7 @@
 
       order  <- .sapmComponentOrder(family, state[["base"]])
       inits  <- .sapmInits(mixture, state[["base"]][order], state[["beta"]][order], state[["probabilities"]][order])
-      native <- .sapmNativeFit(formula, dataset, options, family, components, mixture, inits, caseWeights)
+      native <- .sapmNativeFit(formula, dataset, options, family, components, mixture, inits, caseWeights, constraint = constraint)
       if (jaspBase::isTryError(native[["fit"]])) {
         fitError <- .sapmCleanError(native[["fit"]])
         next
@@ -155,17 +159,19 @@
   if (length(candidates) == 0)
     stop(gettextf("The mixture model could not be estimated from any starting value: %1$s", if (is.null(fitError)) gettext("the optimizer failed.") else fitError))
 
-  selection <- .sapmSelectCandidate(candidates)
+  selection <- .sapmSelectCandidate(candidates, constrained = !is.null(constraint))
   best      <- candidates[[selection[["selected"]]]]
 
   # native covariance/CI construction at the selected estimates, without another optimization
-  native <- .sapmNativeFit(formula, dataset, options, family, components, mixture, best[["inits"]], caseWeights, hessian = TRUE)
+  native <- .sapmNativeFit(formula, dataset, options, family, components, mixture, best[["inits"]], caseWeights, hessian = TRUE, constraint = constraint)
   if (jaspBase::isTryError(native[["fit"]]))
     stop(gettextf("The mixture model could not be finalized: %1$s", .sapmCleanError(native[["fit"]])))
 
   fit <- native[["fit"]]
   .sapmCheckPrecision(fit, family, components, survObject)
   .sapmCheckFinalPoint(fit, best[["inits"]], best[["logLik"]])
+  constraintInfo <- .sapmConstraintInfo(fit, constraint, family, components)
+  fit <- .sapmApplyConstraintInference(fit, constraintInfo)
 
   # the constructed call contains the data and the distribution functions
   fit[["call"]] <- NULL
@@ -189,13 +195,14 @@
     nextBest        = selection[["nextBest"]],
     degenerate      = selection[["degenerate"]],
     allDegenerate   = selection[["allDegenerate"]],
+    selectedDegenerate = best[["degenerate"]],
     precisionRejected = precisionRejected,
     # retain the optimization status of the selected candidate, not the Hessian-only call
     converged       = best[["converged"]],
     minEss          = min(sizes[["ess"]]),
     minEvents       = min(sizes[["events"]]),
     hessianPositiveDefinite = hessianPositiveDefinite,
-    hessianWarning  = native[["hessianWarning"]] || !isTRUE(hessianPositiveDefinite) || any(!is.finite(fit[["cov"]])),
+    hessianWarning  = if (!is.null(constraintInfo) && constraintInfo[["active"]]) FALSE else native[["hessianWarning"]] || !isTRUE(hessianPositiveDefinite) || any(!is.finite(fit[["cov"]])),
     warnings        = unique(c(best[["warnings"]], native[["warnings"]])),
     collapsed       = which(estimates[["probabilities"]] < 1e-3 | estimates[["collapsed"]] | divergingEffects),
     duplicated      = .sapmDuplicatedComponents(fit, family, components, survObject),
@@ -209,7 +216,9 @@
   # the solution with one component fewer of the same cell: the fit of the analysis when it is available,
   # otherwise the chain (K-1, ..., 1) is fitted here and discarded afterwards
   if (is.null(previous) || jaspBase::isTryError(previous)) {
-    previous <- if (components == 2)
+    previous <- if (components == 2 && options[["mixtureConstrainSpread"]])
+      try(.sapmFitSingle(dataset, options, distribution, modelTerms), silent = TRUE)
+    else if (components == 2)
       try(flexsurv::flexsurvreg(
         formula = .sapGetFormula(options, modelTerms),
         data    = dataset,
@@ -452,20 +461,25 @@
     minEvents  = min(eventEss)
   ))
 }
-.sapmSelectCandidate            <- function(candidates) {
+.sapmSelectCandidate            <- function(candidates, constrained = FALSE) {
 
   logLik     <- vapply(candidates, function(x) x[["logLik"]], numeric(1))
   degenerate <- vapply(candidates, function(x) x[["degenerate"]], logical(1))
   start      <- vapply(candidates, function(x) x[["start"]], character(1))
+  converged  <- vapply(candidates, function(x) x[["converged"]], logical(1))
 
-  # the best non-degenerate candidate is reported; if every candidate is degenerate the best of them is kept
-  # (the collapsed / coinciding warnings then explain the solution)
-  selected <- if (any(!degenerate)) which(!degenerate)[which.max(logLik[!degenerate])] else which.max(logLik)
+  # With explicit constraints the feasible, converged maximum is selected; heuristic
+  # component diagnostics remain warnings and do not change the fitted objective.
+  if (constrained && !any(converged))
+    stop(gettext("No constrained candidate converged. Try more starting values, a different distribution, or fewer components."))
+  eligible <- if (constrained) converged else if (any(!degenerate)) !degenerate else rep(TRUE, length(candidates))
+  selected <- which(eligible)[which.max(logLik[eligible])]
 
   # solutions within 0.01 log-likelihood units are the same solution: the number of starts that reached it
   # is the replication of the reported solution
-  reached     <- !degenerate & logLik > logLik[selected] - 0.01
-  distinct    <- !degenerate & logLik <= logLik[selected] - 0.01
+  comparable  <- if (constrained) converged else !degenerate
+  reached     <- comparable & logLik > logLik[selected] - 0.01
+  distinct    <- comparable & logLik <= logLik[selected] - 0.01
 
   return(list(
     selected      = selected,
@@ -498,7 +512,7 @@
 
   return(min(eigenvalue) > 0)
 }
-.sapmEm                         <- function(emFormula, dataset, survObject, covariates, family, components, caseWeights, posterior, iterations) {
+.sapmEm                         <- function(emFormula, dataset, survObject, covariates, family, components, caseWeights, posterior, iterations, constraint = NULL) {
 
   nObs          <- nrow(survObject)
   probabilities <- colSums(posterior * caseWeights) / sum(caseWeights)
@@ -515,7 +529,8 @@
       covariates = covariates,
       family     = family,
       weights    = posterior[, k] * caseWeights,
-      previous   = mSteps[[k]]
+      previous   = mSteps[[k]],
+      constraint = constraint
     )), silent = TRUE)
 
     # E-step: posterior probabilities of component membership
@@ -580,20 +595,74 @@
 
   return(unname(states))
 }
-.sapmMStep                      <- function(emFormula, dataset, covariates, family, weights, previous) {
+.sapmMStep                      <- function(emFormula, dataset, covariates, family, weights, previous, constraint = NULL) {
 
   # posterior probabilities can underflow to zero which is not allowed as a weight
   weights <- pmax(weights, 1e-10)
 
-  if (!is.null(family[["survreg"]])) {
+  if (!is.null(constraint) && is.null(family[["survreg"]])) {
+
+    bounds <- .sapmConstraintBounds(constraint, family, 1L, length(family[["pars"]]) + ncol(covariates))
+    fitCall <- list(
+      formula = emFormula,
+      data    = dataset,
+      weights = weights,
+      dist    = .sapmConstraintDistribution(family[["family"]], constraint, family),
+      method  = "L-BFGS-B",
+      lower   = bounds[["lower"]],
+      upper   = bounds[["upper"]],
+      hessian = FALSE,
+      control = list(maxit = 1000, factr = 1e5, ndeps = rep(1e-6, length(bounds[["lower"]])), fnscale = sum(weights), pgtol = 1e-6)
+    )
+    if (!is.null(previous))
+      fitCall[["inits"]] <- .sapmFeasibleInits(c(previous[["base"]], previous[["beta"]]), constraint, family, 1L)
+    else {
+      # flexsurvreg normally rescales times by case weights for its initializer.
+      # Tiny memberships can make those pseudo-times misleading; initialize this
+      # weighted gamma fit from the native initializer on actual observation times.
+      times <- .sapmObservedTimes(stats::model.response(stats::model.frame(emFormula, dataset)))
+      initial <- fitCall[["dist"]][["inits"]](t = times, mf = NULL, mml = NULL, aux = NULL)
+      fitCall[["inits"]] <- c(initial, rep(0, ncol(covariates)))
+    }
+    fit <- try(suppressWarnings(suppressMessages(do.call(flexsurv::flexsurvreg, fitCall))), silent = TRUE)
+    if (jaspBase::isTryError(fit)) {
+      # This weighted component fit supplies starts only. Native BFGS can backtrack
+      # through a nonfinite trial where L-BFGS-B aborts; project its result below.
+      fitCall[["method"]]  <- "BFGS"
+      fitCall[["lower"]]   <- NULL
+      fitCall[["upper"]]   <- NULL
+      fitCall[["control"]] <- list(maxit = 1000, reltol = 1e-10, ndeps = rep(1e-6, length(bounds[["lower"]])), fnscale = sum(weights))
+      fit <- suppressWarnings(suppressMessages(do.call(flexsurv::flexsurvreg, fitCall)))
+    }
+    base <- fit[["res"]][family[["pars"]], "est"]
+    beta <- fit[["res"]][fit[["covpars"]], "est"]
+
+    projected <- .sapmFeasibleInits(base, constraint, family, 1L)
+    if (family[["family"]] == "gamma")
+      projected[["rate"]] <- base[["rate"]] * (projected[["shape"]] / base[["shape"]])
+    base <- projected
+
+  } else if (!is.null(family[["survreg"]])) {
 
     # survreg evaluates weights non-standardly, the call needs to be constructed
-    fit <- suppressWarnings(do.call(survival::survreg, list(
+    fitCall <- list(
       formula = emFormula,
       data    = dataset,
       weights = weights,
       dist    = family[["survreg"]]
-    )))
+    )
+    if (is.null(constraint)) {
+      fit <- suppressWarnings(do.call(survival::survreg, fitCall))
+    } else {
+      fit <- try(suppressWarnings(do.call(survival::survreg, fitCall)), silent = TRUE)
+      minimumScale <- if (family[["family"]] == "lnorm") constraint[["naturalBound"]] else 1 / constraint[["naturalBound"]]
+      if (jaspBase::isTryError(fit) || any(!is.finite(stats::coef(fit))) || !is.finite(fit[["scale"]]) || fit[["scale"]] < minimumScale) {
+        # The public fixed-scale fit supplies feasible location/covariate starts
+        # without subtracting extreme component CDFs in flexsurvreg's likelihood.
+        fitCall[["scale"]] <- minimumScale
+        fit <- suppressWarnings(do.call(survival::survreg, fitCall))
+      }
+    }
 
     coefficients <- stats::coef(fit)
     base         <- switch(
@@ -713,10 +782,12 @@
 
   return(time)
 }
-.sapmNativeFit                  <- function(formula, dataset, options, family, components, mixture, inits, caseWeights, hessian = FALSE) {
+.sapmNativeFit                  <- function(formula, dataset, options, family, components, mixture, inits, caseWeights, hessian = FALSE, constraint = NULL) {
 
   hessianWarning <- FALSE
   warnings       <- character(0)
+  if (!hessian)
+    inits <- .sapmFeasibleInits(inits, constraint, family, components)
   fitCall        <- list(
     formula = formula,
     data    = dataset,
@@ -733,6 +804,23 @@
     fitCall[["anc"]] <- stats::setNames(rep(list(formula[-2]), components - 1), paste0(family[["location"]], 2:components))
   if (options[["weights"]] != "")
     fitCall[["weights"]] <- caseWeights
+
+  if (!is.null(constraint)) {
+    point <- .sapmConstraintPoint(inits, constraint, family, components)
+    if (!point[["feasible"]])
+      return(list(fit = try(stop(gettext("The initial parameters do not satisfy the minimum log-time standard deviation.")), silent = TRUE), hessianWarning = FALSE, warnings = warnings))
+    if (hessian) {
+      # BFGS with no bounds and maxit=0 evaluates the selected point without moving it.
+      # L-BFGS-B may take a step even with maxit=0; its bounds must not reach this call.
+      fitCall[["hessian"]] <- !any(point[["active"]])
+    } else {
+      bounds <- .sapmConstraintBounds(constraint, family, components, length(inits))
+      fitCall[["method"]]  <- "L-BFGS-B"
+      fitCall[["lower"]]   <- bounds[["lower"]]
+      fitCall[["upper"]]   <- bounds[["upper"]]
+      fitCall[["control"]] <- list(maxit = 1000, factr = 1e5, ndeps = rep(1e-6, length(inits)), fnscale = sum(caseWeights), pgtol = 1e-6)
+    }
+  }
 
   fit <- try(withCallingHandlers(
     suppressMessages(do.call(flexsurv::flexsurvreg, fitCall)),
@@ -1347,10 +1435,12 @@
   # add footnotes
   if (!is.null(attr(fit, "label")) && attr(fit, "label") != "")
     componentsTable$addFootnote(attr(fit, "label"))
+  for (message in .sapConstraintNote(fit))
+    componentsTable$addFootnote(message)
   componentsTable$addFootnote(gettext("The mean and the median are those of the fitted component distribution; they are not restricted to the observed follow-up."))
   if (anyNA(data[["est"]]))
     componentsTable$addFootnote(gettext("Some component means or medians are infinite or could not be evaluated numerically and are shown as missing."))
-  if (anyNA(data[["se"]]) || (options[["coefficientsConfidenceInterval"]] && anyNA(data[c("lower", "upper")])))
+  if (!.sapConstraintActive(fit) && (anyNA(data[["se"]]) || (options[["coefficientsConfidenceInterval"]] && anyNA(data[c("lower", "upper")]))))
     componentsTable$addFootnote(gettext("Some standard errors or confidence intervals could not be evaluated and are shown as missing."))
   componentsTable$addFootnote(gettext("Standard errors and confidence intervals are based on the delta method."))
   if (length(fit[["covpars"]]) > 0)
@@ -1385,17 +1475,20 @@
   }
 
   # delta method with a numerical Jacobian (covariate effects do not affect the baseline quantities)
-  estimate  <- quantities(estimates)
-  jacobian  <- matrix(0, length(estimate), length(estimates))
-  baseIndex <- setdiff(seq_along(estimates), fit[["covpars"]])
-  for (i in baseIndex) {
-    step          <- 1e-5 * max(abs(estimates[i]), 1)
-    upper         <- lower <- estimates
-    upper[i]      <- upper[i] + step
-    lower[i]      <- lower[i] - step
-    jacobian[, i] <- (quantities(upper) - quantities(lower)) / (2 * step)
+  estimate      <- quantities(estimates)
+  standardError <- rep(NA_real_, length(estimate))
+  if (!.sapConstraintActive(fit)) {
+    jacobian  <- matrix(0, length(estimate), length(estimates))
+    baseIndex <- setdiff(seq_along(estimates), fit[["covpars"]])
+    for (i in baseIndex) {
+      step          <- 1e-5 * max(abs(estimates[i]), 1)
+      upper         <- lower <- estimates
+      upper[i]      <- upper[i] + step
+      lower[i]      <- lower[i] - step
+      jacobian[, i] <- (quantities(upper) - quantities(lower)) / (2 * step)
+    }
+    standardError <- sqrt(pmax(diag(jacobian %*% fit[["cov"]] %*% t(jacobian)), 0))
   }
-  standardError <- sqrt(pmax(diag(jacobian %*% fit[["cov"]] %*% t(jacobian)), 0))
 
   estimate[!is.finite(estimate)]           <- NA
   standardError[!is.finite(standardError)] <- NA
@@ -1483,6 +1576,8 @@
   # add footnotes
   if (!is.null(attr(fit, "label")) && attr(fit, "label") != "")
     classificationTable$addFootnote(attr(fit, "label"))
+  for (message in .sapConstraintNote(fit))
+    classificationTable$addFootnote(message)
   classificationTable$addFootnote(gettextf("Observations are classified to the component with the highest posterior probability. The relative entropy of the classification is %1$.3f (values close to 1 indicate low uncertainty in the assignments).", entropy))
   for (message in .sapmFitMessages(fit, options))
     classificationTable$addFootnote(message, symbol = gettext("Warning:"))
@@ -1518,8 +1613,13 @@
 
   # add footnotes
   diagnosticsTable$addFootnote(gettext("Starts is the number of starting values that produced a solution and Replications the number of them that reached the reported solution (within 0.01 log-likelihood units)."))
-  diagnosticsTable$addFootnote(gettext("A candidate solution is degenerate when a component collapses on a few observations (fewer than 3 effective observations, a vanishing interquartile range, or a diverging parameter), or when optimization does not converge. The best non-degenerate candidate is selected. If all candidates are degenerate, the best of them is reported with a warning."))
+  if (options[["mixtureConstrainSpread"]])
+    diagnosticsTable$addFootnote(gettext("The converged candidate with the highest likelihood satisfying the spread bound is selected. Component-size and separation diagnostics are warnings and do not change this selection."))
+  else
+    diagnosticsTable$addFootnote(gettext("A candidate solution is degenerate when a component collapses on a few observations (fewer than 3 effective observations, a vanishing interquartile range, or a diverging parameter), or when optimization does not converge. The best non-degenerate candidate is selected. If all candidates are degenerate, the best of them is reported with a warning."))
   diagnosticsTable$addFootnote(gettext("Convergence and Hessian diagnostics refer to the selected candidate fit. Convergence does not rule out a local optimum or unreliable standard errors."))
+  for (message in unique(unlist(lapply(fit, .sapConstraintNote))))
+    diagnosticsTable$addFootnote(message)
   for (message in .sapCollectFitErrors(fit, options))
     diagnosticsTable$addFootnote(message, symbol = gettext("Error:"))
   for (message in .sapmSummaryMessages(fit, options)[["warnings"]])
@@ -1724,7 +1824,7 @@
 .sapmFitMessages                <- function(fit, options) {
 
   mixture  <- attr(fit, "mixture")
-  messages <- NULL
+  messages <- c(.sapConstraintWarning(fit), .sapNativeFitWarnings(fit))
 
   if (is.null(mixture))
     return(messages)
@@ -1748,6 +1848,8 @@
 
   if (mixture[["allDegenerate"]])
     messages <- c(messages, gettext("All candidate solutions were flagged as degenerate or failed to converge; the reported estimates may be unreliable. Consider fewer components or more starting values."))
+  else if (!is.null(attr(fit, "constraints")) && mixture[["selectedDegenerate"]])
+    messages <- c(messages, gettext("The selected solution triggered component diagnostics despite satisfying the spread bound. Inspect the component sizes and dispersion before interpreting the mixture."))
   if (!mixture[["allDegenerate"]] && is.finite(mixture[["minEvents"]]) && mixture[["minEvents"]] < 5)
     messages <- c(messages, gettextf("The smallest component is supported by %1$.1f effective events; such a component is weakly identified. Consider fewer components.", mixture[["minEvents"]]))
 
@@ -1780,17 +1882,23 @@
   isMixture      <- vapply(successfulFits, function(x) !is.null(attr(x, "mixture")), logical(1))
   mixtures       <- successfulFits[isMixture]
 
+  messages[["notes"]] <- unique(unlist(lapply(successfulFits, .sapConstraintNote)))
+  for (model in successfulFits[!isMixture]) {
+    message <- paste(.sapmFitMessages(model, options), collapse = " ")
+    if (message != "")
+      messages[["warnings"]] <- c(messages[["warnings"]], paste0(.sapmCellLabel(model, options), ": ", message))
+  }
 
   if (length(mixtures) == 0)
     return(messages)
 
   starts <- vapply(mixtures, function(x) attr(x, "mixture")[["starts"]], numeric(1))
-  messages[["notes"]] <- gettextf(
+  messages[["notes"]] <- c(messages[["notes"]], gettextf(
     "Mixture models were estimated by direct maximization of the likelihood from %1$s starting values per model (%2$s), each refined by %3$i EM iterations.",
     if (min(starts) == max(starts)) as.character(min(starts)) else gettextf("%1$i to %2$i", min(starts), max(starts)),
     .sapmStartLabels(options),
     options[["mixtureEmIterations"]]
-  )
+  ))
   if (options[["censoringType"]] == "counting")
     messages[["notes"]] <- c(messages[["notes"]], gettext("Left-truncated data: the EM algorithm provides starting values only; the estimates are from the direct maximization of the likelihood."))
 

@@ -22,7 +22,7 @@ import JASP
 
 Form
 {
-	info: qsTr("This analysis performs a parametric mixture survival analysis. The survival times are modeled as a finite mixture of components from the same parametric family. The likelihood is maximized directly from several starting values (each refined by a few EM iterations). The non-degenerate solution with the highest likelihood is reported. If all solutions are degenerate, the best of them is reported with a warning.")
+	info: mixtureConstrainSpread.checked ? qsTr("This analysis models survival times as a finite mixture of components from the same parametric family. Constrained maximum likelihood imposes the specified minimum standard deviation of log survival time in every component. Several starting values, each refined by EM iterations, are used; the converged solution with the highest likelihood satisfying the bound is reported.") : qsTr("This analysis performs a parametric mixture survival analysis. The survival times are modeled as a finite mixture of components from the same parametric family. The likelihood is maximized directly from several starting values (each refined by a few EM iterations). The non-degenerate solution with the highest likelihood is reported. If all solutions are degenerate, the best of them is reported with a warning.")
 
 	property bool	categoricalPredictionLevelsPossible:		factors.count > 0 && modelTerms.countVariables > 0
 	property bool	multipleComponentsSelected:				mixtureComponents.value === "all" || mixtureComponents.value === "bestAic" || mixtureComponents.value === "bestBic"
@@ -210,7 +210,9 @@ Form
 				{ label: qsTr("All"),								value: "all"},
 				{ label: qsTr("Best AIC"),							value: "bestAic"},
 				{ label: qsTr("Best BIC"),							value: "bestBic"}
-			]
+			].filter(function(item) {
+				return !mixtureConstrainSpread.checked || ["gamma", "logLogistic", "logNormal", "weibull", "all", "bestAic", "bestBic"].indexOf(item.value) >= 0
+			})
 		}
 
 		DropDown
@@ -1118,21 +1120,96 @@ Form
 			enabled:	distribution.value === "all" || distribution.value === "bestAic" || distribution.value === "bestBic"
 
 
-			CheckBox { name: "selectedParametricDistributionExponential";				label: qsTr("Exponential");						checked: true }
+			CheckBox
+			{
+				name: "selectedParametricDistributionExponential"
+				label: qsTr("Exponential")
+				checked: true
+				property bool supportedUnderConstraint: !mixtureConstrainSpread.checked
+				enabled: supportedUnderConstraint
+				onSupportedUnderConstraintChanged: if (!supportedUnderConstraint) checked = false
+				onCheckedChanged: if (checked && mixtureConstrainSpread && mixtureConstrainSpread.checked) checked = false
+			}
 			CheckBox { name: "selectedParametricDistributionGamma";						label: qsTr("Gamma");							checked: true }
-			CheckBox { name: "selectedParametricDistributionGeneralizedF";				label: qsTr("Generalized F");					checked: true }
-			CheckBox { name: "selectedParametricDistributionGeneralizedGamma";			label: qsTr("Generalized gamma");				checked: true }
-			CheckBox { name: "selectedParametricDistributionGompertz";					label: qsTr("Gompertz");						checked: true }
+			CheckBox
+			{
+				name: "selectedParametricDistributionGeneralizedF"
+				label: qsTr("Generalized F")
+				checked: true
+				property bool supportedUnderConstraint: !mixtureConstrainSpread.checked
+				enabled: supportedUnderConstraint
+				onSupportedUnderConstraintChanged: if (!supportedUnderConstraint) checked = false
+				onCheckedChanged: if (checked && mixtureConstrainSpread && mixtureConstrainSpread.checked) checked = false
+			}
+			CheckBox
+			{
+				name: "selectedParametricDistributionGeneralizedGamma"
+				label: qsTr("Generalized gamma")
+				checked: true
+				property bool supportedUnderConstraint: !mixtureConstrainSpread.checked
+				enabled: supportedUnderConstraint
+				onSupportedUnderConstraintChanged: if (!supportedUnderConstraint) checked = false
+				onCheckedChanged: if (checked && mixtureConstrainSpread && mixtureConstrainSpread.checked) checked = false
+			}
+			CheckBox
+			{
+				name: "selectedParametricDistributionGompertz"
+				label: qsTr("Gompertz")
+				checked: true
+				property bool supportedUnderConstraint: !mixtureConstrainSpread.checked
+				enabled: supportedUnderConstraint
+				onSupportedUnderConstraintChanged: if (!supportedUnderConstraint) checked = false
+				onCheckedChanged: if (checked && mixtureConstrainSpread && mixtureConstrainSpread.checked) checked = false
+			}
 			CheckBox { name: "selectedParametricDistributionLogLogistic";				label: qsTr("Log-logistic");					checked: true }
 			CheckBox { name: "selectedParametricDistributionLogNormal";					label: qsTr("Log-normal");						checked: true }
 			CheckBox { name: "selectedParametricDistributionWeibull";					label: qsTr("Weibull");							checked: true }
-			CheckBox { name: "selectedParametricDistributionGeneralizedGammaOriginal"; 	label: qsTr("Generalized gamma (original)");	checked: false }
-			CheckBox { name: "selectedParametricDistributionGeneralizedFOriginal"; 		label: qsTr("Generalized F (original)");		checked: false }
+			CheckBox
+			{
+				name: "selectedParametricDistributionGeneralizedGammaOriginal"
+				label: qsTr("Generalized gamma (original)")
+				checked: false
+				property bool supportedUnderConstraint: !mixtureConstrainSpread.checked
+				enabled: supportedUnderConstraint
+				onSupportedUnderConstraintChanged: if (!supportedUnderConstraint) checked = false
+				onCheckedChanged: if (checked && mixtureConstrainSpread && mixtureConstrainSpread.checked) checked = false
+			}
+			CheckBox
+			{
+				name: "selectedParametricDistributionGeneralizedFOriginal"
+				label: qsTr("Generalized F (original)")
+				checked: false
+				property bool supportedUnderConstraint: !mixtureConstrainSpread.checked
+				enabled: supportedUnderConstraint
+				onSupportedUnderConstraintChanged: if (!supportedUnderConstraint) checked = false
+				onCheckedChanged: if (checked && mixtureConstrainSpread && mixtureConstrainSpread.checked) checked = false
+			}
 		}
 
 		Group
 		{
 			title:		qsTr("Mixture")
+
+			CheckBox
+			{
+				id:			mixtureConstrainSpread
+				name:		"mixtureConstrainSpread"
+				label:		qsTr("Constrain component spread")
+				checked:	false
+				info: qsTr("Fit by constrained maximum likelihood with a minimum standard deviation of the natural logarithm of survival time in every component, including one-component models. Available for log-normal, Weibull, log-logistic, and gamma distributions; other distributions are deselected. When the bound is active, point estimates remain available but standard errors, confidence intervals, covariance estimates, and regular inferential tests are not reported.")
+
+				DoubleField
+				{
+					name:			"mixtureMinimumLogTimeSd"
+					label:			qsTr("Minimum log-time SD")
+					defaultValue:	0.1
+					min:			0
+					max:			100
+					inclusive:		JASP.MaxOnly
+					decimals:		6
+					info: qsTr("Set a positive lower bound, up to 100, on the standard deviation of the natural logarithm of survival time. Choose a minimum justified by the application and check sensitivity to other values; 0.1 is an editable preset, not a universal recommendation. The bound is unchanged when the units of survival time change. For delayed entry, it bounds the component distribution before conditioning on entry.")
+				}
+			}
 
 			IntegerField
 			{
@@ -1148,7 +1225,7 @@ Form
 			Group
 			{
 				title:		qsTr("Starting Values")
-				info: qsTr("Select the starting values of the mixture estimation. The likelihood is maximized directly from every selected starting value and the non-degenerate solution with the highest likelihood is reported. If all solutions are degenerate, the best of them is reported with a warning. More starting values make it more likely that the reported solution is the global maximum, at a proportionally higher computational cost.")
+				info: mixtureConstrainSpread.checked ? qsTr("Select the starting values of the constrained mixture estimation. The converged solution with the highest likelihood satisfying the minimum component spread is reported. More starting values reduce the risk of a local optimum at a higher computational cost.") : qsTr("Select the starting values of the mixture estimation. The likelihood is maximized directly from every selected starting value and the non-degenerate solution with the highest likelihood is reported. If all solutions are degenerate, the best of them is reported with a warning. More starting values make it more likely that the reported solution is the global maximum, at a proportionally higher computational cost.")
 
 				CheckBox
 				{
