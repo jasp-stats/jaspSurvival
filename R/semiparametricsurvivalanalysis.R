@@ -387,7 +387,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
 
   if (jaspBase::isTryError(fitNull)) {
-    estimatesTable$addFootnote(gettextf("Null model contains nuisance parameters: %s", paste(nullPredictors, collapse = ", ")))
+    estimatesTable$addFootnote(fitNull, symbol = gettext("The null model failed with the following message:"))
     estimates <- NULL
   } else
     estimates <- .saspCoxFitSummary(fitNull, options, "H\u2080")
@@ -405,6 +405,10 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   if (length(options[["strata"]]) > 0)
     estimatesTable$addFootnote(gettextf("Results are stratified via: %1$s.", paste0(options[["strata"]], collapse = ", ")))
+
+  nullPredictors <- .saGetPredictors(options, null = TRUE)
+  if (length(nullPredictors) != 0)
+    estimatesTable$addFootnote(gettextf("Null model contains nuisance parameters: %1$s", paste(nullPredictors, collapse = ", ")))
 
   estimatesTable$setData(estimates)
 
@@ -438,7 +442,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
 
   if (jaspBase::isTryError(fitNull)) {
-    hazardRatioTable$addFootnote(gettextf("Null model contains nuisance parameters: %s", paste(nullPredictors, collapse = ", ")))
+    hazardRatioTable$addFootnote(fitNull, symbol = gettext("The null model failed with the following message:"))
     estimates <- NULL
   } else
     estimates <- .saspCoxFitSummary(fitNull, options, "H\u2080", HR = TRUE)
@@ -453,6 +457,10 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   if (!is.null(estimates) && options[["vovkSellke"]])
     estimates$vsmpr <- VovkSellkeMPR(estimates$pval)
+
+  nullPredictors <- .saGetPredictors(options, null = TRUE)
+  if (length(nullPredictors) != 0)
+    hazardRatioTable$addFootnote(gettextf("Null model contains nuisance parameters: %1$s", paste(nullPredictors, collapse = ", ")))
 
   hazardRatioTable$setData(estimates)
 
