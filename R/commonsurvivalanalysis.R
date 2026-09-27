@@ -242,20 +242,12 @@
 }
 .sapGetFormula        <- function(options, modelTerms) {
 
-  predictors    <- .sapGetPredictors(modelTerms)
-  interceptTerm <- options[["includeIntercept"]]
-
-  survival <- .saGetSurv(options)
-
-  if (length(predictors) == 0 && !interceptTerm)
-    stop(gettext("At least one predictor, or an intercept, is needed to fit the model."))
-
-  if (length(predictors) == 0)
-    formula <- paste(survival, "~", "1")
-  else if (interceptTerm)
-    formula <- paste(survival, "~", paste(predictors, collapse = "+"))
-  else
-    formula <- paste(survival, "~", paste(predictors, collapse = "+"), "-1")
+  # flexsurv estimates a baseline distribution parameter in every model and
+  # removes the first design column as its intercept. Omitting the intercept
+  # from the formula would silently discard the first predictor instead.
+  predictors <- .sapGetPredictors(modelTerms)
+  survival   <- .saGetSurv(options)
+  formula    <- paste(survival, "~", if (length(predictors) == 0) "1" else paste(predictors, collapse = "+"))
 
   return(stats::as.formula(formula, env = parent.frame(1)))
 }

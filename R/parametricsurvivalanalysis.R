@@ -117,7 +117,7 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
   "selectedParametricDistributionGeneralizedGamma" ,"selectedParametricDistributionGompertz" ,"selectedParametricDistributionLogLogistic" ,
   "selectedParametricDistributionLogNormal" ,"selectedParametricDistributionWeibull" ,"selectedParametricDistributionGeneralizedGammaOriginal" ,
   "selectedParametricDistributionGeneralizedFOriginal",
-  "modelTerms", "includeIntercept",
+  "modelTerms",
   "includeFullDatasetInSubgroupAnalysis",
   # the CIs are not a simple multiplier of the standard error
   # as such, they need to be changed during the fitting process

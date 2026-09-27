@@ -252,13 +252,6 @@ Form
 			allowedColumns:		[]
 		}
 
-		CheckBox
-		{
-			name:		"includeIntercept"
-			label:		qsTr("Include intercept")
-			checked:	true
-		}
-
 		DropDown
 		{
 			id:					interpretModel

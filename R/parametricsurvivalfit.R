@@ -31,7 +31,7 @@
       # this does not contain `modelTerms` as the fits are updated only if the corresponding model changes
       "timeToEvent", "eventStatus", "eventIndicator", "censoringType",
       "factors", "covariates", "weights", "subgroup",
-      "distribution", "includeIntercept",
+      "distribution",
       "selectedParametricDistributionExponential" ,"selectedParametricDistributionGamma" ,"selectedParametricDistributionGeneralizedF" ,
       "selectedParametricDistributionGeneralizedGamma" ,"selectedParametricDistributionGompertz" ,"selectedParametricDistributionLogLogistic" ,
       "selectedParametricDistributionLogNormal" ,"selectedParametricDistributionWeibull" ,"selectedParametricDistributionGeneralizedGammaOriginal" ,
