@@ -267,11 +267,9 @@
   # add "strata" calls
   for (i in seq_along(options[["strata"]])) {
     for (j in seq_along(modelTerms)) {
-      modelTerms[[j]]$components <- gsub(
-        options[["strata"]][[i]],
-        paste0("strata(", options[["strata"]][[i]], ")"),
-        modelTerms[[j]]$components
-      )
+      components <- modelTerms[[j]]$components
+      components[components == options[["strata"]][[i]]] <- paste0("strata(", options[["strata"]][[i]], ")")
+      modelTerms[[j]]$components <- components
     }
   }
 
@@ -324,7 +322,7 @@
     if (options[["frailtyMethod"]] != "fixed") ""
     else if (options[["frailtyMethodFixed"]] == "df")    paste0(", df = ",    options[["frailtyMethodFixedDf"]])
     else if (options[["frailtyMethodFixed"]] == "theta") paste0(", theta = ", options[["frailtyMethodFixedTheta"]]),
-    if (options[["frailtyMethod"]] == "t")  paste0("tdf = ", options[["frailtyMethodTDf"]]) else ""
+    if (options[["frailtyDistribution"]] == "t") paste0(", tdf = ", options[["frailtyMethodTDf"]]) else ""
   )
 
   return(frailty)

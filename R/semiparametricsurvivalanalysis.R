@@ -55,7 +55,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   return()
 }
 
-.saspDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "censoringType", "factors", "covariates", "weights",
+.saspDependencies <- c("timeToEvent", "intervalStart", "intervalEnd", "eventStatus", "eventIndicator", "censoringType", "factors", "covariates", "weights",
                        "strata", "id", "cluster",
                        "frailty", "frailtyDistribution", "frailtyMethod", "frailtyMethodTDf", "frailtyMethodFixed", "frailtyMethodFixedTheta",  "frailtyMethodFixedDf",
                        "modelTerms", "method")
@@ -74,6 +74,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     fit <- try(coxph(
       formula = .saGetFormula(options, type = "Cox", null = FALSE),
       data    = dataset,
+      x       = TRUE,
       method  = options[["method"]],
       # id      = if (options[["id"]] != "")      dataset[[options[["id"]]]],
       cluster = if (options[["cluster"]] != "") dataset[[options[["cluster"]]]],
@@ -124,8 +125,10 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   fit <- jaspResults[["fit"]][["object"]]
 
-  if (jaspBase::isTryError(fit))
+  if (jaspBase::isTryError(fit)) {
+    jaspResults[["fitTest"]]$object <- fit
     return()
+  }
 
   fitTest <- try(cox.zph(
     fit       = fit,
@@ -155,12 +158,25 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   testsTable$addColumnInfo(name = "df",       title = gettext("df"),           type = if (.saspHasFrailty(options)) "number" else "integer")
   testsTable$addColumnInfo(name = "p",        title = gettext("p"),            type = "pvalue")
 
+  if (!.saSurvivalReady(options))
+    return()
+
   if (length(options[["factors"]]) == 0 && length(options[["covariates"]]) == 0) {
     testsTable$addFootnote(gettext("At least one factor or covariate needs to be specified"))
     return()
   }
 
-  fit        <- jaspResults[["fit"]][["object"]]
+  fit <- jaspResults[["fit"]][["object"]]
+  if (jaspBase::isTryError(fit)) {
+    testsTable$setError(gettextf("The model failed with the following message: %1$s.", fit))
+    return()
+  }
+
+  if (length(stats::coef(fit)) == 0) {
+    testsTable$addFootnote(gettext("At least one factor or covariate needs to be specified"))
+    return()
+  }
+
   fitSummary <- summary(fit)
 
   if (options[["testsLikelihoodRatio"]]) {
@@ -387,7 +403,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
 
   if (jaspBase::isTryError(fitNull)) {
-    estimatesTable$addFootnote(gettextf("Null model contains nuisance parameters: %s", paste(nullPredictors, collapse = ", ")))
+    estimatesTable$addFootnote(gettextf("The null model failed with the following message: %1$s.", fitNull))
     estimates <- NULL
   } else
     estimates <- .saspCoxFitSummary(fitNull, options, "H\u2080")
@@ -438,7 +454,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
 
   if (jaspBase::isTryError(fitNull)) {
-    hazardRatioTable$addFootnote(gettextf("Null model contains nuisance parameters: %s", paste(nullPredictors, collapse = ", ")))
+    hazardRatioTable$addFootnote(gettextf("The null model failed with the following message: %1$s.", fitNull))
     estimates <- NULL
   } else
     estimates <- .saspCoxFitSummary(fitNull, options, "H\u2080", HR = TRUE)
@@ -450,9 +466,6 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   estimates <- rbind(estimates, .saspCoxFitSummary(fit, options, "H\u2081", HR = TRUE))
 
-
-  if (!is.null(estimates) && options[["vovkSellke"]])
-    estimates$vsmpr <- VovkSellkeMPR(estimates$pval)
 
   hazardRatioTable$setData(estimates)
 
@@ -513,15 +526,22 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   if (jaspBase::isTryError(fitTest)) {
     surivalPlot <- createJaspPlot()
-    surivalPlot$setError(gettextf("The model test failed with the following message: %1$s", fitTest))
     proportionalHazardsPlots[["waitingPlot"]] <- surivalPlot
+    surivalPlot$setError(gettextf("The model test failed with the following message: %1$s", fitTest))
     return()
   }
 
-  for (i in 1:(nrow(fitTest$table) - 1)) {
+  for (i in seq_len(nrow(fitTest$table) - 1)) {
 
     tempVariable    <- rownames(fitTest$table)[i]
-    tempFitTestPlot <- plot(fitTest, plot = FALSE, var = tempVariable)
+    tempFitTestPlot <- try(plot(fitTest, plot = FALSE, var = tempVariable))
+
+    if (jaspBase::isTryError(tempFitTestPlot)) {
+      tempJaspPlot <- createJaspPlot(title = .saTermNames(tempVariable, c(options[["covariates"]], options[["factors"]])))
+      proportionalHazardsPlots[[paste0("plot", i)]] <- tempJaspPlot
+      tempJaspPlot$setError(tempFitTestPlot)
+      next
+    }
 
     # adapted from the survival:::plot.cox.zph
     tempDfPoints <- data.frame(
