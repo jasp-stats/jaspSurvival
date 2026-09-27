@@ -141,7 +141,7 @@ Form
 				values:
 				[
 					{ label: qsTr("Default"),		value: "default"},
-					{ label: qsTr("Quantilies"),	value: "quantiles"},
+					{ label: qsTr("Quantiles"),	value: "quantiles"},
 					{ label: qsTr("Fixed size"),	value: "fixedSize"}
 				]
 			}

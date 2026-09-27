@@ -339,7 +339,7 @@
 
   timeSteps <- switch(
     options[["lifeTableStepsType"]],
-    "quantiles" = seq(from = min(times), to = max(times), length.out = options[["lifeTableStepsNumber"]]),
+    "quantiles" = stats::quantile(times, probs = seq(0, 1, length.out = options[["lifeTableStepsNumber"]]), names = FALSE),
     "fixedSize" = seq(from = options[["lifeTableStepsFrom"]], to = options[["lifeTableStepsTo"]], by = options[["lifeTableStepsSize"]])
   )
 
