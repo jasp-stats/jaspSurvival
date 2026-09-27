@@ -12,10 +12,12 @@ Encoding: UTF-8
 Depends:
   survival
 Imports:
+  ggplot2,
   ggsurvfit,
   flexsurv,
   jaspBase,
-  jaspGraphs
+  jaspGraphs,
+  scales
 Suggests:
   testthat
 Remotes:
