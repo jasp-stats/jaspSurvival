@@ -169,7 +169,7 @@
   outputDependencies <- c(.sapGetDependencies(options), "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "survivalProbabilityTable", "hazardTable", "cumulativeHazardTable", "restrictedMeanSurvivalTimeTable", "lifeTimeMergeTablesAcrossMeasures",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
-                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
+                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom", "survivalProbabilityAsFailureProbability"
   )
 
   .sapSectionWrapper(
@@ -416,8 +416,7 @@
     # transform survival to failure if requested
     if (type == "survival" && options[["survivalProbabilityAsFailureProbability"]]) {
       data[[i]]$estimate <- 1 - data[[i]]$estimate
-      data[[i]]$lCi      <- 1 - data[[i]]$lCi
-      data[[i]]$uCi      <- 1 - data[[i]]$uCi
+      data[[i]][c("lCi", "uCi")] <- 1 - data[[i]][c("uCi", "lCi")]
     }
   }
 
@@ -464,8 +463,7 @@
   # transform survival to failure if requested
   if (type == "survival" && options[["survivalProbabilityAsFailureProbability"]]) {
     tempData$estimate <- 1 - tempData$estimate
-    tempData$lCi      <- 1 - tempData$lCi
-    tempData$uCi      <- 1 - tempData$uCi
+    tempData[c("lCi", "uCi")] <- 1 - tempData[c("uCi", "lCi")]
   }
 
   return(tempData)
@@ -646,8 +644,7 @@
 
       if (type == "survival" && options[["survivalProbabilityAsFailureProbability"]]) {
         data[[j]]$estimate <- 1 - data[[j]]$estimate
-        data[[j]]$lCi      <- 1 - data[[j]]$lCi
-        data[[j]]$uCi      <- 1 - data[[j]]$uCi
+        data[[j]][c("lCi", "uCi")] <- 1 - data[[j]][c("uCi", "lCi")]
       }
 
       # add factor level
@@ -799,8 +796,7 @@
 
   if (failureProbability) {
     kmTable$estimate <- 1 - kmTable$estimate
-    kmTable$lCi      <- 1 - kmTable$lCi
-    kmTable$uCi      <- 1 - kmTable$uCi
+    kmTable[c("lCi", "uCi")] <- 1 - kmTable[c("uCi", "lCi")]
   }
 
   # transform into a step function
