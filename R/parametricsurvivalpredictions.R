@@ -828,12 +828,12 @@
       switch(
         options[["plotTheme"]],
         "whiteBackground" = ggplot2::theme_bw()       + ggplot2::theme(legend.position = options[["plotLegend"]]),
-        "light"           = ggplot2::theme_light()    + ggplot2::theme(legend.position = options[["plotLegend"]]),,
+        "light"           = ggplot2::theme_light()    + ggplot2::theme(legend.position = options[["plotLegend"]]),
         "detailed"        = ggplot2::theme_light()    + ggplot2::theme(legend.position = options[["plotLegend"]]),
         "minimal"         = ggplot2::theme_minimal()  + ggplot2::theme(legend.position = options[["plotLegend"]]),
         "pubr"            = jaspGraphs::themePubrRaw(legend = options[["plotLegend"]]),
         "apa"             = jaspGraphs::themeApaRaw(legend.pos = switch(
-          options[["plotTheme"]],
+          options[["plotLegend"]],
           "none"   = "none",
           "bottom" = "bottommiddle",
           "right"  = "bottomright",
@@ -855,7 +855,7 @@
   } else if (options[["survivalProbabilityPlotTransformXAxis"]] == "log") {
     # log transformation
     atTitle <- gettextf("%1$s (log scale)", atTitle)
-    plot <- plot + jaspGraphs::scale_x_continuous(breaks = xBreaks, limits = range(xBreaks), trans = "log", oob = scales::oob_keep)
+    plot <- plot + jaspGraphs::scale_x_continuous(breaks = xBreaks, limits = range(xBreaks), trans = "log", transform = "log", oob = scales::oob_keep)
 
   }
 
@@ -899,14 +899,14 @@
       yRange[1] <- max(0.01, yRange[1])
       yBreaks   <- exp(seq(log(yRange[1]), log(yRange[2]), length.out = 7))
 
-      plot <- plot + jaspGraphs::scale_y_continuous(breaks = yBreaks, limits = yRange, oob = scales::oob_keep, trans = "log")
+      plot <- plot + jaspGraphs::scale_y_continuous(breaks = yBreaks, limits = yRange, oob = scales::oob_keep, trans = "log", transform = "log")
 
     }
 
   } else if (options[["survivalProbabilityPlotTransformYAxis"]] == "logmlogmp") {
     # log-log transformation
-    logmlogmp    <- function(x) log(-log(1-x))
-    logmlogmpInv <- function(x) exp(-exp(x)) * (exp(exp(x))-1)
+    logmlogmp    <- function(x) log(-log1p(-x))
+    logmlogmpInv <- function(x) -expm1(-exp(x))
     estimateTitle <- gettextf("%1$s (log(-log(1-p)) scale)", estimateTitle)
 
     if (options[["plotTheme"]] == "detailed") {
@@ -926,10 +926,11 @@
       yRange[1] <- max(0.01, yRange[1])
       yRange[2] <- min(0.99, yRange[2])
       yBreaks   <- logmlogmpInv(seq(logmlogmp(yRange[2]), logmlogmp(yRange[1]), length.out = 7))
+      probabilityTransform <- scales::new_transform(name = "logmlogp", transform = logmlogmp, inverse = logmlogmpInv)
 
       plot <- plot + jaspGraphs::scale_y_continuous(
         breaks = (yBreaks), limits = (yRange), oob = scales::oob_keep,
-        trans = scales::new_transform(name = "logmlogp", transform = logmlogmp, inverse = logmlogmpInv)
+        trans = probabilityTransform, transform = probabilityTransform
       )
     }
   }
