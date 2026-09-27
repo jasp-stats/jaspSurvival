@@ -44,8 +44,13 @@
 
   # clean from NAs
   if (options[["censoringType"]] == "interval") {
+    if (any(dataset[[options[["intervalStart"]]]] == Inf, na.rm = TRUE) ||
+        any(dataset[[options[["intervalEnd"]]]] == -Inf, na.rm = TRUE))
+      .quitAnalysis(gettext("An open interval may use negative infinity for its start or positive infinity for its end, but not the reverse."))
+
     # !!! interval data use NA's in the interval indication !!!
-    keep <- stats::complete.cases(dataset[setdiff(colnames(dataset), timeVariable)])
+    keep <- stats::complete.cases(dataset[setdiff(colnames(dataset), timeVariable)]) &
+      (is.finite(dataset[[options[["intervalStart"]]]]) | is.finite(dataset[[options[["intervalEnd"]]]]))
     dataset <- dataset[keep, ]
     dataset <- droplevels(dataset)
 
@@ -61,24 +66,31 @@
   }
   attr(dataset, "missingObservations") <- nOriginal - nrow(dataset)
 
+  if (nrow(dataset) == 0)
+    .quitAnalysis(gettext("No observations remain after excluding missing values."))
+
   # check of errors
   .hasErrors(
     dataset                      = dataset,
-    type                         = c("negativeValues"),
+    type                         = c("negativeValues", "infinity"),
     negativeValues.target        = c(timeVariable, weightsVariable),
+    infinity.target              = c(timeVariable, weightsVariable),
     exitAnalysisIfErrors         = TRUE
   )
 
   # check that interval start < end
   if (options[["censoringType"]] == "counting") {
-    if (any(dataset[[options[["intervalStart"]]]] > dataset[[options[["intervalEnd"]]]]))
+    if (any(dataset[[options[["intervalStart"]]]] >= dataset[[options[["intervalEnd"]]]]))
       .quitAnalysis(gettextf("The end time must be larger than the start time."))
+  } else if (options[["censoringType"]] == "interval") {
+    if (any(dataset[[options[["intervalStart"]]]] > dataset[[options[["intervalEnd"]]]], na.rm = TRUE))
+      .quitAnalysis(gettext("The interval end must be greater than or equal to the interval start."))
   }
 
   if (!is.null(covariatesVariable) && length(covariatesVariable) > 0)
     .hasErrors(
       dataset                      = dataset,
-      type                         = c("infinity", "observations", "variance", "varCovData"),
+      type                         = c("infinity", "observations", "variance", if (length(covariatesVariable) > 1) "varCovData"),
       all.target                   = covariatesVariable,
       varCovData.corFun            = stats::cov,
       observations.amount          = "< 2",
@@ -88,7 +100,7 @@
   if (!is.null(subgroupVariable))
     .hasErrors(
       dataset                      = dataset,
-      type                         = c("observations", "variance"),
+      type                         = c("observations"),
       all.target                   = subgroupVariable,
       observations.amount          = "< 2",
       exitAnalysisIfErrors         = TRUE
@@ -404,7 +416,8 @@
     return()
 
   censoringSummaryTable <- createJaspTable(title = gettext("Censoring Summary"))
-  censoringSummaryTable$dependOn(c("censoringType", "timeToEvent", "eventStatus", "eventIndicator", "intervalStart", "intervalEnd", "weights", "subgroup", "censoringSummary"))
+  censoringSummaryTable$dependOn(c("censoringType", "timeToEvent", "eventStatus", "eventIndicator", "intervalStart", "intervalEnd", "weights", "subgroup", "censoringSummary",
+                                  "covariates", "factors", "strata", "cluster", "frailty"))
   censoringSummaryTable$position <- 0
   jaspResults[["censoringSummaryTable"]] <- censoringSummaryTable
 
