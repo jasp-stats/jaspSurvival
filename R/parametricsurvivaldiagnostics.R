@@ -127,11 +127,11 @@
   # extract the dataset and compute residuals
   dataset <- attr(fit, "dataset")
   time    <- .saExtractSurvTimes(dataset, options)
-  res     <- residuals(fit, type = switch(
-    options[["residualPlotResidualType"]],
-    "response" = "response",
-    "coxSnell" = "coxsnell"
-  ))
+  res     <- .sapResiduals(fit, options)
+  if (jaspBase::isTryError(res)) {
+    tempPlot$setError(conditionMessage(attr(res, "condition")))
+    return(tempPlot)
+  }
 
   tempPlot$plotObject <- try(.saspResidualsPlot(time, res, gettext("Time"), switch(
     options[["residualPlotResidualType"]],
@@ -153,11 +153,11 @@
   # the predictors of mixture models are repeated for the location parameter of each component
   if (!is.null(attr(fit, "mixture")))
     predictorsFit <- predictorsFit[, fit[["mx"]][[fit[["dlist"]][["location"]]]], drop = FALSE]
-  res           <- residuals(fit, type = switch(
-    options[["residualPlotResidualType"]],
-    "response" = "response",
-    "coxSnell" = "coxsnell"
-  ))
+  res <- .sapResiduals(fit, options)
+  if (jaspBase::isTryError(res)) {
+    residualPlotResidualVsPredictors$setError(conditionMessage(attr(res, "condition")))
+    return(residualPlotResidualVsPredictors)
+  }
 
   for (i in seq_len(ncol(predictorsFit))) {
     tempPredictorName <- .saTermNames(colnames(predictorsFit)[i], variables = c(options[["covariates"]], options[["factors"]]))
@@ -185,11 +185,11 @@
 
   # extract the dataset and compute residuals
   pred    <- try(unlist(predict(fit)))
-  res     <- residuals(fit, type = switch(
-    options[["residualPlotResidualType"]],
-    "response" = "response",
-    "coxSnell" = "coxsnell"
-  ))
+  res     <- .sapResiduals(fit, options)
+  if (jaspBase::isTryError(res)) {
+    tempPlot$setError(conditionMessage(attr(res, "condition")))
+    return(tempPlot)
+  }
 
   if (jaspBase::isTryError(pred)) {
     tempPlot$setError(gettext("The model failed to produce predictions. Consider simplifying the model."))
@@ -212,11 +212,11 @@
     return(tempPlot)
 
   # extract the dataset and compute residuals
-  res     <- residuals(fit, type = switch(
-    options[["residualPlotResidualType"]],
-    "response" = "response",
-    "coxSnell" = "coxsnell"
-  ))
+  res <- .sapResiduals(fit, options)
+  if (jaspBase::isTryError(res)) {
+    tempPlot$setError(conditionMessage(attr(res, "condition")))
+    return(tempPlot)
+  }
 
   tempPlot$plotObject <- try(jaspGraphs::jaspHistogram(res, xName =switch(
     options[["residualPlotResidualType"]],
@@ -225,4 +225,19 @@
   )))
 
   return(tempPlot)
+}
+.sapResiduals <- function(fit, options) {
+
+  # flexsurv cannot compute Cox-Snell residuals from interval-censored outcomes.
+  # Keep an unsupported diagnostic from aborting the remaining analysis output.
+  return(try({
+    if (options[["censoringType"]] == "interval" && options[["residualPlotResidualType"]] == "coxSnell")
+      stop(gettext("Cox-Snell residuals are not available for interval-censored data."), call. = FALSE)
+
+    residuals(fit, type = switch(
+      options[["residualPlotResidualType"]],
+      "response" = "response",
+      "coxSnell" = "coxsnell"
+    ))
+  }, silent = TRUE))
 }

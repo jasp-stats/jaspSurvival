@@ -786,7 +786,7 @@ Form
 			{
 				name:		"residualPlotResidualVsPredicted"
 				label:		qsTr("Residuals vs. predicted survival")
-				info: qsTr("Plot residuals versus predicted survival probabilities.")
+				info: qsTr("Plot residuals versus predicted mean survival times.")
 			}
 
 			CheckBox
