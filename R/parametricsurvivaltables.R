@@ -336,6 +336,9 @@
   # add footnotes
   if (!is.null(attr(fit, "label")))
     covarianceMatrixTableTable$addFootnote(attr(fit, "label"))
+  covarianceMatrixTableTable$addFootnote(gettext("The covariance matrix uses the estimation scale: distribution parameters constrained to be positive are log-transformed. This scale can differ from the coefficients table."))
+  if (!is.null(attr(fit, "mixture")))
+    covarianceMatrixTableTable$addFootnote(gettext("The v parameters are conditional stick-breaking weights on the logit scale, not the component mixing probabilities reported in the coefficients table."))
 
   covarianceMatrixTableTable$setData(data)
   covarianceMatrixTableTable$showSpecifiedColumnsOnly <- TRUE
