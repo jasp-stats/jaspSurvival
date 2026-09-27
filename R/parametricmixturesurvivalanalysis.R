@@ -450,6 +450,14 @@
     nrow = nrow(survObject)
   ))
 }
+.sapmLogSumExp                  <- function(x) {
+
+  maximum <- Reduce(pmax, lapply(seq_len(ncol(x)), function(k) x[, k]))
+  out     <- maximum + log(rowSums(exp(x - maximum)))
+  out[!is.finite(maximum)] <- maximum[!is.finite(maximum)]
+
+  return(out)
+}
 .sapmPosteriorProbabilities     <- function(family, survObject, parameters, probabilities) {
 
   # posterior component membership of every observation
@@ -1037,20 +1045,13 @@
       probabilities = .sapmStickBreaking(if (components > 1) do.call(cbind, arguments[weightPars]), n)
     ))
   }
-  logSumExp      <- function(x) {
-    maximum <- Reduce(pmax, lapply(seq_len(ncol(x)), function(k) x[, k]))
-    out     <- maximum + log(rowSums(exp(x - maximum)))
-    out[!is.finite(maximum)] <- maximum[!is.finite(maximum)]
-    return(out)
-  }
-
   dMixture <- function(x, ..., log = FALSE) {
     arguments <- splitArguments(list(...), length(x))
     x         <- rep_len(x, arguments[["n"]])
     logs      <- vapply(seq_len(components), function(k) {
       log(arguments[["probabilities"]][, k]) + do.call(family[["d"]], c(list(x), arguments[["components"]][[k]], list(log = TRUE)))
     }, numeric(arguments[["n"]]))
-    out       <- logSumExp(matrix(logs, nrow = arguments[["n"]]))
+    out       <- .sapmLogSumExp(matrix(logs, nrow = arguments[["n"]]))
     return(if (log) out else exp(out))
   }
   pMixture <- function(q, ..., lower.tail = TRUE, log.p = FALSE) {
@@ -1064,30 +1065,49 @@
     logs      <- vapply(seq_len(components), function(k) {
       log(arguments[["probabilities"]][, k]) + do.call(family[["p"]], c(list(q), arguments[["components"]][[k]], list(lower.tail = lower.tail, log.p = TRUE)))
     }, numeric(arguments[["n"]]))
-    return(logSumExp(matrix(logs, nrow = arguments[["n"]])))
+    return(.sapmLogSumExp(matrix(logs, nrow = arguments[["n"]])))
   }
   qMixture <- function(p, ..., lower.tail = TRUE, log.p = FALSE) {
     if (log.p)
       p <- exp(p)
     if (!lower.tail)
       p <- 1 - p
-    arguments <- splitArguments(list(...), length(p))
-    p         <- rep_len(p, arguments[["n"]])
-    # the mixture quantile lies between the smallest and the largest component quantile (found by bisection)
-    bounds    <- matrix(vapply(seq_len(components), function(k) {
-      do.call(family[["q"]], c(list(p), arguments[["components"]][[k]]))
-    }, numeric(arguments[["n"]])), nrow = arguments[["n"]])
-    lower     <- Reduce(pmin, lapply(seq_len(components), function(k) bounds[, k]))
-    upper     <- Reduce(pmax, lapply(seq_len(components), function(k) bounds[, k]))
-    for (i in seq_len(100)) {
-      middle <- (lower + upper) / 2
-      below  <- do.call(pMixture, c(list(middle), list(...))) < p
-      lower  <- ifelse(below, middle, lower)
-      upper  <- ifelse(below, upper, middle)
+    arguments <- list(...)
+    n         <- max(length(p), lengths(arguments))
+    arguments <- lapply(arguments, rep_len, length.out = n)
+    p         <- rep_len(p, n)
+    out       <- rep(NA_real_, n)
+    out[which(p == 0)] <- 0
+    out[which(p == 1)] <- Inf
+
+    # Negative Gompertz shapes can leave a cure fraction. Quantiles at or above
+    # the finite-event probability are infinite, rather than numerical failures.
+    limit    <- do.call(pMixture, c(list(q = Inf), arguments))
+    interior <- is.finite(p) & p > 0 & p < 1 & is.finite(limit)
+    out[which(interior & p >= limit)] <- Inf
+    index <- which(interior & p < limit)
+    if (length(index) == 0)
+      return(out)
+
+    parameters <- lapply(arguments, function(x) x[index])
+    # Invert on log time with flexsurv's native solver so units do not set the root tolerance.
+    logTimeCdf <- function(q, ...) pMixture(exp(q), ...)
+    quantiles  <- try(do.call(flexsurv::qgeneric, c(list(pdist = logTimeCdf, p = p[index]), parameters)), silent = TRUE)
+    if (!inherits(quantiles, "try-error")) {
+      quantiles   <- exp(quantiles)
+      probability <- do.call(pMixture, c(list(q = quantiles), parameters))
+      upperTail   <- p[index] > 0.5
+      if (any(upperTail)) {
+        survival <- do.call(pMixture, c(list(q = quantiles, lower.tail = FALSE), parameters))
+        probability[upperTail] <- survival[upperTail]
+      }
+      target   <- ifelse(upperTail, 1 - p[index], p[index])
+      accurate <- is.finite(quantiles) & quantiles > 0 & is.finite(probability) & abs(probability - target) <= 1e-7 * target
+      out[index[accurate]] <- quantiles[accurate]
     }
-    out <- (lower + upper) / 2
-    out[p <= 0] <- 0
-    out[p >= 1] <- Inf
+    if (anyNA(out[index]))
+      warning(gettext("Some mixture quantiles could not be evaluated accurately and are shown as missing."), call. = FALSE)
+
     return(out)
   }
   # the restricted mean survival time and the mean are mixtures of the component quantities (without left-truncation)
