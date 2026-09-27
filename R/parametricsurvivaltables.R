@@ -97,7 +97,7 @@
 }
 .sapCoefficientsCovarianceMatrixTable <- function(jaspResults, options) {
 
-  if (!is.null(jaspResults[["covarianceMatrixTableTable"]]))
+  if (!is.null(jaspResults[["coefficientsCovarianceMatrixTable"]]))
     return()
 
   # the extract function automatically groups models by subgroup / distribution

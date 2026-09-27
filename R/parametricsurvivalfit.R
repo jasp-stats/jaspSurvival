@@ -29,7 +29,7 @@
     fitContainer <- createJaspState()
     fitContainer$dependOn(c(
       # this does not contain `modelTerms` as the fits are updated only if the corresponding model changes
-      "timeToEvent", "eventStatus", "eventIndicator", "censoringType",
+      "intervalStart", "intervalEnd", "timeToEvent", "eventStatus", "eventIndicator", "censoringType",
       "factors", "covariates", "weights", "subgroup",
       "distribution",
       "selectedParametricDistributionExponential" ,"selectedParametricDistributionGamma" ,"selectedParametricDistributionGeneralizedF" ,
@@ -147,16 +147,18 @@
     if (length(out) >= i) {
 
       previousTerms  <- attr(out[[i]], "modelTerms")
-      curentTerms    <- options[["modelTerms"]][[i]]
+      currentTerms   <- options[["modelTerms"]][[i]]
 
       # check without a title - allow renaming without re-fitting
-      curentTitle    <- curentTerms[["title"]]
+      currentTitle   <- currentTerms[["title"]]
       previousTerms$title <- ""
-      curentTerms$title   <- ""
+      currentTerms$title  <- ""
 
-      if (isTRUE(all.equal(previousTerms, curentTerms))) {
+      if (isTRUE(all.equal(previousTerms, currentTerms))) {
         # everything but the title is the same -> relabel
-        attr(out[[i]], "label") <- curentTitle
+        attr(out[[i]], "label")      <- currentTitle
+        attr(out[[i]], "modelTitle") <- currentTitle
+        attr(out[[i]], "modelTerms") <- options[["modelTerms"]][[i]]
         next
       }
 
@@ -164,10 +166,13 @@
       if (i > 1) {
         simplerTerms       <- attr(out[[i-1]], "modelTerms")
         simplerTerms$title <- ""
-        if (isTRUE(all.equal(previousTerms, simplerTerms))) {
+        if (isTRUE(all.equal(currentTerms, simplerTerms))) {
           # everything but the title is the same -> relabel
-          out[[i]]                <- out[[i-1]]
-          attr(out[[i]], "label") <- curentTitle
+          out[[i]]                     <- out[[i-1]]
+          attr(out[[i]], "label")       <- currentTitle
+          attr(out[[i]], "modelTitle")  <- currentTitle
+          attr(out[[i]], "modelId")     <- options[["modelTerms"]][[i]][["name"]]
+          attr(out[[i]], "modelTerms")  <- options[["modelTerms"]][[i]]
           next
         }
       }
