@@ -75,7 +75,7 @@ Form
 			visible:			censoringTypeRight.checked
 			property bool active:	censoringTypeRight.checked
 			onActiveChanged: 		if (!active && count > 0) itemDoubleClicked(0)
-			info: qsTr("Select the variable that represents the time until the event or censoring occurs. Only available when Censoring Type is set to Right or Counting.")
+			info: qsTr("Select the variable that represents the time until the event or censoring occurs. Only available when Censoring Type is set to Right.")
 		}
 
 		AssignedVariablesList
@@ -150,7 +150,7 @@ Form
 			title:					qsTr("Censoring Type")
 			radioButtonsOnSameRow:	true
 			columns:				3
-			info: qsTr("Select the type of censoring in your data: right, left, or interval censoring.")
+			info: qsTr("Select right-censored data, counting-process data with delayed entry, or interval-censored data.")
 
 			RadioButton
 			{
@@ -390,10 +390,10 @@ Form
 				name:		"predictionsSurvivalTimeStepsType"
 				id:			predictionsSurvivalTimeStepsType
 				label:		qsTr("Steps type")
-				info: qsTr("Select the method to define intervals for the life table: Default, Quantiles, or Custom.")
+				info: qsTr("Select the probabilities at which survival times are predicted: Quantiles, Sequence, or Custom.")
 				values:
 				[
-					{ label: qsTr("Quantilies"),	value: "quantiles"},
+					{ label: qsTr("Quantiles"),	value: "quantiles"},
 					{ label: qsTr("Sequence"),		value: "sequence"},
 					{ label: qsTr("Custom"),		value: "custom"}
 				]
@@ -406,7 +406,7 @@ Form
 				defaultValue:	10
 				min:			2
 				visible:		predictionsSurvivalTimeStepsType.value === "quantiles"
-				info: qsTr("Specify the number of quantiles of the predicted surival when using Quantiles as the steps type.")
+				info: qsTr("Specify the number of predicted survival-time quantiles when using Quantiles as the steps type.")
 			}
 
 			DoubleField
@@ -664,10 +664,10 @@ Form
 				name:		"predictionsLifeTimeStepsType"
 				id:			predictionsLifeTimeStepsType
 				label:		qsTr("Steps type")
-				info: qsTr("Select the method to define intervals for the life table: Default, Quantiles, or Custom.")
+				info: qsTr("Select the time points for predictions: Equal spacing, Sequence, or Custom. Equal spacing uses evenly spaced times up to the maximum observed time; survival plots with a logarithmic time axis use evenly spaced log times.")
 				values:
 				[
-					{ label: qsTr("Quantilies"),	value: "quantiles"},
+					{ label: qsTr("Equal spacing"),	value: "quantiles"},
 					{ label: qsTr("Sequence"),		value: "sequence"},
 					{ label: qsTr("Custom"),		value: "custom"}
 				]
@@ -680,7 +680,7 @@ Form
 				defaultValue:	10
 				min:			2
 				visible:		predictionsLifeTimeStepsType.value === "quantiles"
-				info: qsTr("Specify the number of quantiles of the life time when using Quantiles as the steps type.")
+				info: qsTr("Specify the number of time points when using Equal spacing as the steps type.")
 			}
 
 			FormulaField
@@ -693,7 +693,7 @@ Form
 				max:			predictionsLifeTimeStepsTo.value
 				visible:		predictionsLifeTimeStepsType.value === "sequence"
 				fieldWidth:		40 * jaspTheme.uiScale
-				info: qsTr("Set the starting quantile of the life time when using Sequence steps.")
+				info: qsTr("Set the starting time when using Sequence steps.")
 			}
 
 			FormulaField
@@ -704,7 +704,7 @@ Form
 				defaultValue:	""
 				visible:		predictionsLifeTimeStepsType.value === "sequence"
 				fieldWidth:		40 * jaspTheme.uiScale
-				info: qsTr("Define the size of each quantile of the life time when using Sequence steps. The default '' corresponds to 1/10 of the maximum observed time.")
+				info: qsTr("Set the time increment when using Sequence steps. Leaving this blank uses one tenth of the selected time range.")
 			}
 
 			FormulaField
@@ -716,7 +716,7 @@ Form
 				defaultValue:	""
 				visible:		predictionsLifeTimeStepsType.value === "sequence"
 				fieldWidth:		40 * jaspTheme.uiScale
-				info: qsTr("Set the final step of the life time when using Sequence steps. The default '' corresponds to the maximum observed time.")
+				info: qsTr("Set the ending time when using Sequence steps. Leaving this blank uses the maximum observed time.")
 			}
 
 			CheckBox
@@ -725,7 +725,7 @@ Form
 				label:		qsTr("Round steps")
 				checked:	true
 				visible:	predictionsLifeTimeStepsType.value === "quantiles" || predictionsLifeTimeStepsType.value === "sequence"
-				info: qsTr("Round the interval boundaries to the nearest integer when using Quantiles or Sequence steps.")
+				info: qsTr("Round the time points to the nearest integer when using Equal spacing or Sequence steps.")
 			}
 
 			FormulaField

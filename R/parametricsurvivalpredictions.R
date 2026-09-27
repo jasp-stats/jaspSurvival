@@ -976,7 +976,7 @@
   } else if (options[["predictionsSurvivalTimeStepsType"]] == "sequence") {
 
     setQuantiles <- seq(options[["predictionsSurvivalTimeStepsFrom"]], options[["predictionsSurvivalTimeStepsTo"]], options[["predictionsSurvivalTimeStepsSize"]])
-    setQuantiles <- setQuantiles[-length(setQuantiles)]
+    setQuantiles <- setQuantiles[setQuantiles < 1]
 
   } else if (options[["predictionsSurvivalTimeStepsType"]] == "custom") {
 
@@ -1021,25 +1021,27 @@
 
     if (stepFrom != "") {
       stepFrom <- as.numeric(trimws(stepFrom, which = "both"))
-      if (is.na(stepFrom) || stepFrom <= 0)
-        .quitAnalysis(gettext("Step from for predicted survival time must be a positive number."))
+      if (!is.finite(stepFrom) || stepFrom < 0)
+        .quitAnalysis(gettext("Step from for predicted survival time must be a finite, non-negative number."))
     } else {
-      stepTo <- 0
+      stepFrom <- 0
     }
     if (stepTo != "") {
       stepTo <- as.numeric(trimws(stepTo, which = "both"))
-      if (is.na(stepTo) || stepTo <= 0)
-        .quitAnalysis(gettext("Step to for predicted survival time must be a positive number."))
+      if (!is.finite(stepTo) || stepTo <= 0)
+        .quitAnalysis(gettext("Step to for predicted survival time must be a finite, positive number."))
     } else {
       stepTo <- maxTime
     }
     if (stepSize != "") {
       stepSize <- as.numeric(trimws(stepSize, which = "both"))
-      if (is.na(stepSize) || stepSize <= 0)
-        .quitAnalysis(gettext("Step size for predicted survival time must be a positive number."))
+      if (!is.finite(stepSize) || stepSize <= 0)
+        .quitAnalysis(gettext("Step size for predicted survival time must be a finite, positive number."))
     } else {
       stepSize <- (stepTo - stepFrom) / 10
     }
+    if (stepTo <= stepFrom)
+      .quitAnalysis(gettext("Step to for predicted survival time must be greater than step from."))
 
     # special treatment for setting limits when survival plot with transformation is used
     if (type == "survival" && options[["survivalProbabilityPlotTransformXAxis"]] %in% c("log")) {
@@ -1093,13 +1095,17 @@
   x <- trimws(x, which = "both", whitespace = "\\)")
   x <- trimws(x, which = "both", whitespace = ",")
 
+  if (!nzchar(x))
+    .quitAnalysis(message)
+
   x <- strsplit(x, ",", fixed = TRUE)[[1]]
 
   x <- trimws(x, which = "both")
   x <- x[x != ""]
 
-  if (anyNA(as.numeric(x)))
+  x <- suppressWarnings(as.numeric(x))
+  if (length(x) == 0 || any(!is.finite(x)))
     .quitAnalysis(message)
 
-  return(as.numeric(x))
+  return(x)
 }
