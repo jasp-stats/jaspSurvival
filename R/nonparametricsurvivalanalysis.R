@@ -76,7 +76,8 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     data    = dataset
   ))
   # fix scoping in ggsurvplot
-  fit$call$formula <- eval(fit$call$formula)
+  if (!jaspBase::isTryError(fit))
+    fit$call$formula <- eval(fit$call$formula)
 
 
   jaspResults[["fit"]]$object <- fit
@@ -198,6 +199,9 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     return()
   }
 
+  if (!.saSurvivalReady(options))
+    return()
+
   if (options[["testsLogRank"]]) {
     fit <- jaspResults[["testLogRank"]]$object
     if (jaspBase::isTryError(fit))
@@ -244,6 +248,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   if (jaspBase::isTryError(fit)) {
     jaspResults[["LifeTableContainer"]][["emptyTable"]] <- .sanpEmptyLifeTable()
+    jaspResults[["LifeTableContainer"]][["emptyTable"]]$setError(fit)
     return()
   }
 
@@ -292,7 +297,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   fitSummary <- fitSummary[,c("records", "events", "rmean", "se.rmean.",  "median", "X0.95LCL", "X0.95UCL")]
   colnames(fitSummary) <- c("n", "events", "restrictedMean", "restrictedMeanSe", "median", "lowerCI", "upperCI")
 
-  if (nrow(fitSummary) > 1)
+  if (!is.null(fit$strata))
     fitSummary$strata <- rownames(fitSummary)
 
   return(fitSummary)
@@ -397,10 +402,11 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   return(tempTable)
 }
 .sanpExtractTest             <- function(fit, title) {
+  expected <- if (is.matrix(fit$exp)) rowSums(fit$exp) else fit$exp
   return(list(
     test   = title,
     chiSqr = fit$chisq,
-    df     = length(fit$n) - 1,
+    df     = sum(expected > 0) - 1,
     p      = fit$pvalue
   ))
 }

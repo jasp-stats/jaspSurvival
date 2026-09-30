@@ -55,7 +55,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   return()
 }
 
-.saspDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "censoringType", "factors", "covariates", "weights",
+.saspDependencies <- c("timeToEvent", "intervalStart", "intervalEnd", "eventStatus", "eventIndicator", "censoringType", "factors", "covariates", "weights",
                        "strata", "id", "cluster",
                        "frailty", "frailtyDistribution", "frailtyMethod", "frailtyMethodTDf", "frailtyMethodFixed", "frailtyMethodFixedTheta",  "frailtyMethodFixedDf",
                        "modelTerms", "method")
@@ -74,6 +74,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     fit <- try(coxph(
       formula = .saGetFormula(options, type = "Cox", null = FALSE),
       data    = dataset,
+      x       = TRUE,
       method  = options[["method"]],
       # id      = if (options[["id"]] != "")      dataset[[options[["id"]]]],
       cluster = if (options[["cluster"]] != "") dataset[[options[["cluster"]]]],
@@ -124,8 +125,10 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   fit <- jaspResults[["fit"]][["object"]]
 
-  if (jaspBase::isTryError(fit))
+  if (jaspBase::isTryError(fit)) {
+    jaspResults[["fitTest"]]$object <- fit
     return()
+  }
 
   fitTest <- try(cox.zph(
     fit       = fit,
@@ -155,12 +158,25 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   testsTable$addColumnInfo(name = "df",       title = gettext("df"),           type = if (.saspHasFrailty(options)) "number" else "integer")
   testsTable$addColumnInfo(name = "p",        title = gettext("p"),            type = "pvalue")
 
+  if (!.saSurvivalReady(options))
+    return()
+
   if (length(options[["factors"]]) == 0 && length(options[["covariates"]]) == 0) {
     testsTable$addFootnote(gettext("At least one factor or covariate needs to be specified"))
     return()
   }
 
-  fit        <- jaspResults[["fit"]][["object"]]
+  fit <- jaspResults[["fit"]][["object"]]
+  if (jaspBase::isTryError(fit)) {
+    testsTable$setError(gettextf("The model failed with the following message: %1$s.", fit))
+    return()
+  }
+
+  if (length(stats::coef(fit)) == 0) {
+    testsTable$addFootnote(gettext("At least one factor or covariate needs to be specified"))
+    return()
+  }
+
   fitSummary <- summary(fit)
 
   if (options[["testsLikelihoodRatio"]]) {
@@ -455,9 +471,6 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   estimates <- rbind(estimates, .saspCoxFitSummary(fit, options, "H\u2081", HR = TRUE))
 
 
-  if (!is.null(estimates) && options[["vovkSellke"]])
-    estimates$vsmpr <- VovkSellkeMPR(estimates$pval)
-
   nullPredictors <- .saGetPredictors(options, null = TRUE)
   if (length(nullPredictors) != 0)
     hazardRatioTable$addFootnote(gettextf("Null model contains nuisance parameters: %1$s", paste(nullPredictors, collapse = ", ")))
@@ -521,15 +534,22 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   if (jaspBase::isTryError(fitTest)) {
     surivalPlot <- createJaspPlot()
-    surivalPlot$setError(gettextf("The model test failed with the following message: %1$s", fitTest))
     proportionalHazardsPlots[["waitingPlot"]] <- surivalPlot
+    surivalPlot$setError(gettextf("The model test failed with the following message: %1$s", fitTest))
     return()
   }
 
-  for (i in 1:(nrow(fitTest$table) - 1)) {
+  for (i in seq_len(nrow(fitTest$table) - 1)) {
 
     tempVariable    <- rownames(fitTest$table)[i]
-    tempFitTestPlot <- plot(fitTest, plot = FALSE, var = tempVariable)
+    tempFitTestPlot <- try(plot(fitTest, plot = FALSE, var = tempVariable))
+
+    if (jaspBase::isTryError(tempFitTestPlot)) {
+      tempJaspPlot <- createJaspPlot(title = .saTermNames(tempVariable, c(options[["covariates"]], options[["factors"]])))
+      proportionalHazardsPlots[[paste0("plot", i)]] <- tempJaspPlot
+      tempJaspPlot$setError(tempFitTestPlot)
+      next
+    }
 
     # adapted from the survival:::plot.cox.zph
     tempDfPoints <- data.frame(
@@ -613,7 +633,15 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   residuals          <- try(residuals(fit, type = switch(options[["residualPlotResidualType"]], "scaledSchoenfeld" = "scaledsch", options[["residualPlotResidualType"]])))
   predictorsFit      <- model.matrix(fit)
   if (options[["residualPlotResidualType"]] %in% c("schoenfeld", "scaledSchoenfeld")) {
-    varIndx <- dataset[[options[["eventStatus"]]]]
+    # Schoenfeld residuals are returned in event-time order within strata.
+    response <- fit[["y"]]
+    status   <- response[, ncol(response)]
+    times    <- response[, ncol(response) - 1]
+    if (is.null(fit[["strata"]]))
+      rowOrder <- order(times, -status)
+    else
+      rowOrder <- order(as.integer(fit[["strata"]]), times, -status)
+    varIndx <- rowOrder[status[rowOrder] == 1]
   } else {
     varIndx <- rep(TRUE, nrow(dataset))
   }
@@ -629,7 +657,8 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     if (jaspBase::isTryError(residuals)) {
       residualPlotResidualVsTime$setError(residuals)
     } else {
-      tempPlot <- try(.saspResidualsPlot(x = dataset[[options[["timeToEvent"]]]][varIndx], y = residuals, xlab = gettext("Time"), ylab = .saspResidualsPlotName(options)))
+      timeVariable <- if (options[["censoringType"]] == "counting") options[["intervalEnd"]] else options[["timeToEvent"]]
+      tempPlot <- try(.saspResidualsPlot(x = dataset[[timeVariable]][varIndx], y = residuals, xlab = gettext("Time"), ylab = .saspResidualsPlotName(options)))
 
       if (jaspBase::isTryError(tempPlot))
         residualsPlots$setError(tempPlot)
@@ -648,13 +677,12 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
     if (dim(predictorsFit)[2] == 0) {
       tempPlot <- createJaspPlot()
-      tempPlot$setError(gettext("No predictors in the model."))
       residualPlotResidualVsPredictors[["waitingPlot"]] <- tempPlot
+      tempPlot$setError(gettext("No predictors in the model."))
     } else if (jaspBase::isTryError(residuals)) {
       tempPlot <- createJaspPlot()
-      tempPlot$setError(residuals)
       residualPlotResidualVsPredictors[["waitingPlot"]] <- tempPlot
-      residualPlotResidualVsTime$setError(residuals)
+      tempPlot$setError(residuals)
     } else {
       for (i in 1:ncol(predictorsFit)) {
 
