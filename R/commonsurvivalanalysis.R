@@ -621,13 +621,18 @@
 
   # transform into factors to keep the order during splitting
   df[["model"]]        <- factor(df[["model"]],        levels = unique(df[["model"]]))
+  df[["components"]]   <- factor(df[["components"]],   levels = unique(df[["components"]]))
   df[["distribution"]] <- factor(df[["distribution"]], levels = unique(df[["distribution"]]))
   df[["subgroup"]]     <- factor(df[["subgroup"]],     levels = unique(df[["subgroup"]]))
 
   # simplifying output tables
   df <- do.call(rbind, lapply(split(df, df[["subgroup"]]), function(x) {
     x <- do.call(rbind, lapply(split(x, x[["distribution"]]), function(xx) {
-      xx[["model"]][duplicated(xx[["model"]])] <- NA
+      xx <- do.call(rbind, lapply(split(xx, xx[["components"]]), function(xxx) {
+        xxx[["model"]][duplicated(xxx[["model"]])] <- NA
+        return(xxx)
+      }))
+      xx[["components"]][duplicated(xx[["components"]])] <- NA
       return(xx)
     }))
     x[["distribution"]][duplicated(x[["distribution"]])] <- NA
@@ -637,6 +642,7 @@
 
   # transform back to character
   df[["model"]]        <- as.character(df[["model"]])
+  df[["components"]]   <- as.integer(as.character(df[["components"]]))
   df[["distribution"]] <- as.character(df[["distribution"]])
   df[["subgroup"]]     <- as.character(df[["subgroup"]])
 

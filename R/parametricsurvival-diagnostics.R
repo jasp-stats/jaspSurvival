@@ -15,105 +15,39 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# Residual plots share model selection, dependencies, and section construction.
+.sapResidualPlots <- function(jaspResults, options) {
 
-# diagnostics plots
-.sapResidualsVsTimePlot                <- function(jaspResults, options) {
-
-  if (!is.null(jaspResults[["residualsVsTimePlot"]]) || options[["censoringType"]] != "right")
+  specifications <- list(
+    list(option = "residualPlotResidualVsTime", name = "residualsVsTimePlot", title = gettext("Residuals vs. Time"),
+         builder = .sapResidualsVsTimePlotFun, position = 5.1),
+    list(option = "residualPlotResidualVsPredictors", name = "residualsVsPredictorsPlot", title = gettext("Residuals vs. Predictors"),
+         builder = .sapResidualsVsPredictorsPlotFun, position = 5.2),
+    list(option = "residualPlotResidualVsPredicted", name = "residualVsPredictedPlot", title = gettext("Residuals vs. Predicted"),
+         builder = .sapResidualsVsPredictedPlotFun, position = 5.3),
+    list(option = "residualPlotResidualHistogram", name = "residualHistogram", title = gettext("Residual Histogram"),
+         builder = .sapResidualHistogramPlotFun, position = 5.4)
+  )
+  requested <- Filter(function(specification) {
+    options[[specification[["option"]]]] && is.null(jaspResults[[specification[["name"]]]]) &&
+      (specification[["option"]] != "residualPlotResidualVsTime" || options[["censoringType"]] == "right")
+  }, specifications)
+  if (length(requested) == 0)
     return()
 
-  # extract all models individually
-  fit <- .sapExtractFit(jaspResults, options, type = "selected")
-  fit <- .sapFlattenFit(fit, options)
-
-  # output dependencies
-  outputDependencies <- c(.sapDependencies, "interpretModel", "residualPlotResidualVsTime", "residualPlotResidualType")
-
-  .sapSectionWrapper(
-    jaspResults   = jaspResults,
-    options       = options,
-    fit           = fit,
-    tableFunction = .sapResidualsVsTimePlotFun,
-    name          = "residualsVsTimePlot",
-    title         = gettext("Residuals vs. Time"),
-    dependencies  = outputDependencies,
-    position      = 5.1
-  )
-
-  return()
-}
-.sapResidualsVsPredictorsPlot          <- function(jaspResults, options) {
-
-  if (!is.null(jaspResults[["residualsVsPredictorsPlot"]]))
-    return()
-
-  # extract all models individually
-  fit <- .sapExtractFit(jaspResults, options, type = "selected")
-  fit <- .sapFlattenFit(fit, options)
-
-  # output dependencies
-  outputDependencies <- c(.sapDependencies, "interpretModel", "residualPlotResidualVsPredictors", "residualPlotResidualType")
-
-  .sapSectionWrapper(
-    jaspResults   = jaspResults,
-    options       = options,
-    fit           = fit,
-    tableFunction = .sapResidualsVsPredictorsPlotFun,
-    name          = "residualsVsPredictorsPlot",
-    title         = gettext("Residuals vs. Predictors"),
-    dependencies  = outputDependencies,
-    position      = 5.2
-  )
-
-  return()
-}
-.sapResidualsVsPredictedPlot           <- function(jaspResults, options) {
-
-  if (!is.null(jaspResults[["residualVsPredictedPlot"]]))
-    return()
-
-  # extract all models individually
-  fit <- .sapExtractFit(jaspResults, options, type = "selected")
-  fit <- .sapFlattenFit(fit, options)
-
-  # output dependencies
-  outputDependencies <- c(.sapDependencies, "interpretModel", "residualPlotResidualVsPredicted", "residualPlotResidualType")
-
-  .sapSectionWrapper(
-    jaspResults   = jaspResults,
-    options       = options,
-    fit           = fit,
-    tableFunction = .sapResidualsVsPredictedPlotFun,
-    name          = "residualVsPredictedPlot",
-    title         = gettext("Residuals vs. Predicted"),
-    dependencies  = outputDependencies,
-    position      = 5.3
-  )
-
-  return()
-}
-.sapResidualHistogramPlot              <- function(jaspResults, options) {
-
-  if (!is.null(jaspResults[["residualHistogram"]]))
-    return()
-
-  # extract all models individually
-  fit <- .sapExtractFit(jaspResults, options, type = "selected")
-  fit <- .sapFlattenFit(fit, options)
-
-  # output dependencies
-  outputDependencies <- c(.sapDependencies, "interpretModel", "residualPlotResidualHistogram", "residualPlotResidualType")
-
-  .sapSectionWrapper(
-    jaspResults   = jaspResults,
-    options       = options,
-    fit           = fit,
-    tableFunction = .sapResidualHistogramPlotFun,
-    name          = "residualHistogram",
-    title         = gettext("Residual Histogram"),
-    dependencies  = outputDependencies,
-    position      = 5.4
-  )
+  fit <- .sapFlattenFit(.sapExtractFit(jaspResults, options, type = "selected"), options)
+  for (specification in requested) {
+    .sapSectionWrapper(
+      jaspResults   = jaspResults,
+      options       = options,
+      fit           = fit,
+      tableFunction = specification[["builder"]],
+      name          = specification[["name"]],
+      title         = specification[["title"]],
+      dependencies  = c(.sapGetDependencies(options), "interpretModel", specification[["option"]], "residualPlotResidualType"),
+      position      = specification[["position"]]
+    )
+  }
 
   return()
 }
@@ -128,11 +62,11 @@
   # extract the dataset and compute residuals
   dataset <- attr(fit, "dataset")
   time    <- .saExtractSurvTimes(dataset, options)
-  res     <- residuals(fit, type = switch(
-    options[["residualPlotResidualType"]],
-    "response" = "response",
-    "coxSnell" = "coxsnell"
-  ))
+  res     <- .sapResiduals(fit, options)
+  if (jaspBase::isTryError(res)) {
+    tempPlot$setError(conditionMessage(attr(res, "condition")))
+    return(tempPlot)
+  }
 
   tempPlot$plotObject <- try(.saspResidualsPlot(time, res, gettext("Time"), switch(
     options[["residualPlotResidualType"]],
@@ -151,11 +85,14 @@
 
   # extract the dataset and compute residuals
   predictorsFit <- model.matrix(fit)
-  res           <- residuals(fit, type = switch(
-    options[["residualPlotResidualType"]],
-    "response" = "response",
-    "coxSnell" = "coxsnell"
-  ))
+  # the predictors of mixture models are repeated for the location parameter of each component
+  if (!is.null(attr(fit, "mixture")))
+    predictorsFit <- predictorsFit[, fit[["mx"]][[fit[["dlist"]][["location"]]]], drop = FALSE]
+  res <- .sapResiduals(fit, options)
+  if (jaspBase::isTryError(res)) {
+    residualPlotResidualVsPredictors$setError(conditionMessage(attr(res, "condition")))
+    return(residualPlotResidualVsPredictors)
+  }
 
   for (i in seq_len(ncol(predictorsFit))) {
     tempPredictorName <- .saTermNames(colnames(predictorsFit)[i], variables = c(options[["covariates"]], options[["factors"]]))
@@ -183,11 +120,11 @@
 
   # extract the dataset and compute residuals
   pred    <- try(unlist(predict(fit)))
-  res     <- residuals(fit, type = switch(
-    options[["residualPlotResidualType"]],
-    "response" = "response",
-    "coxSnell" = "coxsnell"
-  ))
+  res     <- .sapResiduals(fit, options)
+  if (jaspBase::isTryError(res)) {
+    tempPlot$setError(conditionMessage(attr(res, "condition")))
+    return(tempPlot)
+  }
 
   if (jaspBase::isTryError(pred)) {
     tempPlot$setError(gettext("The model failed to produce predictions. Consider simplifying the model."))
@@ -210,11 +147,11 @@
     return(tempPlot)
 
   # extract the dataset and compute residuals
-  res     <- residuals(fit, type = switch(
-    options[["residualPlotResidualType"]],
-    "response" = "response",
-    "coxSnell" = "coxsnell"
-  ))
+  res <- .sapResiduals(fit, options)
+  if (jaspBase::isTryError(res)) {
+    tempPlot$setError(conditionMessage(attr(res, "condition")))
+    return(tempPlot)
+  }
 
   tempPlot$plotObject <- try(jaspGraphs::jaspHistogram(res, xName =switch(
     options[["residualPlotResidualType"]],
@@ -223,4 +160,19 @@
   )))
 
   return(tempPlot)
+}
+.sapResiduals <- function(fit, options) {
+
+  # flexsurv cannot compute Cox-Snell residuals from interval-censored outcomes.
+  # Keep an unsupported diagnostic from aborting the remaining analysis output.
+  return(try({
+    if (options[["censoringType"]] == "interval" && options[["residualPlotResidualType"]] == "coxSnell")
+      stop(gettext("Cox-Snell residuals are not available for interval-censored data."), call. = FALSE)
+
+    residuals(fit, type = switch(
+      options[["residualPlotResidualType"]],
+      "response" = "response",
+      "coxSnell" = "coxsnell"
+    ))
+  }, silent = TRUE))
 }

@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
 # model fitting and extraction functions
 # these are pretty much the workhorse of the analysis:
 # they make sure that you obtain exactly the models you want
@@ -30,16 +29,20 @@
     fitContainer <- createJaspState()
     fitContainer$dependOn(c(
       # this does not contain `modelTerms` as the fits are updated only if the corresponding model changes
-      "timeToEvent", "eventStatus", "eventIndicator", "censoringType",
+      "intervalStart", "intervalEnd", "timeToEvent", "eventStatus", "eventIndicator", "censoringType",
       "factors", "covariates", "weights", "subgroup",
-      "distribution", "includeIntercept",
+      "distribution",
       "selectedParametricDistributionExponential" ,"selectedParametricDistributionGamma" ,"selectedParametricDistributionGeneralizedF" ,
       "selectedParametricDistributionGeneralizedGamma" ,"selectedParametricDistributionGompertz" ,"selectedParametricDistributionLogLogistic" ,
       "selectedParametricDistributionLogNormal" ,"selectedParametricDistributionWeibull" ,"selectedParametricDistributionGeneralizedGammaOriginal" ,
       "selectedParametricDistributionGeneralizedFOriginal",
       # the CIs are not a simple multiplier of the standard error
       # as such, they need to be changed during the fitting process
-      "coefficientsConfidenceIntervalLevel"
+      "coefficientsConfidenceIntervalLevel",
+      # the numbers of components are not included as the fits are updated only if the corresponding number of components changes
+      if (options[["analysisType"]] == "mixture") c("mixtureStartKmeans", "mixtureStartQuantiles", "mixtureStartSplit",
+                                                    "mixtureStartRandom", "mixtureStartRandomCount", "mixtureEmIterations", "setSeed", "seed",
+                                                    "mixtureConstrainSpread", "mixtureMinimumLogTimeSd")
     ))
     jaspResults[["fit"]] <- fitContainer
     out                  <- NULL
@@ -51,15 +54,25 @@
   # check whether anything in the model had changed
   if (!is.null(out) &&
       isTRUE(all.equal(attr(out, "modelTerms"), options[["modelTerms"]])) &&
+      isTRUE(all.equal(attr(out, "components"), .sapComponents(options))) &&
       attr(out, "includeFullDatasetInSubgroupAnalysis") == options[["includeFullDatasetInSubgroupAnalysis"]])
     return()
 
   # structure the container following:
   # - subgroup
   #   - family
-  #     - model
+  #     - components
+  #       - model
 
   distributions <- .sapGetDistributions(options)
+  components    <- .sapComponents(options)
+
+  # mixture models can take a while to fit
+  if (options[["analysisType"]] == "mixture") {
+    nSubgroups <- (options[["subgroup"]] == "" || options[["includeFullDatasetInSubgroupAnalysis"]]) +
+      if (options[["subgroup"]] != "") length(unique(dataset[[options[["subgroup"]]]])) else 0
+    startProgressbar(nSubgroups * length(distributions) * length(components), label = gettext("Fitting mixture models"))
+  }
 
   # fit the full dataset
   if (options[["subgroup"]] == "" || options[["includeFullDatasetInSubgroupAnalysis"]]) {
@@ -67,9 +80,7 @@
     attr(dataset, "subgroup")      <- gettext("Full dataset")
     attr(dataset, "subgroupLabel") <- gettext("Full dataset")
 
-    for(i in seq_along(distributions)) {
-      out[["fullDataset"]][[distributions[i]]] <- .sapFitDistribution(out[["fullDataset"]][[distributions[i]]], dataset, options, distributions[i])
-    }
+    out[["fullDataset"]] <- .sapFitDistributions(out[["fullDataset"]], dataset, options, distributions, components)
 
     attr(out[["fullDataset"]], "label")         <- gettext("Full dataset")
     attr(out[["fullDataset"]], "dataset")       <- dataset
@@ -91,9 +102,7 @@
       attr(subgroupDataset, "subgroup")      <- as.character(subgroupLevels[i])
       attr(subgroupDataset, "subgroupLabel") <- gettextf("Subgroup: %1$s", subgroupLevels[i])
 
-      for(j in seq_along(distributions)) {
-        out[[paste0("subgroup", subgroupLevels[i])]][[distributions[j]]] <- .sapFitDistribution(out[[paste0("subgroup", subgroupLevels[i])]][[distributions[j]]], subgroupDataset, options, distributions[j])
-      }
+      out[[paste0("subgroup", subgroupLevels[i])]] <- .sapFitDistributions(out[[paste0("subgroup", subgroupLevels[i])]], subgroupDataset, options, distributions, components)
 
       attr(out[[paste0("subgroup", subgroupLevels[i])]], "label")         <- gettextf("Subgroup: %1$s", subgroupLevels[i])
       attr(out[[paste0("subgroup", subgroupLevels[i])]], "dataset")       <- subgroupDataset
@@ -103,13 +112,35 @@
   }
 
   attr(out, "modelTerms")                           <- options[["modelTerms"]]
+  attr(out, "components")                           <- components
   attr(out, "includeFullDatasetInSubgroupAnalysis") <- options[["includeFullDatasetInSubgroupAnalysis"]]
 
   fitContainer$object <- out
 
   return()
 }
-.sapFitDistribution     <- function(out, dataset, options, distribution) {
+.sapFitDistributions    <- function(out, dataset, options, distributions, components) {
+
+  for (i in seq_along(distributions)) {
+
+    # previously fitted numbers of components are kept (and only the missing ones are fitted)
+    for (k in components) {
+      # the fits with one component fewer of the same distribution supply the split starts of the mixture models
+      out[[distributions[i]]][[as.character(k)]] <- .sapFitDistribution(
+        out[[distributions[i]]][[as.character(k)]], dataset, options, distributions[i], k,
+        previous = out[[distributions[i]]][[as.character(k - 1)]]
+      )
+      if (options[["analysisType"]] == "mixture")
+        progressbarTick()
+    }
+
+    attr(out[[distributions[i]]], "distribution") <- distributions[i]
+    attr(out[[distributions[i]]], "label")        <- .sapOption2DistributionName(distributions[i])
+  }
+
+  return(out)
+}
+.sapFitDistribution     <- function(out, dataset, options, distribution, components, previous = NULL) {
 
   for (i in seq_along(options[["modelTerms"]])) {
 
@@ -117,16 +148,18 @@
     if (length(out) >= i) {
 
       previousTerms  <- attr(out[[i]], "modelTerms")
-      curentTerms    <- options[["modelTerms"]][[i]]
+      currentTerms   <- options[["modelTerms"]][[i]]
 
       # check without a title - allow renaming without re-fitting
-      curentTitle    <- curentTerms[["title"]]
+      currentTitle   <- currentTerms[["title"]]
       previousTerms$title <- ""
-      curentTerms$title   <- ""
+      currentTerms$title  <- ""
 
-      if (isTRUE(all.equal(previousTerms, curentTerms))) {
+      if (isTRUE(all.equal(previousTerms, currentTerms))) {
         # everything but the title is the same -> relabel
-        attr(out[[i]], "label") <- curentTitle
+        attr(out[[i]], "label")      <- currentTitle
+        attr(out[[i]], "modelTitle") <- currentTitle
+        attr(out[[i]], "modelTerms") <- options[["modelTerms"]][[i]]
         next
       }
 
@@ -134,17 +167,21 @@
       if (i > 1) {
         simplerTerms       <- attr(out[[i-1]], "modelTerms")
         simplerTerms$title <- ""
-        if (isTRUE(all.equal(previousTerms, simplerTerms))) {
+        if (isTRUE(all.equal(currentTerms, simplerTerms))) {
           # everything but the title is the same -> relabel
-          out[[i]]                <- out[[i-1]]
-          attr(out[[i]], "label") <- curentTitle
+          out[[i]]                     <- out[[i-1]]
+          attr(out[[i]], "label")       <- currentTitle
+          attr(out[[i]], "modelTitle")  <- currentTitle
+          attr(out[[i]], "modelId")     <- options[["modelTerms"]][[i]][["name"]]
+          attr(out[[i]], "modelTerms")  <- options[["modelTerms"]][[i]]
           next
         }
       }
     }
 
-    # fit the model
-    out[[i]] <- .sapFitModel(dataset, options, distribution, options[["modelTerms"]][[i]])
+    # fit the model (the same model of the previous number of components, when it is available)
+    out[[i]] <- .sapFitModel(dataset, options, distribution, options[["modelTerms"]][[i]], components,
+                             previous = .sapPreviousComponentsFit(previous, options[["modelTerms"]][[i]], i))
 
   }
 
@@ -155,19 +192,51 @@
 
   # store attributes
   attr(out, "distribution") <- distribution
-  attr(out, "label")        <- .sapOption2DistributionName(distribution)
+  attr(out, "components")   <- components
+  attr(out, "label")        <- .sapComponentsLabel(components)
 
   return(out)
 }
-.sapFitModel            <- function(dataset, options, distribution, modelTerms) {
+.sapPreviousComponentsFit <- function(previous, modelTerms, index) {
 
-  fit <- try(flexsurv::flexsurvreg(
-    formula = .sapGetFormula(options, modelTerms),
-    data    = dataset,
-    dist    = distribution,
-    weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]],
-    cl      = options[["coefficientsConfidenceIntervalLevel"]]
-  ))
+  # the fit with one component fewer supplies the split starts only when it is the same model:
+  # the store keeps the fits of previously specified model terms, and those are not a starting point
+  # of the current model (the chain is then fitted by the mixture estimator itself)
+  if (length(previous) < index)
+    return(NULL)
+
+  candidate <- previous[[index]]
+  if (jaspBase::isTryError(candidate))
+    return(NULL)
+
+  previousTerms <- attr(candidate, "modelTerms")
+  if (is.null(previousTerms))
+    return(NULL)
+
+  # compare without a title - renaming a model does not change it
+  previousTerms$title <- ""
+  modelTerms$title    <- ""
+
+  if (!isTRUE(all.equal(previousTerms, modelTerms)))
+    return(NULL)
+
+  return(candidate)
+}
+.sapFitModel            <- function(dataset, options, distribution, modelTerms, components, previous = NULL) {
+
+  if (components > 1) {
+    fit <- .sapmFitModel(dataset, options, distribution, modelTerms, components, previous)
+  } else if (options[["analysisType"]] == "mixture" && options[["mixtureConstrainSpread"]]) {
+    fit <- try(.sapmFitSingle(dataset, options, distribution, modelTerms))
+  } else {
+    fit <- try(flexsurv::flexsurvreg(
+      formula = .sapGetFormula(options, modelTerms),
+      data    = dataset,
+      dist    = distribution,
+      weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]],
+      cl      = options[["coefficientsConfidenceIntervalLevel"]]
+    ))
+  }
 
   # store attributes
   attr(fit, "subgroup")       <- attr(dataset, "subgroup")
@@ -176,154 +245,193 @@
   attr(fit, "modelId")        <- modelTerms[["name"]]
   attr(fit, "modelTerms")     <- modelTerms
   attr(fit, "distribution")   <- .sapOption2DistributionName(distribution)
+  attr(fit, "family")         <- distribution
+  attr(fit, "components")     <- components
   attr(fit, "dataset")        <- dataset
 
   return(fit)
 }
-.sapExtractFit          <- function(jaspResults, options, type = "all") {
+.sapFitIndex            <- function(out, options) {
+
+  # flat index of the nested fit store (subgroup - family - components - model)
+  # the fits are selected and grouped via the index and extracted afterwards
+  components <- as.character(.sapComponents(options))
+  index      <- list()
+
+  for (subgroup in names(out)) {
+    for (family in names(out[[subgroup]])) {
+      for (k in components) {
+        for (model in seq_along(out[[subgroup]][[family]][[k]])) {
+
+          fit     <- out[[subgroup]][[family]][[k]][[model]]
+          isError <- jaspBase::isTryError(fit)
+
+          index[[length(index) + 1]] <- data.frame(
+            subgroup      = subgroup,
+            subgroupLabel = attr(out[[subgroup]], "label"),
+            family        = family,
+            distribution  = attr(fit, "distribution"),
+            components    = as.integer(k),
+            model         = model,
+            modelId       = attr(fit, "modelId"),
+            modelTitle    = attr(fit, "modelTitle"),
+            aic           = if (isError) NA_real_ else AIC(fit),
+            bic           = if (isError) NA_real_ else BIC(fit)
+          )
+        }
+      }
+    }
+  }
+
+  index <- do.call(rbind, index)
+  index[["row"]] <- seq_len(nrow(index))
+
+  # remove the full dataset fits if not requested anymore
+  if (options[["subgroup"]] != "" && !options[["includeFullDatasetInSubgroupAnalysis"]])
+    index <- index[index[["subgroup"]] != "fullDataset", , drop = FALSE]
+
+  return(index)
+}
+.sapIndexFits           <- function(out, index) {
+
+  # extract the fits corresponding to the (grouped) index
+  fit <- lapply(seq_len(nrow(index)), function(i) {
+    out[[index[["subgroup"]][i]]][[index[["family"]][i]]][[as.character(index[["components"]][i])]][[index[["model"]][i]]]
+  })
+
+  if (nrow(index) > 0 && !anyNA(index[["fitName"]]))
+    names(fit) <- index[["fitName"]]
+
+  if (nrow(index) > 0 && !is.na(index[["groupLabel"]][1]))
+    attr(fit, "label") <- index[["groupLabel"]][1]
+
+  return(fit)
+}
+.sapExtractFit          <- function(jaspResults, options, type = "all", output = NULL) {
 
   if (!.saSurvivalReady(options))
     return()
 
-  out <- jaspResults[["fit"]][["object"]]
-  fit <- list()
+  out   <- jaspResults[["fit"]][["object"]]
+  index <- .sapFitIndex(out, options)
 
-  if (options[["subgroup"]] != "" && !options[["includeFullDatasetInSubgroupAnalysis"]]) {
-    out <- out[names(out) != "fullDataset"]
-  }
+  # select the models within each subgroup
+  if (type %in% c("selected", "byDistribution", "byModel"))
+    index <- .sapSelectIndex(index, options, type)
 
-  # extract models by subgroups
+  # group the models into output sections by subgroups (and models)
   if (type == "byModel") {
-    fit <- .sapExtractFitModels(out, options)
+    groups <- .sapGroupIndexModels(index, options, output)
   } else {
-    fit <- .sapExtractFitGroups(out, options)
+    groups <- .sapGroupIndex(index, options)
   }
 
-  # return all models in the restructured format
-  if (type %in% c("all", "byModel"))
-    return(fit)
-
-  ### return only the selected models
-  selectDistributions <- length(.sapGetDistributions(options)) > 1 && options[["distribution"]]   %in% c("bestAic", "bestBic")
-  selectModels        <- .sapMultipleModels(options)               && options[["interpretModel"]] !=   "all"
-
-  # all models are selected
-  if (!selectModels && !selectDistributions)
-    return(fit)
-
-  # no selection is needed when only a single model & distribution is specified (those are already joined across subgroups)
-  if (!.sapMultipleModels(options) && !.sapMultiplDistributions(options))
-    return(fit)
-
-  # we don't need to worry whether we select across models / distributions since the output is already correctly structured
-  # select the best distribution:
-  if (selectDistributions) {
-    for (i in seq_along(fit)) {
-      # reuse the summary data function to obtain fit statistics
-      tempSummary      <- .saSafeRbind(lapply(fit[[i]], .sapRowSummaryTable))
-      bestDistribution <- tempSummary[["distribution"]][which.min(tempSummary[[switch(
-        options[["distribution"]],
-        "bestAic" = "aic",
-        "bestBic" = "bic"
-      )]])]
-      fit[[i]][which(tempSummary[["distribution"]] != bestDistribution, arr.ind = TRUE)] <- NULL
-    }
-  }
-
-  # select the best models:
-  if (type != "byDistribution" && selectModels) {
-    for (i in seq_along(fit)) {
-      # reuse the summary data function to obtain fit statistics
-      tempSummary      <- .saSafeRbind(lapply(fit[[i]], .sapRowSummaryTable))
-      if (options[["interpretModel"]] %in% c("bestAic", "bestBic")) {
-        bestModel <- tempSummary[["model"]][which.min(tempSummary[[switch(
-          options[["interpretModel"]],
-          "bestAic" = "aic",
-          "bestBic" = "bic"
-        )]])]
-        fit[[i]][which(tempSummary[["model"]] != bestModel, arr.ind = TRUE)] <- NULL
-      } else {
-        modelNames <- sapply(fit[[i]], attr, "modelId")
-        fit[[i]][which(modelNames != options[["interpretModel"]], arr.ind = TRUE)] <- NULL
-      }
-    }
-  }
-
-  return(fit)
+  return(lapply(groups, .sapIndexFits, out = out))
 }
-.sapExtractFitGroups    <- function(out, options) {
+.sapSelectIndex         <- function(index, options, type) {
 
-  fit <- list()
+  # the models are selected within each subgroup by traversing the axes hierarchically (distribution - components - model):
+  # - an axis with all levels splits the remaining selection by its levels
+  # - an axis with the best level keeps the level of the best fitting model across all models of the current selection
+  #   (e.g., the best distribution is the distribution of the best fitting model across all numbers of components and models)
+  # - an axis with a specified level keeps only that level
+  # the output grouping (i.e., comparing models across distributions / components) does not affect the selection
+  axes <- list(
+    list(column = "family",     multiple = .sapMultipleFamilies(options),                           selection = .sapFamilySelection(options)),
+    list(column = "components", multiple = .sapMultipleComponents(options),                         selection = .sapComponentSelection(options)),
+    list(column = "modelId",    multiple = .sapMultipleModels(options) && type != "byDistribution", selection = options[["interpretModel"]])
+  )
 
-  # automatically extract models by subgroup
-  # subgroups are collapsed only if the user specifies one distribution and one model
-  # distributions are collapsed if the user specifies one model (or asks for joining distributions/models)
-  if (!options[["compareModelsAcrossDistributions"]] && .sapMultipleModels(options) && .sapMultiplDistributions(options)) {
+  groups <- split(index, factor(index[["subgroup"]], levels = unique(index[["subgroup"]])))
 
-    # separate outputs for each distribution
-    for (i in seq_along(out)) {
-      for (j in seq_along(out[[i]])) {
-        fit[[length(fit) + 1]] <- out[[i]][[j]]
-        if (options[["subgroup"]] != "")
-          attr(fit[[length(fit)]], "label") <- paste0(attr(out[[i]], "label"), " | ", attr(out[[i]][[j]], "label"))
-        else
-          attr(fit[[length(fit)]], "label") <- attr(out[[i]][[j]], "label")
-      }
+  for (axis in axes) {
+
+    if (!axis[["multiple"]])
+      next
+
+    if (axis[["selection"]] == "all") {
+      groups <- do.call(c, lapply(unname(groups), function(group) {
+        unname(split(group, factor(group[[axis[["column"]]]], levels = unique(group[[axis[["column"]]]]))))
+      }))
+    } else if (axis[["selection"]] %in% c("bestAic", "bestBic")) {
+      groups <- lapply(groups, function(group) {
+        best <- which.min(group[[.sapSelectionCriterion(axis[["selection"]])]])
+        if (length(best) == 0)
+          return(group)
+        return(group[group[[axis[["column"]]]] == group[[axis[["column"]]]][best], , drop = FALSE])
+      })
+    } else {
+      groups <- lapply(groups, function(group) group[group[[axis[["column"]]]] == axis[["selection"]], , drop = FALSE])
     }
-
-  }else if (options[["compareModelsAcrossDistributions"]] && .sapMultipleModels(options) && .sapMultiplDistributions(options)) {
-
-    # join across distributions and models
-    for (i in seq_along(out)) {
-      fit[[names(out)[i]]] <- do.call(c, out[[i]])
-      attr(fit[[names(out)[i]]], "label") <- attr(out[[i]], "label")
-    }
-
-  } else if (.sapMultiplDistributions(options)) {
-
-    # join across distributions
-    for (i in seq_along(out)) {
-      fit[[names(out)[i]]] <- lapply(out[[i]], function(x) x[[1]])
-      attr(fit[[names(out)[i]]], "label") <- attr(out[[i]], "label")
-    }
-
-  } else if (.sapMultipleModels(options)) {
-
-    # join across models
-    for (i in seq_along(out)) {
-      fit[[names(out)[i]]] <- out[[i]][[1]]
-      attr(fit[[names(out)[i]]], "label") <- attr(out[[i]], "label")
-    }
-
-  } else {
-
-    # join subgroups if they have a single model
-    fit <- list(lapply(out, function(x) x[[1]][[1]]))
   }
 
-  return(fit)
+  selectedRows <- unlist(lapply(groups, function(group) group[["row"]]), use.names = FALSE)
+
+  return(index[index[["row"]] %in% selectedRows, , drop = FALSE])
 }
-.sapExtractFitModels    <- function(out, options) {
+.sapGroupIndex          <- function(index, options) {
 
-  fit <- list()
+  multipleModels     <- .sapMultipleModels(options)
+  multipleFamilies   <- .sapMultipleFamilies(options)
+  multipleComponents <- .sapMultipleComponents(options)
 
-  # automatically extract models by model across distributions
+  # subgroups are collapsed only if the user specifies a single distribution, number of components, and model
+  if (!multipleModels && !multipleFamilies && !multipleComponents) {
+    index[["groupLabel"]] <- NA_character_
+    index[["fitName"]]    <- index[["subgroup"]]
+    return(list(index))
+  }
+
+  # distributions / numbers of components are collapsed if the user specifies one model (or asks for comparing models across them)
+  splitFamilies   <- multipleModels && multipleFamilies   && !options[["compareModelsAcrossDistributions"]]
+  splitComponents <- multipleModels && multipleComponents && !options[["compareModelsAcrossComponents"]]
+  spanFamilies    <- multipleFamilies   && !splitFamilies
+  spanComponents  <- multipleComponents && !splitComponents
+
+  labelParts <- list()
+  if (options[["subgroup"]] != "" || (!splitFamilies && !splitComponents))
+    labelParts[["subgroup"]]   <- index[["subgroupLabel"]]
+  if (splitFamilies)
+    labelParts[["family"]]     <- index[["distribution"]]
+  if (splitComponents)
+    labelParts[["components"]] <- .sapComponentsLabel(index[["components"]])
+
+  index[["groupLabel"]] <- do.call(paste, c(unname(labelParts), sep = " | "))
+  index[["fitName"]]    <- if (spanFamilies || spanComponents) paste0(
+    if (spanFamilies)   index[["family"]],
+    if (spanComponents) paste0("components", index[["components"]]),
+    if (multipleModels) index[["model"]]
+  ) else NA_character_
+
+  groupKey <- paste(index[["subgroup"]], if (splitFamilies) index[["family"]], if (splitComponents) index[["components"]], sep = "|")
+
+  return(unname(split(index, factor(groupKey, levels = unique(groupKey)))))
+}
+.sapGroupIndexModels    <- function(index, options, output) {
+
+  # automatically extract models by model across distributions (and numbers of components)
   # subgroups are never collapsed
-  for (i in seq_along(out)) {
-    for (j in seq_along(options[["modelTerms"]])) {
-      fit[[length(fit) + 1]] <- lapply(out[[i]], function(x) x[[j]])
-      if (options[["subgroup"]] != "" && length(options[["modelTerms"]]) > 1)
-        attr(fit[[length(fit)]], "label") <- paste0(attr(out[[i]], "label"), " | ", options[["modelTerms"]][[j]][["title"]])
-      else if (options[["subgroup"]] == "" && length(options[["modelTerms"]]) > 1)
-        attr(fit[[length(fit)]], "label") <- options[["modelTerms"]][[j]][["title"]]
-      else if (options[["subgroup"]] != "" && length(options[["modelTerms"]]) == 1)
-        attr(fit[[length(fit)]], "label") <- attr(out[[i]], "label")
-      else
-        attr(fit[[length(fit)]], "label") <- ""
-    }
-  }
+  multipleModels     <- .sapMultipleModels(options)
+  splitFamilies      <- .sapMultipleFamilies(options)   && !.sapMergePlotsAcrossFamilies(options, output)
+  splitComponents    <- .sapMultipleComponents(options) && !.sapMergePlotsAcrossComponents(options, output)
+  spanComponents     <- .sapMultipleComponents(options) && !splitComponents
 
-  return(fit)
+  labelParts <- list()
+  if (options[["subgroup"]] != "")
+    labelParts[["subgroup"]]   <- index[["subgroupLabel"]]
+  if (splitFamilies)
+    labelParts[["family"]]     <- index[["distribution"]]
+  if (splitComponents)
+    labelParts[["components"]] <- .sapComponentsLabel(index[["components"]])
+  if (multipleModels)
+    labelParts[["model"]]      <- vapply(options[["modelTerms"]][index[["model"]]], function(x) x[["title"]], character(1))
+
+  index[["groupLabel"]] <- if (length(labelParts) > 0) do.call(paste, c(unname(labelParts), sep = " | ")) else ""
+  index[["fitName"]]    <- paste0(index[["family"]], if (spanComponents) paste0("components", index[["components"]]))
+
+  groupKey <- paste(index[["subgroup"]], index[["model"]], if (splitFamilies) index[["family"]], if (splitComponents) index[["components"]], sep = "|")
+
+  return(unname(split(index, factor(groupKey, levels = unique(groupKey)))))
 }
 .sapFlattenFit          <- function(fit, options) {
 
@@ -331,7 +439,8 @@
 
   # check the output type
   multipleModels        <- .sapMultipleModels(options)
-  multipleDistributions <- .sapMultiplDistributions(options)
+  multipleDistributions <- .sapMultipleFamilies(options)
+  multipleComponents    <- .sapMultipleComponents(options)
 
   for(i in seq_along(fit)) {
     for(j in seq_along(fit[[i]])) {
@@ -343,15 +452,12 @@
         prefix <- ""
       }
 
-      if (multipleModels && multipleDistributions) {
-        attr(out[[length(out)]], "label") <- paste0(prefix, attr(fit[[i]][[j]], "distribution"), " distribution | ", attr(fit[[i]][[j]], "modelTitle"))
-      } else if (multipleModels) {
-        attr(out[[length(out)]], "label") <- paste0(prefix, attr(fit[[i]][[j]], "modelTitle"))
-      } else if (multipleDistributions) {
-        attr(out[[length(out)]], "label") <- paste0(prefix, attr(fit[[i]][[j]], "distribution"), " distribution")
-      } else {
-        attr(out[[length(out)]], "label") <- prefix
-      }
+      labelParts <- c(
+        if (multipleDistributions) paste0(attr(fit[[i]][[j]], "distribution"), " distribution"),
+        if (multipleComponents)    .sapComponentsLabel(attr(fit[[i]][[j]], "components")),
+        if (multipleModels)        attr(fit[[i]][[j]], "modelTitle")
+      )
+      attr(out[[length(out)]], "label") <- paste0(prefix, paste(labelParts, collapse = " | "))
 
     }
   }
@@ -391,6 +497,7 @@
       tempContainer[[paste0("table", i)]] <- do.call(tableFunction, list(fit = fit[[i]], options = options))
       tempContainer[[paste0("table", i)]]$position <- i
       tempContainer[[paste0("table", i)]]$title    <- attr(fit[[i]], "label")
+      .sapSectionFitError(tempContainer[[paste0("table", i)]], fit[[i]], options)
 
     }
 
@@ -402,25 +509,82 @@
     tempTable$dependOn(dependencies)
     tempTable$position  <- position
     jaspResults[[name]] <- tempTable
+    .sapSectionFitError(tempTable, fit[[1]], options)
 
   }
 
   return()
 }
+.sapSectionFitError <- function(output, fit, options) {
 
-# add the model names
+  # Fit failures must remain visible even when the model summary is disabled.
+  if (inherits(fit, "try-error"))
+    fit <- list(fit)
+  else if (inherits(fit, "flexsurvreg") || length(fit) == 0)
+    return()
+
+  if (all(vapply(fit, inherits, logical(1), what = "try-error")))
+    output$setError(paste(.sapCollectFitErrors(fit, options), collapse = "\n"))
+
+  return()
+}
+
+# analysis axes: subgroup - family (distribution) - number of components - model
 .sapMultipleModels          <- function(options) {
   return(length(options[["modelTerms"]]) > 1)
 }
-.sapMultiplDistributions    <- function(options) {
-  return(options[["distribution"]] %in% c("all", "bestAic", "bestBic") && length(.sapGetDistributions(options)) > 1)
+.sapMultipleFamilies        <- function(options) {
+  return(.sapFamilySelection(options) %in% c("all", "bestAic", "bestBic") && length(.sapGetDistributions(options)) > 1)
 }
-.sapMultipleOutputs         <- function(options) {
+.sapMultipleComponents      <- function(options) {
+  return(options[["analysisType"]] == "mixture" && .sapComponentSelection(options) %in% c("all", "bestAic", "bestBic") && options[["mixtureMaximumComponents"]] > 1)
+}
+.sapFamilySelection         <- function(options) {
+  return(options[["distribution"]])
+}
+.sapComponentSelection      <- function(options) {
+  if (options[["analysisType"]] != "mixture")
+    return("1")
+  return(options[["mixtureComponents"]])
+}
+.sapComponents              <- function(options) {
 
-  # create a container with multiple outputs if
-  # - subgroup analysis is specified
-  # - multiple models are compared across multiple distributions & the output is not to be joined
-  return((options[["subgroup"]] != "" || (options[["compareModelsAcrossDistributions"]] && .sapMultipleModels(options) && .sapMultiplDistributions(options))))
+  if (options[["analysisType"]] != "mixture")
+    return(1L)
+
+  if (.sapComponentSelection(options) %in% c("all", "bestAic", "bestBic"))
+    return(seq_len(options[["mixtureMaximumComponents"]]))
+
+  return(as.integer(.sapComponentSelection(options)))
+}
+.sapComponentsLabel         <- function(components) {
+  return(vapply(components, function(k) sprintf(ngettext(k, "%1$i component", "%1$i components"), k), character(1)))
+}
+.sapSeriesLabel             <- function(fit, options) {
+
+  # label of the fitted model in plots with multiple distributions (and numbers of components)
+  if (options[["analysisType"]] != "mixture")
+    return(attr(fit, "distribution"))
+
+  return(gettextf("%1$s, %2$i comp.", attr(fit, "distribution"), attr(fit, "components")))
+}
+.sapSelectionCriterion      <- function(selection) {
+  return(switch(
+    selection,
+    "bestAic" = "aic",
+    "bestBic" = "bic"
+  ))
+}
+.sapMergePlotsAcrossFamilies   <- function(options, output) {
+  # merging across distributions is possible only if all distributions are displayed without model selection
+  return(options[[paste0(output, "MergePlotsAcrossDistributions")]] && .sapFamilySelection(options) == "all" && !options[["interpretModel"]] %in% c("bestAic", "bestBic"))
+}
+.sapMergePlotsAcrossComponents <- function(options, output) {
+  # merging across numbers of components is possible only if all numbers of components are displayed without model selection
+  return(options[["analysisType"]] == "mixture" && options[[paste0(output, "MergePlotsAcrossComponents")]] && .sapComponentSelection(options) == "all" && !options[["interpretModel"]] %in% c("bestAic", "bestBic"))
+}
+.sapMergePlots                 <- function(options, output) {
+  return(.sapMergePlotsAcrossFamilies(options, output) || .sapMergePlotsAcrossComponents(options, output))
 }
 .sapOption2Distribution     <- function(optionName) {
 
@@ -494,7 +658,7 @@
 
     distributions <- do.call(c, distributions)
     if (length(distributions) == 0)
-      .quitAnalysis(paste0("No parametric Distribution selected. Please select at least one parametric Distribution."))
+      .quitAnalysis(gettext("No parametric distribution selected. Please select at least one parametric distribution."))
 
   } else {
 

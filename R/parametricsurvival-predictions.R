@@ -15,147 +15,80 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# One output contract for all survival prediction measures.
+.sapPredictionOutput <- function(jaspResults, options, measure, plot = FALSE) {
 
-# predictions tables
-.sapSurvivalTimeTable        <- function(jaspResults, options) {
-
-  if (!is.null(jaspResults[["survivalTimeTable"]]))
+  specification <- switch(measure,
+    "survivalTime" = list(type = "quantile", table = "survivalTimeTable", plot = "survivalTimePlot",
+                          title = gettext("Predicted Survival Time"), position = c(3.01, 3.02)),
+    "survivalProbability" = list(type = "survival", table = "survivalProbabilityTable", plot = "survivalProbabilityPlot",
+                                 title = if (options[["survivalProbabilityAsFailureProbability"]])
+                                   gettext("Predicted Failure Probability") else gettext("Predicted Survival Probability"),
+                                 position = c(3.11, 3.12)),
+    "hazard" = list(type = "hazard", table = "hazardTable", plot = "hazardPlot",
+                    title = gettext("Predicted Hazard"), position = c(3.21, 3.22)),
+    "cumulativeHazard" = list(type = "cumhaz", table = "cumHazardTable", plot = "cumulativeHazardPlot",
+                              title = gettext("Predicted Cumulative Hazard"), position = c(3.31, 3.32)),
+    "restrictedMeanSurvivalTime" = list(type = "rmst", table = "rmstTable", plot = "restrictedMeanSurvivalTimePlot",
+                                        title = gettext("Predicted Restricted Mean Survival Time"), position = c(3.41, 3.42))
+  )
+  name <- specification[[if (plot) "plot" else "table"]]
+  if (!is.null(jaspResults[[name]]))
     return()
 
-  # the extract function automatically groups models by subgroup / distribution
-  # (or joins them within subgroups if distributions / models are to be collapsed)
-  fit <- .sapExtractFit(jaspResults, options, type = "selected")
-  # flatten the list - each model has to get its own matrix because they might differ in parameters etc...
-  fit <- .sapFlattenFit(fit, options)
-
-  # output dependencies
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "survivalTimeTable", "predictionsSurvivalTimeStepsType", "predictionsSurvivalTimeStepsNumber", "predictionsSurvivalTimeStepsFrom",
-                          "predictionsSurvivalTimeStepsSize", "predictionsSurvivalTimeStepsTo", "predictionsSurvivalTimeCustom",
-                          "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel"
-                          )
+  output <- if (measure == "survivalTime") "survivalTime" else "lifeTime"
+  if (plot && .sapMergePlots(options, output)) {
+    fit <- .sapExtractFit(jaspResults, options, type = "byModel", output = output)
+  } else {
+    fit <- .sapFlattenFit(.sapExtractFit(jaspResults, options, type = "selected"), options)
+    if (plot)
+      fit <- .sapNestFit(fit)
+  }
+  builder <- if (plot)
+    function(fit, options) .sapCreatePredictionPlotWrapper(fit, options, type = specification[["type"]])
+  else
+    function(fit, options) .sapCreatePredictionTableWrapper(fit, options, type = specification[["type"]])
 
   .sapSectionWrapper(
     jaspResults   = jaspResults,
     options       = options,
     fit           = fit,
-    tableFunction = .sapSurvivalTimeTableFun,
-    name          = "survivalTimeTable",
-    title         = gettext("Predicted Survival Time"),
-    dependencies  = outputDependencies,
-    position      = 3.01
+    tableFunction = builder,
+    name          = name,
+    title         = specification[["title"]],
+    dependencies  = .sapPredictionDependencies(options, measure, plot),
+    position      = specification[["position"]][if (plot) 2 else 1]
   )
 
   return()
 }
-.sapSurvivalProbabilityTable <- function(jaspResults, options) {
+.sapPredictionDependencies <- function(options, measure, plot = FALSE) {
 
-  if (!is.null(jaspResults[["survivalProbabilityTable"]]))
-    return()
-
-  fit <- .sapExtractFit(jaspResults, options, type = "selected")
-  fit <- .sapFlattenFit(fit, options)
-
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "survivalProbabilityTable", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
-                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
-                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom", "survivalProbabilityAsFailureProbability"
+  survivalTime <- measure == "survivalTime"
+  grid <- if (survivalTime) "SurvivalTime" else "LifeTime"
+  dependencies <- c(
+    .sapGetDependencies(options), "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
+    paste0(measure, if (plot) "Plot" else "Table"),
+    paste0("predictions", grid, c("StepsType", "StepsNumber", "StepsFrom", "StepsSize", "StepsTo", "Custom")),
+    "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel"
   )
+  if (!survivalTime)
+    dependencies <- c(dependencies, "lifeTimeMergeTablesAcrossMeasures", "predictionsLifeTimeRoundSteps")
+  if (measure == "survivalProbability")
+    dependencies <- c(dependencies, "survivalProbabilityAsFailureProbability")
+  if (plot) {
+    output <- if (survivalTime) "survivalTime" else "lifeTime"
+    dependencies <- c(dependencies, paste0(output, "MergePlotsAcrossDistributions"), "colorPalette", "plotLegend", "plotTheme")
+    if (options[["analysisType"]] == "mixture")
+      dependencies <- c(dependencies, paste0(output, "MergePlotsAcrossComponents"))
+    if (measure == "survivalProbability")
+      dependencies <- c(dependencies, "survivalProbabilityPlotKaplanMeier", "survivalProbabilityPlotCensoringEvents",
+                         "survivalProbabilityPlotTransformXAxis", "survivalProbabilityPlotTransformYAxis")
+  }
 
-  .sapSectionWrapper(
-    jaspResults   = jaspResults,
-    options       = options,
-    fit           = fit,
-    tableFunction = .sapSurvivalProbabilityTableFun,
-    name          = "survivalProbabilityTable",
-    title         = if (options[["survivalProbabilityAsFailureProbability"]]) gettext("Predicted Failure Probability") else gettext("Predicted Survival Probability"),
-    dependencies  = outputDependencies,
-    position      = 3.11
-  )
-
-  return()
+  return(dependencies)
 }
-.sapHazardTable              <- function(jaspResults, options) {
 
-  if (!is.null(jaspResults[["hazardTable"]]))
-    return()
-
-  fit <- .sapExtractFit(jaspResults, options, type = "selected")
-  fit <- .sapFlattenFit(fit, options)
-
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "hazardTable", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
-                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
-                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
-  )
-
-  .sapSectionWrapper(
-    jaspResults   = jaspResults,
-    options       = options,
-    fit           = fit,
-    tableFunction = .sapHazardTableFun,
-    name          = "hazardTable",
-    title         = gettext("Predicted Hazard"),
-    dependencies  = outputDependencies,
-    position      = 3.21
-  )
-
-  return()
-}
-.sapCumHazardTable           <- function(jaspResults, options) {
-
-  if (!is.null(jaspResults[["cumHazardTable"]]))
-    return()
-
-  fit <- .sapExtractFit(jaspResults, options, type = "selected")
-  fit <- .sapFlattenFit(fit, options)
-
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "cumulativeHazardTable", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
-                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
-                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
-  )
-
-  .sapSectionWrapper(
-    jaspResults   = jaspResults,
-    options       = options,
-    fit           = fit,
-    tableFunction = .sapCumHazardTableFun,
-    name          = "cumHazardTable",
-    title         = gettext("Predicted Cumulative Hazard"),
-    dependencies  = outputDependencies,
-    position      = 3.31
-  )
-
-  return()
-}
-.sapRmstTable                <- function(jaspResults, options) {
-
-  if (!is.null(jaspResults[["rmstTable"]]))
-    return()
-
-  fit <- .sapExtractFit(jaspResults, options, type = "selected")
-  fit <- .sapFlattenFit(fit, options)
-
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "restrictedMeanSurvivalTimeTable", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
-                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
-                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
-  )
-
-  .sapSectionWrapper(
-    jaspResults   = jaspResults,
-    options       = options,
-    fit           = fit,
-    tableFunction = .sapRmstTableFun,
-    name          = "rmstTable",
-    title         = gettext("Predicted Restricted Mean Survival Time"),
-    dependencies  = outputDependencies,
-    position      = 3.41
-  )
-
-  return()
-}
 .sapLifeTimeTable            <- function(jaspResults, options) {
 
   if (!is.null(jaspResults[["lifeTimeTable"]]))
@@ -167,10 +100,10 @@
   fit <- .sapExtractFit(jaspResults, options, type = "selected")
   fit <- .sapFlattenFit(fit, options)
 
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
+  outputDependencies <- c(.sapGetDependencies(options), "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "survivalProbabilityTable", "hazardTable", "cumulativeHazardTable", "restrictedMeanSurvivalTimeTable", "lifeTimeMergeTablesAcrossMeasures",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
-                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom"
+                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom", "survivalProbabilityAsFailureProbability"
   )
 
   .sapSectionWrapper(
@@ -187,187 +120,48 @@
   return()
 }
 
-# prediction plots
-.sapSurvivalTimePlot        <- function(jaspResults, options) {
+.sapPredictionPlotAddCaption <- function(plot, messages, width) {
 
-  if (!is.null(jaspResults[["survivalTimePlot"]]))
-    return()
+  if (length(messages) == 0)
+    return(plot)
 
-  # the extract function automatically groups models by subgroup / distribution
-  # (or joins them within subgroups if distributions / models are to be collapsed)
-  if (options[["survivalTimeMergePlotsAcrossDistributions"]] && options[["distribution"]] %in% "all" && !options[["interpretModel"]] %in% c("bestAic", "bestBic")) {
-    fit <- .sapExtractFit(jaspResults, options, type = "byModel")
-    fit <- .sapFilterSelectedModel(fit, options)
-  } else {
-    fit <- .sapExtractFit(jaspResults, options, type = "selected")
-    fit <- .sapNestFit(.sapFlattenFit(fit, options))
-  }
-
-  # output dependencies
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "survivalTimePlot", "predictionsSurvivalTimeStepsType", "predictionsSurvivalTimeStepsNumber", "predictionsSurvivalTimeStepsFrom",
-                          "predictionsSurvivalTimeStepsSize", "predictionsSurvivalTimeStepsTo", "predictionsSurvivalTimeCustom",
-                          "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel", "survivalTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme"
-  )
-
-  .sapSectionWrapper(
-    jaspResults   = jaspResults,
-    options       = options,
-    fit           = fit,
-    tableFunction = .sapSurvivalTimePlotFun,
-    name          = "survivalTimePlot",
-    title         = gettext("Predicted Survival Time"),
-    dependencies  = outputDependencies,
-    position      = 3.02
-  )
-
-  return()
+  lines <- strwrap(unique(messages), width = max(25L, floor((width - 40) / 7)))
+  return(plot + ggplot2::labs(caption = paste(lines, collapse = "\n")) + ggplot2::theme(
+    plot.caption = ggplot2::element_text(size = 8, hjust = 0, lineheight = 1.1, margin = ggplot2::margin(t = 8)),
+    plot.caption.position = "plot"
+  ))
 }
-.sapSurvivalProbabilityPlot <- function(jaspResults, options) {
+.sapPredictionPlotCaptionHeight <- function(plot, height) {
 
-  if (!is.null(jaspResults[["survivalProbabilityPlot"]]))
-    return()
+  caption <- plot$labels[["caption"]]
+  if (is.null(caption) || !nzchar(caption))
+    return(height)
 
-  # the extract function automatically groups models by subgroup / distribution
-  # (or joins them within subgroups if distributions / models are to be collapsed)
-  if (options[["lifeTimeMergePlotsAcrossDistributions"]] && options[["distribution"]] %in% "all" && !options[["interpretModel"]] %in% c("bestAic", "bestBic")) {
-    fit <- .sapExtractFit(jaspResults, options, type = "byModel")
-    fit <- .sapFilterSelectedModel(fit, options)
-  } else {
-    fit <- .sapExtractFit(jaspResults, options, type = "selected")
-    fit <- .sapNestFit(.sapFlattenFit(fit, options))
-  }
-
-  # output dependencies
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "survivalProbabilityPlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
-                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
-                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom",
-                          "lifeTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme",
-                          "survivalProbabilityPlotKaplanMeier", "survivalProbabilityPlotCensoringEvents", "survivalProbabilityPlotTransformXAxis", "survivalProbabilityPlotTransformYAxis",
-                          "survivalProbabilityAsFailureProbability"
-  )
-
-  .sapSectionWrapper(
-    jaspResults   = jaspResults,
-    options       = options,
-    fit           = fit,
-    tableFunction = .sapSurvivalProbabilityPlotFun,
-    name          = "survivalProbabilityPlot",
-    title         = if (options[["survivalProbabilityAsFailureProbability"]]) gettext("Predicted Failure Probability") else gettext("Predicted Survival Probability"),
-    dependencies  = outputDependencies,
-    position      = 3.12
-  )
-
-  return()
+  # Reserve caption space instead of shrinking the original plotting area.
+  return(height + 16 + 16 * length(strsplit(caption, "\n", fixed = TRUE)[[1]]))
 }
-.sapHazardPlot              <- function(jaspResults, options) {
 
-  if (!is.null(jaspResults[["hazardPlot"]]))
-    return()
+.sapSummaryPredictions <- function(fit, ..., ci) {
 
-  # the extract function automatically groups models by subgroup / distribution
-  # (or joins them within subgroups if distributions / models are to be collapsed)
-  if (options[["lifeTimeMergePlotsAcrossDistributions"]] && options[["distribution"]] %in% "all" && !options[["interpretModel"]] %in% c("bestAic", "bestBic")) {
-    fit <- .sapExtractFit(jaspResults, options, type = "byModel")
-    fit <- .sapFilterSelectedModel(fit, options)
-  } else {
-    fit <- .sapExtractFit(jaspResults, options, type = "selected")
-    fit <- .sapNestFit(.sapFlattenFit(fit, options))
+  activeBound <- .sapConstraintActive(fit)
+  messages <- c(.sapConstraintNote(fit), .sapConstraintWarning(fit), .sapNativeFitWarnings(fit))
+  data <- withCallingHandlers(summary(fit, ..., ci = ci && !activeBound && all(is.finite(fit[["cov"]]))), warning = function(w) {
+    messages <<- c(messages, conditionMessage(w))
+    invokeRestart("muffleWarning")
+  })
+  for (i in seq_along(data)) {
+    if (!"lcl" %in% names(data[[i]])) data[[i]][["lcl"]] <- rep(NA_real_, nrow(data[[i]]))
+    if (!"ucl" %in% names(data[[i]])) data[[i]][["ucl"]] <- rep(NA_real_, nrow(data[[i]]))
+    if (anyNA(data[[i]][["est"]]))
+      messages <- c(messages, gettext("Some predictions could not be evaluated and are shown as missing."))
+    if (any(is.infinite(data[[i]][["est"]])))
+      messages <- c(messages, gettext("Some requested quantities are infinite or exceed numerical range."))
+    if (ci && !activeBound && anyNA(data[[i]][c("lcl", "ucl")]))
+      messages <- c(messages, gettext("Some confidence intervals could not be evaluated and are shown as missing."))
   }
+  attr(data, "predictionWarnings") <- unique(messages)
 
-  # output dependencies
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "hazardPlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
-                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
-                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom",
-                          "lifeTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme"
-  )
-
-  .sapSectionWrapper(
-    jaspResults   = jaspResults,
-    options       = options,
-    fit           = fit,
-    tableFunction = .sapHazardPlotFun,
-    name          = "hazardPlot",
-    title         = gettext("Predicted Hazard"),
-    dependencies  = outputDependencies,
-    position      = 3.22
-  )
-
-  return()
-}
-.sapCumHazardPlot           <- function(jaspResults, options) {
-
-  if (!is.null(jaspResults[["cumulativeHazardPlot"]]))
-    return()
-
-  # the extract function automatically groups models by subgroup / distribution
-  # (or joins them within subgroups if distributions / models are to be collapsed)
-  if (options[["lifeTimeMergePlotsAcrossDistributions"]] && options[["distribution"]] %in% "all" && !options[["interpretModel"]] %in% c("bestAic", "bestBic")) {
-    fit <- .sapExtractFit(jaspResults, options, type = "byModel")
-    fit <- .sapFilterSelectedModel(fit, options)
-  } else {
-    fit <- .sapExtractFit(jaspResults, options, type = "selected")
-    fit <- .sapNestFit(.sapFlattenFit(fit, options))
-  }
-
-  # output dependencies
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "cumulativeHazardPlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
-                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
-                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom",
-                          "lifeTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme"
-  )
-
-  .sapSectionWrapper(
-    jaspResults   = jaspResults,
-    options       = options,
-    fit           = fit,
-    tableFunction = .sapCumHazardPlotFun,
-    name          = "cumulativeHazardPlot",
-    title         = gettext("Predicted Cumulative Hazard"),
-    dependencies  = outputDependencies,
-    position      = 3.32
-  )
-
-  return()
-}
-.sapRmstPlot                <- function(jaspResults, options) {
-
-  if (!is.null(jaspResults[["restrictedMeanSurvivalTimePlot"]]))
-    return()
-
-  # the extract function automatically groups models by subgroup / distribution
-  # (or joins them within subgroups if distributions / models are to be collapsed)
-  if (options[["lifeTimeMergePlotsAcrossDistributions"]] && options[["distribution"]] %in% "all" && !options[["interpretModel"]] %in% c("bestAic", "bestBic")) {
-    fit <- .sapExtractFit(jaspResults, options, type = "byModel")
-    fit <- .sapFilterSelectedModel(fit, options)
-  } else {
-    fit <- .sapExtractFit(jaspResults, options, type = "selected")
-    fit <- .sapNestFit(.sapFlattenFit(fit, options))
-  }
-
-  # output dependencies
-  outputDependencies <- c(.sapDependencies, "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "restrictedMeanSurvivalTimePlot", "lifeTimeMergeTablesAcrossMeasures", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
-                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
-                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom",
-                          "lifeTimeMergePlotsAcrossDistributions", "colorPalette", "plotLegend", "plotTheme"
-  )
-
-  .sapSectionWrapper(
-    jaspResults   = jaspResults,
-    options       = options,
-    fit           = fit,
-    tableFunction = .sapRmstPlotFun,
-    name          = "restrictedMeanSurvivalTimePlot",
-    title         = gettext("Predicted Restricted Mean Survival Time"),
-    dependencies  = outputDependencies,
-    position      = 3.42
-  )
-
-  return()
+  return(data)
 }
 
 .sapCreatePredictionTableWrapper <- function(fit, options, type) {
@@ -395,10 +189,10 @@
   # if there is any continuous predictor, the output is averaged across the predictors matrix
   if (type == "quantile") {
     optionsSequence <- .sapOptions2PredictionQuantile(options)
-    data  <- try(summary(fit, type = type, quantiles = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]]))
+    data  <- try(.sapSummaryPredictions(fit, type = type, quantiles = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]]))
   } else {
     optionsSequence <- .sapOptions2PredictionTime(options, fit)
-    data  <- try(summary(fit, type = type, t = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]]))
+    data  <- try(.sapSummaryPredictions(fit, type = type, t = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]]))
   }
 
   # error handling for divergent integrals
@@ -408,18 +202,17 @@
     return(tempTable)
   }
 
+  predictionWarnings <- attr(data, "predictionWarnings")
   dataLength <- length(data)
 
   for (i in seq_along(data)) {
     data[[i]]           <- data[[i]][,-1]
     colnames(data[[i]]) <- c("estimate", "lCi", "uCi")
 
-    # transform survival to failure if requested (swap CI bounds: F = 1 - S)
+    # transform survival to failure if requested
     if (type == "survival" && options[["survivalProbabilityAsFailureProbability"]]) {
       data[[i]]$estimate <- 1 - data[[i]]$estimate
-      lowerCi            <- data[[i]]$lCi
-      data[[i]]$lCi      <- 1 - data[[i]]$uCi
-      data[[i]]$uCi      <- 1 - lowerCi
+      data[[i]][c("lCi", "uCi")] <- 1 - data[[i]][c("uCi", "lCi")]
     }
   }
 
@@ -438,13 +231,17 @@
   data$at              <- optionsSequence
   data$subgroup        <- NA
   data$distribution    <- NA
+  data$components      <- NA
   data$model           <- NA
   data$subgroup[1]     <- attr(fit, "subgroup")
   data$distribution[1] <- attr(fit, "distribution")
+  data$components[1]   <- attr(fit, "components")
   data$model[1]        <- attr(fit, "modelTitle")
 
   if (!is.null(attr(fit, "label")))
     tempTable$addFootnote(attr(fit, "label"))
+  for (message in predictionWarnings)
+    tempTable$addFootnote(message)
 
   tempTable$setData(data)
   tempTable$showSpecifiedColumnsOnly <- TRUE
@@ -453,54 +250,37 @@
 }
 .sapLifeTimeTableWrapper         <- function(fit, options, type, timeSequence) {
 
-  tempData           <- summary(fit, type = type, t = timeSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]])
+  tempData           <- .sapSummaryPredictions(fit, type = type, t = timeSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]])
+  predictionWarnings <- attr(tempData, "predictionWarnings")
   if (length(tempData) > 1)
-    stop(gettext("Life time tables cannot be merged if there is more than a one prediction from a given model."))
-
+    stop(errorCondition(gettext("Life time tables cannot be merged when a model produces multiple predictions. Disable 'Merge tables across measures'."), class = "sapMultiplePredictionsError"))
   tempData           <- tempData[[1]][,-1]
   colnames(tempData) <- c("estimate", "lCi", "uCi")
 
-  # transform survival to failure if requested (swap CI bounds: F = 1 - S)
+  # transform survival to failure if requested
   if (type == "survival" && options[["survivalProbabilityAsFailureProbability"]]) {
     tempData$estimate <- 1 - tempData$estimate
-    lowerCi           <- tempData$lCi
-    tempData$lCi      <- 1 - tempData$uCi
-    tempData$uCi      <- 1 - lowerCi
+    tempData[c("lCi", "uCi")] <- 1 - tempData[c("uCi", "lCi")]
   }
 
+  attr(tempData, "predictionWarnings") <- predictionWarnings
   return(tempData)
 }
+.sapLifeTimePredictionError <- function(prediction, message) {
 
-.sapSurvivalTimeTableFun         <- function(fit, options) {
+  condition <- attr(prediction, "condition")
+  if (inherits(condition, "sapMultiplePredictionsError"))
+    return(conditionMessage(condition))
 
-  tempTable <- .sapCreatePredictionTableWrapper(fit, options, type = "quantile")
-  return(tempTable)
+  return(message)
 }
-.sapSurvivalProbabilityTableFun  <- function(fit, options) {
 
-  tempTable <- .sapCreatePredictionTableWrapper(fit, options, type = "survival")
-  return(tempTable)
-}
-.sapHazardTableFun               <- function(fit, options) {
-
-  tempTable <- .sapCreatePredictionTableWrapper(fit, options, type = "hazard")
-  return(tempTable)
-}
-.sapCumHazardTableFun            <- function(fit, options) {
-
-  tempTable <- .sapCreatePredictionTableWrapper(fit, options, type = "cumhaz")
-  return(tempTable)
-}
-.sapRmstTableFun                 <- function(fit, options) {
-
-  tempTable <- .sapCreatePredictionTableWrapper(fit, options, type = "rmst")
-  return(tempTable)
-}
 .sapLifeTimeTableFun             <- function(fit, options) {
 
   tempTable <- createJaspTable()
   .sapAddColumnSubgroup(     tempTable, options, output = "coefficientsCovarianceMatrix")
   .sapAddColumnDistribution( tempTable, options, output = "coefficientsCovarianceMatrix")
+  .sapAddColumnComponents(   tempTable, options, output = "coefficientsCovarianceMatrix")
   .sapAddColumnModel(        tempTable, options, output = "coefficientsCovarianceMatrix")
   tempTable$addColumnInfo(name = "at", title = gettext("Time"), type = "number")
 
@@ -519,7 +299,7 @@
     # error handling for divergent integrals
     if (jaspBase::isTryError(data[["survivalProbability"]])) {
       tempTable <- createJaspTable()
-      tempTable$setError(gettext("The model failed to produce survival predictions. Consider simplifying the model."))
+      tempTable$setError(.sapLifeTimePredictionError(data[["survivalProbability"]], gettext("The model failed to produce survival predictions. Consider simplifying the model.")))
       return(tempTable)
     }
   }
@@ -532,7 +312,7 @@
     # error handling for divergent integrals
     if (jaspBase::isTryError(data[["hazard"]])) {
       tempTable <- createJaspTable()
-      tempTable$setError(gettext("The model failed to produce hazard predictions. Consider simplifying the model."))
+      tempTable$setError(.sapLifeTimePredictionError(data[["hazard"]], gettext("The model failed to produce hazard predictions. Consider simplifying the model.")))
       return(tempTable)
     }
   }
@@ -545,7 +325,7 @@
     # error handling for divergent integrals
     if (jaspBase::isTryError(data[["cumulativeHazard"]])) {
       tempTable <- createJaspTable()
-      tempTable$setError(gettext("The model failed to produce cumulative predictions. Consider simplifying the model."))
+      tempTable$setError(.sapLifeTimePredictionError(data[["cumulativeHazard"]], gettext("The model failed to produce cumulative predictions. Consider simplifying the model.")))
       return(tempTable)
     }
   }
@@ -558,19 +338,23 @@
     # error handling for divergent integrals
     if (jaspBase::isTryError(data[["restrictedMeanSurvivalTime"]])) {
       tempTable <- createJaspTable()
-      tempTable$setError(gettext("The model failed to produce restricted mean survival time predictions. Consider simplifying the model."))
+      tempTable$setError(.sapLifeTimePredictionError(data[["restrictedMeanSurvivalTime"]], gettext("The model failed to produce restricted mean survival time predictions. Consider simplifying the model.")))
       return(tempTable)
     }
   }
 
+  for (message in unique(unlist(lapply(data, attr, "predictionWarnings"))))
+    tempTable$addFootnote(message)
   data <- do.call(cbind, data)
 
   data$at              <- timeSequence
   data$subgroup        <- NA
   data$distribution    <- NA
+  data$components      <- NA
   data$model           <- NA
   data$subgroup[1]     <- attr(fit, "subgroup")
   data$distribution[1] <- attr(fit, "distribution")
+  data$components[1]   <- attr(fit, "components")
   data$model[1]        <- attr(fit, "modelTitle")
 
   if (!is.null(attr(fit, "label")))
@@ -616,6 +400,7 @@
   }
 
   out <- list()
+  predictionWarnings <- character(0)
   for (i in seq_along(fit)) {
 
     # skip model on error
@@ -623,9 +408,9 @@
       next
 
     if (type == "quantile") {
-      data  <- try(summary(fit[[i]], type = type, quantiles = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]]))
+      data  <- try(.sapSummaryPredictions(fit[[i]], type = type, quantiles = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]]))
     } else {
-      data  <- try(summary(fit[[i]], type = type, t = optionsSequence, ci = TRUE, cl = options[["predictionsConfidenceIntervalLevel"]]))
+      data  <- try(.sapSummaryPredictions(fit[[i]], type = type, t = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]]))
     }
 
     # error handling for divergent integrals
@@ -635,6 +420,7 @@
       return(tempPlot)
     }
 
+    predictionWarnings <- c(predictionWarnings, attr(data, "predictionWarnings"))
     # deal with potentially multiple predictions
     for (j in seq_along(data)) {
 
@@ -643,9 +429,7 @@
 
       if (type == "survival" && options[["survivalProbabilityAsFailureProbability"]]) {
         data[[j]]$estimate <- 1 - data[[j]]$estimate
-        lowerCi            <- data[[j]]$lCi
-        data[[j]]$lCi      <- 1 - data[[j]]$uCi
-        data[[j]]$uCi      <- 1 - lowerCi
+        data[[j]][c("lCi", "uCi")] <- 1 - data[[j]][c("uCi", "lCi")]
       }
 
       # add factor level
@@ -656,7 +440,7 @@
       }
 
       # add distribution information
-      data[[j]]$Distribution <- attr(fit[[i]], "distribution")
+      data[[j]]$Distribution <- .sapSeriesLabel(fit[[i]], options)
     }
 
     # bind across levels
@@ -671,6 +455,12 @@
   out[["lCi"]][is.infinite(out[["lCi"]])] <- NA
   out[["uCi"]][is.infinite(out[["uCi"]])] <- NA
 
+  if (!any(is.finite(out[["at"]]) & is.finite(out[["estimate"]]))) {
+    tempPlot <- createJaspPlot(title = estimateTitle)
+    tempPlot$setError(paste(unique(c(gettext("No finite predictions are available for this plot."), predictionWarnings)), collapse = "\n"))
+    return(tempPlot)
+  }
+
   # check how to distribute legend
   hasDistribution <- length(unique(out[["Distribution"]])) > 1
   hasLevel        <- length(unique(out[["Level"]])) > 1
@@ -682,42 +472,8 @@
   }
 
   # compute Kaplan-Meier if needed
-  if (type == "survival" && isTRUE(options[["survivalProbabilityPlotKaplanMeier"]]) && options[["censoringType"]] == "right") {
-
-    kmFit    <- try(survfit(
-      formula = .saGetFormula(options, type = "KM"),
-      type    = "kaplan-meier",
-      data    = tempData
-    ))
-    kmTable <- summary(kmFit) # , times = optionsSequence
-    kmTable <- with(kmTable, data.frame(
-      at       = time,
-      estimate = surv,
-      lCi      = lower,
-      uCi      = upper
-    ))
-
-    if (options[["survivalProbabilityAsFailureProbability"]]) {
-      kmTable$estimate <- 1 - kmTable$estimate
-      lowerCi          <- kmTable$lCi
-      kmTable$lCi      <- 1 - kmTable$uCi
-      kmTable$uCi      <- 1 - lowerCi
-    }
-
-    # transform into a step function
-    kmTable    <- kmTable[rep(1:nrow(kmTable), each=2), ]
-    kmTable$at[1:(nrow(kmTable)-1)] <- kmTable$at[2:nrow(kmTable)]
-
-    # extend the last step to match the last data point
-    if (max(kmTable$at) < max(tempData[[options[["timeToEvent"]]]])) {
-      kmTable <- rbind(kmTable, data.frame(
-        at       = max(tempData[[options[["timeToEvent"]]]]),
-        estimate = kmTable[["estimate"]][nrow(kmTable)],
-        lCi      = kmTable[["lCi"]][nrow(kmTable)],
-        uCi      = kmTable[["uCi"]][nrow(kmTable)]
-      ))
-    }
-  }
+  if (type == "survival" && isTRUE(options[["survivalProbabilityPlotKaplanMeier"]]) && options[["censoringType"]] == "right")
+    kmTable <- .sapKaplanMeierStepData(tempData, options, failureProbability = options[["survivalProbabilityAsFailureProbability"]])
 
   # create a plot
   plot <- ggplot2::ggplot(data = out)
@@ -753,8 +509,8 @@
 
   }
 
-  # add CI
-  if (options[["predictionsConfidenceInterval"]]) {
+  # add available model intervals; active-bound fits retain point predictions only
+  if (options[["predictionsConfidenceInterval"]] && any(is.finite(out[["lCi"]]) & is.finite(out[["uCi"]]))) {
     aesCall <- list(
       x        = as.name("at"),
       ymin     = as.name("lCi"),
@@ -806,6 +562,57 @@
   if (type != "survival" && options[["plotTheme"]] == "detailed") {
     options[["plotTheme"]] <- "jasp"
   }
+  plot <- .sapPredictionPlotAddTheme(plot, options)
+  width <- if (hasDistribution || hasLevel) 550 else 400
+  plot  <- .sapPredictionPlotAddCaption(plot, predictionWarnings, width)
+
+  tempPlot <- createJaspPlot(width = width, height = .sapPredictionPlotCaptionHeight(plot, 320))
+  tempPlot$plotObject <- plot
+
+  return(tempPlot)
+}
+
+.sapKaplanMeierStepData          <- function(dataset, options, failureProbability) {
+
+  kmFit    <- survival::survfit(
+    formula = .saGetFormula(options, type = "KM"),
+    type    = "kaplan-meier",
+    data    = dataset,
+    weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]],
+    conf.int = options[["predictionsConfidenceIntervalLevel"]]
+  )
+  kmTable <- summary(kmFit) # , times = optionsSequence
+  kmTable <- with(kmTable, data.frame(
+    at       = time,
+    estimate = surv,
+    lCi      = lower,
+    uCi      = upper
+  ))
+  kmTable <- rbind(data.frame(at = 0, estimate = 1, lCi = 1, uCi = 1), kmTable)
+
+  if (failureProbability) {
+    kmTable$estimate <- 1 - kmTable$estimate
+    kmTable[c("lCi", "uCi")] <- 1 - kmTable[c("uCi", "lCi")]
+  }
+
+  # transform into a step function
+  kmTable <- kmTable[rep(seq_len(nrow(kmTable)), each = 2), ]
+  kmTable$at[seq_len(nrow(kmTable) - 1)] <- kmTable$at[seq_len(nrow(kmTable) - 1) + 1]
+
+  # extend the last step to match the last data point
+  if (max(kmTable$at) < max(dataset[[options[["timeToEvent"]]]])) {
+    kmTable <- rbind(kmTable, data.frame(
+      at       = max(dataset[[options[["timeToEvent"]]]]),
+      estimate = kmTable[["estimate"]][nrow(kmTable)],
+      lCi      = kmTable[["lCi"]][nrow(kmTable)],
+      uCi      = kmTable[["uCi"]][nrow(kmTable)]
+    ))
+  }
+
+  return(kmTable)
+}
+.sapPredictionPlotAddTheme        <- function(plot, options) {
+
   if (options[["plotTheme"]] == "jasp") {
     plot <- plot + jaspGraphs::geom_rangeframe() +
       jaspGraphs::themeJaspRaw(legend.position = options[["plotLegend"]])
@@ -814,12 +621,12 @@
       switch(
         options[["plotTheme"]],
         "whiteBackground" = ggplot2::theme_bw()       + ggplot2::theme(legend.position = options[["plotLegend"]]),
-        "light"           = ggplot2::theme_light()    + ggplot2::theme(legend.position = options[["plotLegend"]]),,
+        "light"           = ggplot2::theme_light()    + ggplot2::theme(legend.position = options[["plotLegend"]]),
         "detailed"        = ggplot2::theme_light()    + ggplot2::theme(legend.position = options[["plotLegend"]]),
         "minimal"         = ggplot2::theme_minimal()  + ggplot2::theme(legend.position = options[["plotLegend"]]),
         "pubr"            = jaspGraphs::themePubrRaw(legend = options[["plotLegend"]]),
         "apa"             = jaspGraphs::themeApaRaw(legend.pos = switch(
-          options[["plotTheme"]],
+          options[["plotLegend"]],
           "none"   = "none",
           "bottom" = "bottommiddle",
           "right"  = "bottomright",
@@ -829,12 +636,8 @@
       )
   }
 
-  tempPlot <- createJaspPlot(width = if (hasDistribution || hasLevel) 550 else 400, height = 320)
-  tempPlot$plotObject <- plot
-
-  return(tempPlot)
+  return(plot)
 }
-
 .sapPredictionPlotAddSurvivalAxis <- function(plot, options, xBreaks, yBreaks, atTitle, estimateTitle) {
 
   ### x-axis
@@ -845,7 +648,7 @@
   } else if (options[["survivalProbabilityPlotTransformXAxis"]] == "log") {
     # log transformation
     atTitle <- gettextf("%1$s (log scale)", atTitle)
-    plot <- plot + jaspGraphs::scale_x_continuous(breaks = xBreaks, limits = range(xBreaks), trans = "log", oob = scales::oob_keep)
+    plot <- plot + jaspGraphs::scale_x_continuous(breaks = xBreaks, limits = range(xBreaks), trans = "log", transform = "log", oob = scales::oob_keep)
 
   }
 
@@ -889,14 +692,14 @@
       yRange[1] <- max(0.01, yRange[1])
       yBreaks   <- exp(seq(log(yRange[1]), log(yRange[2]), length.out = 7))
 
-      plot <- plot + jaspGraphs::scale_y_continuous(breaks = yBreaks, limits = yRange, oob = scales::oob_keep, trans = "log")
+      plot <- plot + jaspGraphs::scale_y_continuous(breaks = yBreaks, limits = yRange, oob = scales::oob_keep, trans = "log", transform = "log")
 
     }
 
   } else if (options[["survivalProbabilityPlotTransformYAxis"]] == "logmlogmp") {
     # log-log transformation
-    logmlogmp    <- function(x) log(-log(1-x))
-    logmlogmpInv <- function(x) exp(-exp(x)) * (exp(exp(x))-1)
+    logmlogmp    <- function(x) log(-log1p(-x))
+    logmlogmpInv <- function(x) -expm1(-exp(x))
     estimateTitle <- gettextf("%1$s (log(-log(1-p)) scale)", estimateTitle)
 
     if (options[["plotTheme"]] == "detailed") {
@@ -916,10 +719,11 @@
       yRange[1] <- max(0.01, yRange[1])
       yRange[2] <- min(0.99, yRange[2])
       yBreaks   <- logmlogmpInv(seq(logmlogmp(yRange[2]), logmlogmp(yRange[1]), length.out = 7))
+      probabilityTransform <- scales::new_transform(name = "logmlogp", transform = logmlogmp, inverse = logmlogmpInv)
 
       plot <- plot + jaspGraphs::scale_y_continuous(
         breaks = (yBreaks), limits = (yRange), oob = scales::oob_keep,
-        trans = scales::new_transform(name = "logmlogp", transform = logmlogmp, inverse = logmlogmpInv)
+        trans = probabilityTransform, transform = probabilityTransform
       )
     }
   }
@@ -929,31 +733,6 @@
 }
 
 
-.sapSurvivalTimePlotFun         <- function(fit, options) {
-
-  tempPlot <- .sapCreatePredictionPlotWrapper(fit, options, type = "quantile")
-  return(tempPlot)
-}
-.sapSurvivalProbabilityPlotFun  <- function(fit, options) {
-
-  tempPlot <- .sapCreatePredictionPlotWrapper(fit, options, type = "survival")
-  return(tempPlot)
-}
-.sapHazardPlotFun               <- function(fit, options) {
-
-  tempPlot <- .sapCreatePredictionPlotWrapper(fit, options, type = "hazard")
-  return(tempPlot)
-}
-.sapCumHazardPlotFun            <- function(fit, options) {
-
-  tempPlot <- .sapCreatePredictionPlotWrapper(fit, options, type = "cumhaz")
-  return(tempPlot)
-}
-.sapRmstPlotFun                 <- function(fit, options) {
-
-  tempPlot <- .sapCreatePredictionPlotWrapper(fit, options, type = "rmst")
-  return(tempPlot)
-}
 .sapOptions2PredictionQuantile  <- function(options) {
 
   if (options[["predictionsSurvivalTimeStepsType"]] == "quantiles") {
@@ -964,7 +743,7 @@
   } else if (options[["predictionsSurvivalTimeStepsType"]] == "sequence") {
 
     setQuantiles <- seq(options[["predictionsSurvivalTimeStepsFrom"]], options[["predictionsSurvivalTimeStepsTo"]], options[["predictionsSurvivalTimeStepsSize"]])
-    setQuantiles <- setQuantiles[-length(setQuantiles)]
+    setQuantiles <- setQuantiles[setQuantiles < 1]
 
   } else if (options[["predictionsSurvivalTimeStepsType"]] == "custom") {
 
@@ -1009,25 +788,27 @@
 
     if (stepFrom != "") {
       stepFrom <- as.numeric(trimws(stepFrom, which = "both"))
-      if (is.na(stepFrom) || stepFrom <= 0)
-        .quitAnalysis(gettext("Step from for predicted survival time must be a positive number."))
+      if (!is.finite(stepFrom) || stepFrom < 0)
+        .quitAnalysis(gettext("Step from for predicted survival time must be a finite, non-negative number."))
     } else {
-      stepTo <- 0
+      stepFrom <- 0
     }
     if (stepTo != "") {
       stepTo <- as.numeric(trimws(stepTo, which = "both"))
-      if (is.na(stepTo) || stepTo <= 0)
-        .quitAnalysis(gettext("Step to for predicted survival time must be a positive number."))
+      if (!is.finite(stepTo) || stepTo <= 0)
+        .quitAnalysis(gettext("Step to for predicted survival time must be a finite, positive number."))
     } else {
       stepTo <- maxTime
     }
     if (stepSize != "") {
       stepSize <- as.numeric(trimws(stepSize, which = "both"))
-      if (is.na(stepSize) || stepSize <= 0)
-        .quitAnalysis(gettext("Step size for predicted survival time must be a positive number."))
+      if (!is.finite(stepSize) || stepSize <= 0)
+        .quitAnalysis(gettext("Step size for predicted survival time must be a finite, positive number."))
     } else {
       stepSize <- (stepTo - stepFrom) / 10
     }
+    if (stepTo <= stepFrom)
+      .quitAnalysis(gettext("Step to for predicted survival time must be greater than step from."))
 
     # special treatment for setting limits when survival plot with transformation is used
     if (type == "survival" && options[["survivalProbabilityPlotTransformXAxis"]] %in% c("log")) {
@@ -1081,13 +862,17 @@
   x <- trimws(x, which = "both", whitespace = "\\)")
   x <- trimws(x, which = "both", whitespace = ",")
 
+  if (!nzchar(x))
+    .quitAnalysis(message)
+
   x <- strsplit(x, ",", fixed = TRUE)[[1]]
 
   x <- trimws(x, which = "both")
   x <- x[x != ""]
 
-  if (anyNA(as.numeric(x)))
+  x <- suppressWarnings(as.numeric(x))
+  if (length(x) == 0 || any(!is.finite(x)))
     .quitAnalysis(message)
 
-  return(as.numeric(x))
+  return(x)
 }

@@ -23,23 +23,23 @@
   # Probability-paper diagnostics are distribution-level checks by default.
   # When requested, group the selected distributions by model/subgroup and
   # overlay them in one canvas, following the prediction-plot merge pattern.
-  if (isTRUE(options[["probabilityPlotMergePlotsAcrossDistributions"]]) && options[["distribution"]] %in% "all" && !options[["interpretModel"]] %in% c("bestAic", "bestBic")) {
-    fit <- .sapExtractFit(jaspResults, options, type = "byModel")
-    fit <- .sapFilterSelectedModel(fit, options)
+  if (.sapMergePlots(options, "probabilityPlot")) {
+    fit <- .sapExtractFit(jaspResults, options, type = "byModel", output = "probabilityPlot")
   } else {
     fit <- .sapExtractFit(jaspResults, options, type = "selected")
     fit <- .sapFlattenFit(fit, options)
   }
 
   outputDependencies <- c(
-    .sapDependencies, "interpretModel", "compareModelsAcrossDistributions", "alwaysDisplayModelInformation",
+    .sapGetDependencies(options), "interpretModel", "compareModelsAcrossDistributions", "alwaysDisplayModelInformation",
     "probabilityPlot", "probabilityPlotCanvas", "probabilityPlotEmpiricalPoints",
     "probabilityPlotPointCoordinates", "probabilityPlotFittedCurve",
     "probabilityPlotCensoringEvents", "probabilityPlotMergePlotsAcrossDistributions",
     "probabilityPlotConfidenceInterval", "probabilityPlotConfidenceIntervalLevel",
     "probabilityPlotGrid", "probabilityPlotPlottingPosition", "probabilityPlotRankAdjustment",
     "probabilityPlotTiesHandler", "probabilityPlotLegend", "probabilityPlotColorPalette",
-    "probabilityPlotTheme"
+    "probabilityPlotTheme",
+    if (options[["analysisType"]] == "mixture") "probabilityPlotMergePlotsAcrossComponents"
   )
 
   .sapSectionWrapper(
@@ -56,25 +56,6 @@
   return()
 }
 
-.sapFilterSelectedModel <- function(fit, options) {
-
-  if (!.sapMultipleModels(options) || options[["interpretModel"]] %in% c("all", "bestAic", "bestBic"))
-    return(fit)
-
-  keep <- vapply(fit, function(fitGroup) {
-    modelIds <- vapply(fitGroup, function(x) {
-      modelId <- attr(x, "modelId")
-      if (is.null(modelId) || length(modelId) == 0 || is.na(modelId[1]))
-        return(NA_character_)
-      return(as.character(modelId[1]))
-    }, character(1))
-
-    return(any(modelIds == options[["interpretModel"]], na.rm = TRUE))
-  }, logical(1))
-
-  return(fit[keep])
-}
-
 .sapProbabilityPlotFun <- function(fit, options) {
 
   fitList  <- .sapProbabilityPlotAsFitList(fit)
@@ -86,10 +67,14 @@
   if (length(fitValid) == 0)
     return(tempPlot)
 
-  tempPlot$plotObject <- try(.sapCreateProbabilityPlot(fitList, options))
+  plot <- try(.sapCreateProbabilityPlot(fitList, options))
 
-  if (jaspBase::isTryError(tempPlot$plotObject))
+  if (jaspBase::isTryError(plot))
     tempPlot$setError(gettext("The model failed to produce a probability plot. Consider simplifying the model."))
+  else {
+    tempPlot$height     <- .sapPredictionPlotCaptionHeight(plot, 420)
+    tempPlot$plotObject <- plot
+  }
 
   return(tempPlot)
 }
@@ -99,7 +84,7 @@
   if (is.null(fit))
     return(list())
 
-  if (jaspBase::isTryError(fit) || inherits(fit, "flexsurvreg"))
+  if (inherits(fit, "try-error") || inherits(fit, "flexsurvreg"))
     return(list(fit))
 
   return(fit)
@@ -137,7 +122,7 @@
   if (length(fitList) == 0)
     return(FALSE)
 
-  distributionLabels <- vapply(fitList, .sapProbabilityPlotDistributionLabel, character(1))
+  distributionLabels <- vapply(fitList, .sapProbabilityPlotDistributionLabel, character(1), options = options)
   hasDistribution    <- length(unique(stats::na.omit(distributionLabels))) > 1
   hasLevel           <- any(vapply(fitList, .sapProbabilityPlotFitCanShowLevels, logical(1), options = options))
 
@@ -165,6 +150,7 @@
   if (length(fitList) == 0)
     stop(gettext("The probability plot requires at least one fitted model."))
 
+  width <- .sapProbabilityPlotWidth(fitList, options)
   dataset <- attr(fitList[[1]], "dataset")
   observedTimeRange <- .sapProbabilityPlotTimeRange(.saExtractSurvTimes(dataset, options))
   timeSequence <- .sapProbabilityPlotTimeSequence(observedTimeRange, options)
@@ -180,6 +166,7 @@
   curveData <- .sapProbabilityPlotEmptyCurveData()
   if (options[["probabilityPlotFittedCurve"]])
     curveData <- .sapProbabilityPlotCurveData(fitList, options, timeSequence)
+  predictionWarnings <- attr(curveData, "predictionWarnings")
 
   if (nrow(empiricalData) == 0 && nrow(curveData) == 0 && nrow(censoringData) == 0)
     stop(gettext("The probability plot requires at least one positive observed failure time, censored observation, or fitted curve."))
@@ -196,7 +183,7 @@
 
   plot <- ggplot2::ggplot()
 
-  if (nrow(curveData) > 0 && options[["probabilityPlotConfidenceInterval"]]) {
+  if (nrow(curveData) > 0 && options[["probabilityPlotConfidenceInterval"]] && any(is.finite(curveData[["lCi"]]) & is.finite(curveData[["uCi"]]))) {
     aesCall <- list(
       x     = as.name("time"),
       ymin  = as.name("lCi"),
@@ -255,6 +242,7 @@
 
   plot <- .sapProbabilityPlotAddAxes(plot, empiricalData, curveData, censoringData, options, observedTimeRange)
   plot <- .sapProbabilityPlotAddTheme(plot, options)
+  plot <- .sapPredictionPlotAddCaption(plot, predictionWarnings, width)
 
   return(plot)
 }
@@ -475,9 +463,11 @@
   ciLevel <- .sapProbabilityPlotConfidenceIntervalLevel(options)
 
   out <- list()
+  predictionWarnings <- character(0)
   for (i in seq_along(fitList)) {
 
-    data <- summary(fitList[[i]], type = "survival", t = timeSequence, ci = TRUE, cl = ciLevel)
+    data <- .sapSummaryPredictions(fitList[[i]], type = "survival", t = timeSequence, ci = options[["probabilityPlotConfidenceInterval"]], cl = ciLevel)
+    predictionWarnings <- c(predictionWarnings, attr(data, "predictionWarnings"))
 
     for (j in seq_along(data)) {
       colnames(data[[j]]) <- c("time", "survival", "survivalLCI", "survivalUCI")
@@ -486,7 +476,7 @@
       data[[j]][["lCi"]]          <- 1 - data[[j]][["survivalUCI"]]
       data[[j]][["uCi"]]          <- 1 - data[[j]][["survivalLCI"]]
       data[[j]][["Level"]]        <- if (length(data) > 1) decodeColNames(names(data)[j]) else NA_character_
-      data[[j]][["Distribution"]] <- .sapProbabilityPlotDistributionLabel(fitList[[i]])
+      data[[j]][["Distribution"]] <- .sapProbabilityPlotDistributionLabel(fitList[[i]], options)
       data[[j]][["Group"]]        <- paste(data[[j]][["Distribution"]], data[[j]][["Level"]], sep = " | ")
 
       out[[length(out) + 1]] <- data[[j]][, c("time", "probability", "lCi", "uCi", "Level", "Distribution", "Group"), drop = FALSE]
@@ -506,13 +496,14 @@
   out[["uCi"]][is.infinite(out[["uCi"]])]                 <- NA
   out <- out[stats::complete.cases(out[, c("time", "probability")]) & out[["time"]] > 0, , drop = FALSE]
   rownames(out) <- NULL
+  attr(out, "predictionWarnings") <- unique(predictionWarnings)
 
   return(out)
 }
 
-.sapProbabilityPlotDistributionLabel <- function(fit) {
+.sapProbabilityPlotDistributionLabel <- function(fit, options) {
 
-  distribution <- attr(fit, "distribution")
+  distribution <- .sapSeriesLabel(fit, options)
   if (is.null(distribution) || length(distribution) == 0 || is.na(distribution[1]))
     distribution <- gettext("Fitted")
 
@@ -593,8 +584,8 @@
     probabilityRange = probabilityRange,
     xBreaks          = .sapProbabilityPlotTimeBreaks(timeRange, canvas),
     xMinor           = .sapProbabilityPlotTimeMinorBreaks(timeRange, canvas),
-    yBreaks          = yAxisSetup[["yBreaks"]],
-    yMinor           = yAxisSetup[["yMinor"]]
+    yBreaks          = yAxisSetup[["major"]],
+    yMinor           = yAxisSetup[["minor"]]
   ))
 }
 
@@ -618,8 +609,8 @@
     probabilityRange = probabilityRange,
     xBreaks          = .sapProbabilityPlotTimeBreaks(timeRange, canvas),
     xMinor           = .sapProbabilityPlotTimeMinorBreaks(timeRange, canvas),
-    yBreaks          = yAxisSetup[["yBreaks"]],
-    yMinor           = yAxisSetup[["yMinor"]]
+    yBreaks          = yAxisSetup[["major"]],
+    yMinor           = yAxisSetup[["minor"]]
   ))
 }
 
@@ -897,32 +888,29 @@
 .sapProbabilityPlotAxisBreaks <- function(probabilityRange, canvas, detailed = FALSE) {
 
   if (.sapProbabilityPlotIsExponential(canvas)) {
-    yBreaks <- c(probabilityRange[1], 0.30, 0.50, 0.70, 0.80, 0.90, 0.95, 0.98, 0.99, 0.995, probabilityRange[2])
-    yBreaks <- sort(unique(yBreaks[yBreaks >= probabilityRange[1] & yBreaks <= probabilityRange[2]]))
+    major <- c(probabilityRange[1], 0.30, 0.50, 0.70, 0.80, 0.90, 0.95, 0.98, 0.99, 0.995, probabilityRange[2])
+    major <- sort(unique(major[major >= probabilityRange[1] & major <= probabilityRange[2]]))
 
-    transformedBreaks <- canvas[["transform"]](yBreaks)
-    transformedMinor  <- transformedBreaks[-length(transformedBreaks)] + diff(transformedBreaks) / 2
-    yMinor            <- canvas[["inverse"]](transformedMinor)
+    cumulativeHazard <- -log1p(-major)
+    minorHazard      <- cumulativeHazard[-length(cumulativeHazard)] + diff(cumulativeHazard) / 2
+    minor            <- -expm1(-minorHazard)
   } else if (detailed) {
     probabilityGridRange <- c(probabilityRange[1] / 10, 1 - (1 - probabilityRange[2]) / 10)
 
-    yBreaks <- sort(unique(c(
+    major <- sort(unique(c(
       .sapProbabilityPlotSeqProbability(probabilityGridRange[1], probabilityGridRange[2], c(1, 2, 5)),
       0.9
     )))
-    yBreaks <- yBreaks[yBreaks >= probabilityRange[1] & yBreaks <= probabilityRange[2]]
+    major <- major[major >= probabilityRange[1] & major <= probabilityRange[2]]
 
-    yMinor <- .sapProbabilityPlotSeqProbability(probabilityGridRange[1], probabilityGridRange[2], 1:9)
-    yMinor <- yMinor[yMinor >= probabilityRange[1] & yMinor <= probabilityRange[2]]
+    minor <- .sapProbabilityPlotSeqProbability(probabilityGridRange[1], probabilityGridRange[2], 1:9)
+    minor <- minor[minor >= probabilityRange[1] & minor <= probabilityRange[2]]
   } else {
-    yBreaks <- c(0.001, 0.005, 0.01, 0.02, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95, 0.98, 0.99, 0.995, 0.999)
-    yBreaks <- yBreaks[yBreaks >= probabilityRange[1] & yBreaks <= probabilityRange[2]]
-
-    yMinor <- sort(unique(c(seq(0.001, 0.009, by = 0.001), seq(0.01, 0.09, by = 0.01), seq(0.10, 0.90, by = 0.10), seq(0.91, 0.99, by = 0.01), 0.995, 0.999)))
-    yMinor <- yMinor[yMinor >= probabilityRange[1] & yMinor <= probabilityRange[2]]
+    major <- c(0.001, 0.005, 0.01, 0.02, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95, 0.98, 0.99, 0.995, 0.999)
+    minor <- sort(unique(c(seq(0.001, 0.009, by = 0.001), seq(0.01, 0.09, by = 0.01), seq(0.10, 0.90, by = 0.10), seq(0.91, 0.99, by = 0.01), 0.995, 0.999)))
   }
 
-  return(list(yBreaks = yBreaks, yMinor = yMinor))
+  return(list(major = major, minor = minor))
 }
 
 .sapProbabilityPlotProbabilityLabel <- function(probability) {

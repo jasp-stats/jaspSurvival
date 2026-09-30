@@ -17,8 +17,19 @@
 
 ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NULL) {
 
-  if (.saSurvivalReady(options))
+  options[["analysisType"]] <- "parametric"
+  .sapRun(jaspResults, dataset, options)
+
+  return()
+}
+
+.sapRun <- function(jaspResults, dataset, options) {
+
+  if (.saSurvivalReady(options)) {
     dataset <- .saCheckDataset(dataset, options, type = "parametric")
+    if (options[["analysisType"]] == "mixture")
+      .sapmCheckDataset(dataset, options)
+  }
 
   # Censoring summary table
   if (options[["censoringSummary"]])
@@ -38,43 +49,35 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
     .sapCoefficientsCovarianceMatrixTable(jaspResults, options)
 
 
-  # Prediction Tables
-  if (options[["survivalTimeTable"]])
-    .sapSurvivalTimeTable(jaspResults, options)
-  if (!options[["lifeTimeMergeTablesAcrossMeasures"]] && options[["survivalProbabilityTable"]])
-    .sapSurvivalProbabilityTable(jaspResults, options)
-  if (!options[["lifeTimeMergeTablesAcrossMeasures"]] && options[["hazardTable"]])
-    .sapHazardTable(jaspResults, options)
-  if (!options[["lifeTimeMergeTablesAcrossMeasures"]] && options[["cumulativeHazardTable"]])
-    .sapCumHazardTable(jaspResults, options)
-  if (!options[["lifeTimeMergeTablesAcrossMeasures"]] && options[["restrictedMeanSurvivalTimeTable"]])
-    .sapRmstTable(jaspResults, options)
+  # Predictions use the same output contract for every measure.
+  measures <- c("survivalTime", "survivalProbability", "hazard", "cumulativeHazard", "restrictedMeanSurvivalTime")
+  for (measure in measures) {
+    if (options[[paste0(measure, "Table")]] && (measure == "survivalTime" || !options[["lifeTimeMergeTablesAcrossMeasures"]]))
+      .sapPredictionOutput(jaspResults, options, measure)
+  }
   if (options[["lifeTimeMergeTablesAcrossMeasures"]])
     .sapLifeTimeTable(jaspResults, options)
-
-  # Prediction Plots
-  if (options[["survivalTimePlot"]])
-    .sapSurvivalTimePlot(jaspResults, options)
-  if (options[["survivalProbabilityPlot"]])
-    .sapSurvivalProbabilityPlot(jaspResults, options)
-  if (options[["hazardPlot"]])
-    .sapHazardPlot(jaspResults, options)
-  if (options[["cumulativeHazardPlot"]])
-    .sapCumHazardPlot(jaspResults, options)
-  if (options[["restrictedMeanSurvivalTimePlot"]])
-    .sapRmstPlot(jaspResults, options)
+  for (measure in measures) {
+    if (options[[paste0(measure, "Plot")]])
+      .sapPredictionOutput(jaspResults, options, measure, plot = TRUE)
+  }
 
   # Diagnostics
-  if (options[["residualPlotResidualVsTime"]])
-    .sapResidualsVsTimePlot(jaspResults, options)
-  if (options[["residualPlotResidualVsPredictors"]])
-    .sapResidualsVsPredictorsPlot(jaspResults, options)
-  if (options[["residualPlotResidualVsPredicted"]])
-    .sapResidualsVsPredictedPlot(jaspResults, options)
-  if (options[["residualPlotResidualHistogram"]])
-    .sapResidualHistogramPlot(jaspResults, options)
+  .sapResidualPlots(jaspResults, options)
   if (isTRUE(options[["probabilityPlot"]]))
     .sapProbabilityPlot(jaspResults, options)
+
+  # Mixture
+  if (options[["analysisType"]] == "mixture") {
+    if (options[["mixtureComponentsTable"]])
+      .sapmComponentsTable(jaspResults, options)
+    if (options[["mixtureClassificationTable"]])
+      .sapmClassificationTable(jaspResults, options)
+    if (options[["mixtureDiagnosticsTable"]])
+      .sapmDiagnosticsTable(jaspResults, options)
+    if (options[["mixtureComponentPlot"]])
+      .sapmComponentPlot(jaspResults, options)
+  }
 
   return()
 }
@@ -86,9 +89,16 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   "selectedParametricDistributionGeneralizedGamma" ,"selectedParametricDistributionGompertz" ,"selectedParametricDistributionLogLogistic" ,
   "selectedParametricDistributionLogNormal" ,"selectedParametricDistributionWeibull" ,"selectedParametricDistributionGeneralizedGammaOriginal" ,
   "selectedParametricDistributionGeneralizedFOriginal",
-  "modelTerms", "includeIntercept",
+  "modelTerms",
   "includeFullDatasetInSubgroupAnalysis",
   # the CIs are not a simple multiplier of the standard error
   # as such, they need to be changed during the fitting process
   "coefficientsConfidenceIntervalLevel"
 )
+.sapGetDependencies <- function(options) {
+
+  if (options[["analysisType"]] == "mixture")
+    return(c(.sapDependencies, .sapmDependencies))
+
+  return(.sapDependencies)
+}

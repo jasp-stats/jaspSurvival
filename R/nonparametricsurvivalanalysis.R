@@ -347,44 +347,6 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   return(rbind(lifeTable0, lifeTable, lifeTable2))
 }
-.sanpPlotLifeTable           <- function(fitLifeTable, options) {
-
-  if (length(options[["strata"]]) == 0) {
-
-    tempPlot <- ggplot2::ggplot(fitLifeTable) +
-      jaspGraphs::geom_line(mapping = ggplot2::aes(x = time, y = survival))
-
-    if (options[["survivalCurveplotCi"]])
-      tempPlot <- tempPlot + ggplot2::geom_ribbon(mapping = ggplot2::aes(x = time, ymin = lowerCI, ymax = upperCI), alpha = 0.1, size = 1)
-
-    if (options[["survivalCurvePlotDataRug"]])
-      tempPlot <- tempPlot + ggplot2::geom_rug(ggplot2::aes(x = time, y = survival), sides = "b", alpha = 0.5)
-
-  } else {
-
-    tempPlot <- ggplot2::ggplot(fitLifeTable) +
-      jaspGraphs::geom_line(mapping = ggplot2::aes(x = time, y = survival, group = strata, color = strata))
-
-    if (options[["survivalCurveplotCi"]])
-      tempPlot <- tempPlot + ggplot2::geom_ribbon(mapping = ggplot2::aes(x = time, ymin = lowerCI, ymax = upperCI, group = strata, fill = strata), alpha = 0.1, size = 1)
-
-    if (options[["survivalCurvePlotDataRug"]])
-      tempPlot <- tempPlot + ggplot2::geom_rug(ggplot2::aes(x = time, y = survival, color = strata), sides = "b", alpha = 0.5)
-
-    tempPlot <- tempPlot + jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]]) +
-      jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]]) +
-      ggplot2::labs(fill = gettext("Strata"), color = gettext("Strata"))
-
-  }
-
-  tempPlot <- tempPlot +
-    jaspGraphs::scale_x_continuous(name = gettext("Time")) +
-    jaspGraphs::scale_y_continuous(name = gettext("Survival")) +
-    jaspGraphs::geom_rangeframe(sides = 'bl') +
-    jaspGraphs::themeJaspRaw(legend.position = if (length(options[["strata"]]) != 0) options[["survivalCurvePlotLegend"]])
-
-  return(tempPlot)
-}
 .sanpEmptyLifeTable          <- function(title = "", position = 1) {
 
   tempTable <- createJaspTable(title = title)
