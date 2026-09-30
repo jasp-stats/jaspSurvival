@@ -13,7 +13,7 @@
 
 <img src='inst/icons/survival-analysis.svg' width='149' height='109' align='right'/>
 
-**JASP Survival module** is an add-on module for JASP that provides tools for analyzing censored time-to-event data. The Survival module offers non-parametric Kaplan-Meier survival curves and life tables, semi-parametric Cox proportional hazards regression, and parametric survival models for several distributional families.
+**JASP Survival module** is an add-on module for JASP that provides tools for analyzing censored time-to-event data. The Survival module offers non-parametric Kaplan-Meier survival curves and life tables, semi-parametric Cox proportional hazards regression, parametric survival models for several distributional families, and finite mixtures of parametric survival models.
 
 The module supports censoring summaries, group comparisons, model fit statistics, coefficient and hazard ratio estimates, diagnostic plots, and predictions for survival time, survival probability, hazard, cumulative hazard, and restricted mean survival time.
 

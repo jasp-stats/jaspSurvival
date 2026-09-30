@@ -23,6 +23,14 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   return()
 }
 
+ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, state = NULL) {
+
+  options[["analysisType"]] <- "mixture"
+  .sapRun(jaspResults, dataset, options)
+
+  return()
+}
+
 .sapRun <- function(jaspResults, dataset, options) {
 
   if (.saSurvivalReady(options)) {

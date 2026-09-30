@@ -13,6 +13,17 @@
 
 
 ---
+# jaspSurvival 0.97.0
+## Added
+* Added the Parametric Mixture Survival Analysis: finite mixtures of up to four components from the same parametric family estimated with the EM algorithm followed by a direct maximization of the likelihood, with the selection of the distribution and the number of components by AIC/BIC, the mixing probabilities of all components in the coefficients summary, component mean and median and classification tables, and a mixture components plot.
+* Parametric mixture survival analysis: models with coinciding, collapsed, or degenerated components are kept for the model comparison and reported with a warning; models with a lower log-likelihood than a nested model with fewer components are reported as local optima; left-truncated (counting) data are estimated by a direct maximization of the likelihood started from the EM solution of the untruncated data.
+
+## Fixed
+* Parametric survival analysis: the best fitting distribution is selected within each subgroup regardless of the "Compare models across distributions" option, and the best fitting model is selected within each distribution when all distributions are displayed.
+* Parametric survival analysis: the sequential model comparison compares models only within the same distribution.
+* Parametric survival analysis: the coefficients covariance matrix displays the covariances of interaction terms.
+* Parametric survival analysis: the subgroup variable accepts nominal variables (the allowed column type was misspelled) and the covariate and factor descriptions no longer refer to the Cox regression model.
+
 # jaspSurvival 0.96.7
 ## Fixed
 * Fixed confidence intervals for failure-probability predictions so lower and upper bounds are correctly swapped when transforming from survival probabilities.
