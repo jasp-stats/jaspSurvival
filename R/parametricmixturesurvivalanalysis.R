@@ -16,7 +16,7 @@
 #
 
 # the parametric mixture survival analysis shares the fitting, selection, and output of the parametric survival analysis
-# (see .sapRun), this file contains the mixture estimator and the mixture specific output
+# (see .sapRun), this file contains the mixture estimator; output builders are in parametricmixturesurvival-output.R
 .sapmDependencies <- c(
   "mixtureComponents", "mixtureMaximumComponents",
   "mixtureStartKmeans", "mixtureStartQuantiles", "mixtureStartSplit", "mixtureStartRandom", "mixtureStartRandomCount",
