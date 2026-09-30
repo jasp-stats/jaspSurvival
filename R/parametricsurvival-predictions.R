@@ -472,14 +472,14 @@
   }
 
   # compute Kaplan-Meier if needed
-  if (type == "survival" && isTRUE(options[["survivalProbabilityPlotKaplanMeier"]]) && options[["censoringType"]] == "right")
+  if (type == "survival" && options[["survivalProbabilityPlotKaplanMeier"]] && options[["censoringType"]] == "right")
     kmTable <- .sapKaplanMeierStepData(tempData, options, failureProbability = options[["survivalProbabilityAsFailureProbability"]])
 
   # create a plot
   plot <- ggplot2::ggplot(data = out)
 
   # add censoring observations if requested
-  if (type == "survival" && isTRUE(options[["survivalProbabilityPlotCensoringEvents"]]) && options[["censoringType"]] == "right") {
+  if (type == "survival" && options[["survivalProbabilityPlotCensoringEvents"]] && options[["censoringType"]] == "right") {
     plot <- plot + ggplot2::geom_rug(
       data    = data.frame(censoring = tempData[[options[["timeToEvent"]]]][!tempData[[options[["eventStatus"]]]]]),
       mapping = ggplot2::aes(x = censoring),
@@ -488,7 +488,7 @@
   }
 
   # add Kaplan-Meier if needed
-  if (type == "survival" && isTRUE(options[["survivalProbabilityPlotKaplanMeier"]]) && options[["censoringType"]] == "right") {
+  if (type == "survival" && options[["survivalProbabilityPlotKaplanMeier"]] && options[["censoringType"]] == "right") {
 
     if (options[["predictionsConfidenceInterval"]]) {
       aesCall <- list(
@@ -816,17 +816,13 @@
         stepFrom <- minTime
       }
       if (plot) {
-        setTime <- seq(stepFrom, stepTo, length.out = options[["predictionsLifeTimeStepsNumber"]])
+        setTime <- exp(seq(log(stepFrom), log(stepTo), length.out = options[["predictionsLifeTimeStepsNumber"]]))
       } else {
         setTime <- seq(stepFrom, stepTo, stepSize)
       }
     } else {
       if (plot) {
-        if (type == "survival" && options[["survivalProbabilityPlotTransformXAxis"]] %in% c("log")) {
-          setTime <- exp(seq(log(stepFrom), log(stepTo), length.out = options[["predictionsLifeTimeStepsNumber"]]))
-        } else {
-          setTime <- seq(stepFrom, stepTo, length.out = options[["predictionsLifeTimeStepsNumber"]])
-        }
+        setTime <- seq(stepFrom, stepTo, length.out = options[["predictionsLifeTimeStepsNumber"]])
       } else {
         setTime <- seq(stepFrom, stepTo, stepSize)
         if (options[["predictionsLifeTimeRoundSteps"]])

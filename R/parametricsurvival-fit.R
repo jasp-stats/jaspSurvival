@@ -27,23 +27,12 @@
   # extract the container
   if (is.null(jaspResults[["fit"]])) {
     fitContainer <- createJaspState()
-    fitContainer$dependOn(c(
-      # this does not contain `modelTerms` as the fits are updated only if the corresponding model changes
-      "intervalStart", "intervalEnd", "timeToEvent", "eventStatus", "eventIndicator", "censoringType",
-      "factors", "covariates", "weights", "subgroup",
-      "distribution",
-      "selectedParametricDistributionExponential" ,"selectedParametricDistributionGamma" ,"selectedParametricDistributionGeneralizedF" ,
-      "selectedParametricDistributionGeneralizedGamma" ,"selectedParametricDistributionGompertz" ,"selectedParametricDistributionLogLogistic" ,
-      "selectedParametricDistributionLogNormal" ,"selectedParametricDistributionWeibull" ,"selectedParametricDistributionGeneralizedGammaOriginal" ,
-      "selectedParametricDistributionGeneralizedFOriginal",
-      # the CIs are not a simple multiplier of the standard error
-      # as such, they need to be changed during the fitting process
-      "coefficientsConfidenceIntervalLevel",
-      # the numbers of components are not included as the fits are updated only if the corresponding number of components changes
-      if (options[["analysisType"]] == "mixture") c("mixtureStartKmeans", "mixtureStartQuantiles", "mixtureStartSplit",
-                                                    "mixtureStartRandom", "mixtureStartRandomCount", "mixtureEmIterations", "setSeed", "seed",
-                                                    "mixtureConstrainSpread", "mixtureMinimumLogTimeSd")
-    ))
+    # the models, the full dataset fit, and the numbers of components are not included as the fits are updated
+    # only if the corresponding model / number of components changes (the comparison option only affects the output)
+    fitContainer$dependOn(setdiff(.sapGetDependencies(options), c(
+      "modelTerms", "includeFullDatasetInSubgroupAnalysis",
+      "mixtureComponents", "mixtureMaximumComponents", "compareModelsAcrossComponents"
+    )))
     jaspResults[["fit"]] <- fitContainer
     out                  <- NULL
   } else {
@@ -225,7 +214,7 @@
 .sapFitModel            <- function(dataset, options, distribution, modelTerms, components, previous = NULL) {
 
   if (components > 1) {
-    fit <- .sapmFitModel(dataset, options, distribution, modelTerms, components, previous)
+    fit <- try(.sapmFitMixture(dataset, options, distribution, modelTerms, components, previous))
   } else if (options[["analysisType"]] == "mixture" && options[["mixtureConstrainSpread"]]) {
     fit <- try(.sapmFitSingle(dataset, options, distribution, modelTerms))
   } else {
@@ -236,6 +225,12 @@
       weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]],
       cl      = options[["coefficientsConfidenceIntervalLevel"]]
     ))
+  }
+
+  # flexsurvreg stores a scalar NA covariance if the Hessian is not finite, the output expects a matrix
+  if (!jaspBase::isTryError(fit) && !is.matrix(fit[["cov"]])) {
+    parameters   <- rownames(fit[["res.t"]])
+    fit[["cov"]] <- matrix(NA_real_, length(parameters), length(parameters), dimnames = list(parameters, parameters))
   }
 
   # store attributes
@@ -413,7 +408,8 @@
   # subgroups are never collapsed
   multipleModels     <- .sapMultipleModels(options)
   splitFamilies      <- .sapMultipleFamilies(options)   && !.sapMergePlotsAcrossFamilies(options, output)
-  splitComponents    <- .sapMultipleComponents(options) && !.sapMergePlotsAcrossComponents(options, output)
+  # a selected (best) number of components leaves a single number of components per distribution
+  splitComponents    <- .sapMultipleComponents(options) && .sapComponentSelection(options) == "all" && !.sapMergePlotsAcrossComponents(options, output)
   spanComponents     <- .sapMultipleComponents(options) && !splitComponents
 
   labelParts <- list()

@@ -23,7 +23,7 @@
   for (fit in fits) {
     prefix <- .sapmExportModelPrefix(fit, options, length(fits) > 1)
     if (jaspBase::isTryError(fit)) {
-      messages <- c(messages, paste0(prefix, .sapmCleanError(fit)))
+      messages <- c(messages, paste0(prefix, jaspBase::.extractErrorMessage(fit)))
       next
     }
 

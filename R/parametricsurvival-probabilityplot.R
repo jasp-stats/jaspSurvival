@@ -111,7 +111,7 @@
 
 .sapProbabilityPlotHasSideLegend <- function(fit, options) {
 
-  if (!isTRUE(options[["probabilityPlotFittedCurve"]]))
+  if (!options[["probabilityPlotFittedCurve"]])
     return(FALSE)
 
   legendPosition <- .sapProbabilityPlotLegendPosition(options[["probabilityPlotLegend"]])
@@ -160,7 +160,7 @@
     empiricalData <- .sapProbabilityPlotEmpiricalData(dataset, options)
 
   censoringData <- data.frame(time = numeric(0))
-  if (isTRUE(options[["probabilityPlotCensoringEvents"]]))
+  if (options[["probabilityPlotCensoringEvents"]])
     censoringData <- .sapProbabilityPlotCensoringData(dataset, options)
 
   curveData <- .sapProbabilityPlotEmptyCurveData()

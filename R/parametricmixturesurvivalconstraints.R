@@ -167,7 +167,7 @@
   native <- .sapmNativeFit(formula, dataset, options, family, 1L, descriptor,
                            unname(pilot[["res"]][, "est"]), weights, constraint = constraint)
   if (jaspBase::isTryError(native[["fit"]]))
-    stop(.sapmCleanError(native[["fit"]]))
+    stop(jaspBase::.extractErrorMessage(native[["fit"]]))
   candidate <- native[["fit"]]
   selectedWarnings <- native[["warnings"]]
   if (candidate[["opt"]][["convergence"]] != 0)
@@ -177,7 +177,7 @@
   native <- .sapmNativeFit(formula, dataset, options, family, 1L, descriptor,
                            inits, weights, hessian = TRUE, constraint = constraint)
   if (jaspBase::isTryError(native[["fit"]]))
-    stop(.sapmCleanError(native[["fit"]]))
+    stop(jaspBase::.extractErrorMessage(native[["fit"]]))
   fit <- native[["fit"]]
   .sapmCheckFinalPoint(fit, inits, candidate[["loglik"]])
 

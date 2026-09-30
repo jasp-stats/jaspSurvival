@@ -161,7 +161,7 @@
   if (options[["modelSummaryRankModels"]] && length(fit) > 1 && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
     data <- data[order(data[[options[["modelSummaryRankModelsBy"]]]], decreasing = options[["modelSummaryRankModelsBy"]] == "logLik", na.last = TRUE), ]
     data$rank <- seq_len(nrow(data))
-    data$rank[is.na(data$rank)] <- NA
+    data$rank[is.na(data[[options[["modelSummaryRankModelsBy"]]]])] <- NA
   }
 
   # add footnotes
@@ -622,7 +622,7 @@
       errors <- c(errors, gettextf(
         "%1$s failed with the following message: %2$s",
         .sapmCellLabel(fit[[i]], options),
-        .sapmCleanError(fit[[i]])
+        jaspBase::.extractErrorMessage(fit[[i]])
       ))
     else if (jaspBase::isTryError(fit[[i]]))
       errors <- c(errors, gettextf(

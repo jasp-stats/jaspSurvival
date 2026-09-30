@@ -51,12 +51,6 @@
 # mixture estimator
 # flexsurvreg fits the custom mixture distribution from every starting value;
 # short EM runs initialize its native optimizer
-.sapmFitModel                   <- function(dataset, options, distribution, modelTerms, components, previous = NULL) {
-
-  fit <- try(.sapmFitMixture(dataset, options, distribution, modelTerms, components, previous))
-
-  return(fit)
-}
 .sapmFitMixture                 <- function(dataset, options, distribution, modelTerms, components, previous = NULL) {
 
   # seeding each number of components makes the starting values independent of the order in which the models are fitted
@@ -115,7 +109,7 @@
 
     if (jaspBase::isTryError(states)) {
       if (is.null(fitError))
-        fitError <- .sapmCleanError(states)
+        fitError <- jaspBase::.extractErrorMessage(states)
       next
     }
 
@@ -125,7 +119,7 @@
       inits  <- .sapmInits(mixture, state[["base"]][order], state[["beta"]][order], state[["probabilities"]][order])
       native <- .sapmNativeFit(formula, dataset, options, family, components, mixture, inits, caseWeights, constraint = constraint)
       if (jaspBase::isTryError(native[["fit"]])) {
-        fitError <- .sapmCleanError(native[["fit"]])
+        fitError <- jaspBase::.extractErrorMessage(native[["fit"]])
         next
       }
 
@@ -133,12 +127,12 @@
       precision <- try(.sapmCheckPrecision(fit, family, components, survObject), silent = TRUE)
       if (jaspBase::isTryError(precision)) {
         precisionRejected <- precisionRejected + 1L
-        fitError <- .sapmCleanError(precision)
+        fitError <- jaspBase::.extractErrorMessage(precision)
         next
       }
       diagnostics <- try(.sapmCandidateDiagnostics(fit, family, components, survObject, caseWeights), silent = TRUE)
       if (jaspBase::isTryError(diagnostics)) {
-        fitError <- .sapmCleanError(diagnostics)
+        fitError <- jaspBase::.extractErrorMessage(diagnostics)
         next
       }
 
@@ -165,7 +159,7 @@
   # native covariance/CI construction at the selected estimates, without another optimization
   native <- .sapmNativeFit(formula, dataset, options, family, components, mixture, best[["inits"]], caseWeights, hessian = TRUE, constraint = constraint)
   if (jaspBase::isTryError(native[["fit"]]))
-    stop(gettextf("The mixture model could not be finalized: %1$s", .sapmCleanError(native[["fit"]])))
+    stop(gettextf("The mixture model could not be finalized: %1$s", jaspBase::.extractErrorMessage(native[["fit"]])))
 
   fit <- native[["fit"]]
   .sapmCheckPrecision(fit, family, components, survObject)
@@ -556,7 +550,7 @@
     # a degenerated component ends the EM algorithm at the last valid state
     if (jaspBase::isTryError(newMSteps) || !is.finite(newLogLik)) {
       if (is.null(mSteps))
-        stop(if (jaspBase::isTryError(newMSteps)) .sapmCleanError(newMSteps) else gettext("The log-likelihood is not finite."))
+        stop(if (jaspBase::isTryError(newMSteps)) jaspBase::.extractErrorMessage(newMSteps) else gettext("The log-likelihood is not finite."))
       break
     }
 
@@ -1208,7 +1202,4 @@
     # Families with a survreg equivalent use the faster weighted survreg M-step.
     survreg        = switch(distribution, "exp" = "exponential", "lnorm" = "lognormal", "llogis" = "loglogistic", "weibull" = "weibull", NULL)
   ), functions))
-}
-.sapmCleanError                 <- function(error) {
-  return(conditionMessage(attr(error, "condition")))
 }

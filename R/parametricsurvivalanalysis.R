@@ -77,7 +77,7 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
 
   # Diagnostics
   .sapResidualPlots(jaspResults, options)
-  if (isTRUE(options[["probabilityPlot"]]))
+  if (options[["probabilityPlot"]])
     .sapProbabilityPlot(jaspResults, options)
 
   # Mixture
