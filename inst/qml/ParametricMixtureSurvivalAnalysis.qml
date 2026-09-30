@@ -116,6 +116,7 @@ Form
 			info: qsTr("Add categorical variables as factors to include them in the mixture model. The factors affect the location parameter of each component with separate coefficients.")
 		}
 
+
 		AssignedVariablesList
 		{
 			name:			 	"weights"
@@ -346,6 +347,11 @@ Form
 				info: qsTr("Merge the plots for survival probabilities, hazard, cumulative hazard, and restricted mean survival across the numbers of components into a single plot. Only available when all numbers of components are displayed and no model selection is being performed.")
 			}
 		]
+	}
+
+	Section
+	{
+		title:	qsTr("Diagnostics")
 
 		Group
 		{
@@ -376,19 +382,13 @@ Form
 
 				CheckBox
 				{
-					name:		"mixtureComponentPlotKaplanMeier"
-					label:		qsTr("Kaplan-Meier")
-					enabled:	censoringTypeRight.checked && (mixtureComponentPlotType.value === "survival" || mixtureComponentPlotType.value === "failureProbability")
-					info: qsTr("Show a Kaplan-Meier curve in the survival or failure probability plot. Only available when Censoring Type is set to Right.")
+					name:		"mixtureComponentPlotObservedData"
+					label:		qsTr("Observed data")
+					enabled:	censoringTypeRight.checked && mixtureComponentPlotType.value === "density"
+					info: qsTr("Overlay a histogram of the observed time distribution on the fitted densities. For right-censored data, bin probabilities are estimated with Kaplan-Meier and any unobserved tail probability is retained. The fitted curves use the prediction covariate settings; the histogram describes the full sample within each subgroup.")
 				}
 			}
 		}
-	}
-
-	Section
-	{
-		title:	qsTr("Diagnostics")
-
 		SA.ParametricResidualPlots
 		{
 			rightCensoring:	censoringTypeRight.checked
@@ -416,6 +416,81 @@ Form
 		}
 	}
 
+	Section
+	{
+		title:		qsTr("Export")
+		columns:	2
+		info: qsTr("Export model-derived values for each observation to the dataset. Exports follow the displayed model selection. When multiple models are displayed, column names include distribution, model, number of components, and subgroup identifiers. Observations excluded from a model receive missing values.")
+
+		TextField
+		{
+			name:			"exportColumnPrefix"
+			label:			qsTr("Column prefix")
+			defaultValue:	""
+			fieldWidth:		160
+			Layout.columnSpan: 2
+			info: qsTr("Optional custom prefix prepended to every exported column name, before any automatic model identifier.")
+		}
+
+		Group
+		{
+			title:	qsTr("Residuals")
+
+			CheckBox
+			{
+				name:		"exportResidualsResponse"
+				label:		qsTr("Response")
+				enabled:	!censoringTypeInterval.checked
+				info: qsTr("Export observed time minus fitted mean survival time. Censored times are treated as observed times. Unavailable for interval-censored data.")
+			}
+
+			CheckBox
+			{
+				name:		"exportResidualsCoxSnell"
+				label:		qsTr("Cox-Snell")
+				enabled:	!censoringTypeInterval.checked
+				info: qsTr("Export the fitted cumulative hazard at each observation's time. For counting-process data, it is conditional on survival to the entry time. Unavailable for interval-censored data.")
+			}
+		}
+
+		Group
+		{
+			title:	qsTr("Fitted Values")
+
+			CheckBox
+			{
+				name:	"exportFittedMean"
+				label:	qsTr("Mean survival time")
+				info: qsTr("Export the fitted mean survival time at each observation's covariate values.")
+			}
+
+			CheckBox
+			{
+				name:	"exportFittedMedian"
+				label:	qsTr("Median survival time")
+				info: qsTr("Export the fitted median survival time at each observation's covariate values.")
+			}
+		}
+
+		Group
+		{
+			title:	qsTr("Mixture Classification")
+
+			CheckBox
+			{
+				name:	"exportMixtureProbabilities"
+				label:	qsTr("Component probabilities")
+				info: qsTr("Export one posterior membership probability per mixture component, conditional on the observed survival or censoring information.")
+			}
+
+			CheckBox
+			{
+				name:	"exportMixtureClassification"
+				label:	qsTr("Component index")
+				info: qsTr("Export the index of the component with the highest posterior membership probability. Ties are assigned to the first component.")
+			}
+		}
+	}
 
 	Section
 	{
@@ -425,6 +500,7 @@ Form
 		{
 			title:		qsTr("Selected Parametric Distributions")
 			enabled:	distribution.value === "all" || distribution.value === "bestAic" || distribution.value === "bestBic"
+
 
 			CheckBox
 			{

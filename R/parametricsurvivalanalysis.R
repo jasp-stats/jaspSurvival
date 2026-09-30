@@ -33,10 +33,15 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
 
 .sapRun <- function(jaspResults, dataset, options) {
 
+  if (options[["analysisType"]] == "mixture" && .saSurvivalReady(options))
+    exportRowNames <- rownames(dataset)
+
   if (.saSurvivalReady(options)) {
     dataset <- .saCheckDataset(dataset, options, type = "parametric")
-    if (options[["analysisType"]] == "mixture")
+    if (options[["analysisType"]] == "mixture") {
+      attr(dataset, "exportRowNames") <- exportRowNames
       .sapmCheckDataset(dataset, options)
+    }
   }
 
   # Censoring summary table
@@ -85,6 +90,7 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
       .sapmDiagnosticsTable(jaspResults, options)
     if (options[["mixtureComponentPlot"]])
       .sapmComponentPlot(jaspResults, options)
+    .sapmExportColumns(jaspResults, options)
   }
 
   return()

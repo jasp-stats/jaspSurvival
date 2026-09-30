@@ -240,6 +240,8 @@
   .sapAddColumnDistribution( estimatesTable, options, output = "coefficients")
   .sapAddColumnComponents(   estimatesTable, options, output = "coefficients")
   .sapAddColumnModel(        estimatesTable, options, output = "coefficients")
+  if (options[["analysisType"]] == "mixture")
+    estimatesTable$addColumnInfo(name = "mixtureComponent", title = gettext("Component"), type = "integer")
   estimatesTable$addColumnInfo(name = "coefficient",    title = "",                         type = "string")
   estimatesTable$addColumnInfo(name = "est",            title = gettext("Estimate"),        type = "number")
   estimatesTable$addColumnInfo(name = "se",             title = gettext("Standard Error"),  type = "number")
@@ -265,7 +267,7 @@
   }
 
   # extract the data
-  data <- .saSafeRbind(lapply(fit, .sapRowCoefficientsTable))
+  data <- .saSafeRbind(lapply(fit, .sapRowCoefficientsTable, options = options))
   data <- .saSafeSimplify(data)
 
   # add test statistics and p-values
@@ -285,16 +287,9 @@
     # fix coefficient names
     if (any(thisRegression))
       data[["coefficient"]][thisRegression] <- sapply(data[["coefficient"]][thisRegression], .saTermNames, variables = c(options[["covariates"]], options[["factors"]]))
-
-    # add the mixture component of the regression coefficients
-    if (!is.null(data[["mixtureComponent"]])) {
-      thisMixtureRegression <- thisRegression & !is.na(data[["mixtureComponent"]])
-      data[["coefficient"]][thisMixtureRegression] <- gettextf("%1$s (component %2$i)", data[["coefficient"]][thisMixtureRegression], data[["mixtureComponent"]][thisMixtureRegression])
-    }
   }
 
   data[["isRegressionCoefficient"]] <- NULL
-  data[["mixtureComponent"]]        <- NULL
 
   # add footnotes
   messages <- .sapSelectedModelMessage(fit, options)
@@ -420,7 +415,7 @@
     pValue       = pValue
   ))
 }
-.sapRowCoefficientsTable              <- function(fit) {
+.sapRowCoefficientsTable              <- function(fit, options) {
 
   if (jaspBase::isTryError(fit))
     return(.sapRowModelInformation(fit))
@@ -438,6 +433,10 @@
   # label the parameters of mixture components
   if (!is.null(attr(fit, "mixture")))
     coeffTable <- .sapmCoefficientsNames(coeffTable, fit)
+  else if (options[["analysisType"]] == "mixture")
+    coeffTable[["mixtureComponent"]] <- 1L
+  if (options[["analysisType"]] == "mixture")
+    coeffTable[["mixtureComponent"]][duplicated(coeffTable[["mixtureComponent"]])] <- NA_integer_
   if (.sapConstraintActive(fit))
     coeffTable[c("se", "lower", "upper")] <- NA_real_
 

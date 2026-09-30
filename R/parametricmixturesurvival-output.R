@@ -109,7 +109,7 @@
   fit <- .sapNestFit(fit)
 
   outputDependencies <- c(.sapGetDependencies(options), "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
-                          "mixtureComponentPlot", "mixtureComponentPlotType", "mixtureComponentPlotKaplanMeier",
+                          "mixtureComponentPlot", "mixtureComponentPlotType", "mixtureComponentPlotObservedData",
                           "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
                           "predictionsLifeTimeStepsTo", "predictionsLifeTimeCustom",
@@ -124,7 +124,7 @@
     name          = "mixtureComponentPlot",
     title         = gettext("Mixture Components"),
     dependencies  = outputDependencies,
-    position      = 3.5
+    position      = 5.6
   )
 
   return()
@@ -435,9 +435,17 @@
 
   plot <- ggplot2::ggplot(data = plotData)
 
-  if (options[["mixtureComponentPlotType"]] %in% c("survival", "failureProbability") && options[["mixtureComponentPlotKaplanMeier"]] && options[["censoringType"]] == "right") {
-    kmTable <- .sapKaplanMeierStepData(attr(fit, "dataset"), options, failureProbability = options[["mixtureComponentPlotType"]] == "failureProbability")
-    plot    <- plot + jaspGraphs::geom_line(mapping = ggplot2::aes(x = at, y = estimate), data = kmTable, color = "grey60")
+  observedDensity <- NULL
+  if (options[["mixtureComponentPlotType"]] == "density" && options[["mixtureComponentPlotObservedData"]] && options[["censoringType"]] == "right") {
+    observedDensity <- .sapmObservedDensity(attr(fit, "dataset"), options)
+    plot <- plot + ggplot2::geom_rect(
+      data = observedDensity,
+      mapping = ggplot2::aes(xmin = lower, xmax = upper, ymin = 0, ymax = density),
+      inherit.aes = FALSE, fill = "grey80", color = "white", alpha = 0.6
+    )
+    predictionWarnings <- c(predictionWarnings, gettext("The histogram shows bin probabilities estimated from the observed data using Kaplan-Meier; unobserved tail probability is not redistributed."))
+    if (length(attr(fit, "modelTerms")[["components"]]) > 0)
+      predictionWarnings <- c(predictionWarnings, gettext("The histogram describes the sample distribution; fitted curves use the selected prediction covariate values."))
   }
 
   if (options[["predictionsConfidenceInterval"]]) {
@@ -461,9 +469,11 @@
   plot <- plot + do.call(jaspGraphs::geom_line, geomCall) +
     ggplot2::scale_color_manual(values = colors, name = gettext("Component"))
 
-  xBreaks <- jaspGraphs::getPrettyAxisBreaks(range(plotData[["at"]], na.rm = TRUE))
+  xBreaks <- jaspGraphs::getPrettyAxisBreaks(range(c(plotData[["at"]], observedDensity[["lower"]], observedDensity[["upper"]]), na.rm = TRUE))
   yBreaks <- jaspGraphs::getPrettyAxisBreaks(range(c(
     plotData[["estimate"]],
+    observedDensity[["density"]],
+    if (!is.null(observedDensity)) 0,
     if (options[["predictionsConfidenceInterval"]]) plotData[["lCi"]],
     if (options[["predictionsConfidenceInterval"]]) plotData[["uCi"]]), na.rm = TRUE))
 
@@ -475,12 +485,36 @@
   if (options[["plotTheme"]] == "detailed")
     options[["plotTheme"]] <- "jasp"
   plot <- .sapPredictionPlotAddTheme(plot, options)
+  horizontalLegend <- options[["plotLegend"]] %in% c("bottom", "top")
+  if (horizontalLegend)
+    plot <- plot + ggplot2::guides(color = ggplot2::guide_legend(ncol = 2, byrow = TRUE, title.position = "top"))
   plot <- .sapPredictionPlotAddCaption(plot, predictionWarnings, 550)
 
-  tempPlot <- createJaspPlot(width = 550, height = .sapPredictionPlotCaptionHeight(plot, 320))
+  height <- 320 + if (horizontalLegend) 30 * (ceiling(length(colors) / 2) - 1) else 0
+  tempPlot <- createJaspPlot(width = 550, height = .sapPredictionPlotCaptionHeight(plot, height))
   tempPlot$plotObject <- plot
 
   return(tempPlot)
+}
+.sapmObservedDensity            <- function(dataset, options) {
+
+  time <- dataset[[options[["timeToEvent"]]]]
+  histogram <- graphics::hist(time, breaks = "FD", plot = FALSE)
+  breaks <- pmax(0, histogram[["breaks"]])
+  breaks <- unique(breaks)
+
+  # Survival drops supply probability masses. Do not normalize an unidentified tail away.
+  outcome <- .saGetSurvObject(options, dataset)
+  km <- survival::survfit(outcome ~ 1, weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]])
+  mass <- -diff(c(1, km[["surv"]]))
+  bin <- as.integer(cut(km[["time"]], breaks = breaks, include.lowest = TRUE))
+  probability <- vapply(seq_len(length(breaks) - 1), function(i) sum(mass[bin == i]), numeric(1))
+
+  return(data.frame(
+    lower   = head(breaks, -1),
+    upper   = tail(breaks, -1),
+    density = probability / diff(breaks)
+  ))
 }
 .sapmComponentPlotData          <- function(fit, options) {
 
@@ -732,8 +766,10 @@
   for (k in seq_len(components)) {
 
     # component parameters
-    for (par in family[["pars"]])
-      coeffTable[["coefficient"]][names == paste0(par, k)] <- gettextf("%1$s (component %2$i)", par, k)
+    for (par in family[["pars"]]) {
+      coeffTable[["coefficient"]][names == paste0(par, k)] <- par
+      coeffTable[["mixtureComponent"]][names == paste0(par, k)] <- k
+    }
 
     # covariate effects on the location parameter of the component (the effects of the first component are not prefixed)
     index <- fit[["covpars"]][fit[["mx"]][[paste0(family[["location"]], k)]]]
@@ -754,13 +790,13 @@
     probabilities <- .sapmMixingProbabilities(fit, fit[["cl"]])
     replacement   <- coeffTable[rep(weightIndex[1], components), , drop = FALSE]
 
-    replacement[["coefficient"]]             <- gettextf("Mixing probability (component %1$i)", seq_len(components))
+    replacement[["coefficient"]]             <- gettext("mixing probability")
     replacement[["est"]]                     <- probabilities[["est"]]
     replacement[["se"]]                      <- probabilities[["se"]]
     replacement[["lower"]]                   <- probabilities[["lower"]]
     replacement[["upper"]]                   <- probabilities[["upper"]]
     replacement[["isRegressionCoefficient"]] <- FALSE
-    replacement[["mixtureComponent"]]        <- NA_integer_
+    replacement[["mixtureComponent"]]        <- seq_len(components)
 
     coeffTable           <- rbind(
       coeffTable[seq_len(min(weightIndex) - 1), , drop = FALSE],
@@ -769,6 +805,9 @@
     )
     rownames(coeffTable) <- NULL
   }
+
+  coeffTable <- coeffTable[order(coeffTable[["mixtureComponent"]], coeffTable[["coefficient"]] != gettext("mixing probability")), , drop = FALSE]
+  rownames(coeffTable) <- NULL
 
   return(coeffTable)
 }
