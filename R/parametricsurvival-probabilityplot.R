@@ -111,7 +111,7 @@
 
 .sapProbabilityPlotHasSideLegend <- function(fit, options) {
 
-  if (!options[["probabilityPlotFittedCurve"]])
+  if (!options[["probabilityPlotFittedCurve"]] && !options[["probabilityPlotEmpiricalPoints"]] && !options[["probabilityPlotCensoringEvents"]])
     return(FALSE)
 
   legendPosition <- .sapProbabilityPlotLegendPosition(options[["probabilityPlotLegend"]])
@@ -157,22 +157,40 @@
 
   empiricalData <- data.frame(time = numeric(0), probability = numeric(0), label = character(0))
   if (options[["probabilityPlotEmpiricalPoints"]])
-    empiricalData <- .sapProbabilityPlotEmpiricalData(dataset, options)
+    empiricalData <- .sapProbabilityPlotObservedData(dataset, fitList[[1]], options, .sapProbabilityPlotEmpiricalData)
 
   censoringData <- data.frame(time = numeric(0))
   if (options[["probabilityPlotCensoringEvents"]])
-    censoringData <- .sapProbabilityPlotCensoringData(dataset, options)
+    censoringData <- .sapProbabilityPlotObservedData(dataset, fitList[[1]], options, .sapProbabilityPlotCensoringData)
 
   curveData <- .sapProbabilityPlotEmptyCurveData()
-  if (options[["probabilityPlotFittedCurve"]])
+  if (options[["probabilityPlotFittedCurve"]]) {
+    canvas <- .sapProbabilityPlotCanvasTransform(options[["probabilityPlotCanvas"]])
+    probabilityRange <- if (.sapProbabilityPlotIsDetailed(options))
+      .sapProbabilityPlotDetailedProbabilityRange(empiricalData[["probability"]]) else .sapProbabilityPlotProbabilityRange()
+    limits <- if (.sapProbabilityPlotIsDetailed(options) && nrow(empiricalData) == 0)
+      function(values) canvas[["transform"]](.sapProbabilityPlotDetailedProbabilityRange(.sapProbabilityPlotCurveProbability(1 - values)))
+      else canvas[["transform"]](probabilityRange)
+    evaluate <- function(times) do.call(cbind, lapply(fitList, function(model)
+      .sapPlotPredictionMatrix(.sapSummaryPredictions(model, type = "survival", t = times, ci = FALSE))))
+    anchors <- try(.sapPlotFeatureTimes(fitList, timeSequence), silent = TRUE)
+    timeSequence <- .sapAdaptivePlotTimes(timeSequence[timeSequence > 0], evaluate,
+      xTransform = if (.sapProbabilityPlotUsesLogTime(canvas)) log else identity,
+      xInverse = if (.sapProbabilityPlotUsesLogTime(canvas)) exp else identity,
+      yTransform = function(values) canvas[["transform"]](.sapProbabilityPlotCurveProbability(1 - values)),
+      limits = limits, minimum = if (options[["probabilityPlotConfidenceInterval"]]) 65L else 17L,
+      maximum = if (options[["probabilityPlotConfidenceInterval"]]) 129L else 201L,
+      anchors = if (inherits(anchors, "try-error")) numeric(0) else anchors)
     curveData <- .sapProbabilityPlotCurveData(fitList, options, timeSequence)
+  }
   predictionWarnings <- attr(curveData, "predictionWarnings")
 
   if (nrow(empiricalData) == 0 && nrow(curveData) == 0 && nrow(censoringData) == 0)
     stop(gettext("The probability plot requires at least one positive observed failure time, censored observation, or fitted curve."))
 
   hasDistribution <- nrow(curveData) > 0 && length(unique(stats::na.omit(curveData[["Distribution"]]))) > 1
-  hasLevel        <- nrow(curveData) > 0 && length(unique(stats::na.omit(curveData[["Level"]]))) > 1
+  levelLabels     <- sort(unique(stats::na.omit(c(curveData[["Level"]], empiricalData[["Level"]], censoringData[["Level"]]))))
+  hasLevel        <- length(levelLabels) > 1
   hasGroup        <- nrow(curveData) > 0 && length(unique(stats::na.omit(curveData[["Group"]]))) > 1
   hasSeries       <- hasDistribution || hasLevel
 
@@ -188,7 +206,7 @@
       x     = as.name("time"),
       ymin  = as.name("lCi"),
       ymax  = as.name("uCi"),
-      fill  = if (hasDistribution) as.name("Distribution") else if (hasLevel) as.name("Level"),
+      fill  = if (hasLevel) as.name("Level") else if (hasDistribution) as.name("Distribution"),
       group = if (hasGroup) as.name("Group")
     )
     geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]), data = curveData, alpha = 0.22)
@@ -201,8 +219,8 @@
     aesCall <- list(
       x        = as.name("time"),
       y        = as.name("probability"),
-      color    = if (hasDistribution) as.name("Distribution") else if (hasLevel) as.name("Level"),
-      linetype = if (hasDistribution && hasLevel) as.name("Level"),
+      color    = if (hasLevel) as.name("Level") else if (hasDistribution) as.name("Distribution"),
+      linetype = if (hasDistribution && hasLevel) as.name("Distribution"),
       group    = if (hasGroup) as.name("Group")
     )
     geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]), data = curveData)
@@ -212,15 +230,18 @@
   }
 
   if (nrow(empiricalData) > 0 && options[["probabilityPlotEmpiricalPoints"]]) {
-    plot <- plot + ggplot2::geom_point(
+    aesCall <- list(x = as.name("time"), y = as.name("probability"), fill = if (hasLevel) as.name("Level"))
+    geomCall <- list(
       data    = empiricalData,
-      mapping = ggplot2::aes(x = time, y = probability),
+      mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]),
       color   = "black",
-      fill    = "white",
       shape   = 21,
       size    = 2.1,
       stroke  = 0.6
     )
+    if (!hasLevel)
+      geomCall[["fill"]] <- "white"
+    plot <- plot + do.call(ggplot2::geom_point, geomCall)
 
     if (options[["probabilityPlotPointCoordinates"]]) {
       plot <- plot + ggplot2::geom_text(
@@ -235,12 +256,15 @@
   }
 
   if (hasSeries) {
+    scaleCall <- list(palette = options[["probabilityPlotColorPalette"]])
+    if (hasLevel)
+      scaleCall[["limits"]] <- levelLabels
     plot <- plot +
-      jaspGraphs::scale_JASPcolor_discrete(options[["probabilityPlotColorPalette"]]) +
-      jaspGraphs::scale_JASPfill_discrete(options[["probabilityPlotColorPalette"]])
+      do.call(jaspGraphs::scale_JASPcolor_discrete, scaleCall) +
+      do.call(jaspGraphs::scale_JASPfill_discrete, scaleCall)
   }
 
-  plot <- .sapProbabilityPlotAddAxes(plot, empiricalData, curveData, censoringData, options, observedTimeRange)
+  plot <- .sapProbabilityPlotAddAxes(plot, empiricalData, curveData, censoringData, options, observedTimeRange, hasLevel)
   plot <- .sapProbabilityPlotAddTheme(plot, options)
   plot <- .sapPredictionPlotAddCaption(plot, predictionWarnings, width)
 
@@ -257,6 +281,30 @@
     return(exp(seq(log(timeRange[1]), log(timeRange[2]), length.out = 101)))
 
   return(seq(timeRange[1], timeRange[2], length.out = 101))
+}
+
+.sapProbabilityPlotObservedData <- function(dataset, fit, options, dataFunction) {
+
+  modelFrame <- stats::model.frame(fit)
+  factors    <- unique(attr(modelFrame, "covnames.orig"))
+
+  # flexsurv produces one prediction at the mean design vector when a continuous
+  # predictor is present. Split observations only when predictions show levels.
+  if (length(factors) == 0 || !all(vapply(modelFrame[factors], function(x) is.factor(x) || is.character(x), logical(1))))
+    return(dataFunction(dataset, options))
+
+  labels <- vapply(seq_len(nrow(dataset)), function(i) {
+    values <- vapply(factors, function(factor) as.character(dataset[[factor]][i]), character(1))
+    return(paste0(factors, "=", values, collapse = ","))
+  }, character(1))
+
+  out <- lapply(unique(labels), function(label) {
+    data <- dataFunction(dataset[labels == label, , drop = FALSE], options)
+    data[["Level"]] <- rep(decodeColNames(label), nrow(data))
+    return(data)
+  })
+
+  return(do.call(rbind, out))
 }
 
 .sapProbabilityPlotEmpiricalData <- function(dataset, options) {
@@ -487,9 +535,9 @@
     return(.sapProbabilityPlotEmptyCurveData())
 
   out <- do.call(rbind, out)
-  out[["probability"]] <- .sapProbabilityPlotClampProbability(out[["probability"]])
-  out[["lCi"]]         <- .sapProbabilityPlotClampProbability(out[["lCi"]])
-  out[["uCi"]]         <- .sapProbabilityPlotClampProbability(out[["uCi"]])
+  out[["probability"]] <- .sapProbabilityPlotCurveProbability(out[["probability"]])
+  out[["lCi"]]         <- .sapProbabilityPlotCurveProbability(out[["lCi"]])
+  out[["uCi"]]         <- .sapProbabilityPlotCurveProbability(out[["uCi"]])
   out[["time"]][is.infinite(out[["time"]])]               <- NA
   out[["probability"]][is.infinite(out[["probability"]])] <- NA
   out[["lCi"]][is.infinite(out[["lCi"]])]                 <- NA
@@ -522,7 +570,7 @@
   ))
 }
 
-.sapProbabilityPlotAddAxes <- function(plot, empiricalData, curveData, censoringData, options, observedTimeRange = NULL) {
+.sapProbabilityPlotAddAxes <- function(plot, empiricalData, curveData, censoringData, options, observedTimeRange = NULL, hasLevel = FALSE) {
 
   canvas   <- .sapProbabilityPlotCanvasTransform(options[["probabilityPlotCanvas"]])
   detailed <- .sapProbabilityPlotIsDetailed(options)
@@ -539,7 +587,7 @@
     axisSetup <- .sapProbabilityPlotDefaultAxisSetup(empiricalData, curveData, censoringData, canvas)
   }
 
-  plot <- .sapProbabilityPlotCensoringEvents(plot, censoringData)
+  plot <- .sapProbabilityPlotCensoringEvents(plot, censoringData, hasLevel)
 
   xScaleCall <- list(
     trans        = canvas[["xTransform"]],
@@ -614,19 +662,22 @@
   ))
 }
 
-.sapProbabilityPlotCensoringEvents <- function(plot, censoringData) {
+.sapProbabilityPlotCensoringEvents <- function(plot, censoringData, hasLevel = FALSE) {
 
   if (is.null(censoringData) || nrow(censoringData) == 0)
     return(plot)
 
-  plot <- plot + ggplot2::geom_rug(
+  aesCall <- list(x = as.name("time"), color = if (hasLevel) as.name("Level"))
+  geomCall <- list(
     data    = censoringData,
-    mapping = ggplot2::aes(x = time),
+    mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]),
     sides   = "b",
-    color   = "darkblue",
     alpha   = 0.5,
     size    = 0.5
   )
+  if (!hasLevel)
+    geomCall[["color"]] <- "darkblue"
+  plot <- plot + do.call(ggplot2::geom_rug, geomCall)
 
   return(plot)
 }
@@ -642,7 +693,7 @@
       xTransform = "identity",
       xLabel     = gettext("Time"),
       transform  = function(p) -log1p(-p),
-      inverse    = function(x) 1 - exp(-x)
+      inverse    = function(x) -expm1(-x)
     ),
     "lognormal" = list(
       name       = "lognormalProbability",
@@ -666,7 +717,7 @@
       xTransform = "log",
       xLabel     = gettext("Time (log scale)"),
       transform  = function(p) log(-log1p(-p)),
-      inverse    = function(x) 1 - exp(-exp(x))
+      inverse    = function(x) -expm1(-exp(x))
     )
   )
 }
@@ -793,6 +844,18 @@
 
   probabilityRange <- .sapProbabilityPlotProbabilityRange()
   return(pmin(pmax(probability, probabilityRange[1]), probabilityRange[2]))
+}
+
+.sapProbabilityPlotCurveProbability <- function(probability) {
+
+  # Keep endpoints finite on probability paper. Leave enough precision in the
+  # upper tail for the inverse transformation used by mirrored axes to remain
+  # strictly monotonic. This cap is beyond the displayed probability range.
+  probability[which(probability == 0)] <- .Machine$double.xmin
+  upper <- 1 - sqrt(.Machine$double.eps)
+  probability[which(probability > upper)] <- upper
+
+  return(probability)
 }
 
 .sapProbabilityPlotTimeRange <- function(time) {

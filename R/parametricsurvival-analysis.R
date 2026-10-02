@@ -33,13 +33,9 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
 
 .sapRun <- function(jaspResults, dataset, options) {
 
-  if (options[["analysisType"]] == "mixture" && .saSurvivalReady(options))
-    exportRowNames <- rownames(dataset)
-
   if (.saSurvivalReady(options)) {
     dataset <- .saCheckDataset(dataset, options, type = "parametric")
     if (options[["analysisType"]] == "mixture") {
-      attr(dataset, "exportRowNames") <- exportRowNames
       .sapmCheckDataset(dataset, options)
     }
   }
@@ -90,8 +86,9 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
       .sapmDiagnosticsTable(jaspResults, options)
     if (options[["mixtureComponentPlot"]])
       .sapmComponentPlot(jaspResults, options)
-    .sapmExportColumns(jaspResults, options)
   }
+
+  .saExportColumns(jaspResults, options)
 
   return()
 }

@@ -29,6 +29,7 @@ Section
 	property bool multipleResults:	false
 	property bool multipleModels:	false
 	property string modelSummaryInfo:	qsTr("Include a table with information about the model fit.")
+	property alias extraStatisticsControls:	statisticsExtras.content
 
 	title: qsTr("Statistics")
 
@@ -119,6 +120,12 @@ Section
 			name:		"coefficientsCovarianceMatrix"
 			checked:	false
 			info: qsTr("Include a table with the covariance matrix of the coefficient estimates.")
+		}
+
+		Group
+		{
+			id:		statisticsExtras
+			visible:	hasChildren
 		}
 	}
 

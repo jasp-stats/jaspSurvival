@@ -1,33 +1,40 @@
 # Per-observation exports follow the same model selection as the displayed output.
-.sapmExportOptions <- c(
-  "exportResidualsResponse", "exportResidualsCoxSnell", "exportFittedMean", "exportFittedMedian",
-  "exportMixtureProbabilities", "exportMixtureClassification"
-)
+.saExportOptions <- function(options) {
 
-.sapmExportColumns <- function(jaspResults, options) {
+  return(c("exportResidualsCoxSnell", if (options[["analysisType"]] == "semiparametric")
+    c("exportResidualsMartingale", "exportResidualsDeviance", "exportFittedRisk", "exportFittedLinearPredictor") else
+    c("exportResidualsResponse", "exportFittedMean", "exportFittedMedian"),
+    if (options[["analysisType"]] == "mixture") c("exportMixtureProbabilities", "exportMixtureClassification")))
+}
 
-  if (!.saSurvivalReady(options) || !any(vapply(.sapmExportOptions, function(name) options[[name]], logical(1))))
+.saExportColumns <- function(jaspResults, options) {
+
+  exportOptions <- .saExportOptions(options)
+  if (!.saSurvivalReady(options) || !any(vapply(exportOptions, function(name) options[[name]], logical(1))))
     return()
   if (!is.null(jaspResults[["exportColumns"]]))
     return()
 
-  dependencies <- c(.sapGetDependencies(options), "interpretModel", "exportColumnPrefix", .sapmExportOptions)
+  cox <- options[["analysisType"]] == "semiparametric"
+  dependencies <- c(if (cox) .saspDependencies else c(.sapGetDependencies(options), "interpretModel"),
+    "exportColumnPrefix", exportOptions)
   container <- createJaspContainer()
   container$dependOn(dependencies)
-  container$position <- 6
+  container$position <- if (cox) 10 else 6
   jaspResults[["exportColumns"]] <- container
 
-  fits <- .sapFlattenFit(.sapExtractFit(jaspResults, options, type = "selected"), options)
+  fits <- if (cox) list(jaspResults[["fit"]]$object) else
+    .sapFlattenFit(.sapExtractFit(jaspResults, options, type = "selected"), options)
   columns  <- list()
   messages <- character()
   for (fit in fits) {
-    prefix <- .sapmExportModelPrefix(fit, options, length(fits) > 1)
+    prefix <- .saExportModelPrefix(fit, options, length(fits) > 1)
     if (jaspBase::isTryError(fit)) {
       messages <- c(messages, paste0(prefix, jaspBase::.extractErrorMessage(fit)))
       next
     }
 
-    values <- .sapmExportValues(fit, options)
+    values <- if (cox) .saspExportValues(fit, options) else .sapExportValues(fit, options)
     for (name in names(values)) {
       columnName <- paste0(prefix, name)
       value <- values[[name]]
@@ -39,7 +46,7 @@
         messages <- c(messages, gettextf("%1$s: non-finite values were exported as missing.", columnName))
         value[!is.finite(value)] <- NA_real_
       }
-      columns[[columnName]] <- .sapmExportAlign(fit, value)
+      columns[[columnName]] <- .saExportAlign(fit, value)
     }
   }
 
@@ -66,7 +73,7 @@
   return()
 }
 
-.sapmExportAlign <- function(fit, values) {
+.saExportAlign <- function(fit, values) {
 
   dataset  <- attr(fit, "dataset")
   rowNames <- attr(dataset, "exportRowNames")
@@ -80,7 +87,7 @@
   return(aligned)
 }
 
-.sapmExportValues <- function(fit, options) {
+.sapExportValues <- function(fit, options) {
 
   dataset <- attr(fit, "dataset")
   values  <- list()
@@ -99,7 +106,7 @@
   if (options[["exportResidualsCoxSnell"]] && residualsAvailable)
     values[[gettext("Cox-Snell residual")]] <- try(stats::residuals(fit, type = "coxsnell"), silent = TRUE)
 
-  if (options[["exportMixtureProbabilities"]] || options[["exportMixtureClassification"]]) {
+  if (options[["analysisType"]] == "mixture" && (options[["exportMixtureProbabilities"]] || options[["exportMixtureClassification"]])) {
     posterior <- if (attr(fit, "components") == 1) matrix(1, nrow(dataset), 1) else attr(fit, "mixture")[["posterior"]]
     if (options[["exportMixtureProbabilities"]]) {
       for (k in seq_len(ncol(posterior)))
@@ -112,7 +119,26 @@
   return(values)
 }
 
-.sapmExportModelPrefix <- function(fit, options, multiple) {
+.saspExportValues <- function(fit, options) {
+
+  values <- list()
+  if (options[["exportResidualsMartingale"]])
+    values[[gettext("Martingale residual")]] <- try(stats::residuals(fit, type = "martingale"), silent = TRUE)
+  if (options[["exportResidualsDeviance"]])
+    values[[gettext("Deviance residual")]] <- try(stats::residuals(fit, type = "deviance"), silent = TRUE)
+  if (options[["exportResidualsCoxSnell"]]) {
+    # Martingale residual = event indicator - fitted cumulative hazard (also for counting-process data).
+    values[[gettext("Cox-Snell residual")]] <- try(fit[["y"]][, ncol(fit[["y"]])] - stats::residuals(fit, type = "martingale"), silent = TRUE)
+  }
+  if (options[["exportFittedRisk"]])
+    values[[gettext("Fitted relative risk")]] <- try(stats::predict(fit, type = "risk"), silent = TRUE)
+  if (options[["exportFittedLinearPredictor"]])
+    values[[gettext("Fitted linear predictor")]] <- try(stats::predict(fit, type = "lp"), silent = TRUE)
+
+  return(values)
+}
+
+.saExportModelPrefix <- function(fit, options, multiple) {
 
   parts <- trimws(options[["exportColumnPrefix"]])
   if (multiple) {
@@ -122,7 +148,8 @@
       "lnorm" = "LN", "weibull" = "WB"
     )
     model <- match(attr(fit, "modelId"), vapply(options[["modelTerms"]], function(x) x[["name"]], character(1)))
-    modelPrefix <- paste0(family, "-M", model, "-Mix", attr(fit, "components"))
+    modelPrefix <- paste0(family, "-M", model,
+      if (options[["analysisType"]] == "mixture") paste0("-Mix", attr(fit, "components")))
     if (options[["subgroup"]] != "") {
       subgroup <- if (attr(fit, "subgroupLabel") == gettext("Full dataset")) "All" else paste0("G-", attr(fit, "subgroup"))
       modelPrefix <- paste0(modelPrefix, "-", subgroup)

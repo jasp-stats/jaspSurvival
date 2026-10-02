@@ -278,6 +278,11 @@ Form
 		}
 	}
 
+	SA.SurvivalExport
+	{
+		intervalCensoring: censoringTypeInterval.checked
+	}
+
 	Section
 	{
 		title: qsTr("Advanced")

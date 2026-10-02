@@ -83,7 +83,7 @@
   outputDependencies <- c(.sapGetDependencies(options), "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
                           "mixtureDiagnosticsTable")
 
-  # every mixture model is a row of a single table
+  # every mixture model is displayed as a column of a single table
   .sapSectionWrapper(
     jaspResults   = jaspResults,
     options       = options,
@@ -183,7 +183,6 @@
     componentsTable$addFootnote(attr(fit, "label"))
   for (message in .sapConstraintNote(fit))
     componentsTable$addFootnote(message)
-  componentsTable$addFootnote(gettext("The mean and the median are those of the fitted component distribution; they are not restricted to the observed follow-up."))
   if (anyNA(data[["est"]]))
     componentsTable$addFootnote(gettext("Some component means or medians are infinite or could not be evaluated numerically and are shown as missing."))
   if (!.sapConstraintActive(fit) && (anyNA(data[["se"]]) || (options[["coefficientsConfidenceInterval"]] && anyNA(data[c("lower", "upper")]))))
@@ -337,10 +336,14 @@
 
   # create the table
   diagnosticsTable <- createJaspTable()
+  diagnosticsTable$transpose <- TRUE
+  textColumns <- c("model", "converged", "hessian")
   if (options[["subgroup"]] != "")
     diagnosticsTable$addColumnInfo(name = "subgroup",     title = gettext("Subgroup"),     type = "string")
-  diagnosticsTable$addColumnInfo(name = "distribution",   title = gettext("Distribution"), type = "string")
-  diagnosticsTable$addColumnInfo(name = "model",          title = gettext("Model"),        type = "string")
+  if (options[["subgroup"]] != "")
+    textColumns <- c("distribution", textColumns)
+  diagnosticsTable$addColumnInfo(name = "distribution",   title = gettext("Distribution"), type = if (options[["subgroup"]] != "") "mixed" else "string")
+  diagnosticsTable$addColumnInfo(name = "model",          title = gettext("Model"),        type = "mixed")
   diagnosticsTable$addColumnInfo(name = "components",     title = gettext("Components"),   type = "integer")
   diagnosticsTable$addColumnInfo(name = "starts",         title = gettext("Starts"),       type = "integer")
   diagnosticsTable$addColumnInfo(name = "replication",    title = gettext("Replications"), type = "integer")
@@ -349,21 +352,17 @@
   diagnosticsTable$addColumnInfo(name = "degenerate",     title = gettext("Degenerate Candidates"), type = "integer")
   diagnosticsTable$addColumnInfo(name = "minEss",         title = gettext("Min. Component n (ESS)"), type = "number")
   diagnosticsTable$addColumnInfo(name = "minEvents",      title = gettext("Min. Component Events"),  type = "number")
-  diagnosticsTable$addColumnInfo(name = "converged",       title = gettext("Optimizer Converged"), type = "string")
-  diagnosticsTable$addColumnInfo(name = "hessian",        title = gettext("Hessian Positive Definite"), type = "string")
+  diagnosticsTable$addColumnInfo(name = "converged",       title = gettext("Optimizer Converged"), type = "mixed")
+  diagnosticsTable$addColumnInfo(name = "hessian",        title = gettext("Hessian Positive Definite"), type = "mixed")
 
   if (!.saSurvivalReady(options) || is.null(fit))
     return(diagnosticsTable)
 
   data <- .saSafeRbind(lapply(fit, .sapmRowDiagnosticsTable))
+  for (column in intersect(textColumns, names(data)))
+    data[[column]] <- jaspBase::createMixedColumn(data[[column]], rep("string", nrow(data)))
 
   # add footnotes
-  diagnosticsTable$addFootnote(gettext("Starts is the number of starting values that produced a solution and Replications the number of them that reached the reported solution (within 0.01 log-likelihood units)."))
-  if (options[["mixtureConstrainSpread"]])
-    diagnosticsTable$addFootnote(gettext("The converged candidate with the highest likelihood satisfying the spread bound is selected. Component-size and separation diagnostics are warnings and do not change this selection."))
-  else
-    diagnosticsTable$addFootnote(gettext("A candidate solution is degenerate when a component collapses on a few observations (fewer than 3 effective observations, a vanishing interquartile range, or a diverging parameter), or when optimization does not converge. The best non-degenerate candidate is selected. If all candidates are degenerate, the best of them is reported with a warning."))
-  diagnosticsTable$addFootnote(gettext("Convergence and Hessian diagnostics refer to the selected candidate fit. Convergence does not rule out a local optimum or unreliable standard errors."))
   for (message in unique(unlist(lapply(fit, .sapConstraintNote))))
     diagnosticsTable$addFootnote(message)
   for (message in .sapCollectFitErrors(fit, options))
@@ -443,9 +442,6 @@
       mapping = ggplot2::aes(xmin = lower, xmax = upper, ymin = 0, ymax = density),
       inherit.aes = FALSE, fill = "grey80", color = "white", alpha = 0.6
     )
-    predictionWarnings <- c(predictionWarnings, gettext("The histogram shows bin probabilities estimated from the observed data using Kaplan-Meier; unobserved tail probability is not redistributed."))
-    if (length(attr(fit, "modelTerms")[["components"]]) > 0)
-      predictionWarnings <- c(predictionWarnings, gettext("The histogram describes the sample distribution; fitted curves use the selected prediction covariate values."))
   }
 
   if (options[["predictionsConfidenceInterval"]]) {
@@ -525,6 +521,7 @@
   # the components might change rapidly, the time steps are not rounded for a smooth display
   options[["predictionsLifeTimeRoundSteps"]] <- FALSE
   times      <- .sapOptions2PredictionTime(options, fit, type = "mixtureComponents", plot = TRUE)
+  times      <- .sapmComponentPlotTimes(fit, family, components, times)
   ci         <- options[["predictionsConfidenceInterval"]]
   level      <- options[["predictionsConfidenceIntervalLevel"]]
 
@@ -545,6 +542,21 @@
       )
     }
   }
+
+  evaluate <- function(times) {
+    summary <- switch(type,
+      "survival" = .sapSummaryPredictions(fit, type = "survival", t = times, ci = FALSE),
+      "failureProbability" = .sapSummaryPredictions(fit, type = "survival", t = times, ci = FALSE),
+      "density" = .sapSummaryPredictions(fit, fn = mixtureDensity, t = times, ci = FALSE),
+      "hazard" = .sapSummaryPredictions(fit, type = "hazard", t = times, ci = FALSE))
+    values <- .sapPlotPredictionMatrix(summary)
+    if (type == "failureProbability") values <- 1 - values
+    return(do.call(cbind, c(list(values), lapply(seq_len(components), function(k)
+      .sapPlotPredictionMatrix(.sapSummaryPredictions(fit, fn = componentFunction(k), t = times, ci = FALSE))))))
+  }
+  anchors <- try(.sapPlotFeatureTimes(list(fit), times), silent = TRUE)
+  times   <- .sapAdaptivePlotTimes(times, evaluate, minimum = if (ci) 65L else 17L, maximum = 401L,
+    anchors = if (inherits(anchors, "try-error")) numeric(0) else anchors)
 
   mixtureSummary <- switch(
     type,
@@ -598,6 +610,25 @@
   attr(out, "predictionWarnings") <- predictionWarnings
 
   return(out)
+}
+.sapmComponentPlotTimes         <- function(fit, family, components, times, probabilities = seq(0.001, 0.999, length.out = 101L)) {
+
+  # Add points within every component at each displayed covariate level: a
+  # uniform time grid can miss narrow peaks almost entirely.
+  componentTimes <- lapply(seq_len(components), function(k) {
+    quantileFunction <- function(t, start, ...) {
+      arguments  <- list(...)
+      n          <- max(length(t), lengths(arguments))
+      parameters <- lapply(stats::setNames(arguments[paste0(family[["pars"]], k)], family[["pars"]]), rep_len, length.out = n)
+      return(do.call(family[["q"]], c(list(rep_len(t, n)), parameters)))
+    }
+    predictions <- .sapSummaryPredictions(fit, fn = quantileFunction, t = probabilities, ci = FALSE)
+    return(unlist(lapply(predictions, function(x) x[["est"]]), use.names = FALSE))
+  })
+  componentTimes <- unlist(componentTimes, use.names = FALSE)
+  componentTimes <- componentTimes[is.finite(componentTimes) & componentTimes >= min(times) & componentTimes <= max(times)]
+
+  return(sort(unique(c(times, componentTimes))))
 }
 
 # mixture messages
@@ -672,16 +703,6 @@
   if (length(mixtures) == 0)
     return(messages)
 
-  starts <- vapply(mixtures, function(x) attr(x, "mixture")[["starts"]], numeric(1))
-  messages[["notes"]] <- c(messages[["notes"]], gettextf(
-    "Mixture models were estimated by direct maximization of the likelihood from %1$s starting values per model (%2$s), each refined by %3$i EM iterations.",
-    if (min(starts) == max(starts)) as.character(min(starts)) else gettextf("%1$i to %2$i", min(starts), max(starts)),
-    .sapmStartLabels(options),
-    options[["mixtureEmIterations"]]
-  ))
-  if (options[["censoringType"]] == "counting")
-    messages[["notes"]] <- c(messages[["notes"]], gettext("Left-truncated data: the EM algorithm provides starting values only; the estimates are from the direct maximization of the likelihood."))
-
   # the messages of each model are reported in a single footnote, models of the same distribution with the same messages are reported together
   fitMessages <- vapply(mixtures, function(x) paste(.sapmFitMessages(x, options), collapse = " "), character(1))
   # A one-component fit is also nested in every mixture of the same family and model.
@@ -719,17 +740,6 @@
   }
 
   return(messages)
-}
-.sapmStartLabels                <- function(options) {
-
-  labels <- c(
-    if (options[["mixtureStartKmeans"]])    gettext("k-means"),
-    if (options[["mixtureStartQuantiles"]]) gettext("quantiles"),
-    if (options[["mixtureStartSplit"]])     gettext("splits of the solution with one component fewer"),
-    if (options[["mixtureStartRandom"]])    gettextf("%1$i random", options[["mixtureStartRandomCount"]])
-  )
-
-  return(paste(labels, collapse = ", "))
 }
 .sapmCellLabel                  <- function(fit, options, components = attr(fit, "components")) {
   return(gettextf(

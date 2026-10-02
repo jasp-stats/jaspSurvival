@@ -73,7 +73,7 @@
     "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel"
   )
   if (!survivalTime)
-    dependencies <- c(dependencies, "lifeTimeMergeTablesAcrossMeasures", "predictionsLifeTimeRoundSteps")
+    dependencies <- c(dependencies, "lifeTimeMergeTablesAcrossMeasures", if (!plot) "predictionsLifeTimeRoundSteps")
   if (measure == "survivalProbability")
     dependencies <- c(dependencies, "survivalProbabilityAsFailureProbability")
   if (plot) {
@@ -396,7 +396,27 @@
   if (type == "quantile") {
     optionsSequence <- .sapOptions2PredictionQuantile(options)
   } else {
+    options[["predictionsLifeTimeRoundSteps"]] <- FALSE
     optionsSequence <- .sapOptions2PredictionTime(options, tempFit, type, plot = TRUE)
+    successfulFits <- fit[!checkFit]
+    logTime <- type == "survival" && options[["survivalProbabilityPlotTransformXAxis"]] == "log"
+    yTransform <- if (type == "survival") switch(options[["survivalProbabilityPlotTransformYAxis"]],
+      "none" = identity, "log" = log, "logmlogmp" = function(p) log(-log1p(-p))) else identity
+    limits <- if (type == "survival") switch(options[["survivalProbabilityPlotTransformYAxis"]],
+      "none" = if (options[["plotTheme"]] == "detailed") c(0, 1),
+      "log" = log(c(if (options[["plotTheme"]] == "detailed") 0.001 else 0.01, 1)),
+      "logmlogmp" = yTransform(if (options[["plotTheme"]] == "detailed") c(0.001, 0.999) else c(0.01, 0.99)))
+    evaluate <- function(times) {
+      values <- do.call(cbind, lapply(successfulFits, function(model)
+        .sapPlotPredictionMatrix(.sapSummaryPredictions(model, type = type, t = times, ci = FALSE))))
+      return(if (type == "survival" && options[["survivalProbabilityAsFailureProbability"]]) 1 - values else values)
+    }
+    anchors <- try(.sapPlotFeatureTimes(successfulFits, optionsSequence, sparse = type == "rmst"), silent = TRUE)
+    optionsSequence <- .sapAdaptivePlotTimes(optionsSequence, evaluate,
+      xTransform = if (logTime) log else identity, xInverse = if (logTime) exp else identity,
+      yTransform = yTransform, limits = limits, minimum = if (options[["predictionsConfidenceInterval"]]) 65L else 17L,
+      maximum = if (options[["predictionsConfidenceInterval"]]) 129L else 201L,
+      anchors = if (inherits(anchors, "try-error")) numeric(0) else anchors)
   }
 
   out <- list()

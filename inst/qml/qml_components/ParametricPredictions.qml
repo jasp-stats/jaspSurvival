@@ -42,7 +42,7 @@ Section
 	readonly property bool legendPaletteAvailable: (survivalTimePlot.checked && timeSeriesAvailable) || (lifePlotSelected && lifeSeriesAvailable) || extraPlotSelected
 	property string quantileStepsInfo:	qsTr("Select the probabilities at which survival times are predicted: Quantiles, Sequence, or Custom.")
 	property string quantileNumberInfo:	qsTr("Specify the number of predicted survival-time quantiles when using Quantiles as the steps type.")
-	property string lifeTimeStepsInfo:	qsTr("Select the time points for predictions: Equal spacing, Sequence, or Custom. Equal spacing uses evenly spaced times up to the maximum observed time; survival plots with a logarithmic time axis use evenly spaced log times.")
+	property string lifeTimeStepsInfo:	qsTr("Select the time points for prediction tables: Equal spacing, Sequence, or Custom. Equal spacing uses evenly spaced times up to the maximum observed time. Time plots place points adaptively within the selected range.")
 	property string lifeTimeSizeInfo:	qsTr("Set the time increment when using Sequence steps. Leaving this blank uses one tenth of the selected time range.")
 	property string lifeTimeCustomInfo:	qsTr("Specify custom steps of the life time.")
 
@@ -417,7 +417,7 @@ Section
 			label:		qsTr("Round steps")
 			checked:	true
 			visible:	predictionsLifeTimeStepsType.value === "quantiles" || predictionsLifeTimeStepsType.value === "sequence"
-			info: qsTr("Round the time points to the nearest integer when using Equal spacing or Sequence steps.")
+			info: qsTr("Round table time points to the nearest integer when using Equal spacing or Sequence steps. Time plots use unrounded points placed adaptively within the selected range.")
 		}
 
 		FormulaField

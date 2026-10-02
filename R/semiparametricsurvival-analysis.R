@@ -17,6 +17,8 @@
 
 SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NULL) {
 
+  options[["analysisType"]] <- "semiparametric"
+
   if (.saSurvivalReady(options))
     dataset <- .saCheckDataset(dataset, options, type = "Cox")
 
@@ -51,6 +53,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     .saspProportionalHazardsPlots(jaspResults, dataset, options)
 
   .saspResidualsPlots(jaspResults, dataset, options)
+  .saExportColumns(jaspResults, options)
 
   return()
 }
@@ -81,6 +84,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
       weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]]
     ))
 
+    attr(fit, "dataset") <- dataset
     jaspResults[["fit"]]$object <- fit
   }
 
@@ -631,7 +635,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   # compute the residuals
   residuals          <- try(residuals(fit, type = switch(options[["residualPlotResidualType"]], "scaledSchoenfeld" = "scaledsch", options[["residualPlotResidualType"]])))
-  predictorsFit      <- model.matrix(fit)
+  predictorsFit      <- .saspResidualsPredictors(model.matrix(fit), dataset, options[["factors"]])
   if (options[["residualPlotResidualType"]] %in% c("schoenfeld", "scaledSchoenfeld")) {
     # Schoenfeld residuals are returned in event-time order within strata.
     response <- fit[["y"]]
@@ -751,20 +755,38 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   return()
 }
+.saspResidualsPredictors      <- function(predictorsFit, dataset, factors) {
+
+  predictors <- as.data.frame(predictorsFit)
+  if (length(factors) == 0)
+    return(predictors)
+
+  # Match factor contrast columns exactly; binary covariates remain numeric.
+  factorMatrix  <- stats::model.matrix(stats::reformulate(unlist(factors)), data = dataset)
+  factorColumns <- intersect(setdiff(colnames(factorMatrix), "(Intercept)"), colnames(predictors))
+  for (column in factorColumns)
+    predictors[[column]] <- factor(predictors[[column]])
+
+  return(predictors)
+}
 .saspResidualsPlot            <- function(x, y, xlab, ylab) {
 
-  xTicks <- jaspGraphs::getPrettyAxisBreaks(x)
   yTicks <- jaspGraphs::getPrettyAxisBreaks(y)
 
   tempPlot <- ggplot2::ggplot() +
-    jaspGraphs::geom_point(mapping = ggplot2::aes(x = x, y = y)) +
+    jaspGraphs::geom_point(mapping = ggplot2::aes(x = x, y = y),
+                          position = if (is.factor(x)) ggplot2::position_jitter(width = 0.1, height = 0, seed = 1) else "identity") +
     ggplot2::labs(
       x     = xlab,
       y     = ylab
     )
-  tempPlot <- tempPlot +
-    jaspGraphs::scale_x_continuous(limits = range(xTicks), breaks = xTicks) +
-    jaspGraphs::scale_y_continuous(limits = range(yTicks), breaks = yTicks)
+  if (is.factor(x)) {
+    tempPlot <- tempPlot + ggplot2::scale_x_discrete()
+  } else {
+    xTicks   <- jaspGraphs::getPrettyAxisBreaks(x)
+    tempPlot <- tempPlot + jaspGraphs::scale_x_continuous(limits = range(xTicks), breaks = xTicks)
+  }
+  tempPlot <- tempPlot + jaspGraphs::scale_y_continuous(limits = range(yTicks), breaks = yTicks)
 
   tempPlot <- tempPlot + jaspGraphs::geom_rangeframe(sides = "bl") + jaspGraphs::themeJaspRaw()
 

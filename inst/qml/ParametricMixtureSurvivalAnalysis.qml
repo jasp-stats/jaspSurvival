@@ -276,38 +276,32 @@ Form
 
 	SA.ParametricStatistics
 	{
-		multipleModels:	modelTerms.count > 1
+		multipleModels:		modelTerms.count > 1
 		multipleResults:	distribution.value === "all" || mixtureComponents.value === "all" || modelTerms.count > 1
-		modelSummaryInfo: qsTr("Include a table with information about the model fit. The BIC uses the number of observations (including censored observations and weighted by the case weights) as the sample size.")
+		modelSummaryInfo:	qsTr("Include a table with information about the model fit. The BIC uses the number of observations (including censored observations and weighted by the case weights) as the sample size.")
 
-		Group
-		{
-			title:	qsTr("Mixture")
-
-			CheckBox
+		extraStatisticsControls: [
+			Group
 			{
-				label:		qsTr("Mean and median")
-				name:		"mixtureComponentsTable"
-				checked:	true
-				info: qsTr("Include a table with the mean and the median lifetime of each mixture component. They correspond to the reference level of factors and zero value of covariates. The mixing probabilities and the parameters of the components are reported in the coefficients summary. Components are ordered by their median lifetime.")
-			}
+				title:	qsTr("Mixture")
 
-			CheckBox
-			{
-				label:		qsTr("Classification")
-				name:		"mixtureClassificationTable"
-				checked:	false
-				info: qsTr("Include a table with the number and proportion of observations assigned to each component based on their highest posterior probability, the mean posterior probability of the assigned observations, and the relative entropy of the classification.")
-			}
+				CheckBox
+				{
+					label:		qsTr("Mean and median")
+					name:		"mixtureComponentsTable"
+					checked:	false
+					info: qsTr("Include a table with the mean and the median lifetime of each mixture component. They correspond to the reference level of factors and zero value of covariates. The mixing probabilities and the parameters of the components are reported in the coefficients summary. Components are ordered by their median lifetime.")
+				}
 
-			CheckBox
-			{
-				label:		qsTr("Estimation diagnostics")
-				name:		"mixtureDiagnosticsTable"
-				checked:	false
-				info: qsTr("Include a table with the diagnostics of the estimation of each mixture model: the number of starting values, how many of them reached the reported solution, the log-likelihood of the reported and of the next best distinct solution, the number of degenerate candidate solutions, the effective sample size and the effective number of events of the smallest component, optimizer convergence, and whether the Hessian of the likelihood is positive definite.")
+				CheckBox
+				{
+					label:		qsTr("Classification")
+					name:		"mixtureClassificationTable"
+					checked:	false
+					info: qsTr("Include a table with the number and proportion of observations assigned to each component based on their highest posterior probability, the mean posterior probability of the assigned observations, and the relative entropy of the classification.")
+				}
 			}
-		}
+		]
 	}
 
 	SA.ParametricPredictions
@@ -320,7 +314,7 @@ Form
 		mergeLifeComponentsActive:	lifeTimeMergePlotsAcrossComponents.checked && lifeTimeMergePlotsAcrossComponents.enabled
 		quantileStepsInfo: qsTr("Select the quantiles at which survival times are predicted: evenly spaced Quantiles, a Sequence, or Custom probabilities.")
 		quantileNumberInfo: qsTr("Specify the number of quantiles of the predicted survival when using Quantiles as the steps type.")
-		lifeTimeStepsInfo: qsTr("Select the time points at which predictions are evaluated: Equal spacing, a Sequence, or Custom times.")
+		lifeTimeStepsInfo: qsTr("Select the time points for prediction tables: Equal spacing, a Sequence, or Custom times. Time plots place unrounded points adaptively within the selected range.")
 		lifeTimeSizeInfo: qsTr("Define the time increment when using Sequence steps. Leaving this blank uses one tenth of the selected time range.")
 		lifeTimeCustomInfo: qsTr("Specify custom time points for predictions.")
 
@@ -355,44 +349,56 @@ Form
 
 		Group
 		{
-			title:		qsTr("Mixture Components")
-
-			CheckBox
+			SA.ParametricResidualPlots
 			{
-				id:			mixtureComponentPlot
-				label:		qsTr("Plot")
-				name:		"mixtureComponentPlot"
-				info: qsTr("Include a plot with the fitted mixture and its components. The components are evaluated at the same covariate values as the predictions.")
+				rightCensoring:	censoringTypeRight.checked
+				residualVsPredictedLabel:	qsTr("Residuals vs. predicted time")
+			}
 
-				DropDown
+			Group
+			{
+				title:		qsTr("Mixture")
+
+				CheckBox
 				{
-					name:		"mixtureComponentPlotType"
-					id:			mixtureComponentPlotType
-					label:		qsTr("Type")
-					startValue:	"survival"
-					info: qsTr("Select the displayed function: the survival probability of the mixture and of each component, the failure probability of the mixture and of each component, the density of the mixture and the weighted density of each component (which sum to the mixture density), or the hazard of the mixture and of each component.")
-					values:
-					[
-						{ label: qsTr("Survival probability"),	value: "survival"},
-						{ label: qsTr("Failure probability"),	value: "failureProbability"},
-						{ label: qsTr("Density"),				value: "density"},
-						{ label: qsTr("Hazard"),				value: "hazard"}
-					]
+					label:		qsTr("Estimation diagnostics")
+					name:		"mixtureDiagnosticsTable"
+					checked:	false
+					info: qsTr("Include a table with the diagnostics of the estimation of each mixture model: the number of starting values, how many of them reached the reported solution, the log-likelihood of the reported and of the next best distinct solution, the number of degenerate candidate solutions, the effective sample size and the effective number of events of the smallest component, optimizer convergence, and whether the Hessian of the likelihood is positive definite.")
 				}
 
 				CheckBox
 				{
-					name:		"mixtureComponentPlotObservedData"
-					label:		qsTr("Observed data")
-					enabled:	censoringTypeRight.checked && mixtureComponentPlotType.value === "density"
-					info: qsTr("Overlay a histogram of the observed time distribution on the fitted densities. For right-censored data, bin probabilities are estimated with Kaplan-Meier and any unobserved tail probability is retained. The fitted curves use the prediction covariate settings; the histogram describes the full sample within each subgroup.")
+					id:			mixtureComponentPlot
+					label:		qsTr("Component plot")
+					name:		"mixtureComponentPlot"
+					info: qsTr("Include a plot with the fitted mixture and its components. The components are evaluated at the same covariate values as the predictions.")
+
+					DropDown
+					{
+						name:		"mixtureComponentPlotType"
+						id:			mixtureComponentPlotType
+						label:		qsTr("Type")
+						startValue:	"survival"
+						info: qsTr("Select the displayed function: the survival probability of the mixture and of each component, the failure probability of the mixture and of each component, the density of the mixture and the weighted density of each component (which sum to the mixture density), or the hazard of the mixture and of each component.")
+						values:
+						[
+							{ label: qsTr("Survival probability"),	value: "survival"},
+							{ label: qsTr("Failure probability"),	value: "failureProbability"},
+							{ label: qsTr("Density"),				value: "density"},
+							{ label: qsTr("Hazard"),				value: "hazard"}
+						]
+					}
+
+					CheckBox
+					{
+						name:		"mixtureComponentPlotObservedData"
+						label:		qsTr("Observed data")
+						enabled:	censoringTypeRight.checked && mixtureComponentPlotType.value === "density"
+						info: qsTr("Overlay a histogram of the observed time distribution on the fitted densities. For right-censored data, bin probabilities are estimated with Kaplan-Meier and any unobserved tail probability is retained. The fitted curves use the prediction covariate settings; the histogram describes the full sample within each subgroup.")
+					}
 				}
 			}
-		}
-		SA.ParametricResidualPlots
-		{
-			rightCensoring:	censoringTypeRight.checked
-			residualVsPredictedLabel:	qsTr("Residuals vs. predicted time")
 		}
 
 		SA.ParametricProbabilityPlot
@@ -416,80 +422,10 @@ Form
 		}
 	}
 
-	Section
+	SA.SurvivalExport
 	{
-		title:		qsTr("Export")
-		columns:	2
-		info: qsTr("Export model-derived values for each observation to the dataset. Exports follow the displayed model selection. When multiple models are displayed, column names include distribution, model, number of components, and subgroup identifiers. Observations excluded from a model receive missing values.")
-
-		TextField
-		{
-			name:			"exportColumnPrefix"
-			label:			qsTr("Column prefix")
-			defaultValue:	""
-			fieldWidth:		160
-			Layout.columnSpan: 2
-			info: qsTr("Optional custom prefix prepended to every exported column name, before any automatic model identifier.")
-		}
-
-		Group
-		{
-			title:	qsTr("Residuals")
-
-			CheckBox
-			{
-				name:		"exportResidualsResponse"
-				label:		qsTr("Response")
-				enabled:	!censoringTypeInterval.checked
-				info: qsTr("Export observed time minus fitted mean survival time. Censored times are treated as observed times. Unavailable for interval-censored data.")
-			}
-
-			CheckBox
-			{
-				name:		"exportResidualsCoxSnell"
-				label:		qsTr("Cox-Snell")
-				enabled:	!censoringTypeInterval.checked
-				info: qsTr("Export the fitted cumulative hazard at each observation's time. For counting-process data, it is conditional on survival to the entry time. Unavailable for interval-censored data.")
-			}
-		}
-
-		Group
-		{
-			title:	qsTr("Fitted Values")
-
-			CheckBox
-			{
-				name:	"exportFittedMean"
-				label:	qsTr("Mean survival time")
-				info: qsTr("Export the fitted mean survival time at each observation's covariate values.")
-			}
-
-			CheckBox
-			{
-				name:	"exportFittedMedian"
-				label:	qsTr("Median survival time")
-				info: qsTr("Export the fitted median survival time at each observation's covariate values.")
-			}
-		}
-
-		Group
-		{
-			title:	qsTr("Mixture Classification")
-
-			CheckBox
-			{
-				name:	"exportMixtureProbabilities"
-				label:	qsTr("Component probabilities")
-				info: qsTr("Export one posterior membership probability per mixture component, conditional on the observed survival or censoring information.")
-			}
-
-			CheckBox
-			{
-				name:	"exportMixtureClassification"
-				label:	qsTr("Component index")
-				info: qsTr("Export the index of the component with the highest posterior membership probability. Ties are assigned to the first component.")
-			}
-		}
+		mixture: true
+		intervalCensoring: censoringTypeInterval.checked
 	}
 
 	Section

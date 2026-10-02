@@ -442,18 +442,13 @@
     for(j in seq_along(fit[[i]])) {
       out[[length(out) + 1]] <- fit[[i]][[j]]
 
-      if (options[["subgroup"]] != "") {
-        prefix <- paste0(attr(fit[[i]][[j]], "subgroupLabel"), " | ")
-      } else {
-        prefix <- ""
-      }
-
       labelParts <- c(
+        if (options[["subgroup"]] != "") attr(fit[[i]][[j]], "subgroupLabel"),
         if (multipleDistributions) paste0(attr(fit[[i]][[j]], "distribution"), " distribution"),
         if (multipleComponents)    .sapComponentsLabel(attr(fit[[i]][[j]], "components")),
         if (multipleModels)        attr(fit[[i]][[j]], "modelTitle")
       )
-      attr(out[[length(out)]], "label") <- paste0(prefix, paste(labelParts, collapse = " | "))
+      attr(out[[length(out)]], "label") <- paste(labelParts, collapse = " | ")
 
     }
   }

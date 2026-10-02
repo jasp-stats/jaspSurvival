@@ -23,6 +23,7 @@
 .saCheckDataset       <- function(dataset, options, type) {
 
   nOriginal <- nrow(dataset)
+  exportRowNames <- rownames(dataset)
 
   # load the data
   eventVariable <- if (options[["censoringType"]] != "interval") options[["eventStatus"]]
@@ -65,6 +66,7 @@
     dataset[[eventVariable]] <- .saRecodeEventStatus(dataset, options)
   }
   attr(dataset, "missingObservations") <- nOriginal - nrow(dataset)
+  attr(dataset, "exportRowNames") <- exportRowNames
 
   if (nrow(dataset) == 0)
     .quitAnalysis(gettext("No observations remain after excluding missing values."))

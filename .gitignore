@@ -63,3 +63,7 @@ renv/activate.R
 .positai
 AGENTS.md
 /.codex
+
+# StatsVault local workspace and generated agent bridges
+.StatsVault/
+CLAUDE.md
