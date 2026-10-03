@@ -176,7 +176,10 @@
 
   # a component also collapses if the covariate effects on its (log-time scale) location diverge within the observed covariate range
   divergingEffects <- vapply(seq_len(components), function(k) {
-    length(estimates[["beta"]][[k]]) > 0 && max(abs(covariates %*% estimates[["beta"]][[k]])) > 15
+    if (length(estimates[["beta"]][[k]]) == 0)
+      return(FALSE)
+    effects <- as.vector(covariates %*% estimates[["beta"]][[k]])
+    max(abs(effects - mean(effects))) > 15
   }, logical(1))
 
   attr(fit, "mixture") <- list(
