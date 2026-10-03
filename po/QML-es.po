@@ -827,12 +827,12 @@ msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Selected Parametric Distributions"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:504
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:506
 msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid "Constrain component spread"
+msgid "Constrain minimum spread"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:506
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:509
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Fit by constrained maximum likelihood with a minimum standard deviation of "
@@ -846,22 +846,17 @@ msgid ""
 "inferential tests are not reported."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:512
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid "Minimum spread"
-msgstr ""
-
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:514
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:517
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Relative"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:515
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:518
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Absolute"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:518
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:521
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Set the minimum log-time standard deviation relative to an unconstrained one-"
@@ -870,13 +865,13 @@ msgid ""
 "computed separately for each model and subgroup."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:524
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:537
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:528
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:541
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Minimum log-time SD"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:531
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:535
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Set a positive percentage of the unconstrained one-component model's log-"
@@ -886,7 +881,7 @@ msgid ""
 "the distribution before conditioning on entry."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:544
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:548
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Set a positive lower bound, up to 100, on the standard deviation of the "
@@ -897,24 +892,24 @@ msgid ""
 "distribution before conditioning on entry."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:552
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:556
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Maximum components"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:557
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:561
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Set the maximum number of components fitted when 'All', 'Best AIC', or 'Best "
 "BIC' is selected as the number of components."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:562
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:566
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Starting Values"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:563
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:567
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Select the starting values of the constrained mixture estimation. The "
@@ -923,7 +918,7 @@ msgid ""
 "local optimum at a higher computational cost."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:563
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:567
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Select the starting values of the mixture estimation. The likelihood is "
@@ -934,24 +929,24 @@ msgid ""
 "at a proportionally higher computational cost."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:568
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:572
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "K-means"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:570
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:574
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Start from a k-means clustering of the log survival times. The likelihood is "
 "maximized directly from this starting value."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:576
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:580
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Quantiles"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:578
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:582
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Start from partitions of the survival times by their quantiles: a partition "
@@ -961,12 +956,12 @@ msgid ""
 "each of these starting values."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:584
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:588
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Split of the previous solution"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:586
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:590
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Start from the solution with one component fewer, splitting each of its "
@@ -975,12 +970,12 @@ msgid ""
 "fewer is estimated for this purpose when it is not part of the analysis."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:592
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:596
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Random"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:595
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:599
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Start from random centres drawn from the observed event times, assigning "
@@ -989,17 +984,17 @@ msgid ""
 "protection against reporting a local optimum."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:604
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:608
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Set the number of random starting values."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:612
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:616
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "EM iterations"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:616
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:620
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Set the number of EM iterations that refine each starting value before the "
@@ -1008,53 +1003,53 @@ msgid ""
 "maximization."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:624
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:628
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Output Formatting"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:629
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:633
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Include full dataset in subgroup analysis"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:632
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:636
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Include the full dataset output in the subgroup analysis. This option is "
 "only available when the subgroup analysis is selected."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:638
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:642
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Compare models across distributions"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:641
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:645
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Compare models across distributions. This option is only available when the "
 "multiple models and parametric distributions are specified."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:647
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:651
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Compare models across components"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:650
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:654
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Compare models across the numbers of components. This option is only "
 "available when multiple models and numbers of components are specified."
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:656
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:660
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Always display model information"
 msgstr ""
 
-#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:658
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:662
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
 "Always display model information (distribution, number of components, and "
@@ -3257,6 +3252,16 @@ msgstr ""
 #~ msgstr ""
 #~ "Seleccionar el tipo de censura en sus datos: censura por la derecha, por "
 #~ "la izquierda o por intervalo."
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:504
+#~ msgctxt "ParametricMixtureSurvivalAnalysis|"
+#~ msgid "Constrain component spread"
+#~ msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:512
+#~ msgctxt "ParametricMixtureSurvivalAnalysis|"
+#~ msgid "Minimum spread"
+#~ msgstr ""
 
 #~ msgctxt "Description|"
 #~ msgid "Non-parametric"
