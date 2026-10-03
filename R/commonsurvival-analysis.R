@@ -380,7 +380,7 @@
       "type"    = c(gettext("Events"), gettext("Censored")),
       "count"   = c(
         if (options[["weights"]] == "") sum( dataset[[options[["eventStatus"]]]]) else sum( dataset[[options[["eventStatus"]]]] * dataset[[options[["weights"]]]]),
-        if (options[["weights"]] == "") sum(!dataset[[options[["eventStatus"]]]]) else sum(!dataset[[options[["eventStatus"]]]] * dataset[[options[["weights"]]]])
+        if (options[["weights"]] == "") sum(!dataset[[options[["eventStatus"]]]]) else sum((!dataset[[options[["eventStatus"]]]]) * dataset[[options[["weights"]]]])
       )
     ))
 
