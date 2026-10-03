@@ -21,7 +21,7 @@ Section
 		name:			"exportColumnPrefix"
 		label:			qsTr("Column prefix")
 		defaultValue:	""
-		fieldWidth:		160
+		fieldWidth:		160 * jaspTheme.uiScale
 		Layout.columnSpan: 2
 		info: qsTr("Optional custom prefix prepended to every exported column name, before any automatic model identifier.")
 	}
