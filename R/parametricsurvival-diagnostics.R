@@ -88,7 +88,7 @@
   # the predictors of mixture models are repeated for the location parameter of each component
   if (!is.null(attr(fit, "mixture")))
     predictorsFit <- predictorsFit[, fit[["mx"]][[fit[["dlist"]][["location"]]]], drop = FALSE]
-  predictorsFit <- .saspResidualsPredictors(predictorsFit, attr(fit, "dataset"), options[["factors"]])
+  predictorsFit <- .saspResidualsPredictors(predictorsFit, stats::model.frame(fit), options[["factors"]])
   res <- .sapResiduals(fit, options)
   if (jaspBase::isTryError(res)) {
     residualPlotResidualVsPredictors$setError(conditionMessage(attr(res, "condition")))

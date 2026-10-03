@@ -635,7 +635,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   # compute the residuals
   residuals          <- try(residuals(fit, type = switch(options[["residualPlotResidualType"]], "scaledSchoenfeld" = "scaledsch", options[["residualPlotResidualType"]])))
-  predictorsFit      <- .saspResidualsPredictors(model.matrix(fit), dataset, options[["factors"]])
+
   if (options[["residualPlotResidualType"]] %in% c("schoenfeld", "scaledSchoenfeld")) {
     # Schoenfeld residuals are returned in event-time order within strata.
     response <- fit[["y"]]
@@ -674,6 +674,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   # residuals vs predictors
   if (options[["residualPlotResidualVsPredictors"]] && is.null(residualsPlots[["residualPlotResidualVsPredictors"]])) {
 
+    predictorsFit <- .saspResidualsPredictors(model.matrix(fit), stats::model.frame(fit), options[["factors"]], contrasts = fit[["contrasts"]])
     residualPlotResidualVsPredictors <- createJaspContainer(title = gettext("Residual Plots"))
     residualPlotResidualVsPredictors$dependOn("residualPlotResidualVsPredictors")
     residualPlotResidualVsPredictors$position <- 2
@@ -755,14 +756,17 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   return()
 }
-.saspResidualsPredictors      <- function(predictorsFit, dataset, factors) {
+.saspResidualsPredictors      <- function(predictorsFit, modelFrame, factors, contrasts = attr(predictorsFit, "contrasts")) {
 
   predictors <- as.data.frame(predictorsFit)
-  if (length(factors) == 0)
+  factors    <- intersect(unlist(factors), names(modelFrame))
+  if (ncol(predictors) == 0 || length(factors) == 0)
     return(predictors)
 
-  # Match factor contrast columns exactly; binary covariates remain numeric.
-  factorMatrix  <- stats::model.matrix(stats::reformulate(unlist(factors)), data = dataset)
+  # Match fitted factor contrast columns exactly; binary covariates remain numeric.
+  if (!is.null(contrasts))
+    contrasts <- contrasts[intersect(names(contrasts), factors)]
+  factorMatrix  <- stats::model.matrix(stats::reformulate(factors), data = modelFrame[, factors, drop = FALSE], contrasts.arg = contrasts)
   factorColumns <- intersect(setdiff(colnames(factorMatrix), "(Intercept)"), colnames(predictors))
   for (column in factorColumns)
     predictors[[column]] <- factor(predictors[[column]])
