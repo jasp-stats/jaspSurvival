@@ -8,12 +8,16 @@ test_that("SemiParametricSurvivalAnalysis (analysis 1) results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "coxph_full_output.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[1]]
+  # GUI defaults from qml_components/SurvivalExport.qml.
+  opts[c("exportResidualsCoxSnell", "exportResidualsMartingale", "exportResidualsDeviance", "exportFittedRisk", "exportFittedLinearPredictor")] <- rep(list(FALSE), 5)
+  opts[["exportColumnPrefix"]] <- ""
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
   # Encode and run analysis
   encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
   set.seed(1)
   results <- jaspTools::runAnalysis("SemiParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+  expect_identical(results[["status"]], "complete")
 
   table <- results[["results"]][["modelFitTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -36,12 +40,16 @@ test_that("SemiParametricSurvivalAnalysis (analysis 2) results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "coxph_full_output.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[2]]
+  # GUI defaults from qml_components/SurvivalExport.qml.
+  opts[c("exportResidualsCoxSnell", "exportResidualsMartingale", "exportResidualsDeviance", "exportFittedRisk", "exportFittedLinearPredictor")] <- rep(list(FALSE), 5)
+  opts[["exportColumnPrefix"]] <- ""
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
   # Encode and run analysis
   encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
   set.seed(1)
   results <- jaspTools::runAnalysis("SemiParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+  expect_identical(results[["status"]], "complete")
 
   table <- results[["results"]][["estimatesTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -102,12 +110,16 @@ test_that("SemiParametricSurvivalAnalysis (analysis 3) results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "coxph_full_output.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[3]]
+  # GUI defaults from qml_components/SurvivalExport.qml.
+  opts[c("exportResidualsCoxSnell", "exportResidualsMartingale", "exportResidualsDeviance", "exportFittedRisk", "exportFittedLinearPredictor")] <- rep(list(FALSE), 5)
+  opts[["exportColumnPrefix"]] <- ""
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
   # Encode and run analysis
   encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
   set.seed(1)
   results <- jaspTools::runAnalysis("SemiParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+  expect_identical(results[["status"]], "complete")
 
   table <- results[["results"]][["estimatesTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -168,12 +180,16 @@ test_that("SemiParametricSurvivalAnalysis (analysis 4) results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "coxph_full_output.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[4]]
+  # GUI defaults from qml_components/SurvivalExport.qml.
+  opts[c("exportResidualsCoxSnell", "exportResidualsMartingale", "exportResidualsDeviance", "exportFittedRisk", "exportFittedLinearPredictor")] <- rep(list(FALSE), 5)
+  opts[["exportColumnPrefix"]] <- ""
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
   # Encode and run analysis
   encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
   set.seed(1)
   results <- jaspTools::runAnalysis("SemiParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+  expect_identical(results[["status"]], "complete")
 
   table <- results[["results"]][["estimatesTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
