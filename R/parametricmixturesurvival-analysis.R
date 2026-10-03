@@ -594,6 +594,17 @@
 }
 .sapmMStep                      <- function(emFormula, dataset, covariates, family, weights, previous, constraint = NULL) {
 
+  # Right censoring at zero contributes log S(0) = 0 for every component.
+  # Exclude these neutral rows from the native component fit only; predict all rows.
+  response    <- stats::model.response(stats::model.frame(emFormula, dataset))
+  informative <- rep(TRUE, nrow(dataset))
+  if (attr(response, "type") %in% c("right", "interval"))
+    informative <- !(response[, 1] == 0 & response[, ncol(response)] == 0)
+  if (!any(informative))
+    stop(gettext("The mixture model requires events or positive censoring times. Check the survival times and event status."))
+  dataset <- dataset[informative, , drop = FALSE]
+  weights <- weights[informative]
+
   # posterior probabilities can underflow to zero which is not allowed as a weight
   weights <- pmax(weights, 1e-10)
 
