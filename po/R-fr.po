@@ -1,7 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: R-jaspSurvival\n"
-"POT-Creation-Date: 2026-09-09 14:27\n"
+"Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
+"POT-Creation-Date: 2026-10-03 11:23\n"
 "PO-Revision-Date: 2026-08-10 00:00+0000\n"
 "Last-Translator: automated <noreply>\n"
 "Language-Team: French\n"
@@ -11,8 +12,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 
+msgid ""
+"An open interval may use negative infinity for its start or positive "
+"infinity for its end, but not the reverse."
+msgstr ""
+
+msgid "No observations remain after excluding missing values."
+msgstr ""
+
 msgid "The end time must be larger than the start time."
 msgstr "Le temps de fin doit être plus grand que le temps de début."
+
+msgid "The interval end must be greater than or equal to the interval start."
+msgstr ""
 
 msgid "The weights variable must be an integer."
 msgstr "La variable de poids doit être un entier."
@@ -30,11 +42,6 @@ msgid "We need at least one predictor, or an intercept to make a formula"
 msgstr ""
 "Il faut au moins un prédicteur ou une ordonnée à l'origine pour créer une "
 "formule"
-
-msgid "At least one predictor, or an intercept, is needed to fit the model."
-msgstr ""
-"Au moins un prédicteur, ou une ordonnée à l'origine, est nécessaire pour "
-"ajuster le modèle."
 
 msgid "Events"
 msgstr "Événements"
@@ -74,6 +81,54 @@ msgstr "Graphique log-log complémentaire"
 
 msgid "log(Time)"
 msgstr "log(Temps)"
+
+msgid "%1$s: non-finite values were exported as missing."
+msgstr ""
+
+msgid "The column '%1$s' already exists. Specify a different export prefix."
+msgstr ""
+
+msgid "Component index"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Exported values could not be matched to the original observations."
+msgstr ""
+
+msgid "Fitted mean survival time"
+msgstr ""
+
+msgid "Response residual"
+msgstr ""
+
+msgid "Fitted median survival time"
+msgstr ""
+
+msgid "Cox-Snell residual"
+msgstr ""
+
+msgid "Component %1$i probability"
+msgstr ""
+
+msgid "Martingale residual"
+msgstr ""
+
+msgid "Deviance residual"
+msgstr ""
+
+msgid "Fitted relative risk"
+msgstr ""
+
+msgid "Fitted linear predictor"
+msgstr ""
+
+msgid "Full dataset"
+msgstr "Jeu de données complet"
 
 msgid "Kaplan-Meier Summary Table"
 msgstr "Tableau récapitulatif de Kaplan-Meier"
@@ -135,65 +190,342 @@ msgstr "Table de vie"
 msgid "Time"
 msgstr "Temps"
 
-msgid "Survival"
-msgstr "Survie"
-
 msgid "At Risk"
 msgstr "À risque"
 
-msgid "Full dataset"
-msgstr "Jeu de données complet"
+msgid "Survival"
+msgstr "Survie"
 
-msgid "Subgroup: %1$s"
-msgstr "Sous-groupe : %1$s"
+msgid "At least one starting value method must be selected."
+msgstr ""
 
-msgid "Model Summary"
-msgstr "Résumé du modèle"
+msgid "The mixture model requires all event times to be positive."
+msgstr ""
 
-msgid "Sequential Model Comparison"
-msgstr "Comparaison séquentielle de modèles"
+msgid "No starting values could be constructed for the mixture model."
+msgstr ""
 
-msgid "Coefficients Summary"
-msgstr "Résumé des coefficients"
+msgid "The mixture model could not be estimated from any starting value: %1$s"
+msgstr ""
 
-msgid "Coefficients Covariance Matrix"
-msgstr "Matrice de covariance des coefficients"
+msgid "The mixture model could not be finalized: %1$s"
+msgstr ""
+
+msgid ""
+"The component probabilities could not be evaluated accurately. Try a "
+"different distribution or fewer components."
+msgstr ""
+
+msgid ""
+"No constrained candidate converged. Try more starting values, a different "
+"distribution, or fewer components."
+msgstr ""
+
+msgid "The log-likelihood is not finite."
+msgstr ""
+
+msgid "The EM algorithm produced no valid state."
+msgstr ""
+
+msgid ""
+"The mixture model requires events or positive censoring times. Check the "
+"survival times and event status."
+msgstr ""
+
+msgid ""
+"A mixture component degenerated during the estimation. Consider fewer "
+"components."
+msgstr ""
+
+msgid "Censoring type '%1$s' is not supported by the mixture model."
+msgstr ""
+
+msgid ""
+"The initial parameters do not satisfy the minimum log-time standard "
+"deviation."
+msgstr ""
+
+msgid ""
+"The selected solution could not be retained while computing its covariance. "
+"Try a different distribution or fewer components."
+msgstr ""
+
+msgid "The log-likelihood of the mixture model is not finite."
+msgstr ""
+
+msgid ""
+"The likelihood may lose numerical precision at these censoring or entry "
+"times. Results cannot be reported reliably. Try a different distribution or "
+"fewer components."
+msgstr ""
+
+msgid ""
+"Some mixture quantiles could not be evaluated accurately and are shown as "
+"missing."
+msgstr ""
+
+msgid ""
+"A minimum log-time standard deviation is not available for %1$s. Select log-"
+"normal, Weibull, log-logistic, or gamma."
+msgstr ""
+
+msgid ""
+"The one-component reference model could not be fitted. Try a different "
+"distribution or use an absolute minimum log-time standard deviation."
+msgstr ""
+
+msgid ""
+"The one-component reference model did not yield a converged, positive log-"
+"time standard deviation. Try a different distribution or use an absolute "
+"minimum log-time standard deviation."
+msgstr ""
+
+msgid ""
+"The fitted parameters do not satisfy the minimum log-time standard "
+"deviation. Results cannot be reported reliably."
+msgstr ""
+
+msgid "fit"
+msgstr ""
+
+msgid ""
+"The constrained optimizer did not converge. Try a different distribution or "
+"a simpler model."
+msgstr ""
+
+msgid "Component Mean and Median"
+msgstr ""
+
+msgid "Mixture Classification"
+msgstr ""
+
+msgid "Estimation Diagnostics"
+msgstr ""
+
+msgid "Mixture Components"
+msgstr ""
+
+msgid "Component"
+msgstr ""
+
+msgid "Estimate"
+msgstr "Estimation"
+
+msgid "Component %1$i"
+msgstr ""
+
+msgid ""
+"Some component means or medians are infinite or could not be evaluated "
+"numerically and are shown as missing."
+msgstr ""
+
+msgid ""
+"Some standard errors or confidence intervals could not be evaluated and are "
+"shown as missing."
+msgstr ""
+
+msgid "Standard errors and confidence intervals are based on the delta method."
+msgstr ""
+
+msgid ""
+"The component means and medians correspond to the reference level of factors "
+"and zero value of covariates."
+msgstr ""
+
+msgid "Warning:"
+msgstr ""
+
+msgid "Mixing probability"
+msgstr ""
+
+msgid "Mean"
+msgstr ""
+
+msgid "Median"
+msgstr ""
+
+msgid "Classified"
+msgstr ""
+
+msgid "Proportion"
+msgstr ""
+
+msgid "Mean posterior probability"
+msgstr ""
+
+msgid ""
+"Observations are classified to the component with the highest posterior "
+"probability. The relative entropy of the classification is %1$.3f (values "
+"close to 1 indicate low uncertainty in the assignments)."
+msgstr ""
+
+msgid "Distribution"
+msgstr "Distribution"
+
+msgid "Model"
+msgstr "Modèle"
+
+msgid "Components"
+msgstr ""
+
+msgid "Starts"
+msgstr ""
+
+msgid "Replications"
+msgstr ""
 
 msgid "Log Lik."
 msgstr "Log vrais."
 
-msgid "AIC"
-msgstr "AIC"
+msgid "Next Best Log Lik."
+msgstr ""
 
-msgid "BIC"
-msgstr "BIC"
+msgid "Degenerate Candidates"
+msgstr ""
 
-msgid "AIC Weight"
-msgstr "Poids AIC"
+msgid "Min. Component n (ESS)"
+msgstr ""
 
-msgid "BIC Weight"
-msgstr "Poids BIC"
+msgid "Min. Component Events"
+msgstr ""
 
-msgid "Rank"
-msgstr "Rang"
+msgid "Optimizer Converged"
+msgstr ""
+
+msgid "Hessian Positive Definite"
+msgstr ""
 
 #, fuzzy
 msgid "Error:"
 msgstr "Erreur : "
 
-msgid "Likelihood ratio test for nested models based on %s distribution."
+msgid "yes"
 msgstr ""
-"Test du rapport de vraisemblance pour des modèles imbriqués basé sur la "
-"distribution %s."
 
-msgid "Estimate"
-msgstr "Estimation"
+msgid "no"
+msgstr ""
 
-msgid "z"
-msgstr "z"
+msgid "Survival Probability"
+msgstr "Probabilité de survie"
 
-msgid "P-values are based on a Wald test."
-msgstr "Les valeurs p sont basées sur un test de Wald."
+msgid "Failure Probability"
+msgstr "Probabilité de défaillance"
+
+msgid "Density"
+msgstr ""
+
+msgid "Hazard"
+msgstr "Risque"
+
+msgid ""
+"The model failed to produce predictions. Consider simplifying the model."
+msgstr ""
+"Le modèle n'a pas pu produire de prédictions. Envisagez de simplifier le "
+"modèle."
+
+msgid "No finite predictions are available for this plot."
+msgstr ""
+
+msgid "Mixture"
+msgstr ""
+
+msgid "Estimation warning: %1$s"
+msgstr ""
+
+msgid ""
+"The reported solution was reached by only %1$i of %2$i starts; the estimates "
+"might be a local optimum. Consider more random starts."
+msgstr ""
+
+msgid ""
+"All candidate solutions were flagged as degenerate or failed to converge; "
+"the reported estimates may be unreliable. Consider fewer components or more "
+"starting values."
+msgstr ""
+
+msgid ""
+"The selected solution triggered component diagnostics despite satisfying the "
+"spread bound. Inspect the component sizes and dispersion before interpreting "
+"the mixture."
+msgstr ""
+
+msgid ""
+"The smallest component is supported by %1$.1f effective events; such a "
+"component is weakly identified. Consider fewer components."
+msgstr ""
+
+msgid ""
+"All components coincide; the mixture is not identified and its standard "
+"errors are unreliable. Consider fewer components."
+msgstr ""
+
+msgid ""
+"Components %1$s coincide; the mixture is not identified and its standard "
+"errors are unreliable. Consider fewer components."
+msgstr ""
+
+msgid ""
+"The Hessian or parameter covariance could not be used reliably; standard "
+"errors and confidence intervals may be unavailable or unreliable."
+msgstr ""
+
+msgid ""
+"The log-likelihood is lower than that of the nested model with %1$s; the "
+"reported estimates are a local optimum. Consider more random starts."
+msgstr ""
+
+msgid "%1$s model %2$s with %3$s%4$s"
+msgstr ""
+
+msgid "%1$s and %2$s"
+msgstr ""
+
+msgid "mixing probability"
+msgstr ""
+
+msgid "Residuals vs. Time"
+msgstr "Résidus vs temps"
+
+msgid "Residuals vs. Predictors"
+msgstr "Résidus vs prédicteurs"
+
+msgid "Residuals vs. Predicted"
+msgstr "Résidus vs prédits"
+
+msgid "Residual Histogram"
+msgstr "Histogramme des résidus"
+
+msgid "Response"
+msgstr "Réponse"
+
+msgid "Cox-Snell"
+msgstr "Cox-Snell"
+
+msgid "Residuals vs. %1$s"
+msgstr "Résidus vs %1$s"
+
+msgid "Predicted Time"
+msgstr "Temps prédit"
+
+msgid "Cox-Snell residuals are not available for interval-censored data."
+msgstr ""
+
+msgid "Fitting mixture models"
+msgstr ""
+
+msgid "Subgroup: %1$s"
+msgstr "Sous-groupe : %1$s"
+
+msgid "%1$s, %2$i comp."
+msgstr ""
+
+msgid ""
+"No parametric distribution selected. Please select at least one parametric "
+"distribution."
+msgstr ""
+
+msgid "Invalid plot transformation"
+msgstr ""
 
 msgid "Predicted Survival Time"
 msgstr "Temps de survie prédit"
@@ -216,20 +548,21 @@ msgstr "Temps de survie moyen restreint prédit"
 msgid "Life Time Table"
 msgstr "Tableau des temps de vie"
 
+msgid "Some predictions could not be evaluated and are shown as missing."
+msgstr ""
+
+msgid "Some requested quantities are infinite or exceed numerical range."
+msgstr ""
+
+msgid ""
+"Some confidence intervals could not be evaluated and are shown as missing."
+msgstr ""
+
 msgid "Quantile"
 msgstr "Quantile"
 
 msgid "Survival Time"
 msgstr "Temps de survie"
-
-msgid "Failure Probability"
-msgstr "Probabilité de défaillance"
-
-msgid "Survival Probability"
-msgstr "Probabilité de survie"
-
-msgid "Hazard"
-msgstr "Risque"
 
 msgid "Cumulative Hazard"
 msgstr "Risque cumulé"
@@ -238,18 +571,9 @@ msgid "Restricted Mean Survival Time"
 msgstr "Temps de survie moyen restreint"
 
 msgid ""
-"The model failed to produce predictions. Consider simplifying the model."
+"Life time tables cannot be merged when a model produces multiple "
+"predictions. Disable 'Merge tables across measures'."
 msgstr ""
-"Le modèle n'a pas pu produire de prédictions. Envisagez de simplifier le "
-"modèle."
-
-#, fuzzy
-msgid ""
-"Life time tables cannot be merged if there is more than a one prediction "
-"from a given model."
-msgstr ""
-"Les tableaux des temps de vie ne peuvent pas être fusionnés s'il existe plus "
-"d'une prédiction pour un modèle donné."
 
 #, fuzzy
 msgid ""
@@ -289,17 +613,38 @@ msgstr "%1$s (échelle logarithmique)"
 msgid "%1$s (log(-log(1-p)) scale)"
 msgstr "%1$s (échelle log(-log(1-p)))"
 
-msgid "Residuals vs. Time"
-msgstr "Résidus vs temps"
+#, fuzzy
+msgid ""
+"Custom steps for predicted survival time were specified in an incorrect "
+"format. Try '0.25, 0.50, 0.75'."
+msgstr ""
+"Des étapes personnalisées pour le temps de survie prédit ont été spécifiées "
+"dans un format incorrect. Essayez « 0,25, 0,50, 0,75 »."
 
-msgid "Residuals vs. Predictors"
-msgstr "Résidus vs prédicteurs"
+msgid "Custom steps for predicted survival time must be between 0 and 1."
+msgstr ""
+"Les étapes personnalisées pour le temps de survie prédit doivent être "
+"comprises entre 0 et 1."
 
-msgid "Residuals vs. Predicted"
-msgstr "Résidus vs prédits"
+msgid ""
+"Step from for predicted survival time must be a finite, non-negative number."
+msgstr ""
 
-msgid "Residual Histogram"
-msgstr "Histogramme des résidus"
+msgid "Step to for predicted survival time must be a finite, positive number."
+msgstr ""
+
+msgid ""
+"Step size for predicted survival time must be a finite, positive number."
+msgstr ""
+
+msgid "Step to for predicted survival time must be greater than step from."
+msgstr ""
+
+msgid ""
+"Custom steps for predicted survival time must be greater than or equal to 0."
+msgstr ""
+"Les étapes personnalisées pour le temps de survie prédit doivent être "
+"supérieures ou égales à 0."
 
 msgid "Probability Plot"
 msgstr "Graphique de probabilité"
@@ -347,23 +692,69 @@ msgstr "Weibull"
 msgid "The probability plot requires positive time values."
 msgstr "Le graphique de probabilité nécessite des valeurs de temps positives."
 
-msgid "Response"
-msgstr "Réponse"
+msgid "Model Summary"
+msgstr "Résumé du modèle"
 
-msgid "Cox-Snell"
-msgstr "Cox-Snell"
+msgid "Sequential Model Comparison"
+msgstr "Comparaison séquentielle de modèles"
 
-msgid "Residuals vs. %1$s"
-msgstr "Résidus vs %1$s"
+msgid "Coefficients Summary"
+msgstr "Résumé des coefficients"
 
-msgid "Predicted Time"
-msgstr "Temps prédit"
+msgid "Coefficients Covariance Matrix"
+msgstr "Matrice de covariance des coefficients"
 
-msgid "Model"
-msgstr "Modèle"
+msgid "AIC"
+msgstr "AIC"
 
-msgid "Distribution"
-msgstr "Distribution"
+msgid "BIC"
+msgstr "BIC"
+
+msgid "AIC Weight"
+msgstr "Poids AIC"
+
+msgid "BIC Weight"
+msgstr "Poids BIC"
+
+msgid "Rank"
+msgstr "Rang"
+
+msgid ""
+"Comparisons involving an active spread bound have no likelihood-ratio "
+"statistic or p-value; other comparisons use the %1$s approximation."
+msgstr ""
+
+msgid "Likelihood ratio test for nested models based on %s distribution."
+msgstr ""
+"Test du rapport de vraisemblance pour des modèles imbriqués basé sur la "
+"distribution %s."
+
+msgid "z"
+msgstr "z"
+
+msgid "P-values are based on a Wald test."
+msgstr "Les valeurs p sont basées sur un test de Wald."
+
+msgid ""
+"The standard errors and confidence intervals of the mixing probabilities are "
+"based on the delta method."
+msgstr ""
+
+msgid ""
+"The component parameters correspond to the reference level of factors and "
+"zero value of covariates."
+msgstr ""
+
+msgid ""
+"The covariance matrix uses the estimation scale: distribution parameters "
+"constrained to be positive are log-transformed. This scale can differ from "
+"the coefficients table."
+msgstr ""
+
+msgid ""
+"The v parameters are conditional stick-breaking weights on the logit scale, "
+"not the component mixing probabilities reported in the coefficients table."
+msgstr ""
 
 msgid "Lower CI"
 msgstr "IC inférieur"
@@ -371,40 +762,43 @@ msgstr "IC inférieur"
 msgid "Upper CI"
 msgstr "IC supérieur"
 
-#, fuzzy
 msgid ""
-"Custom steps for predicted survival time were specified in an incorrect "
-"format. Try '0.25, 0.50, 0.75'."
+"The standard deviation of the natural logarithm of survival time was "
+"constrained to be at least %1$g in each component (%2$g%% of the "
+"unconstrained one-component model's log-time standard deviation, %3$g)."
 msgstr ""
-"Des étapes personnalisées pour le temps de survie prédit ont été spécifiées "
-"dans un format incorrect. Essayez « 0,25, 0,50, 0,75 »."
-
-msgid "Custom steps for predicted survival time must be between 0 and 1."
-msgstr ""
-"Les étapes personnalisées pour le temps de survie prédit doivent être "
-"comprises entre 0 et 1."
-
-msgid "Step from for predicted survival time must be a positive number."
-msgstr ""
-"L'étape de départ pour le temps de survie prédit doit être un nombre positif."
-
-msgid "Step to for predicted survival time must be a positive number."
-msgstr ""
-"L'étape de fin pour le temps de survie prédit doit être un nombre positif."
-
-msgid "Step size for predicted survival time must be a positive number."
-msgstr ""
-"La taille de l'étape pour le temps de survie prédit doit être un nombre "
-"positif."
 
 msgid ""
-"Custom steps for predicted survival time must be greater than or equal to 0."
+"The standard deviation of the natural logarithm of survival time was "
+"constrained to be at least %1$g in each component."
 msgstr ""
-"Les étapes personnalisées pour le temps de survie prédit doivent être "
-"supérieures ou égales à 0."
+
+msgid ""
+"The minimum log-time standard deviation bound (%1$g) is active. Standard "
+"errors, confidence intervals, covariance estimates, Wald tests, and "
+"likelihood-ratio tests involving this fit are unavailable."
+msgstr ""
+
+msgid "%1$s failed with the following message: %2$s"
+msgstr ""
 
 msgid "%1$s model %2$s%3$s failed with the following message: %4$s."
 msgstr "Le modèle %1$s %2$s%3$s a échoué avec le message suivant : %4$s."
+
+msgid ""
+"All following output is based on the best fitting %1$s distribution with "
+"%2$s."
+msgstr ""
+
+msgid ""
+"All following output is based on the best fitting number of components "
+"(%1$s)."
+msgstr ""
+
+msgid ""
+"All following output is based on the best fitting number of components "
+"within each distribution."
+msgstr ""
 
 msgid "All following output is based on the best fitting %1$s distribution."
 msgstr ""
@@ -444,11 +838,58 @@ msgstr ""
 "Les résultats sont basés sur %1$s avec la distribution %2$s, qui était le "
 "modèle le mieux ajusté parmi tous les modèles et distributions."
 
+msgid ""
+"Results are based on %1$s distribution with %2$s which was the best fitting "
+"combination of distribution and number of components."
+msgstr ""
+
+msgid ""
+"Results are based on the best fitting number of components within each "
+"distribution."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s which was the best fitting number of components."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s with %2$s distribution and %3$s which was the best "
+"fitting combination of distribution and number of components across models."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s with the best fitting number of components within "
+"each distribution."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s with %2$s which was the best fitting number of "
+"components across models."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s with %2$s distribution and %3$s which was the best "
+"fitting model across all models, distributions, and numbers of components."
+msgstr ""
+
+msgid ""
+"Results are based on the best fitting number of components and model within "
+"each distribution."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s with %2$s which was the best fitting model across "
+"all models and numbers of components."
+msgstr ""
+
 msgid "Model Tests Table"
 msgstr "Tableau des tests de modèles"
 
 msgid "At least one factor or covariate needs to be specified"
 msgstr "Au moins un facteur ou une covariable doit être spécifié"
+
+msgid "The model failed with the following message: %1$s."
+msgstr "Le modèle a échoué avec le message suivant : %1$s."
 
 msgid "Likelihood ratio"
 msgstr "Rapport de vraisemblance"
@@ -476,9 +917,6 @@ msgstr ""
 
 msgid "The null model failed with the following message:"
 msgstr "Le modèle nul a échoué avec le message suivant :"
-
-msgid "The model failed with the following message: %1$s."
-msgstr "Le modèle a échoué avec le message suivant : %1$s."
 
 msgid "%1$i observations with %2$i events."
 msgstr "%1$i observations avec %2$i événements."
@@ -526,9 +964,6 @@ msgstr ""
 "Ratio de p maximal de Vovk-Sellke : sur la base de la valeur p, les chances "
 "maximales possibles en faveur de H%1$s contre H%2$s sont égales à 1/(-e p "
 "log(p)) pour p %3$s .37 (Sellke, Bayarri et Berger, 2001)."
-
-msgid "Null model contains nuisance parameters: %s"
-msgstr "Le modèle nul contient des paramètres de nuisance : %s"
 
 msgid "Results are stratified via: %1$s."
 msgstr "Les résultats sont stratifiés par : %1$s."
@@ -585,6 +1020,59 @@ msgstr "Résidus de Schoenfeld"
 
 msgid "Scaled Schoenfeld Residuals"
 msgstr "Résidus de Schoenfeld mis à l'échelle"
+
+msgid ""
+"%1$i candidate fit was omitted because its likelihood could not be evaluated "
+"reliably at the available numerical precision."
+msgid_plural ""
+"%1$i candidate fits were omitted because their likelihoods could not be "
+"evaluated reliably at the available numerical precision."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"Component %1$s has a negligible weight or diverging parameters; consider "
+"fewer components."
+msgid_plural ""
+"Components %1$s have a negligible weight or diverging parameters; consider "
+"fewer components."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%1$i component"
+msgid_plural "%1$i components"
+msgstr[0] ""
+msgstr[1] ""
+
+#~ msgid "At least one predictor, or an intercept, is needed to fit the model."
+#~ msgstr ""
+#~ "Au moins un prédicteur, ou une ordonnée à l'origine, est nécessaire pour "
+#~ "ajuster le modèle."
+
+#, fuzzy
+#~ msgid ""
+#~ "Life time tables cannot be merged if there is more than a one prediction "
+#~ "from a given model."
+#~ msgstr ""
+#~ "Les tableaux des temps de vie ne peuvent pas être fusionnés s'il existe "
+#~ "plus d'une prédiction pour un modèle donné."
+
+#~ msgid "Step from for predicted survival time must be a positive number."
+#~ msgstr ""
+#~ "L'étape de départ pour le temps de survie prédit doit être un nombre "
+#~ "positif."
+
+#~ msgid "Step to for predicted survival time must be a positive number."
+#~ msgstr ""
+#~ "L'étape de fin pour le temps de survie prédit doit être un nombre positif."
+
+#~ msgid "Step size for predicted survival time must be a positive number."
+#~ msgstr ""
+#~ "La taille de l'étape pour le temps de survie prédit doit être un nombre "
+#~ "positif."
+
+#~ msgid "Null model contains nuisance parameters: %s"
+#~ msgstr "Le modèle nul contient des paramètres de nuisance : %s"
 
 #, qt-format
 #~ msgid "Subject identification based on %1$s."

@@ -1,53 +1,73 @@
 msgid ""
 msgstr ""
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"X-Qt-Contexts: true\n"
 "PO-Revision-Date: 2026-09-12 00:51+0000\n"
 "Last-Translator: Koji Kosugi <kosugitti@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
 "jaspsurvival-qml/ja/>\n"
 "Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Qt-Contexts: true\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 2026.10.dev0\n"
 
+#: inst/Description.qml:6
 msgctxt "Description|"
 msgid "Survival"
 msgstr "生存分析"
 
+#: inst/Description.qml:7
 msgctxt "Description|"
 msgid "Perform analyses of censored time to event data."
 msgstr "打ち切りのあるイベント発生時間データを分析します。"
 
+#: inst/Description.qml:13
 msgctxt "Description|"
 msgid "Classical"
 msgstr "伝統的"
 
+#: inst/Description.qml:19
 msgctxt "Description|"
-msgid "Non-parametric"
+msgid "Non-Parametric"
 msgstr "ノンパラメトリック"
 
+#: inst/Description.qml:20
 msgctxt "Description|"
-msgid "Non-parametric Survival Analysis"
+msgid "Non-Parametric Survival Analysis"
 msgstr "ノンパラメトリック生存分析"
 
+#: inst/Description.qml:26
 msgctxt "Description|"
-msgid "Semi-parametric"
+msgid "Semi-Parametric"
 msgstr "セミパラメトリック"
 
+#: inst/Description.qml:27
 msgctxt "Description|"
-msgid "Semi-parametric Survival Analysis"
+msgid "Semi-Parametric Survival Analysis"
 msgstr "セミパラメトリック生存分析"
 
+#: inst/Description.qml:33
 msgctxt "Description|"
 msgid "Parametric"
 msgstr "パラメトリック"
 
+#: inst/Description.qml:34
 msgctxt "Description|"
 msgid "Parametric Survival Analysis"
 msgstr "パラメトリック生存分析"
 
+#: inst/Description.qml:40
+msgctxt "Description|"
+msgid "Parametric Mixture"
+msgstr ""
+
+#: inst/Description.qml:41
+msgctxt "Description|"
+msgid "Parametric Mixture Survival Analysis"
+msgstr ""
+
+#: inst/qml/NonParametricSurvivalAnalysis.qml:27
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "This analysis computes a survival curve for censored data using the Kaplan-"
@@ -68,20 +88,24 @@ msgstr ""
 "曲線を比較できます。さらに、指定した区間ごとに生存データを要約した生命表を作"
 "成できます。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:39
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Time to Event"
 msgstr "イベントまでの時間"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:42
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "Select the variable that represents the time until the event or censoring "
 "occurs."
 msgstr "イベントの発生または打ち切りまでの時間を表す変数を選びます。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:49
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Event Status"
 msgstr "イベントの状態"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:52
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "Choose the variable that indicates the event status, specifying whether each "
@@ -90,10 +114,12 @@ msgstr ""
 "イベントの状態を示す変数を選びます。各観測がイベントなのか打ち切りなのかを指"
 "定するものです。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:58
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Event Indicator"
 msgstr "イベントの指示値"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:61
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "Specify the value in the Event Status variable that indicates the occurrence "
@@ -101,20 +127,24 @@ msgid ""
 msgstr ""
 "イベントが発生したことを示す値を、イベントの状態の変数の中から指定します。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:68
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Strata"
 msgstr "層"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:70
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "Select variables to define strata, allowing separate survival curves for "
 "each stratum."
 msgstr "層を定める変数を選びます。層ごとに別々の生存曲線が得られます。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:76
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Weights"
 msgstr "重み"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:79
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "Select a variable for case weights, weighting each observation accordingly "
@@ -122,24 +152,29 @@ msgid ""
 msgstr ""
 "ケースの重みに使う変数を選びます。各観測はこれに応じて重みづけられます。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:89
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Censoring summary"
 msgstr "打ち切りの要約"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:90
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "Create a summary table with information about the censoring status of the "
 "data."
 msgstr "データの打ち切りの状態をまとめた表を作成します。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:95
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Tests"
 msgstr "検定"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:100
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Log-rank (Mantel-Haenszel)"
 msgstr "ログランク (Mantel-Haenszel)"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:101
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "Include the Log-Rank (Mantel-Haenszel) test to compare survival curves "
@@ -147,10 +182,12 @@ msgid ""
 msgstr ""
 "層の間で生存曲線を比較するログランク (Mantel-Haenszel) 検定を含めます。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:107
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Peto and Peto"
 msgstr "Peto and Peto"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:108
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "Include the Peto and Peto modification of the Gehan-Wilcoxon test to compare "
@@ -158,10 +195,12 @@ msgid ""
 msgstr ""
 "層の間で生存曲線を比較する、Gehan-Wilcoxon検定のPeto and Peto修正を含めます。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:114
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Flemming-Harrington"
 msgstr "Flemming-Harrington"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:115
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "Include the Fleming-Harrington test to compare survival curves across "
@@ -170,10 +209,12 @@ msgstr ""
 "層の間で生存曲線を比較するFleming-Harrington検定を含めます。rho母数は変更でき"
 "ます。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:120
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Rho"
 msgstr "Rho"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:124
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "Set the rho parameter for the Fleming-Harrington test, controlling the "
@@ -182,88 +223,868 @@ msgstr ""
 "Fleming-Harrington検定のrho母数を設定します。異なる時点に与える重みを調整しま"
 "す (0から1の値)。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:132
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Life table"
 msgstr "生命表"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:133
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "Generate a life table summarizing survival data at specified time intervals."
 msgstr "指定した時間区間ごとに生存データを要約した生命表を作成します。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:139
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Steps type"
 msgstr "ステップの種類"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:140
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "Select the method to define intervals for the life table: Default, "
-"Quantiles, or Fixed size."
+"Quantiles, or Fixed size. Quantiles uses empirical quantiles of the observed "
+"times, including censored times, after frequency weights are applied; these "
+"are not quantiles of the estimated survival distribution."
 msgstr ""
-"生命表の区間を定める方法を選びます。デフォルト、分位点、固定幅から選べます。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:143
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Default"
 msgstr "デフォルト"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:144
 msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Quantilies"
+msgid "Quantiles"
 msgstr "分位点"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:145
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Fixed size"
 msgstr "固定幅"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:152
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Number"
 msgstr "個数"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:155
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Specify the number of intervals when using Quantiles as the steps type."
 msgstr "ステップの種類に分位点を使うときの区間の個数を指定します。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:161
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Round steps"
 msgstr "ステップを丸める"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:164
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
 "Round the interval boundaries to the nearest integer when using Quantiles "
 "steps."
 msgstr "分位点のステップを使うとき、区間の境界を最も近い整数に丸めます。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:171
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "From"
 msgstr "開始"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:175
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Set the starting time for intervals when using Fixed size steps."
 msgstr "固定幅のステップを使うときの区間の開始時間を設定します。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:181
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Size"
 msgstr "幅"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:185
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Define the size of each interval when using Fixed size steps."
 msgstr "固定幅のステップを使うときの各区間の幅を定めます。"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:192
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "To"
 msgstr "終了"
 
+#: inst/qml/NonParametricSurvivalAnalysis.qml:196
 msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Set the ending time for intervals when using Fixed size steps."
 msgstr "固定幅のステップを使うときの区間の終了時間を設定します。"
 
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:26
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"This analysis models survival times as a finite mixture of components from "
+"the same parametric family. Constrained maximum likelihood imposes the "
+"specified minimum standard deviation of log survival time in every "
+"component. Several starting values, each refined by EM iterations, are used; "
+"the converged solution with the highest likelihood satisfying the bound is "
+"reported."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:26
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"This analysis performs a parametric mixture survival analysis. The survival "
+"times are modeled as a finite mixture of components from the same parametric "
+"family. The likelihood is maximized directly from several starting values "
+"(each refined by a few EM iterations). The non-degenerate solution with the "
+"highest likelihood is reported. If all solutions are degenerate, the best of "
+"them is reported with a warning."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:45
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Interval Start"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:51
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the start time of the observation "
+"interval. Only available when Censoring Type is set to Interval or Counting."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:57
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Interval End"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:63
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the end time of the observation "
+"interval. Only available when Censoring Type is set to Interval or Counting."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:69
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Time to Event"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:75
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the time until the event or censoring "
+"occurs. Only available when Censoring Type is set to Right."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:82
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Event Status"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:87
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Choose the variable that indicates the event status, specifying whether each "
+"observation is an event or censored."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:93
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Event Indicator"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:98
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Specify the value in the Event Status variable that indicates the occurrence "
+"of the event."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:105
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Covariates"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:107
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Add continuous variables as covariates to include them in the mixture model. "
+"The covariates affect the location parameter of each component with separate "
+"coefficients."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:114
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Factors"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:116
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Add categorical variables as factors to include them in the mixture model. "
+"The factors affect the location parameter of each component with separate "
+"coefficients."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:123
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Weights"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:126
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select a variable for case weights, weighting each observation accordingly "
+"in the model."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:133
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Subgroup"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:136
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select a variable for subgroup analysis, allowing for separate analyses "
+"within each subgroup."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:147
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Censoring Type"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:150
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select right-censored data, counting-process data with entry and exit times, "
+"or interval-censored data (including left-censored observations)."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:154
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Right"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:162
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Counting"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:169
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Interval"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:172
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"If interval censoring is selected, the following coding needs to be used: "
+"left-censored data is represented as (NA, t2), right-censored data as (t1, "
+"NA), exact data as (t, t), and interval-censored data as (t1, t2)."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:179
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Censoring summary"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:180
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Create a summary table with information about the censoring status of the "
+"data."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:191
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Distribution"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:193
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Choose the parametric distribution of the mixture components (all components "
+"come from the same distribution). All fits and display results for all "
+"'Selected parametric families' in the 'Advanced' section. 'Best AIC' and "
+"'Best BIC' fit all `Selected parametric families` in the Advanced section "
+"and display the results only for a parametric family with the lowest AIC/"
+"BIC. Families without a closed-form weighted fit (gamma, Gompertz, and the "
+"generalized families) are considerably slower to estimate."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:196
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:445
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Exponential"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:197
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:450
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Gamma"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:198
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:454
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Generalized F"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:199
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:462
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Generalized gamma"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:200
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:470
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Gompertz"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:201
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:475
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Log-logistic"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:202
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:476
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Log-normal"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:203
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:477
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Weibull"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:204
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:481
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Generalized gamma (original)"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:205
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:489
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Generalized F (original)"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:206
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:227
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:266
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "All"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:207
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:228
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:267
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Best AIC"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:208
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:229
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:268
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Best BIC"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:218
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Components"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:220
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Choose the number of mixture components. 'All' fits and displays results for "
+"one up to the maximum number of components set in the 'Advanced' section. "
+"'Best AIC' and 'Best BIC' fit the same models and display the results only "
+"for the number of components with the lowest AIC/BIC. A fixed number of "
+"components is not limited by the maximum number of components."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:236
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:247
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Model"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:257
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Interpret model"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:260
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select the model to interpret. Defaults to the last specified model. "
+"Alternatives are 'All' which produces results for all of the specified "
+"models or 'Best' which produces results for the best fitting model based on "
+"either AIC or BIC. The selection proceeds within each subgroup from the "
+"distribution to the number of components to the model: 'Best' keeps the "
+"level of the best fitting model across all remaining distributions, numbers "
+"of components, and models, and 'All' selects separately within each of its "
+"levels (e.g., all distributions with the best number of components and the "
+"best model within each distribution)."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:282
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Include a table with information about the model fit. The BIC uses the "
+"number of observations (including censored observations and weighted by the "
+"case weights) as the sample size."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:287
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:361
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:498
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Mixture"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:291
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Mean and median"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:294
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Include a table with the mean and the median lifetime of each mixture "
+"component. They correspond to the reference level of factors and zero value "
+"of covariates. The mixing probabilities and the parameters of the components "
+"are reported in the coefficients summary. Components are ordered by their "
+"median lifetime."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:299
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Classification"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:302
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Include a table with the number and proportion of observations assigned to "
+"each component based on their highest posterior probability, the mean "
+"posterior probability of the assigned observations, and the relative entropy "
+"of the classification."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:316
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select the quantiles at which survival times are predicted: evenly spaced "
+"Quantiles, a Sequence, or Custom probabilities."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:317
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Specify the number of quantiles of the predicted survival when using "
+"Quantiles as the steps type."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:318
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select the time points for prediction tables: Equal spacing, a Sequence, or "
+"Custom times. Time plots place unrounded points adaptively within the "
+"selected range."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:319
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Define the time increment when using Sequence steps. Leaving this blank uses "
+"one tenth of the selected time range."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:320
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Specify custom time points for predictions."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:325
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:337
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:417
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Merge plots across components"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:330
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Merge the plots for survival time across the numbers of components into a "
+"single plot. Only available when all numbers of components are displayed and "
+"no model selection is being performed."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:342
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Merge the plots for survival probabilities, hazard, cumulative hazard, and "
+"restricted mean survival across the numbers of components into a single "
+"plot. Only available when all numbers of components are displayed and no "
+"model selection is being performed."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:349
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Diagnostics"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:356
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Residuals vs. predicted time"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:365
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Estimation diagnostics"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:368
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Include a table with the diagnostics of the estimation of each mixture "
+"model: the number of starting values, how many of them reached the reported "
+"solution, the log-likelihood of the reported and of the next best distinct "
+"solution, the number of degenerate candidate solutions, the effective sample "
+"size and the effective number of events of the smallest component, optimizer "
+"convergence, and whether the Hessian of the likelihood is positive definite."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:374
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Component plot"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:376
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Include a plot with the fitted mixture and its components. The components "
+"are evaluated at the same covariate values as the predictions."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:382
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Type"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:384
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select the displayed function: the survival probability of the mixture and "
+"of each component, the failure probability of the mixture and of each "
+"component, the density of the mixture and the weighted density of each "
+"component (which sum to the mixture density), or the hazard of the mixture "
+"and of each component."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:387
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Survival probability"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:388
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Failure probability"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:389
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Density"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:390
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Hazard"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:397
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Observed data"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:399
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Overlay a histogram of the observed time distribution on the fitted "
+"densities. For right-censored data, bin probabilities are estimated with "
+"Kaplan-Meier and any unobserved tail probability is retained. The fitted "
+"curves use the prediction covariate settings; the histogram describes the "
+"full sample within each subgroup."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:420
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Merge the probability plots across the numbers of components into a single "
+"plot. Only available when all numbers of components are displayed and no "
+"model selection is being performed."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:434
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Advanced"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:438
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Selected Parametric Distributions"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:504
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Constrain component spread"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:506
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Fit by constrained maximum likelihood with a minimum standard deviation of "
+"the natural logarithm of survival time in every component, including one-"
+"component models. Available for log-normal, Weibull, log-logistic, and gamma "
+"distributions; other distributions are deselected. Checkbox choices made in "
+"Selected Parametric Distributions before turning the constraint on are "
+"restored when it is turned off again, provided the analysis form has not "
+"been reloaded. When the bound is active, point estimates remain available "
+"but standard errors, confidence intervals, covariance estimates, and regular "
+"inferential tests are not reported."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:512
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Minimum spread"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:514
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Relative"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:515
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Absolute"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:518
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set the minimum log-time standard deviation relative to an unconstrained one-"
+"component fit of the same distribution, or as an absolute value. The "
+"reference fit uses the same data, predictors, censoring, and weights and is "
+"computed separately for each model and subgroup."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:524
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:537
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Minimum log-time SD"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:531
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set a positive percentage of the unconstrained one-component model's log-"
+"time standard deviation as the minimum for every component. The default is "
+"1%. For models with predictors, the reference is the conditional "
+"distribution's log-time standard deviation. For delayed entry, it refers to "
+"the distribution before conditioning on entry."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:544
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set a positive lower bound, up to 100, on the standard deviation of the "
+"natural logarithm of survival time. Choose a minimum justified by the "
+"application and check sensitivity to other values; 0.1 is an editable "
+"preset, not a universal recommendation. The bound is unchanged when the "
+"units of survival time change. For delayed entry, it bounds the component "
+"distribution before conditioning on entry."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:552
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Maximum components"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:557
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set the maximum number of components fitted when 'All', 'Best AIC', or 'Best "
+"BIC' is selected as the number of components."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:562
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Starting Values"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:563
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select the starting values of the constrained mixture estimation. The "
+"converged solution with the highest likelihood satisfying the minimum "
+"component spread is reported. More starting values reduce the risk of a "
+"local optimum at a higher computational cost."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:563
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select the starting values of the mixture estimation. The likelihood is "
+"maximized directly from every selected starting value and the non-degenerate "
+"solution with the highest likelihood is reported. If all solutions are "
+"degenerate, the best of them is reported with a warning. More starting "
+"values make it more likely that the reported solution is the global maximum, "
+"at a proportionally higher computational cost."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:568
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "K-means"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:570
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Start from a k-means clustering of the log survival times. The likelihood is "
+"maximized directly from this starting value."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:576
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Quantiles"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:578
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Start from partitions of the survival times by their quantiles: a partition "
+"into groups of equal size and partitions that isolate the tails (the lowest "
+"and the highest 15% for two components, 15/70/15% for three components, and "
+"10/40/40/10% for four components). The likelihood is maximized directly from "
+"each of these starting values."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:584
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Split of the previous solution"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:586
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Start from the solution with one component fewer, splitting each of its "
+"components into a lower and an upper half. The likelihood is maximized "
+"directly from each of these starting values. The solution with one component "
+"fewer is estimated for this purpose when it is not part of the analysis."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:592
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Random"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:595
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Start from random centres drawn from the observed event times, assigning "
+"each observation to the nearest centre. The likelihood is maximized directly "
+"from each of these starting values. Random starting values are the main "
+"protection against reporting a local optimum."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:604
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Set the number of random starting values."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:612
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "EM iterations"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:616
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set the number of EM iterations that refine each starting value before the "
+"likelihood is maximized directly. The state after the first and after the "
+"last EM iteration are both used as starting values of the direct "
+"maximization."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:624
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Output Formatting"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:629
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Include full dataset in subgroup analysis"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:632
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Include the full dataset output in the subgroup analysis. This option is "
+"only available when the subgroup analysis is selected."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:638
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Compare models across distributions"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:641
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Compare models across distributions. This option is only available when the "
+"multiple models and parametric distributions are specified."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:647
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Compare models across components"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:650
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Compare models across the numbers of components. This option is only "
+"available when multiple models and numbers of components are specified."
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:656
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Always display model information"
+msgstr ""
+
+#: inst/qml/ParametricMixtureSurvivalAnalysis.qml:658
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Always display model information (distribution, number of components, and "
+"model name) in output tables."
+msgstr ""
+
+#: inst/qml/ParametricSurvivalAnalysis.qml:26
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "This analysis performs a parametric survival analysis."
 msgstr "この分析はパラメトリック生存分析を行います。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:43
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Interval Start"
 msgstr "区間の開始"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:49
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Select the variable that represents the start time of the observation "
@@ -272,10 +1093,12 @@ msgstr ""
 "観測区間の開始時間を表す変数を選びます。打ち切りの種類が区間または計数過程の"
 "ときだけ使えます。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:55
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Interval End"
 msgstr "区間の終了"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:61
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Select the variable that represents the end time of the observation "
@@ -284,22 +1107,24 @@ msgstr ""
 "観測区間の終了時間を表す変数を選びます。打ち切りの種類が区間または計数過程の"
 "ときだけ使えます。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:67
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Time to Event"
 msgstr "イベントまでの時間"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:73
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Select the variable that represents the time until the event or censoring "
-"occurs. Only available when Censoring Type is set to Right or Counting."
+"occurs. Only available when Censoring Type is set to Right."
 msgstr ""
-"イベントの発生または打ち切りまでの時間を表す変数を選びます。打ち切りの種類が"
-"右または計数過程のときだけ使えます。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:80
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Event Status"
 msgstr "イベントの状態"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:85
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Choose the variable that indicates the event status, specifying whether each "
@@ -308,10 +1133,12 @@ msgstr ""
 "イベントの状態を示す変数を選びます。各観測がイベントなのか打ち切りなのかを指"
 "定するものです。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:91
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Event Indicator"
 msgstr "イベントの指示値"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:96
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Specify the value in the Event Status variable that indicates the occurrence "
@@ -319,30 +1146,36 @@ msgid ""
 msgstr ""
 "イベントが発生したことを示す値を、イベントの状態の変数の中から指定します。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:103
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Covariates"
 msgstr "共変量"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:105
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
-"Add continuous variables as covariates to include them in the Cox regression "
-"model."
-msgstr "連続変数を共変量として加え、Cox回帰モデルに含めます。"
+"Add continuous variables as covariates to include them in the parametric "
+"survival model."
+msgstr ""
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:112
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Factors"
 msgstr "要因"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:114
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
-"Add categorical variables as factors to include them in the Cox regression "
-"model."
-msgstr "カテゴリカル変数を要因として加え、Cox回帰モデルに含めます。"
+"Add categorical variables as factors to include them in the parametric "
+"survival model."
+msgstr ""
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:121
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Weights"
 msgstr "重み"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:124
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Select a variable for case weights, weighting each observation accordingly "
@@ -350,10 +1183,12 @@ msgid ""
 msgstr ""
 "ケースの重みに使う変数を選びます。各観測はこれに応じて重みづけられます。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:131
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Subgroup"
 msgstr "サブグループ"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:134
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Select a variable for subgroup analysis, allowing for separate analyses "
@@ -362,30 +1197,36 @@ msgstr ""
 "サブグループ分析に使う変数を選びます。サブグループごとに別々の分析ができま"
 "す。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:145
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Censoring Type"
 msgstr "打ち切りの種類"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:148
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
-"Select the type of censoring in your data: right, left, or interval "
-"censoring."
+"Select right-censored data, counting-process data with delayed entry, or "
+"interval-censored data."
 msgstr ""
-"データの打ち切りの種類を選びます。右打ち切り、左打ち切り、区間打ち切りから選"
-"べます。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:152
+#: inst/qml/qml_components/ParametricPredictions.qml:188
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:187
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Right"
 msgstr "右"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:160
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Counting"
 msgstr "計数過程"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:167
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Interval"
 msgstr "区間"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:170
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "If interval censoring is selected, the following coding needs to be used: "
@@ -396,20 +1237,24 @@ msgstr ""
 "のデータは (NA, t2)、右打ち切りのデータは (t1, NA)、正確に分かっているデータ"
 "は (t, t)、区間打ち切りのデータは (t1, t2) と表します。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:177
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Censoring summary"
 msgstr "打ち切りの要約"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:178
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Create a summary table with information about the censoring status of the "
 "data."
 msgstr "データの打ち切りの状態をまとめた表を作成します。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:186
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Distribution"
 msgstr "分布"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:188
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Choose the parametric distribution for the analysis. All fits and display "
@@ -423,70 +1268,100 @@ msgstr ""
 "「BIC最良」も「詳細」の節にある「選択したパラメトリック分布」をすべて当てはめ"
 "ますが、AIC/BICが最小のパラメトリック族の結果だけを表示します。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:191
+#: inst/qml/ParametricSurvivalAnalysis.qml:296
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:50
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Exponential"
 msgstr "指数"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:192
+#: inst/qml/ParametricSurvivalAnalysis.qml:297
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Gamma"
 msgstr "ガンマ"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:193
+#: inst/qml/ParametricSurvivalAnalysis.qml:298
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Generalized F"
 msgstr "一般化F"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:194
+#: inst/qml/ParametricSurvivalAnalysis.qml:299
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Generalized gamma"
 msgstr "一般化ガンマ"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:195
+#: inst/qml/ParametricSurvivalAnalysis.qml:300
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Gompertz"
 msgstr "ゴンペルツ"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:196
+#: inst/qml/ParametricSurvivalAnalysis.qml:301
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:52
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Log-logistic"
 msgstr "対数ロジスティック"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:197
+#: inst/qml/ParametricSurvivalAnalysis.qml:302
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:51
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Log-normal"
 msgstr "対数正規"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:198
+#: inst/qml/ParametricSurvivalAnalysis.qml:303
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:49
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Weibull"
 msgstr "ワイブル"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:199
+#: inst/qml/ParametricSurvivalAnalysis.qml:304
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Generalized gamma (original)"
 msgstr "一般化ガンマ (オリジナル)"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:200
+#: inst/qml/ParametricSurvivalAnalysis.qml:305
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Generalized F (original)"
 msgstr "一般化F (オリジナル)"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:201
+#: inst/qml/ParametricSurvivalAnalysis.qml:239
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "All"
 msgstr "すべて"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:202
+#: inst/qml/ParametricSurvivalAnalysis.qml:240
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Best AIC"
 msgstr "AIC最良"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:203
+#: inst/qml/ParametricSurvivalAnalysis.qml:241
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Best BIC"
 msgstr "BIC最良"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:209
+#: inst/qml/ParametricSurvivalAnalysis.qml:220
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Model"
 msgstr "モデル"
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include intercept"
-msgstr "切片を含む"
-
+#: inst/qml/ParametricSurvivalAnalysis.qml:230
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Interpret model"
 msgstr "解釈するモデル"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:233
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Select the model to interpret. Defaults to the last specified model. "
@@ -505,192 +1380,224 @@ msgstr ""
 "だうえでモデルの選択を指定した場合は、各分布の中で最も良いモデルが選ばれま"
 "す。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:266
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Statistics"
-msgstr "統計量"
+msgid "Diagnostics"
+msgstr "診断"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:288
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Model summary"
-msgstr "モデルの要約"
+msgid "Advanced"
+msgstr "詳細"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:292
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with information about the model fit."
-msgstr "モデルの適合に関する情報を含む表を含めます。"
+msgid "Selected Parametric Distributions"
+msgstr "選択したパラメトリック分布"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:310
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Rank models"
-msgstr "モデルを順位づける"
+msgid "Output Formatting"
+msgstr "出力の書式"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:315
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Rank models based on the selected criterion."
-msgstr "選んだ規準にもとづいてモデルを順位づけます。"
+msgid "Include full dataset in subgroup analysis"
+msgstr "サブグループ分析に全データセットを含める"
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "AIC"
-msgstr "AIC"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "BIC"
-msgstr "BIC"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Log lik."
-msgstr "対数尤度"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "AIC weights"
-msgstr "AIC重み"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include AIC weights in the model summary."
-msgstr "モデルの要約にAIC重みを含めます。"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "BIC weights"
-msgstr "BIC重み"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include BIC weights in the model summary."
-msgstr "モデルの要約にBIC重みを含めます。"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Coefficients"
-msgstr "係数"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with coefficient estimates."
-msgstr "係数の推定値の表を含めます。"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Confidence intervals"
-msgstr "信頼区間"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include confidence intervals for the coefficients."
-msgstr "係数の信頼区間を含めます。"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Set the confidence level for the confidence intervals."
-msgstr "信頼区間の信頼水準を設定します。"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Coefficients covariance matrix"
-msgstr "係数の分散共分散行列"
-
+#: inst/qml/ParametricSurvivalAnalysis.qml:318
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
-"Include a table with the covariance matrix of the coefficient estimates."
-msgstr "係数の推定値の分散共分散行列の表を含めます。"
+"Include the full dataset output in the subgroup analysis. This option is "
+"only available when the subgroup analysis is selected."
+msgstr ""
+"サブグループ分析の出力に全データセットの結果を含めます。このオプションはサブ"
+"グループ分析を選んでいるときだけ使えます。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:324
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Sequential model comparison"
-msgstr "逐次的モデル比較"
+msgid "Compare models across distributions"
+msgstr "分布をまたいでモデルを比較する"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:327
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with the results of the sequential model comparison."
-msgstr "逐次的モデル比較の結果の表を含めます。"
+msgid ""
+"Compare models across distributions. This option is only available when the "
+"multiple models and parametric distributions are specified."
+msgstr ""
+"分布をまたいでモデルを比較します。このオプションは複数のモデルとパラメトリッ"
+"ク分布を指定しているときだけ使えます。"
 
+#: inst/qml/ParametricSurvivalAnalysis.qml:333
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Always display model information"
+msgstr "モデルの情報を常に表示する"
+
+#: inst/qml/ParametricSurvivalAnalysis.qml:335
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Always display model information (distribution and model name) in output "
+"tables."
+msgstr "出力の表にモデルの情報 (分布とモデル名) を常に表示します。"
+
+#: inst/qml/qml_components/ParametricPredictions.qml:43
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the probabilities at which survival times are predicted: Quantiles, "
+"Sequence, or Custom."
+msgstr ""
+
+#: inst/qml/qml_components/ParametricPredictions.qml:44
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify the number of predicted survival-time quantiles when using Quantiles "
+"as the steps type."
+msgstr ""
+
+#: inst/qml/qml_components/ParametricPredictions.qml:45
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the time points for prediction tables: Equal spacing, Sequence, or "
+"Custom. Equal spacing uses evenly spaced times up to the maximum observed "
+"time. Time plots place points adaptively within the selected range."
+msgstr ""
+
+#: inst/qml/qml_components/ParametricPredictions.qml:46
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the time increment when using Sequence steps. Leaving this blank uses "
+"one tenth of the selected time range."
+msgstr ""
+
+#: inst/qml/qml_components/ParametricPredictions.qml:47
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Specify custom steps of the life time."
+msgstr "生存時間のステップをカスタムで指定します。"
+
+#: inst/qml/qml_components/ParametricPredictions.qml:49
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Predictions"
 msgstr "予測"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:56
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Survival Time"
 msgstr "生存時間"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:60
+#: inst/qml/qml_components/ParametricPredictions.qml:230
+#: inst/qml/qml_components/ParametricPredictions.qml:300
+#: inst/qml/qml_components/ParametricPredictions.qml:320
+#: inst/qml/qml_components/ParametricPredictions.qml:340
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Table"
 msgstr "表"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:62
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Include a table with the predicted survival estimates."
 msgstr "予測された生存時間の推定値の表を含めます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:68
+#: inst/qml/qml_components/ParametricPredictions.qml:238
+#: inst/qml/qml_components/ParametricPredictions.qml:308
+#: inst/qml/qml_components/ParametricPredictions.qml:328
+#: inst/qml/qml_components/ParametricPredictions.qml:348
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Plot"
 msgstr "プロット"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:70
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Include a plot with the predicted survival estimates."
 msgstr "予測された生存時間の推定値のプロットを含めます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:78
+#: inst/qml/qml_components/ParametricPredictions.qml:358
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Steps type"
 msgstr "ステップの種類"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:82
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the method to define intervals for the life table: Default, "
-"Quantiles, or Custom."
-msgstr ""
-"生命表の区間を定める方法を選びます。デフォルト、分位点、カスタムから選べま"
-"す。"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Quantilies"
+msgid "Quantiles"
 msgstr "分位点"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:83
+#: inst/qml/qml_components/ParametricPredictions.qml:363
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Sequence"
 msgstr "等間隔"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:84
+#: inst/qml/qml_components/ParametricPredictions.qml:364
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Custom"
 msgstr "カスタム"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:91
+#: inst/qml/qml_components/ParametricPredictions.qml:371
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Number"
 msgstr "個数"
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Specify the number of quantiles of the predicted surival when using "
-"Quantiles as the steps type."
-msgstr ""
-"ステップの種類に分位点を使うときの、予測された生存の分位点の個数を指定しま"
-"す。"
-
+#: inst/qml/qml_components/ParametricPredictions.qml:102
+#: inst/qml/qml_components/ParametricPredictions.qml:382
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "From"
 msgstr "開始"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:107
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Set the starting quantile of the predicted survival when using Sequence "
 "steps."
 msgstr "等間隔のステップを使うときの、予測された生存の開始分位点を設定します。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:114
+#: inst/qml/qml_components/ParametricPredictions.qml:395
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Size"
 msgstr "幅"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:118
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Define the size of each quantile of the predicted survival when using "
 "Sequence steps."
 msgstr "等間隔のステップを使うときの、予測された生存の分位点の幅を定めます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:125
+#: inst/qml/qml_components/ParametricPredictions.qml:406
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "To"
 msgstr "終了"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:130
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Set the ending quantile of the predicted survival when using Sequence steps."
 msgstr "等間隔のステップを使うときの、予測された生存の終了分位点を設定します。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:136
+#: inst/qml/qml_components/ParametricPredictions.qml:426
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Steps"
 msgstr "ステップ"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:139
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Specify custom steps of the predicted survival."
 msgstr "予測された生存のステップをカスタムで指定します。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:144
+#: inst/qml/qml_components/ParametricPredictions.qml:442
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:95
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Merge plots across distributions"
 msgstr "分布をまたいでプロットを統合する"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:149
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Merge the plots for survival probability across distributions into a single "
@@ -699,50 +1606,83 @@ msgstr ""
 "生存確率のプロットを分布をまたいで1つのプロットに統合します。モデル選択を行っ"
 "ていないときだけ使えます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:161
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Options"
 msgstr "オプション"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:165
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:110
+#: inst/qml/qml_components/ParametricStatistics.qml:104
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Confidence intervals"
+msgstr "信頼区間"
+
+#: inst/qml/qml_components/ParametricPredictions.qml:169
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Include confidence intervals for the figures and tables."
 msgstr "図と表に信頼区間を含めます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:174
+#: inst/qml/qml_components/ParametricStatistics.qml:112
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the confidence level for the confidence intervals."
+msgstr "信頼区間の信頼水準を設定します。"
+
+#: inst/qml/qml_components/ParametricPredictions.qml:181
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:180
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Legend"
 msgstr "凡例"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:184
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Choose the position of the legend on prediction plots with multiple "
 "displayed curves."
 msgstr "複数の曲線を表示する予測プロットで、凡例の位置を選びます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:187
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:186
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Bottom"
 msgstr "下"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:189
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:188
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Left"
 msgstr "左"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:190
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:189
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Top"
 msgstr "上"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:191
+#: inst/qml/qml_components/ParametricPredictions.qml:266
+#: inst/qml/qml_components/ParametricPredictions.qml:279
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:169
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:190
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "None"
 msgstr "なし"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:198
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Customize the color palette used in prediction plots with multiple displayed "
 "curves."
 msgstr "複数の曲線を表示する予測プロットで使うカラーパレットを設定します。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:204
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:204
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Theme"
 msgstr "テーマ"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:207
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Select the theme for prediction plots. The detailed theme works only for "
@@ -751,38 +1691,53 @@ msgstr ""
 "予測プロットのテーマを選びます。詳細テーマは「生存確率」のプロットでのみ機能"
 "します。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:211
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:212
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "White background"
 msgstr "白い背景"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:212
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:213
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Light"
 msgstr "ライト"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:213
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:214
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Minimal"
 msgstr "Minimal"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:216
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:211
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Detailed"
 msgstr "詳細"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:226
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Survival Probability"
 msgstr "生存確率"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:232
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Include a table with the predicted survival probabilities."
 msgstr "予測された生存確率の表を含めます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:240
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Include a plot with the predicted survival probabilities."
 msgstr "予測された生存確率のプロットを含めます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:245
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:143
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:157
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Kaplan-Meier"
 msgstr "Kaplan-Meier"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:247
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Show a Kaplan-Meier curve in the plot. Only available when Censoring Type is "
@@ -791,10 +1746,13 @@ msgstr ""
 "プロットにKaplan-Meier曲線を表示します。打ち切りの種類が右のときだけ使えま"
 "す。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:253
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:86
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Censoring events"
 msgstr "打ち切りのイベント"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:255
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Show censoring events as rug marks in the plot. Only available when "
@@ -803,122 +1761,136 @@ msgstr ""
 "打ち切りのイベントをプロットにラグとして表示します。打ち切りの種類が右のとき"
 "だけ使えます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:261
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "X-axis transformation"
 msgstr "x軸の変換"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:263
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Select the transformation for the x-axis of the plot"
 msgstr "プロットのx軸の変換を選びます"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:267
+#: inst/qml/qml_components/ParametricPredictions.qml:280
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Log"
 msgstr "対数"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:274
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Y-axis transformation"
 msgstr "y軸の変換"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:276
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Select the transformation for the y-axis of the plot"
 msgstr "プロットのy軸の変換を選びます"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:281
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Log(-log(1-p))"
 msgstr "Log(-log(1-p))"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:288
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "As failure probability"
 msgstr "故障確率として"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:290
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Transform the output from survival probability to failure probability (i.e., "
 "1 - Survival Probability)."
 msgstr "出力を生存確率から故障確率 (すなわち 1 - 生存確率) に変換します。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:296
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Hazard"
 msgstr "ハザード"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:302
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Include a table with the predicted hazard estimates."
 msgstr "予測されたハザードの推定値の表を含めます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:310
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Include a plot with the predicted hazard estimates."
 msgstr "予測されたハザードの推定値のプロットを含めます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:316
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Cumulative Hazard"
 msgstr "累積ハザード"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:322
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Include a table with the predicted cumulative hazard estimates."
 msgstr "予測された累積ハザードの推定値の表を含めます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:330
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Include a plot with the predicted cumulative hazard estimates."
 msgstr "予測された累積ハザードの推定値のプロットを含めます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:336
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Restricted Mean Survival Time"
 msgstr "制限付き平均生存時間"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:342
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Include a table with the restricted mean survival time estimates."
 msgstr "制限付き平均生存時間の推定値の表を含めます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:350
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Include a plot with the restricted mean survival time estimates."
 msgstr "制限付き平均生存時間の推定値のプロットを含めます。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:362
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Equal spacing"
+msgstr ""
+
+#: inst/qml/qml_components/ParametricPredictions.qml:375
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
-"Specify the number of quantiles of the life time when using Quantiles as the "
-"steps type."
+"Specify the number of time points when using Equal spacing as the steps type."
 msgstr ""
-"ステップの種類に分位点を使うときの、生存時間の分位点の個数を指定します。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:388
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Set the starting quantile of the life time when using Sequence steps."
-msgstr "等間隔のステップを使うときの、生存時間の開始分位点を設定します。"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Define the size of each quantile of the life time when using Sequence steps. "
-"The default '' corresponds to 1/10 of the maximum observed time."
+msgid "Set the starting time when using Sequence steps."
 msgstr ""
-"等間隔のステップを使うときの、生存時間の分位点の幅を定めます。既定の '' は観"
-"測された最大の時間の10分の1に対応します。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:411
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
-"Set the final step of the life time when using Sequence steps. The default "
-"'' corresponds to the maximum observed time."
+"Set the ending time when using Sequence steps. Leaving this blank uses the "
+"maximum observed time."
 msgstr ""
-"等間隔のステップを使うときの、生存時間の最後のステップを設定します。既定の "
-"'' は観測された最大の時間に対応します。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:417
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Round steps"
 msgstr "ステップを丸める"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:420
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
-"Round the interval boundaries to the nearest integer when using Quantiles or "
-"Sequence steps."
+"Round table time points to the nearest integer when using Equal spacing or "
+"Sequence steps. Time plots use unrounded points placed adaptively within the "
+"selected range."
 msgstr ""
-"分位点または等間隔のステップを使うとき、区間の境界を最も近い整数に丸めます。"
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Specify custom steps of the life time."
-msgstr "生存時間のステップをカスタムで指定します。"
-
+#: inst/qml/qml_components/ParametricPredictions.qml:434
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Merge tables across measures"
 msgstr "指標をまたいで表を統合する"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:437
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Merge the tables for survival time, survival probabilities, hazard, "
@@ -927,6 +1899,7 @@ msgstr ""
 "生存時間、生存確率、ハザード、累積ハザード、制限付き平均生存時間の表を1つの表"
 "に統合します。"
 
+#: inst/qml/qml_components/ParametricPredictions.qml:447
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Merge the plots for survival time, survival probabilities, hazard, "
@@ -937,73 +1910,12 @@ msgstr ""
 "をまたいで1つのプロットに統合します。モデル選択を行っていないときだけ使えま"
 "す。"
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Diagnostics"
-msgstr "診断"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Residual Plots"
-msgstr "残差プロット"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Residuals vs. time"
-msgstr "残差 対 時間"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Plot residuals versus time. Only available when Censoring Type is set to "
-"Right."
-msgstr ""
-"残差を時間に対してプロットします。打ち切りの種類が右のときだけ使えます。"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Residuals vs. predictors"
-msgstr "残差 対 予測変数"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Plot residuals versus predictors to assess model fit. Available when model "
-"terms are specified."
-msgstr ""
-"モデルの適合を評価するため、残差を予測変数に対してプロットします。モデルの項"
-"が指定されているときに使えます。"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Residuals vs. predicted survival"
-msgstr "残差 対 予測された生存"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Plot residuals versus predicted survival probabilities."
-msgstr "残差を予測された生存確率に対してプロットします。"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Residuals histogram"
-msgstr "残差ヒストグラム"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Display a histogram of residuals to assess their distribution."
-msgstr "残差の分布を確認するため、残差のヒストグラムを表示します。"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Type"
-msgstr "タイプ"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Select the type of residuals to plot"
-msgstr "プロットする残差の種類を選びます"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Response"
-msgstr "応答"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Cox-Snell"
-msgstr "Cox-Snell"
-
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:37
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Probability plot"
 msgstr "確率プロット"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:39
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Create a model-based probability plot to assess how well the selected "
@@ -1014,10 +1926,12 @@ msgstr ""
 "価するため、モデルにもとづく確率プロットを作成します。打ち切りの種類が右のと"
 "きだけ使えます。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:44
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Canvas"
 msgstr "キャンバス"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:46
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Select the probability-paper scale. A distribution matching the selected "
@@ -1029,32 +1943,39 @@ msgstr ""
 "れます。指数のキャンバスは時間を線形、確率を累積ハザードのスケールで表しま"
 "す。それ以外のキャンバスは時間を対数で表します。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:60
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Empirical points"
 msgstr "経験的な点"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:62
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Plot empirical failure probability points based on the observed failure "
 "times."
 msgstr "観測された故障時間にもとづく経験的な故障確率の点をプロットします。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:67
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Coordinates"
 msgstr "座標"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:69
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Display the time and failure probability next to each empirical point."
 msgstr "各経験的な点の隣に時間と故障確率を表示します。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:77
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Fitted curve"
 msgstr "当てはめた曲線"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:79
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Plot the fitted curve from the selected parametric model."
 msgstr "選んだパラメトリックモデルの当てはめた曲線をプロットします。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:88
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Show censored observations as rug marks at the bottom of the plot. Only "
@@ -1063,6 +1984,7 @@ msgstr ""
 "打ち切られた観測をプロットの下部にラグとして表示します。打ち切りの種類が右の"
 "ときだけ使えます。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:98
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Merge the probability plots across distributions into a single plot. Only "
@@ -1071,56 +1993,70 @@ msgstr ""
 "確率プロットを分布をまたいで1つのプロットに統合します。モデル選択を行っていな"
 "いときだけ使えます。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:113
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Include confidence interval bounds for the fitted probability curve."
 msgstr "当てはめた確率曲線の信頼区間の境界を含めます。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:119
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Set the confidence level for the probability plot confidence intervals."
 msgstr "確率プロットの信頼区間の信頼水準を設定します。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:126
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Grid"
 msgstr "グリッド"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:128
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Display probability-paper grid lines."
 msgstr "確率紙のグリッド線を表示します。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:134
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Plotting position"
 msgstr "プロット位置"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:136
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Select the method used to compute empirical failure probability plotting "
 "positions."
 msgstr "経験的な故障確率のプロット位置を計算する方法を選びます。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:139
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Median"
 msgstr "中央値"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:140
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Benard"
 msgstr "Benard"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:141
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Hazen"
 msgstr "Hazen"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:142
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:172
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Mean"
 msgstr "平均値"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:144
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Blom"
 msgstr "Blom"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:151
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Rank adjustment"
 msgstr "順位の調整"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:153
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Select the rank adjustment method for right-censored observations. The "
@@ -1131,14 +2067,17 @@ msgstr ""
 "WeibullR/Minitabの流儀に従い、確率紙の上で点が有限にとどまるようにする最後の"
 "故障の調整を含みます。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:156
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Johnson"
 msgstr "Johnson"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:164
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Ties"
 msgstr "同順位"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:166
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Select how tied failure times are handled when computing empirical plotting "
@@ -1146,84 +2085,375 @@ msgid ""
 msgstr ""
 "経験的なプロット位置を計算するとき、同じ故障時間をどう扱うかを選びます。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:170
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Highest"
 msgstr "最大"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:171
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Lowest"
 msgstr "最小"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:173
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Sequential"
 msgstr "逐次"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:183
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
-"Choose the legend position for probability plots with multiple fitted curves."
-msgstr "複数の当てはめた曲線を表示する確率プロットで、凡例の位置を選びます。"
+"Choose the legend position for probability plots with multiple fitted curves "
+"or factor levels."
+msgstr ""
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:198
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
 "Customize the color palette used in probability plots with multiple fitted "
-"curves."
+"curves or factor levels."
 msgstr ""
-"複数の当てはめた曲線を表示する確率プロットで使うカラーパレットを設定します。"
 
+#: inst/qml/qml_components/ParametricProbabilityPlot.qml:207
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Select the theme for the probability plot's appearance."
 msgstr "確率プロットの見た目のテーマを選びます。"
 
+#: inst/qml/qml_components/ParametricResidualPlots.qml:30
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Advanced"
-msgstr "詳細"
+msgid "Residuals vs. predicted survival"
+msgstr "残差 対 予測された生存"
 
+#: inst/qml/qml_components/ParametricResidualPlots.qml:32
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Selected Parametric Distributions"
-msgstr "選択したパラメトリック分布"
+msgid "Residual Plots"
+msgstr "残差プロット"
 
+#: inst/qml/qml_components/ParametricResidualPlots.qml:37
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Output Formatting"
-msgstr "出力の書式"
+msgid "Residuals vs. time"
+msgstr "残差 対 時間"
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include full dataset in subgroup analysis"
-msgstr "サブグループ分析に全データセットを含める"
-
+#: inst/qml/qml_components/ParametricResidualPlots.qml:39
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
-"Include the full dataset output in the subgroup analysis. This option is "
-"only available when the subgroup analysis is selected."
+"Plot residuals versus time. Only available when Censoring Type is set to "
+"Right."
 msgstr ""
-"サブグループ分析の出力に全データセットの結果を含めます。このオプションはサブ"
-"グループ分析を選んでいるときだけ使えます。"
+"残差を時間に対してプロットします。打ち切りの種類が右のときだけ使えます。"
 
+#: inst/qml/qml_components/ParametricResidualPlots.qml:45
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Compare models across distributions"
-msgstr "分布をまたいでモデルを比較する"
+msgid "Residuals vs. predictors"
+msgstr "残差 対 予測変数"
 
+#: inst/qml/qml_components/ParametricResidualPlots.qml:46
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
-"Compare models across distributions. This option is only available when the "
-"multiple models and parametric distributions are specified."
+"Plot residuals versus predictors to assess model fit. Available when model "
+"terms are specified."
 msgstr ""
-"分布をまたいでモデルを比較します。このオプションは複数のモデルとパラメトリッ"
-"ク分布を指定しているときだけ使えます。"
+"モデルの適合を評価するため、残差を予測変数に対してプロットします。モデルの項"
+"が指定されているときに使えます。"
 
+#: inst/qml/qml_components/ParametricResidualPlots.qml:53
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Always display model information"
-msgstr "モデルの情報を常に表示する"
+msgid "Plot residuals versus predicted mean survival times."
+msgstr ""
 
+#: inst/qml/qml_components/ParametricResidualPlots.qml:59
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals histogram"
+msgstr "残差ヒストグラム"
+
+#: inst/qml/qml_components/ParametricResidualPlots.qml:60
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Display a histogram of residuals to assess their distribution."
+msgstr "残差の分布を確認するため、残差のヒストグラムを表示します。"
+
+#: inst/qml/qml_components/ParametricResidualPlots.qml:67
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Type"
+msgstr "タイプ"
+
+#: inst/qml/qml_components/ParametricResidualPlots.qml:68
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the type of residuals to plot"
+msgstr "プロットする残差の種類を選びます"
+
+#: inst/qml/qml_components/ParametricResidualPlots.qml:70
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Response"
+msgstr "応答"
+
+#: inst/qml/qml_components/ParametricResidualPlots.qml:71
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Cox-Snell"
+msgstr "Cox-Snell"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:31
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with information about the model fit."
+msgstr "モデルの適合に関する情報を含む表を含めます。"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:34
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Statistics"
+msgstr "統計量"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:38
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Model summary"
+msgstr "モデルの要約"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:46
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Rank models"
+msgstr "モデルを順位づける"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:48
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Rank models based on the selected criterion."
+msgstr "選んだ規準にもとづいてモデルを順位づけます。"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:56
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "AIC"
+msgstr "AIC"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:63
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "BIC"
+msgstr "BIC"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:69
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log lik."
+msgstr "対数尤度"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:78
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "AIC weights"
+msgstr "AIC重み"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:80
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include AIC weights in the model summary."
+msgstr "モデルの要約にAIC重みを含めます。"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:86
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "BIC weights"
+msgstr "BIC重み"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:88
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include BIC weights in the model summary."
+msgstr "モデルの要約にBIC重みを含めます。"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:96
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Coefficients"
+msgstr "係数"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:99
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with coefficient estimates."
+msgstr "係数の推定値の表を含めます。"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:107
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include confidence intervals for the coefficients."
+msgstr "係数の信頼区間を含めます。"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:119
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Coefficients covariance matrix"
+msgstr "係数の分散共分散行列"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:122
 msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
-"Always display model information (distribution and model name) in output "
-"tables."
-msgstr "出力の表にモデルの情報 (分布とモデル名) を常に表示します。"
+"Include a table with the covariance matrix of the coefficient estimates."
+msgstr "係数の推定値の分散共分散行列の表を含めます。"
 
+#: inst/qml/qml_components/ParametricStatistics.qml:134
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Sequential model comparison"
+msgstr "逐次的モデル比較"
+
+#: inst/qml/qml_components/ParametricStatistics.qml:138
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the results of the sequential model comparison."
+msgstr "逐次的モデル比較の結果の表を含めます。"
+
+#: inst/qml/qml_components/SurvivalExport.qml:15
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Export"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:17
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export model-derived values for each observation to the dataset. Exports "
+"follow the displayed model selection. When multiple models are displayed, "
+"column names include distribution, model, subgroup, and (for mixtures) "
+"component-count identifiers. Observations excluded from a model receive "
+"missing values."
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:22
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Column prefix"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:26
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Optional custom prefix prepended to every exported column name, before any "
+"automatic model identifier."
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:31
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Residuals"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:37
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Martingale"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:38
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export the event indicator minus the fitted cumulative hazard for each "
+"observation."
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:45
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Deviance"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:46
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export deviance residuals from the fitted Cox model for each observation."
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:53
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Response"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:55
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export observed time minus fitted mean survival time. Censored times are "
+"treated as observed times. Unavailable for interval-censored data."
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:61
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Cox-Snell"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:63
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export the fitted cumulative hazard at each observation's time. For counting-"
+"process data, it is conditional on survival to the entry time. Unavailable "
+"for interval-censored data."
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:69
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Fitted Values"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:75
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Relative risk"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:76
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export the fitted relative risk, centered at the mean covariate values "
+"within each stratum."
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:83
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Linear predictor"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:84
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export the fitted log relative risk, centered at the mean covariate values "
+"within each stratum."
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:91
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Mean survival time"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:92
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export the fitted mean survival time at each observation's covariate values."
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:99
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Median survival time"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:100
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export the fitted median survival time at each observation's covariate "
+"values."
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:107
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Mixture Classification"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:112
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Component probabilities"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:113
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export one posterior membership probability per mixture component, "
+"conditional on the observed survival or censoring information."
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:119
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Component index"
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalExport.qml:120
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export the index of the component with the highest posterior membership "
+"probability. Ties are assigned to the first component."
+msgstr ""
+
+#: inst/qml/qml_components/SurvivalPlot.qml:26
 msgctxt "SurvivalPlot|"
 msgid "Plot"
 msgstr "プロット"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:27
 msgctxt "SurvivalPlot|"
 msgid ""
 "This option generates a customizable survival plot to visualize the "
@@ -1246,10 +2476,12 @@ msgstr ""
 "央値) を強調する分位点の線を加えたり、凡例の位置、カラーパレット、全体のテー"
 "マを好みに合わせて調整したりできます。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:32
 msgctxt "SurvivalPlot|"
 msgid "Type"
 msgstr "タイプ"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:33
 msgctxt "SurvivalPlot|"
 msgid ""
 "Select the type of statistic to plot: Survival, Risk, Cumulative Hazard, or "
@@ -1258,36 +2490,44 @@ msgstr ""
 "プロットする統計量の種類を選びます。生存、リスク、累積ハザード、相補対数対数"
 "から選べます。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:36
 msgctxt "SurvivalPlot|"
 msgid "Survival"
 msgstr "生存"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:37
 msgctxt "SurvivalPlot|"
 msgid "Risk"
 msgstr "リスク"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:38
 msgctxt "SurvivalPlot|"
 msgid "Cumulative hazard"
 msgstr "累積ハザード"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:39
 msgctxt "SurvivalPlot|"
 msgid "Complementary log-log"
 msgstr "相補対数対数"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:46
 msgctxt "SurvivalPlot|"
 msgid "Confidence interval"
 msgstr "信頼区間"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:48
 msgctxt "SurvivalPlot|"
 msgid ""
 "Include confidence intervals in the survival plot to show the variability "
 "around the estimates."
 msgstr "推定のばらつきを示すため、生存プロットに信頼区間を含めます。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:54
 msgctxt "SurvivalPlot|"
 msgid "Risk table"
 msgstr "リスク表"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:56
 msgctxt "SurvivalPlot|"
 msgid ""
 "Add a risk table below the plot to display additional information about the "
@@ -1296,19 +2536,23 @@ msgstr ""
 "プロットの下にリスク表を加え、各時点でリスクにさらされている対象の数などの情"
 "報を表示します。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:61
 msgctxt "SurvivalPlot|"
 msgid "Number at risk"
 msgstr "リスク集合の人数"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:63
 msgctxt "SurvivalPlot|"
 msgid ""
 "Display the number of subjects at risk at each time point in the risk table."
 msgstr "リスク表に、各時点でリスクにさらされている対象の数を表示します。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:69
 msgctxt "SurvivalPlot|"
 msgid "Cum. number of observed events"
 msgstr "観測されたイベントの累積数"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:71
 msgctxt "SurvivalPlot|"
 msgid ""
 "Display the cumulative number of observed events (e.g., deaths) at each time "
@@ -1316,40 +2560,48 @@ msgid ""
 msgstr ""
 "リスク表に、各時点で観測されたイベント (例えば死亡) の累積数を表示します。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:77
 msgctxt "SurvivalPlot|"
 msgid "Cum. number of censored obs."
 msgstr "打ち切られた観測の累積数"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:78
 msgctxt "SurvivalPlot|"
 msgid ""
 "Display the cumulative number of censored observations at each time point in "
 "the risk table."
 msgstr "リスク表に、各時点までに打ち切られた観測の累積数を表示します。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:84
 msgctxt "SurvivalPlot|"
 msgid "Number of events in time interval"
 msgstr "時間区間内のイベント数"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:85
 msgctxt "SurvivalPlot|"
 msgid ""
 "Display the number of events that occurred within each time interval in the "
 "risk table."
 msgstr "リスク表に、各時間区間内で発生したイベントの数を表示します。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:91
 msgctxt "SurvivalPlot|"
 msgid "Number of censored obs. in time interval"
 msgstr "時間区間内の打ち切られた観測数"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:92
 msgctxt "SurvivalPlot|"
 msgid ""
 "Display the number of censored observations within each time interval in the "
 "risk table."
 msgstr "リスク表に、各時間区間内で打ち切られた観測の数を表示します。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:98
 msgctxt "SurvivalPlot|"
 msgid "As a single line"
 msgstr "1行にまとめる"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:99
 msgctxt "SurvivalPlot|"
 msgid ""
 "Combine all selected risk table statistics into a single line for a more "
@@ -1357,10 +2609,12 @@ msgid ""
 msgstr ""
 "選んだリスク表の統計量をすべて1行にまとめ、よりコンパクトに表示します。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:106
 msgctxt "SurvivalPlot|"
 msgid "Add quantile"
 msgstr "分位点を追加"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:109
 msgctxt "SurvivalPlot|"
 msgid ""
 "Add a vertical line on the plot at a specified quantile (e.g., median "
@@ -1369,16 +2623,19 @@ msgstr ""
 "指定した分位点 (例えば生存時間の中央値) の位置に、プロット上の垂直線を追加し"
 "ます。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:117
 msgctxt "SurvivalPlot|"
 msgid ""
 "Specify the quantile value (between 0 and 1) at which to add the vertical "
 "line on the plot."
 msgstr "プロット上に垂直線を追加する分位点の値を指定します (0から1の値)。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:126
 msgctxt "SurvivalPlot|"
 msgid "Legend"
 msgstr "凡例"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:127
 msgctxt "SurvivalPlot|"
 msgid ""
 "Choose the position of the legend on the plot: Bottom, Right, Left, Top, or "
@@ -1387,26 +2644,32 @@ msgstr ""
 "プロット上の凡例の位置を選びます。下、右、左、上、なしから選べます。層の変数"
 "を指定しているときだけ使えます。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:130
 msgctxt "SurvivalPlot|"
 msgid "Bottom"
 msgstr "下"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:131
 msgctxt "SurvivalPlot|"
 msgid "Right"
 msgstr "右"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:132
 msgctxt "SurvivalPlot|"
 msgid "Left"
 msgstr "左"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:133
 msgctxt "SurvivalPlot|"
 msgid "Top"
 msgstr "上"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:134
 msgctxt "SurvivalPlot|"
 msgid "None"
 msgstr "なし"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:141
 msgctxt "SurvivalPlot|"
 msgid ""
 "Customize the color palette used in the plot. Only available when Strata "
@@ -1415,10 +2678,12 @@ msgstr ""
 "プロットで使うカラーパレットを設定します。層の変数を指定しているときだけ使え"
 "ます。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:147
 msgctxt "SurvivalPlot|"
 msgid "Theme"
 msgstr "テーマ"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:148
 msgctxt "SurvivalPlot|"
 msgid ""
 "Select the theme for the plot's appearance: JASP for the default look or "
@@ -1427,14 +2692,17 @@ msgstr ""
 "プロットの見た目のテーマを選びます。既定の見た目ならJASP、ggsurvfitパッケージ"
 "の様式ならggsurvfitです。"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:151
 msgctxt "SurvivalPlot|"
 msgid "JASP"
 msgstr "JASP"
 
+#: inst/qml/qml_components/SurvivalPlot.qml:152
 msgctxt "SurvivalPlot|"
 msgid "ggsurvfit"
 msgstr "ggsurvfit"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:27
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "This analysis performs a Cox proportional hazards regression, a statistical "
@@ -1453,10 +2721,12 @@ msgstr ""
 "期間中に一部の対象でイベントが起こらなかった場合) を扱うことができ、ベースラ"
 "インハザード関数について仮定を置く必要がないため、とりわけ有用です。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:42
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Interval Start"
 msgstr "区間の開始"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:48
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Select the variable that represents the start time of the observation "
@@ -1465,10 +2735,12 @@ msgstr ""
 "観測区間の開始時間を表す変数を選びます。打ち切りの種類が計数過程のときだけ使"
 "えます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:54
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Interval End"
 msgstr "区間の終了"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:60
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Select the variable that represents the end time of the observation "
@@ -1477,10 +2749,12 @@ msgstr ""
 "観測区間の終了時間を表す変数を選びます。打ち切りの種類が計数過程のときだけ使"
 "えます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:66
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Time to Event"
 msgstr "イベントまでの時間"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:72
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Select the variable that represents the time until the event or censoring "
@@ -1489,10 +2763,12 @@ msgstr ""
 "イベントの発生または打ち切りまでの時間を表す変数を選びます。打ち切りの種類が"
 "右のときだけ使えます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:79
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Event Status"
 msgstr "イベントの状態"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:82
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Choose the variable that indicates the event status, specifying whether each "
@@ -1501,10 +2777,12 @@ msgstr ""
 "イベントの状態を示す変数を選びます。各観測がイベントなのか打ち切りなのかを指"
 "定するものです。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:88
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Event Indicator"
 msgstr "イベントの指示値"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:91
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Specify the value in the Event Status variable that indicates the occurrence "
@@ -1512,30 +2790,36 @@ msgid ""
 msgstr ""
 "イベントが発生したことを示す値を、イベントの状態の変数の中から指定します。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:97
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Covariates"
 msgstr "共変量"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:99
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Add continuous variables as covariates to include them in the Cox regression "
 "model."
 msgstr "連続変数を共変量として加え、Cox回帰モデルに含めます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:105
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Factors"
 msgstr "要因"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:107
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Add categorical variables as factors to include them in the Cox regression "
 "model."
 msgstr "カテゴリカル変数を要因として加え、Cox回帰モデルに含めます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:114
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Weights"
 msgstr "重み"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:117
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Select a variable for case weights, weighting each observation accordingly "
@@ -1543,63 +2827,78 @@ msgid ""
 msgstr ""
 "ケースの重みに使う変数を選びます。各観測はこれに応じて重みづけられます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:128
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Censoring Type"
 msgstr "打ち切りの種類"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:131
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Select the type of censoring in your data: Right censoring or Counting "
 "process."
 msgstr "データの打ち切りの種類を選びます。右打ち切りか計数過程かを選べます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:135
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Right"
 msgstr "右"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:143
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Counting"
 msgstr "計数過程"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:152
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Censoring summary"
 msgstr "打ち切りの要約"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:153
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Create a summary table with information about the censoring status of the "
 "data."
 msgstr "データの打ち切りの状態をまとめた表を作成します。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:161
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:250
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Method"
 msgstr "方法"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:164
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Efron"
 msgstr "Efron"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:165
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Breslow"
 msgstr "Breslow"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:166
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Exact"
 msgstr "厳密"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:168
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Choose the method for handling tied event times: Efron, Breslow, or Exact."
 msgstr "同じイベント時間の扱い方を選びます。Efron、Breslow、厳密から選べます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:173
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Strata, Cluster, and Frailty"
 msgstr "層、クラスタ、フレイルティ"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:188
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Strata"
 msgstr "層"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:190
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Select variables to define strata, allowing separate baseline hazard "
@@ -1608,10 +2907,12 @@ msgstr ""
 "層を定める変数を選びます。層ごとに別々のベースラインハザード関数が得られま"
 "す。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:209
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Cluster"
 msgstr "クラスタ"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:212
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Select a variable to define clusters of correlated observations for robust "
@@ -1621,10 +2922,13 @@ msgstr ""
 "頑健な分散推定のため、相関のある観測のクラスタを定める変数を選びます。フレイ"
 "ルティの変数を指定しているとき、または方法が厳密のときは使えません。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:220
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:229
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Frailty"
 msgstr "フレイルティ"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:223
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Select a variable for frailty to model unobserved heterogeneity using random "
@@ -1633,10 +2937,12 @@ msgstr ""
 "観測されない異質性を変量効果でモデル化するため、フレイルティに使う変数を選び"
 "ます。クラスタの変数を指定しているときは使えません。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:236
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Distribution"
 msgstr "分布"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:237
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Choose the distribution for the frailty term: Gamma, Gaussian, or T "
@@ -1645,18 +2951,22 @@ msgstr ""
 "フレイルティ項の分布を選びます。ガンマ、正規、t分布から選べます。フレイルティ"
 "の変数を指定しているときだけ使えます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:240
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Gamma"
 msgstr "ガンマ"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:241
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Gaussian"
 msgstr "正規"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:242
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "T"
 msgstr "T"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:251
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Select the estimation method for the frailty distribution. Options vary "
@@ -1665,26 +2975,38 @@ msgstr ""
 "フレイルティ分布の推定方法を選びます。選べる方法は選んだ分布によって変わりま"
 "す。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:255
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "EM"
 msgstr "EM"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:256
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:262
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:267
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "AIC"
 msgstr "AIC"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:257
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:263
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:268
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Fixed"
 msgstr "固定"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:261
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "REML"
 msgstr "REML"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:276
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:296
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:311
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Df"
 msgstr "Df"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:280
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Set the degrees of freedom (Df) for the T frailty distribution. Only visible "
@@ -1692,10 +3014,12 @@ msgid ""
 msgstr ""
 "Tフレイルティ分布の自由度 (Df) を設定します。分布がTのときだけ表示されます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:291
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Fix"
 msgstr "固定する母数"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:292
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Choose the parameter to fix in the frailty model when Method is set to "
@@ -1704,10 +3028,13 @@ msgstr ""
 "方法が固定のとき、フレイルティモデルで固定する母数を選びます。ThetaかDfかを選"
 "べます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:295
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:302
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Theta"
 msgstr "Theta"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:306
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Specify the value of Theta to fix in the frailty model. Only visible when "
@@ -1716,6 +3043,7 @@ msgstr ""
 "フレイルティモデルで固定するThetaの値を指定します。固定する母数がThetaのとき"
 "だけ表示されます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:315
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Specify the degrees of freedom (Df) to fix in the frailty model. Only "
@@ -1724,46 +3052,57 @@ msgstr ""
 "フレイルティモデルで固定する自由度 (Df) を指定します。固定する母数がDfのとき"
 "だけ表示されます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:323
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Model"
 msgstr "モデル"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:332
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Components"
 msgstr "コンポーネント"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:347
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Statistics"
 msgstr "統計量"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:355
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Model fit"
 msgstr "モデルフィット"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:356
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Include overall model fit statistics in the output."
 msgstr "モデル全体の適合度の統計量を出力に含めます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:361
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Tests"
 msgstr "検定"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:362
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Test all parameters of the H₁ model."
 msgstr "H₁モデルのすべての母数を検定します。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:367
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Likelihood ratio"
 msgstr "尤度比"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:368
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Include the Likelihood Ratio Test in the model summary."
 msgstr "モデルの要約に尤度比検定を含めます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:375
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Wald"
 msgstr "Wald"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:376
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Include the Wald Test in the model summary. Disabled when a Frailty variable "
@@ -1772,10 +3111,12 @@ msgstr ""
 "モデルの要約にWald検定を含めます。フレイルティの変数を指定しているときは使え"
 "ません。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:383
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Score (log-rank)"
 msgstr "スコア (ログランク)"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:384
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Include the Score (Log-Rank) Test in the model summary. Disabled when a "
@@ -1784,38 +3125,47 @@ msgstr ""
 "モデルの要約にスコア (ログランク) 検定を含めます。フレイルティの変数を指定し"
 "ているときは使えません。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:391
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Coefficients"
 msgstr "係数"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:398
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Estimates"
 msgstr "推定値"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:400
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Display the estimated coefficients in the model output."
 msgstr "推定された係数をモデルの出力に表示します。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:405
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Vovk-Sellke maximum p-ratio"
 msgstr "Vovk-Sellke maximum p比"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:406
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Include the Vovk-Sellke maximum p-ratio for each coefficient."
 msgstr "各係数にVovk-Sellke maximum p比を含めます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:413
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Hazard ratio estimates"
 msgstr "ハザード比の推定値"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:415
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Display the hazard ratio estimates (exponentiated coefficients)."
 msgstr "ハザード比の推定値 (係数を指数変換したもの) を表示します。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:420
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Include frailty"
 msgstr "フレイルティを含める"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:422
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Include the effect of frailty in hazard ratio estimates. Only available when "
@@ -1824,46 +3174,58 @@ msgstr ""
 "ハザード比の推定値にフレイルティの効果を含めます。フレイルティの変数を指定し"
 "ているときだけ使えます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:429
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Confidence intervals"
 msgstr "信頼区間"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:432
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Include confidence intervals for the coefficients."
 msgstr "係数の信頼区間を含めます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:437
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Set the confidence level (e.g., 95%) for the confidence intervals."
 msgstr "信頼区間の信頼水準 (例えば95%) を設定します。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:446
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:469
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Plot"
 msgstr "プロット"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:453
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Diagnostics"
 msgstr "診断"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:457
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Proportional Hazards"
 msgstr "比例ハザード性"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:462
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Table"
 msgstr "表"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:463
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Provide a table to test the proportional hazards assumption."
 msgstr "比例ハザード性の仮定を検定する表を出力します。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:470
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Generate plots to assess the proportional hazards assumption."
 msgstr "比例ハザード性の仮定を評価するプロットを作成します。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:476
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Transformation"
 msgstr "変換"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:477
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Select the transformation for time in proportional hazards testing: KM, "
@@ -1872,22 +3234,27 @@ msgstr ""
 "比例ハザード性の検定で用いる時間の変換を選びます。KM、順位、恒等から選べま"
 "す。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:480
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "KM"
 msgstr "KM"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:481
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Rank"
 msgstr "ランク"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:482
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Identity"
 msgstr "同一"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:489
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Test terms"
 msgstr "項を検定する"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:490
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Test the proportional hazards assumption for individual model terms (instead "
@@ -1895,14 +3262,17 @@ msgid ""
 msgstr ""
 "係数ではなく、モデルの個々の項について比例ハザード性の仮定を検定します。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:497
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Residual Plots"
 msgstr "残差プロット"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:502
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Residuals vs. time"
 msgstr "残差 対 時間"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:504
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Plot residuals versus time to detect non-proportional hazards. Available "
@@ -1911,10 +3281,12 @@ msgstr ""
 "比例ハザード性が成り立たないことを見つけるため、残差を時間に対してプロットし"
 "ます。マルチンゲール残差またはデビアンス残差のときだけ使えます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:510
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Residuals vs. predictors"
 msgstr "残差 対 予測変数"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:512
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Plot residuals versus predictors to assess model fit. Available when model "
@@ -1923,10 +3295,12 @@ msgstr ""
 "モデルの適合を評価するため、残差を予測変数に対してプロットします。モデルの項"
 "が指定されているときに使えます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:518
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Residuals vs. predicted survival"
 msgstr "残差 対 予測された生存"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:520
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Plot residuals versus predicted survival probabilities. Available only for "
@@ -1935,10 +3309,12 @@ msgstr ""
 "残差を予測された生存確率に対してプロットします。マルチンゲール残差またはデビ"
 "アンス残差のときだけ使えます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:526
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Residuals histogram"
 msgstr "残差ヒストグラム"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:528
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Display a histogram of residuals to assess their distribution. Available "
@@ -1947,10 +3323,12 @@ msgstr ""
 "残差の分布を確認するため、残差のヒストグラムを表示します。マルチンゲール残差"
 "またはデビアンス残差のときだけ使えます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:535
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Type"
 msgstr "タイプ"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:536
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
 "Select the type of residuals to plot: Martingale, Deviance, Score, "
@@ -1959,22 +3337,162 @@ msgstr ""
 "プロットする残差の種類を選びます。マルチンゲール、デビアンス、スコア、"
 "Schoenfeld、標準化Schoenfeldから選べます。"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:538
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Martingale"
 msgstr "マルチンゲール"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:539
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Deviance"
 msgstr "デビアンス"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:540
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Score"
 msgstr "スコア"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:541
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Schoenfeld"
 msgstr "Schoenfeld"
 
+#: inst/qml/SemiParametricSurvivalAnalysis.qml:542
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Scaled Schoenfeld"
 msgstr "標準化Schoenfeld"
+
+#~ msgctxt "Description|"
+#~ msgid "Non-parametric"
+#~ msgstr "ノンパラメトリック"
+
+#~ msgctxt "Description|"
+#~ msgid "Non-parametric Survival Analysis"
+#~ msgstr "ノンパラメトリック生存分析"
+
+#~ msgctxt "Description|"
+#~ msgid "Semi-parametric"
+#~ msgstr "セミパラメトリック"
+
+#~ msgctxt "Description|"
+#~ msgid "Semi-parametric Survival Analysis"
+#~ msgstr "セミパラメトリック生存分析"
+
+#~ msgctxt "NonParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Select the method to define intervals for the life table: Default, "
+#~ "Quantiles, or Fixed size."
+#~ msgstr ""
+#~ "生命表の区間を定める方法を選びます。デフォルト、分位点、固定幅から選べま"
+#~ "す。"
+
+#~ msgctxt "NonParametricSurvivalAnalysis|"
+#~ msgid "Quantilies"
+#~ msgstr "分位点"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Select the variable that represents the time until the event or censoring "
+#~ "occurs. Only available when Censoring Type is set to Right or Counting."
+#~ msgstr ""
+#~ "イベントの発生または打ち切りまでの時間を表す変数を選びます。打ち切りの種類"
+#~ "が右または計数過程のときだけ使えます。"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Add continuous variables as covariates to include them in the Cox "
+#~ "regression model."
+#~ msgstr "連続変数を共変量として加え、Cox回帰モデルに含めます。"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Add categorical variables as factors to include them in the Cox "
+#~ "regression model."
+#~ msgstr "カテゴリカル変数を要因として加え、Cox回帰モデルに含めます。"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Select the type of censoring in your data: right, left, or interval "
+#~ "censoring."
+#~ msgstr ""
+#~ "データの打ち切りの種類を選びます。右打ち切り、左打ち切り、区間打ち切りから"
+#~ "選べます。"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid "Include intercept"
+#~ msgstr "切片を含む"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Select the method to define intervals for the life table: Default, "
+#~ "Quantiles, or Custom."
+#~ msgstr ""
+#~ "生命表の区間を定める方法を選びます。デフォルト、分位点、カスタムから選べま"
+#~ "す。"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid "Quantilies"
+#~ msgstr "分位点"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Specify the number of quantiles of the predicted surival when using "
+#~ "Quantiles as the steps type."
+#~ msgstr ""
+#~ "ステップの種類に分位点を使うときの、予測された生存の分位点の個数を指定しま"
+#~ "す。"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Specify the number of quantiles of the life time when using Quantiles as "
+#~ "the steps type."
+#~ msgstr ""
+#~ "ステップの種類に分位点を使うときの、生存時間の分位点の個数を指定します。"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Set the starting quantile of the life time when using Sequence steps."
+#~ msgstr "等間隔のステップを使うときの、生存時間の開始分位点を設定します。"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Define the size of each quantile of the life time when using Sequence "
+#~ "steps. The default '' corresponds to 1/10 of the maximum observed time."
+#~ msgstr ""
+#~ "等間隔のステップを使うときの、生存時間の分位点の幅を定めます。既定の '' は"
+#~ "観測された最大の時間の10分の1に対応します。"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Set the final step of the life time when using Sequence steps. The "
+#~ "default '' corresponds to the maximum observed time."
+#~ msgstr ""
+#~ "等間隔のステップを使うときの、生存時間の最後のステップを設定します。既定"
+#~ "の '' は観測された最大の時間に対応します。"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Round the interval boundaries to the nearest integer when using Quantiles "
+#~ "or Sequence steps."
+#~ msgstr ""
+#~ "分位点または等間隔のステップを使うとき、区間の境界を最も近い整数に丸めま"
+#~ "す。"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid "Plot residuals versus predicted survival probabilities."
+#~ msgstr "残差を予測された生存確率に対してプロットします。"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Choose the legend position for probability plots with multiple fitted "
+#~ "curves."
+#~ msgstr ""
+#~ "複数の当てはめた曲線を表示する確率プロットで、凡例の位置を選びます。"
+
+#~ msgctxt "ParametricSurvivalAnalysis|"
+#~ msgid ""
+#~ "Customize the color palette used in probability plots with multiple "
+#~ "fitted curves."
+#~ msgstr ""
+#~ "複数の当てはめた曲線を表示する確率プロットで使うカラーパレットを設定しま"
+#~ "す。"
