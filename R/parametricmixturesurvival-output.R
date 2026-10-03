@@ -181,8 +181,6 @@
   # add footnotes
   if (!is.null(attr(fit, "label")) && attr(fit, "label") != "")
     componentsTable$addFootnote(attr(fit, "label"))
-  for (message in .sapConstraintNote(fit))
-    componentsTable$addFootnote(message)
   if (anyNA(data[["est"]]))
     componentsTable$addFootnote(gettext("Some component means or medians are infinite or could not be evaluated numerically and are shown as missing."))
   if (!.sapConstraintActive(fit) && (anyNA(data[["se"]]) || (options[["coefficientsConfidenceInterval"]] && anyNA(data[c("lower", "upper")]))))
@@ -190,8 +188,6 @@
   componentsTable$addFootnote(gettext("Standard errors and confidence intervals are based on the delta method."))
   if (length(fit[["covpars"]]) > 0)
     componentsTable$addFootnote(gettext("The component means and medians correspond to the reference level of factors and zero value of covariates."))
-  for (message in .sapmFitMessages(fit, options))
-    componentsTable$addFootnote(message, symbol = gettext("Warning:"))
 
   componentsTable$setData(data)
   componentsTable$showSpecifiedColumnsOnly <- TRUE
@@ -321,11 +317,7 @@
   # add footnotes
   if (!is.null(attr(fit, "label")) && attr(fit, "label") != "")
     classificationTable$addFootnote(attr(fit, "label"))
-  for (message in .sapConstraintNote(fit))
-    classificationTable$addFootnote(message)
   classificationTable$addFootnote(gettextf("Observations are classified to the component with the highest posterior probability. The relative entropy of the classification is %1$.3f (values close to 1 indicate low uncertainty in the assignments).", entropy))
-  for (message in .sapmFitMessages(fit, options))
-    classificationTable$addFootnote(message, symbol = gettext("Warning:"))
 
   classificationTable$setData(data)
   classificationTable$showSpecifiedColumnsOnly <- TRUE
@@ -361,14 +353,6 @@
   data <- .saSafeRbind(lapply(fit, .sapmRowDiagnosticsTable))
   for (column in intersect(textColumns, names(data)))
     data[[column]] <- jaspBase::createMixedColumn(data[[column]], rep("string", nrow(data)))
-
-  # add footnotes
-  for (message in unique(unlist(lapply(fit, .sapConstraintNote))))
-    diagnosticsTable$addFootnote(message)
-  for (message in .sapCollectFitErrors(fit, options))
-    diagnosticsTable$addFootnote(message, symbol = gettext("Error:"))
-  for (message in .sapmSummaryMessages(fit, options)[["warnings"]])
-    diagnosticsTable$addFootnote(message, symbol = gettext("Warning:"))
 
   diagnosticsTable$setData(data)
   diagnosticsTable$showSpecifiedColumnsOnly <- TRUE

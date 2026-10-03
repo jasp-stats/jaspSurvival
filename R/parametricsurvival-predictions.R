@@ -123,7 +123,7 @@
 .sapSummaryPredictions <- function(fit, ..., ci) {
 
   activeBound <- .sapConstraintActive(fit)
-  messages <- c(.sapConstraintNote(fit), .sapmFitMessages(fit, options = NULL))
+  messages <- character(0)
   data <- withCallingHandlers(summary(fit, ..., ci = ci && !activeBound && all(is.finite(fit[["cov"]]))), warning = function(w) {
     messages <<- c(messages, conditionMessage(w))
     invokeRestart("muffleWarning")

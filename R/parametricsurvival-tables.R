@@ -173,13 +173,11 @@
   for (i in seq_along(errors))
     summaryTable$addFootnote(errors[[i]], symbol = gettext("Error: "))
 
-  if (options[["analysisType"]] == "mixture") {
-    mixtureMessages <- .sapmSummaryMessages(fit, options)
-    for (i in seq_along(mixtureMessages[["notes"]]))
-      summaryTable$addFootnote(mixtureMessages[["notes"]][[i]])
-    for (i in seq_along(mixtureMessages[["warnings"]]))
-      summaryTable$addFootnote(mixtureMessages[["warnings"]][[i]], symbol = gettext("Warning:"))
-  }
+  fitMessages <- .sapmSummaryMessages(fit, options)
+  for (message in fitMessages[["notes"]])
+    summaryTable$addFootnote(message)
+  for (message in fitMessages[["warnings"]])
+    summaryTable$addFootnote(message, symbol = gettext("Warning:"))
 
   if (length(fit) > 0)
     .saAddMissingObservationsFootnote(summaryTable, attr(fit[[1]], "dataset", exact = TRUE))
@@ -219,13 +217,6 @@
     sequentialModelComparisonTable$addFootnote(gettextf("Comparisons involving an active spread bound have no likelihood-ratio statistic or p-value; other comparisons use the %1$s approximation.", "\U03C7\U00B2"))
   else
     sequentialModelComparisonTable$addFootnote(gettextf("Likelihood ratio test for nested models based on %s distribution.", "\U03C7\U00B2"))
-  for (message in unique(unlist(lapply(fit, .sapConstraintNote))))
-    sequentialModelComparisonTable$addFootnote(message)
-  for (model in fit) {
-    message <- paste(c(.sapConstraintWarning(model), .sapNativeFitWarnings(model)), collapse = " ")
-    if (message != "")
-      sequentialModelComparisonTable$addFootnote(paste0(.sapmCellLabel(model, options), ": ", message), symbol = gettext("Warning:"))
-  }
 
   sequentialModelComparisonTable$setData(data)
   sequentialModelComparisonTable$showSpecifiedColumnsOnly <- TRUE
@@ -295,14 +286,6 @@
   messages <- .sapSelectedModelMessage(fit, options)
   for (i in seq_along(messages))
     estimatesTable$addFootnote(messages[[i]])
-  for (message in unique(unlist(lapply(fit, .sapConstraintNote))))
-    estimatesTable$addFootnote(message)
-
-  if (options[["analysisType"]] == "mixture") {
-    mixtureWarnings <- .sapmSummaryMessages(fit, options)[["warnings"]]
-    for (i in seq_along(mixtureWarnings))
-      estimatesTable$addFootnote(mixtureWarnings[[i]], symbol = gettext("Warning:"))
-  }
 
   if (any(sapply(fit, function(x) !jaspBase::isTryError(x) && attr(x, "components") > 1))) {
     estimatesTable$addFootnote(gettext("The standard errors and confidence intervals of the mixing probabilities are based on the delta method."))
@@ -346,12 +329,6 @@
   covarianceMatrixTableTable$addFootnote(gettext("The covariance matrix uses the estimation scale: distribution parameters constrained to be positive are log-transformed. This scale can differ from the coefficients table."))
   if (!is.null(attr(fit, "mixture")))
     covarianceMatrixTableTable$addFootnote(gettext("The v parameters are conditional stick-breaking weights on the logit scale, not the component mixing probabilities reported in the coefficients table."))
-  for (message in .sapConstraintNote(fit))
-    covarianceMatrixTableTable$addFootnote(message)
-  for (message in .sapConstraintWarning(fit))
-    covarianceMatrixTableTable$addFootnote(message, symbol = gettext("Warning:"))
-  for (message in .sapNativeFitWarnings(fit))
-    covarianceMatrixTableTable$addFootnote(message, symbol = gettext("Warning:"))
 
   covarianceMatrixTableTable$setData(data)
   covarianceMatrixTableTable$showSpecifiedColumnsOnly <- TRUE

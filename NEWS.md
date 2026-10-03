@@ -22,6 +22,7 @@
 * Parametric mixture survival analysis: models with coinciding, collapsed, or degenerated components are kept for the model comparison and reported with a warning; models with a lower log-likelihood than a nested model with fewer components are reported as local optima; left-truncated (counting) data are estimated by a direct maximization of the likelihood started from the EM solution of the untruncated data.
 
 ## Changed
+* General constraint and estimation notes are shown in the Model Summary; other tables retain notes specific to their output.
 * Parametric prediction and probability plots use adaptive, unrounded time grids; Round steps affects prediction tables. Parametric life-time steps now use the Equal spacing label.
 * Nonparametric life-table Quantiles now uses empirical quantiles of observed times, including censored times and frequency-expanded observations, in place of equally spaced times; these are not estimated-survival quantiles.
 * Probability plots color empirical points and censoring marks by factor level and retain fitted-curve tails beyond the 0.1%–99.9% display range instead of clamping them to it.

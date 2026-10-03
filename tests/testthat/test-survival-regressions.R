@@ -92,7 +92,7 @@ test_that("location-effect diagnostic is invariant to covariate origin", {
   }
 })
 
-test_that("native prediction estimates retain all mixture fit warnings", {
+test_that("general fit warnings belong to the model summary, not predictions", {
   dataset <- data.frame(time = exp(seq(-1, 4, length.out = 40)), status = TRUE)
   fit <- flexsurv::flexsurvreg(survival::Surv(time, status) ~ 1, data = dataset, dist = "lnorm")
   set.seed(1)
@@ -103,9 +103,16 @@ test_that("native prediction estimates retain all mixture fit warnings", {
     collapsed = integer(0), duplicated = matrix(integer(0), nrow = 0, ncol = 2), hessianWarning = TRUE)
   set.seed(1)
   predicted <- jaspSurvival:::.sapSummaryPredictions(fit, type = "survival", t = c(1, 2), ci = TRUE)
-  messages <- attr(predicted, "predictionWarnings")
-  expect_true(all(jaspSurvival:::.sapmFitMessages(fit, options = NULL) %in% messages))
-  expect_equal(anyDuplicated(messages), 0L)
+  attr(fit, "components") <- 2L
+  attr(fit, "distribution") <- "Log-normal"
+  attr(fit, "family") <- "lnorm"
+  attr(fit, "modelTitle") <- "1"
+  attr(fit, "modelId") <- "1"
+  attr(fit, "subgroupLabel") <- ""
+  overview <- jaspSurvival:::.sapmSummaryMessages(list(fit), list(subgroup = ""))
+  expect_true(all(vapply(jaspSurvival:::.sapmFitMessages(fit, options = NULL), function(message) any(grepl(message, overview[["warnings"]], fixed = TRUE)), logical(1))))
+  expect_equal(anyDuplicated(overview[["warnings"]]), 0L)
+  expect_length(attr(predicted, "predictionWarnings"), 0L)
   expect_identical(lapply(plain, function(x) x[c("est", "lcl", "ucl")]), lapply(predicted, function(x) x[c("est", "lcl", "ucl")]))
 })
 
