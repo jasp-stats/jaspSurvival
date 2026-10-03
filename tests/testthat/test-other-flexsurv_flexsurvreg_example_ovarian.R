@@ -13,7 +13,8 @@ test_that("ParametricSurvivalAnalysis results match", {
   # Encode and run analysis
   encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
   set.seed(1)
-  results <- jaspTools::runAnalysis("ParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+  results <- jaspTools::runAnalysis("ParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE, view = FALSE)
+  expect_identical(results[["status"]], "complete")
 
   table <- results[["results"]][["censoringSummaryTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -37,6 +38,41 @@ test_that("ParametricSurvivalAnalysis results match", {
 
   plotName <- results[["results"]][["survivalProbabilityPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+
+  # The KM curve starts at survival one; its CI starts at the first event.
+  time <- dataset[[opts[["timeToEvent"]]]]
+  event <- dataset[[opts[["eventStatus"]]]] == opts[["eventIndicator"]]
+  km <- summary(survival::survfit(survival::Surv(time, event) ~ 1,
+    conf.int = opts[["predictionsConfidenceIntervalLevel"]]))
+  kmLayers <- Filter(function(layer) identical(layer$aes_params$colour, "grey60"), testPlot$layers)
+  kmRibbon <- Filter(function(layer) inherits(layer$geom, "GeomRibbon"), kmLayers)[[1]]$data
+  kmCurve <- Filter(function(layer) !inherits(layer$geom, "GeomRibbon"), kmLayers)[[1]]$data
+  expect_equal(kmCurve$at[1], 0)
+  expect_equal(kmCurve$estimate[1], 1)
+  expect_equal(max(kmCurve$at), max(time))
+  expect_equal(min(kmRibbon$at), min(time[event]))
+  for (column in c("estimate", "lCi", "uCi")) {
+    expected <- km[[switch(column, estimate = "surv", lCi = "lower", uCi = "upper")]]
+    actual <- vapply(km$time, function(at) tail(kmCurve[[column]][kmCurve$at == at], 1), numeric(1))
+    expect_equal(actual, expected)
+  }
+
+  # Adaptive sampling must retain accurate curves, regardless of node count.
+  denseTimes <- seq(0, max(time), length.out = 5001)
+  distributions <- c("Generalized gamma" = "gengamma", "Weibull" = "weibull")
+  for (label in names(distributions)) {
+    series <- testPlot$data[testPlot$data$Distribution == label, ]
+    nativeFit <- flexsurv::flexsurvreg(survival::Surv(time, event) ~ 1, dist = distributions[[label]])
+    expected <- summary(nativeFit, t = denseTimes, ci = FALSE)[[1]]$est
+    actual <- stats::approx(series$at, series$estimate, xout = denseTimes)$y
+    expect_equal(series$estimate, summary(nativeFit, t = series$at, ci = FALSE)[[1]]$est)
+    expect_equal(range(series$at), range(denseTimes))
+    expect_true(all(is.finite(actual)))
+    expect_lte(max(abs(actual - expected)), 0.001 * diff(range(testPlot$data$estimate)))
+  }
+
+  # Structural snapshot column ordering must not depend on the system locale.
+  withr::local_collate("C")
   jaspTools::expect_equal_plots(testPlot, "analysis-1_figure-1_predicted-survival-probability")
 
   table <- results[["results"]][["survivalProbabilityTable"]][["collection"]][["survivalProbabilityTable_table1"]][["data"]]
