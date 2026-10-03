@@ -574,10 +574,27 @@
     jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]]) +
     jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
 
-  if (options[["plotType"]] == "complementaryLogLog")
+  yScaleCall <- list()
+  if (options[["plotCi"]] && options[["plotType"]] %in% c("cumulativeHazard", "complementaryLogLog") &&
+      any(is.finite(tempPlot$data[["estimate"]]))) {
+    yRange <- .saPlotEstimateRange(
+      estimate  = tempPlot$data[["estimate"]],
+      lCi       = tempPlot$data[["conf.low"]],
+      uCi       = tempPlot$data[["conf.high"]],
+      trimLower = options[["plotType"]] == "complementaryLogLog",
+      at        = if (options[["plotType"]] == "complementaryLogLog") log(tempPlot$data[["time"]]) else tempPlot$data[["time"]],
+      group     = if ("strata" %in% names(tempPlot$data)) tempPlot$data[["strata"]] else rep(1, nrow(tempPlot$data)))
+    yBreaks <- jaspGraphs::getPrettyAxisBreaks(yRange)
+    yScaleCall <- list(limits = range(yBreaks), breaks = yBreaks, oob = scales::oob_keep)
+  }
+
+  if (options[["plotType"]] == "complementaryLogLog") {
     tempPlot <- tempPlot + ggplot2::scale_x_continuous(transform = "log") + ggplot2::xlab(gettext("log(Time)"))
-  else
-    tempPlot <- tempPlot + ggsurvfit::scale_ggsurvfit()
+    if (length(yScaleCall) > 0)
+      tempPlot <- tempPlot + do.call(ggplot2::scale_y_continuous, yScaleCall)
+  } else {
+    tempPlot <- tempPlot + ggsurvfit::scale_ggsurvfit(y_scales = yScaleCall)
+  }
 
   tempPlot <- try(.ggsurvfit2JaspPlot(tempPlot))
   if (jaspBase::isTryError(tempPlot)) {

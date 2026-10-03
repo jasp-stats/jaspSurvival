@@ -579,7 +579,12 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     aprX  <- approx(tempDfPoints$x[indx], xTime[indx], seq(min(tempDfPoints$x), max(tempDfPoints$x), length = 5))
 
     # y-ticks
-    yTicks <- jaspGraphs::getPrettyAxisBreaks(range(c(tempDfPoints$y, tempDfCiBand$y)))
+    yTicks <- jaspGraphs::getPrettyAxisBreaks(.saPlotEstimateRange(
+      estimate  = c(tempDfPoints$y, tempDfPrediction$y),
+      lCi       = tempFitTestPlot$y[,2],
+      uCi       = tempFitTestPlot$y[,3],
+      trimLower = TRUE,
+      at        = tempFitTestPlot$x))
 
     tempPlot <- ggplot2::ggplot() +
       ggplot2::geom_polygon(data = tempDfCiBand, mapping = ggplot2::aes(x = x, y = y), fill = "grey", alpha = 0.5) +
@@ -591,7 +596,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
       )
     tempPlot <- tempPlot +
       jaspGraphs::scale_x_continuous(breaks = aprX$x, labels = signif(aprX$y, 2)) +
-      jaspGraphs::scale_y_continuous(limits = range(yTicks), breaks = yTicks)
+      jaspGraphs::scale_y_continuous(limits = range(yTicks), breaks = yTicks, oob = scales::oob_keep)
 
     tempPlot <- tempPlot + jaspGraphs::geom_rangeframe(sides = "bl") + jaspGraphs::themeJaspRaw()
 

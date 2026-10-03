@@ -373,7 +373,7 @@ Form
 					id:			mixtureComponentPlot
 					label:		qsTr("Component plot")
 					name:		"mixtureComponentPlot"
-					info: qsTr("Include a plot with the fitted mixture and its components. The components are evaluated at the same covariate values as the predictions.")
+					info: qsTr("Include a plot with the fitted mixture and its components. Densities are averaged over the observed predictor values, separately for each factor combination unless plots are merged. Other plot types use the same covariate values as the predictions.")
 
 					DropDown
 					{
@@ -391,12 +391,34 @@ Form
 						]
 					}
 
+					DropDown
+					{
+						name:		"mixtureComponentPlotTransformXAxis"
+						label:		qsTr("X-axis transformation")
+						startValue:	"log"
+						info: qsTr("Select the transformation for the x-axis of the component plot. With Log selected, density curves and histogram bins are computed for log time.")
+						values:
+						[
+							{ label: qsTr("None"),	value: "none"},
+							{ label: qsTr("Log"),	value: "log"}
+						]
+					}
+
+					CheckBox
+					{
+						name:		"mixtureComponentPlotMergePlotsAcrossFactors"
+						label:		qsTr("Merge plots across factors")
+						checked:	false
+						enabled:	mixtureComponentPlotType.value === "density"
+						info: qsTr("For density plots, average the mixture and its weighted component densities over the observed predictor values, using the proportions of observations in each factor combination and any case weights. When unchecked, show a separate plot for each observed factor combination, averaging over its observed covariate values.")
+					}
+
 					CheckBox
 					{
 						name:		"mixtureComponentPlotObservedData"
 						label:		qsTr("Observed data")
 						enabled:	censoringTypeRight.checked && mixtureComponentPlotType.value === "density"
-						info: qsTr("Overlay a histogram of the observed time distribution on the fitted densities. For right-censored data, bin probabilities are estimated with Kaplan-Meier and any unobserved tail probability is retained. The fitted curves use the prediction covariate settings; the histogram describes the full sample within each subgroup.")
+						info: qsTr("Overlay a histogram of the observed time distribution on the fitted densities, using the same observations as the curves: each factor combination separately, or the pooled sample when plots are merged. For right-censored data, bin probabilities are estimated with Kaplan-Meier and any unobserved tail probability is retained.")
 					}
 				}
 			}
@@ -504,7 +526,7 @@ Form
 					id:			mixtureConstrainMinimumSpread
 					name:		"mixtureConstrainMinimumSpread"
 					label:		qsTr("Constrain minimum spread")
-					checked:	true
+					checked:	false
 					childrenOnSameRow:	true
 					info: qsTr("Fit by constrained maximum likelihood with a minimum standard deviation of the natural logarithm of survival time in every component, including one-component models. Available for log-normal, Weibull, log-logistic, and gamma distributions; other distributions are deselected. Checkbox choices made in Selected Parametric Distributions before turning the constraint on are restored when it is turned off again, provided the analysis form has not been reloaded. When the bound is active, point estimates remain available but standard errors, confidence intervals, covariance estimates, and regular inferential tests are not reported.")
 
@@ -619,8 +641,6 @@ Form
 				max:			1000
 				info: qsTr("Set the number of EM iterations that refine each starting value before the likelihood is maximized directly. The state after the first and after the last EM iteration are both used as starting values of the direct maximization.")
 			}
-
-			SetSeed {}
 		}
 
 		Group
@@ -661,6 +681,21 @@ Form
 				checked:	false
 				info: qsTr("Always display model information (distribution, number of components, and model name) in output tables.")
 			}
+		}
+
+		Group
+		{
+			IntegerField
+			{
+				name:			"confidenceIntervalSimulationDraws"
+				label:			qsTr("Confidence interval simulation draws")
+				defaultValue:	10000
+				min:			100
+				max:			1000000
+				info: qsTr("Set the number of parameter draws used to simulate confidence intervals for prediction tables and all model-based plot bands. More draws improve precision at a higher computational cost.")
+			}
+
+			SetSeed {}
 		}
 	}
 }

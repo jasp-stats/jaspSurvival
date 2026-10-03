@@ -35,7 +35,7 @@
     "probabilityPlot", "probabilityPlotCanvas", "probabilityPlotEmpiricalPoints",
     "probabilityPlotPointCoordinates", "probabilityPlotFittedCurve",
     "probabilityPlotCensoringEvents", "probabilityPlotMergePlotsAcrossDistributions",
-    "probabilityPlotConfidenceInterval", "probabilityPlotConfidenceIntervalLevel",
+    "probabilityPlotConfidenceInterval", "probabilityPlotConfidenceIntervalLevel", "confidenceIntervalSimulationDraws", "setSeed", "seed",
     "probabilityPlotGrid", "probabilityPlotPlottingPosition", "probabilityPlotRankAdjustment",
     "probabilityPlotTiesHandler", "probabilityPlotLegend", "probabilityPlotColorPalette",
     "probabilityPlotTheme",
@@ -509,7 +509,7 @@
   predictionWarnings <- character(0)
   for (i in seq_along(fitList)) {
 
-    data <- .sapSummaryPredictions(fitList[[i]], type = "survival", t = timeSequence, ci = options[["probabilityPlotConfidenceInterval"]], cl = ciLevel)
+    data <- .sapSummaryPredictions(fitList[[i]], type = "survival", t = timeSequence, ci = options[["probabilityPlotConfidenceInterval"]], cl = ciLevel, B = options[["confidenceIntervalSimulationDraws"]], seed = if (options[["setSeed"]]) options[["seed"]])
     predictionWarnings <- c(predictionWarnings, attr(data, "predictionWarnings"))
 
     for (j in seq_along(data)) {

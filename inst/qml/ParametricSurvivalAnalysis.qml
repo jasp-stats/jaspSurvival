@@ -335,5 +335,20 @@ Form
 				info: qsTr("Always display model information (distribution and model name) in output tables.")
 			}
 		}
+
+		Group
+		{
+			IntegerField
+			{
+				name:			"confidenceIntervalSimulationDraws"
+				label:			qsTr("Confidence interval simulation draws")
+				defaultValue:	10000
+				min:			100
+				max:			1000000
+				info: qsTr("Set the number of parameter draws used to simulate confidence intervals for prediction tables and all model-based plot bands. More draws improve precision at a higher computational cost.")
+			}
+
+			SetSeed {}
+		}
 	}
 }

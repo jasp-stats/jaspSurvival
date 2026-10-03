@@ -70,7 +70,7 @@
     .sapGetDependencies(options), "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation",
     paste0(measure, if (plot) "Plot" else "Table"),
     paste0("predictions", grid, c("StepsType", "StepsNumber", "StepsFrom", "StepsSize", "StepsTo", "Custom")),
-    "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel"
+    "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel", "confidenceIntervalSimulationDraws", "setSeed", "seed"
   )
   if (!survivalTime)
     dependencies <- c(dependencies, "lifeTimeMergeTablesAcrossMeasures", if (!plot) "predictionsLifeTimeRoundSteps")
@@ -103,7 +103,8 @@
   outputDependencies <- c(.sapGetDependencies(options), "compareModelsAcrossDistributions", "interpretModel", "alwaysDisplayModelInformation", "predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel",
                           "survivalProbabilityTable", "hazardTable", "cumulativeHazardTable", "restrictedMeanSurvivalTimeTable", "lifeTimeMergeTablesAcrossMeasures",
                           "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
-                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom", "survivalProbabilityAsFailureProbability"
+                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeRoundSteps", "predictionsLifeTimeCustom", "survivalProbabilityAsFailureProbability",
+                          "confidenceIntervalSimulationDraws", "setSeed", "seed"
   )
 
   .sapSectionWrapper(
@@ -120,11 +121,15 @@
   return()
 }
 
-.sapSummaryPredictions <- function(fit, ..., ci) {
+.sapSummaryPredictions <- function(fit, ..., ci, seed = NULL) {
 
   activeBound <- .sapConstraintActive(fit)
+  includeCI <- ci && !activeBound && all(is.finite(fit[["cov"]]))
+  # Reset each simulation so output order and cached fits do not change its draws.
+  if (includeCI && !is.null(seed))
+    jaspBase::.setSeedJASP(list(setSeed = TRUE, seed = seed))
   messages <- character(0)
-  data <- withCallingHandlers(summary(fit, ..., ci = ci && !activeBound && all(is.finite(fit[["cov"]]))), warning = function(w) {
+  data <- withCallingHandlers(summary(fit, ..., ci = includeCI), warning = function(w) {
     messages <<- c(messages, conditionMessage(w))
     invokeRestart("muffleWarning")
   })
@@ -168,10 +173,10 @@
   # if there is any continuous predictor, the output is averaged across the predictors matrix
   if (type == "quantile") {
     optionsSequence <- .sapOptions2PredictionQuantile(options)
-    data  <- try(.sapSummaryPredictions(fit, type = type, quantiles = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]]))
+    data  <- try(.sapSummaryPredictions(fit, type = type, quantiles = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]], B = options[["confidenceIntervalSimulationDraws"]], seed = if (options[["setSeed"]]) options[["seed"]]))
   } else {
     optionsSequence <- .sapOptions2PredictionTime(options, fit)
-    data  <- try(.sapSummaryPredictions(fit, type = type, t = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]]))
+    data  <- try(.sapSummaryPredictions(fit, type = type, t = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]], B = options[["confidenceIntervalSimulationDraws"]], seed = if (options[["setSeed"]]) options[["seed"]]))
   }
 
   # error handling for divergent integrals
@@ -229,7 +234,7 @@
 }
 .sapLifeTimeTableWrapper         <- function(fit, options, type, timeSequence) {
 
-  tempData           <- .sapSummaryPredictions(fit, type = type, t = timeSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]])
+  tempData           <- .sapSummaryPredictions(fit, type = type, t = timeSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]], B = options[["confidenceIntervalSimulationDraws"]], seed = if (options[["setSeed"]]) options[["seed"]])
   predictionWarnings <- attr(tempData, "predictionWarnings")
   if (length(tempData) > 1)
     stop(errorCondition(gettext("Life time tables cannot be merged when a model produces multiple predictions. Disable 'Merge tables across measures'."), class = "sapMultiplePredictionsError"))
@@ -407,9 +412,9 @@
       next
 
     if (type == "quantile") {
-      data  <- try(.sapSummaryPredictions(fit[[i]], type = type, quantiles = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]]))
+      data  <- try(.sapSummaryPredictions(fit[[i]], type = type, quantiles = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]], B = options[["confidenceIntervalSimulationDraws"]], seed = if (options[["setSeed"]]) options[["seed"]]))
     } else {
-      data  <- try(.sapSummaryPredictions(fit[[i]], type = type, t = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]]))
+      data  <- try(.sapSummaryPredictions(fit[[i]], type = type, t = optionsSequence, ci = options[["predictionsConfidenceInterval"]], cl = options[["predictionsConfidenceIntervalLevel"]], B = options[["confidenceIntervalSimulationDraws"]], seed = if (options[["setSeed"]]) options[["seed"]]))
     }
 
     # error handling for divergent integrals
@@ -495,7 +500,8 @@
         ymin     = as.name("lCi"),
         ymax     = as.name("uCi")
       )
-      geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]), data = kmTable, fill = "grey60",  color = "grey60", alpha = 0.10)
+      # Start the CI at the first event, omitting the initial survival-one step.
+      geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]), data = kmTable[-c(1, 2), ], fill = "grey60",  color = "grey60", alpha = 0.10)
       plot <- plot + do.call(ggplot2::geom_ribbon, geomCall)
     }
 
@@ -544,10 +550,13 @@
   } else {
     xBreaks <- jaspGraphs::getPrettyAxisBreaks(range(out[["at"]], na.rm = TRUE))
   }
-  yBreaks <- jaspGraphs::getPrettyAxisBreaks(range(c(
-    out[["estimate"]],
-    if (options[["predictionsConfidenceInterval"]]) out[["lCi"]],
-    if (options[["predictionsConfidenceInterval"]]) out[["uCi"]]), na.rm = TRUE))
+  yBreaks <- jaspGraphs::getPrettyAxisBreaks(.saPlotEstimateRange(
+    estimate = out[["estimate"]],
+    lCi      = if (options[["predictionsConfidenceInterval"]]) out[["lCi"]],
+    uCi      = if (options[["predictionsConfidenceInterval"]]) out[["uCi"]],
+    bounded  = type == "survival",
+    at       = out[["at"]],
+    group    = interaction(lapply(out[c("Distribution", "Level")], factor, exclude = NULL), drop = TRUE)))
 
   if (type == "survival") {
     plot <- .sapPredictionPlotAddSurvivalAxis(plot, options, xBreaks, yBreaks, atTitle, estimateTitle)
@@ -761,6 +770,8 @@
   time    <- .saExtractSurvTimes(dataset, options)
   minTime <- min(time[time > 0])
   maxTime <- max(time[time < Inf])
+  logTime <- (type == "survival" && options[["survivalProbabilityPlotTransformXAxis"]] == "log") ||
+    (type == "mixtureComponents" && options[["mixtureComponentPlotTransformXAxis"]] == "log")
 
   # plotting preset which makes the plots look smoother than the generated tables
   if (plot) {
@@ -769,8 +780,8 @@
 
   if (options[["predictionsLifeTimeStepsType"]] == "quantiles") {
 
-    # special treatment for setting limits when survival plot with transformation is used
-    if (type == "survival" && options[["survivalProbabilityPlotTransformXAxis"]] %in% c("log")) {
+    # Log time excludes zero for survival and mixture component plots.
+    if (logTime) {
       setTime <- exp(seq(log(minTime), log(maxTime), length.out = options[["predictionsLifeTimeStepsNumber"]]))
     } else {
       setTime <- seq(0, maxTime, length.out = options[["predictionsLifeTimeStepsNumber"]])
@@ -808,8 +819,8 @@
     if (stepTo <= stepFrom)
       .quitAnalysis(gettext("Step to for predicted survival time must be greater than step from."))
 
-    # special treatment for setting limits when survival plot with transformation is used
-    if (type == "survival" && options[["survivalProbabilityPlotTransformXAxis"]] %in% c("log")) {
+    # Log time excludes zero for survival and mixture component plots.
+    if (logTime) {
       if (stepFrom == 0) {
         stepFrom <- minTime
       }
@@ -836,8 +847,8 @@
     if (any(setTime < 0))
       .quitAnalysis(gettext("Custom steps for predicted survival time must be greater than or equal to 0."))
 
-    # special treatment for setting limits when survival plot with transformation is used
-    if (type == "survival" && options[["survivalProbabilityPlotTransformXAxis"]] %in% c("log")) {
+    # Log time excludes zero for survival and mixture component plots.
+    if (logTime) {
       setTime[setTime <= 0] <- minTime
     }
 
