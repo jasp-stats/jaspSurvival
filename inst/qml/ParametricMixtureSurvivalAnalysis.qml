@@ -187,6 +187,7 @@ Form
 		{
 			name:		"distribution"
 			id:			distribution
+			depends:	mixtureConstrainSpread
 			label:		qsTr("Distribution")
 			startValue:	"weibull"
 			info: qsTr("Choose the parametric distribution of the mixture components (all components come from the same distribution). All fits and display results for all 'Selected parametric families' in the 'Advanced' section. 'Best AIC' and 'Best BIC' fit all `Selected parametric families` in the Advanced section and display the results only for a parametric family with the lowest AIC/BIC. Families without a closed-form weighted fit (gamma, Gompertz, and the generalized families) are considerably slower to estimate.")
@@ -438,69 +439,57 @@ Form
 			enabled:	distribution.value === "all" || distribution.value === "bestAic" || distribution.value === "bestBic"
 
 
-			CheckBox
+			SA.ConstraintFamilyCheckBox
 			{
 				name: "selectedParametricDistributionExponential"
 				label: qsTr("Exponential")
 				checked: true
-				property bool supportedUnderConstraint: !mixtureConstrainSpread.checked
-				enabled: supportedUnderConstraint
-				onSupportedUnderConstraintChanged: if (!supportedUnderConstraint) checked = false
-				onCheckedChanged: if (checked && mixtureConstrainSpread && mixtureConstrainSpread.checked) checked = false
+				depends: mixtureConstrainSpread
+				constraintActive: mixtureConstrainSpread.checked
 			}
 			CheckBox { name: "selectedParametricDistributionGamma";						label: qsTr("Gamma");							checked: true }
-			CheckBox
+			SA.ConstraintFamilyCheckBox
 			{
 				name: "selectedParametricDistributionGeneralizedF"
 				label: qsTr("Generalized F")
 				checked: true
-				property bool supportedUnderConstraint: !mixtureConstrainSpread.checked
-				enabled: supportedUnderConstraint
-				onSupportedUnderConstraintChanged: if (!supportedUnderConstraint) checked = false
-				onCheckedChanged: if (checked && mixtureConstrainSpread && mixtureConstrainSpread.checked) checked = false
+				depends: mixtureConstrainSpread
+				constraintActive: mixtureConstrainSpread.checked
 			}
-			CheckBox
+			SA.ConstraintFamilyCheckBox
 			{
 				name: "selectedParametricDistributionGeneralizedGamma"
 				label: qsTr("Generalized gamma")
 				checked: true
-				property bool supportedUnderConstraint: !mixtureConstrainSpread.checked
-				enabled: supportedUnderConstraint
-				onSupportedUnderConstraintChanged: if (!supportedUnderConstraint) checked = false
-				onCheckedChanged: if (checked && mixtureConstrainSpread && mixtureConstrainSpread.checked) checked = false
+				depends: mixtureConstrainSpread
+				constraintActive: mixtureConstrainSpread.checked
 			}
-			CheckBox
+			SA.ConstraintFamilyCheckBox
 			{
 				name: "selectedParametricDistributionGompertz"
 				label: qsTr("Gompertz")
 				checked: true
-				property bool supportedUnderConstraint: !mixtureConstrainSpread.checked
-				enabled: supportedUnderConstraint
-				onSupportedUnderConstraintChanged: if (!supportedUnderConstraint) checked = false
-				onCheckedChanged: if (checked && mixtureConstrainSpread && mixtureConstrainSpread.checked) checked = false
+				depends: mixtureConstrainSpread
+				constraintActive: mixtureConstrainSpread.checked
 			}
 			CheckBox { name: "selectedParametricDistributionLogLogistic";				label: qsTr("Log-logistic");					checked: true }
 			CheckBox { name: "selectedParametricDistributionLogNormal";					label: qsTr("Log-normal");						checked: true }
 			CheckBox { name: "selectedParametricDistributionWeibull";					label: qsTr("Weibull");							checked: true }
-			CheckBox
+			SA.ConstraintFamilyCheckBox
 			{
 				name: "selectedParametricDistributionGeneralizedGammaOriginal"
 				label: qsTr("Generalized gamma (original)")
 				checked: false
-				property bool supportedUnderConstraint: !mixtureConstrainSpread.checked
-				enabled: supportedUnderConstraint
-				onSupportedUnderConstraintChanged: if (!supportedUnderConstraint) checked = false
-				onCheckedChanged: if (checked && mixtureConstrainSpread && mixtureConstrainSpread.checked) checked = false
+				depends: mixtureConstrainSpread
+				constraintActive: mixtureConstrainSpread.checked
 			}
-			CheckBox
+			SA.ConstraintFamilyCheckBox
 			{
 				name: "selectedParametricDistributionGeneralizedFOriginal"
 				label: qsTr("Generalized F (original)")
 				checked: false
-				property bool supportedUnderConstraint: !mixtureConstrainSpread.checked
-				enabled: supportedUnderConstraint
-				onSupportedUnderConstraintChanged: if (!supportedUnderConstraint) checked = false
-				onCheckedChanged: if (checked && mixtureConstrainSpread && mixtureConstrainSpread.checked) checked = false
+				depends: mixtureConstrainSpread
+				constraintActive: mixtureConstrainSpread.checked
 			}
 		}
 
@@ -514,7 +503,7 @@ Form
 				name:		"mixtureConstrainSpread"
 				label:		qsTr("Constrain component spread")
 				checked:	true
-				info: qsTr("Fit by constrained maximum likelihood with a minimum standard deviation of the natural logarithm of survival time in every component, including one-component models. Available for log-normal, Weibull, log-logistic, and gamma distributions; other distributions are deselected. When the bound is active, point estimates remain available but standard errors, confidence intervals, covariance estimates, and regular inferential tests are not reported.")
+				info: qsTr("Fit by constrained maximum likelihood with a minimum standard deviation of the natural logarithm of survival time in every component, including one-component models. Available for log-normal, Weibull, log-logistic, and gamma distributions; other distributions are deselected. Checkbox choices made in Selected Parametric Distributions before turning the constraint on are restored when it is turned off again, provided the analysis form has not been reloaded. When the bound is active, point estimates remain available but standard errors, confidence intervals, covariance estimates, and regular inferential tests are not reported.")
 
 				DropDown
 				{
