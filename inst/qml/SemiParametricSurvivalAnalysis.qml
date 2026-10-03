@@ -544,4 +544,9 @@ Form
 			}
 		}
 	}
+
+	SA.SurvivalExport
+	{
+		cox: true
+	}
 }

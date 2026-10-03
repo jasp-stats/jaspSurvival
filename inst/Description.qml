@@ -16,15 +16,15 @@ Description
 
 	Analysis
 	{
-		menu:			qsTr("Non-parametric")
-		title:			qsTr("Non-parametric Survival Analysis")
+		menu:			qsTr("Non-Parametric")
+		title:			qsTr("Non-Parametric Survival Analysis")
 		func:			"NonParametricSurvivalAnalysis"
 	}
 
 	Analysis
 	{
-		menu:			qsTr("Semi-parametric")
-		title:			qsTr("Semi-parametric Survival Analysis")
+		menu:			qsTr("Semi-Parametric")
+		title:			qsTr("Semi-Parametric Survival Analysis")
 		func:			"SemiParametricSurvivalAnalysis"
 	}
 
@@ -33,6 +33,13 @@ Description
 		menu:			qsTr("Parametric")
 		title:			qsTr("Parametric Survival Analysis")
 		func:			"ParametricSurvivalAnalysis"
+	}
+
+	Analysis
+	{
+		menu:			qsTr("Parametric Mixture")
+		title:			qsTr("Parametric Mixture Survival Analysis")
+		func:			"ParametricMixtureSurvivalAnalysis"
 	}
 
 }

@@ -5,3 +5,11 @@
 ^\.travis\.yml$
 ^\.positai$
 ^\.claude$
+^\.agents$
+^\.codex$
+^\.StatsVault$
+^AGENTS\.md$
+^CLAUDE\.md$
+^codex\.toml$
+^SURVIVAL_REVIEW\.md$
+^MIXTURE_REGULARIZATION\.md$
