@@ -31,7 +31,7 @@ CheckBox
 	property bool categoricalLevelsPossible:	false
 	property bool mergeComponentsActive:	false
 	property alias extraMergeControls:	mergeExtras.content
-	readonly property bool legendPaletteAvailable: probabilityPlotFittedCurve.checked && ((probabilityPlotMergePlotsAcrossDistributions.checked && probabilityPlotMergePlotsAcrossDistributions.enabled) || mergeComponentsActive || categoricalLevelsPossible)
+	readonly property bool legendPaletteAvailable: (probabilityPlotFittedCurve.checked && ((probabilityPlotMergePlotsAcrossDistributions.checked && probabilityPlotMergePlotsAcrossDistributions.enabled) || mergeComponentsActive || categoricalLevelsPossible)) || (categoricalLevelsPossible && (probabilityPlotEmpiricalPoints.checked || (probabilityPlotCensoringEvents.checked && probabilityPlotCensoringEvents.enabled)))
 
 	name:		"probabilityPlot"
 	label:		qsTr("Probability plot")
@@ -56,6 +56,7 @@ CheckBox
 	CheckBox
 	{
 		name:		"probabilityPlotEmpiricalPoints"
+		id:			probabilityPlotEmpiricalPoints
 		label:		qsTr("Empirical points")
 		checked:	true
 		info: qsTr("Plot empirical failure probability points based on the observed failure times.")
@@ -81,6 +82,7 @@ CheckBox
 	CheckBox
 	{
 		name:		"probabilityPlotCensoringEvents"
+		id:			probabilityPlotCensoringEvents
 		label:		qsTr("Censoring events")
 		enabled:	probabilityRoot.rightCensoring
 		info: qsTr("Show censored observations as rug marks at the bottom of the plot. Only available when Censoring Type is set to Right.")
@@ -178,7 +180,7 @@ CheckBox
 		label:		qsTr("Legend")
 		startValue:	"right"
 		enabled:	probabilityRoot.legendPaletteAvailable
-		info: qsTr("Choose the legend position for probability plots with multiple fitted curves.")
+		info: qsTr("Choose the legend position for probability plots with multiple fitted curves or factor levels.")
 		values:
 		[
 			{ label: qsTr("Bottom"),	value: "bottom"},
@@ -193,7 +195,7 @@ CheckBox
 	{
 		name:		"probabilityPlotColorPalette"
 		enabled:	probabilityRoot.legendPaletteAvailable
-		info: qsTr("Customize the color palette used in probability plots with multiple fitted curves.")
+		info: qsTr("Customize the color palette used in probability plots with multiple fitted curves or factor levels.")
 	}
 
 	DropDown
