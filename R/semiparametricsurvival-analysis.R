@@ -108,9 +108,17 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   return()
 }
+.saspHasPredictors <- function(jaspResults) {
+
+  if (is.null(jaspResults[["fit"]]))
+    return(FALSE)
+
+  fit <- jaspResults[["fit"]][["object"]]
+  return(jaspBase::isTryError(fit) || length(stats::coef(fit)) > 0L)
+}
 .saspFitCoxAssumptionTest <- function(jaspResults, dataset, options) {
 
-  if (!.saSurvivalReady(options))
+  if (!.saSurvivalReady(options) || !.saspHasPredictors(jaspResults))
     return()
 
   # fit only if diagnostics table/plot requested
@@ -485,6 +493,9 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 }
 .saspProportionalHazardsTable <- function(jaspResults, dataset, options) {
 
+  if (!.saspHasPredictors(jaspResults))
+    return()
+
   if (!is.null(jaspResults[["proportionalHazardsTable"]]))
     return()
 
@@ -519,6 +530,9 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   return()
 }
 .saspProportionalHazardsPlots <- function(jaspResults, dataset, options) {
+
+  if (!.saspHasPredictors(jaspResults))
+    return()
 
   if (!is.null(jaspResults[["proportionalHazardsPlots"]]))
     return()
