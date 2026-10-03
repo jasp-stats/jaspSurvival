@@ -71,10 +71,8 @@
 
   if (jaspBase::isTryError(plot))
     tempPlot$setError(gettext("The model failed to produce a probability plot. Consider simplifying the model."))
-  else {
-    tempPlot$height     <- .sapPredictionPlotCaptionHeight(plot, 420)
+  else
     tempPlot$plotObject <- plot
-  }
 
   return(tempPlot)
 }
@@ -150,7 +148,6 @@
   if (length(fitList) == 0)
     stop(gettext("The probability plot requires at least one fitted model."))
 
-  width <- .sapProbabilityPlotWidth(fitList, options)
   dataset <- attr(fitList[[1]], "dataset")
   observedTimeRange <- .sapProbabilityPlotTimeRange(.saExtractSurvTimes(dataset, options))
   timeSequence <- .sapProbabilityPlotTimeSequence(observedTimeRange, options)
@@ -183,7 +180,6 @@
       anchors = if (inherits(anchors, "try-error")) numeric(0) else anchors)
     curveData <- .sapProbabilityPlotCurveData(fitList, options, timeSequence)
   }
-  predictionWarnings <- attr(curveData, "predictionWarnings")
 
   if (nrow(empiricalData) == 0 && nrow(curveData) == 0 && nrow(censoringData) == 0)
     stop(gettext("The probability plot requires at least one positive observed failure time, censored observation, or fitted curve."))
@@ -266,7 +262,6 @@
 
   plot <- .sapProbabilityPlotAddAxes(plot, empiricalData, curveData, censoringData, options, observedTimeRange, hasLevel)
   plot <- .sapProbabilityPlotAddTheme(plot, options)
-  plot <- .sapPredictionPlotAddCaption(plot, predictionWarnings, width)
 
   return(plot)
 }

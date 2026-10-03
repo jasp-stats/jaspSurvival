@@ -21,7 +21,7 @@
   "mixtureComponents", "mixtureMaximumComponents",
   "mixtureStartKmeans", "mixtureStartQuantiles", "mixtureStartSplit", "mixtureStartRandom", "mixtureStartRandomCount",
   "mixtureEmIterations", "setSeed", "seed", "compareModelsAcrossComponents",
-  "mixtureConstrainSpread", "mixtureMinimumLogTimeSd"
+  "mixtureConstrainSpread", "mixtureSpreadType", "mixtureMinimumLogTimeSdRelative", "mixtureMinimumLogTimeSd"
 )
 
 .sapmCheckDataset               <- function(dataset, options) {
@@ -57,7 +57,7 @@
   jaspBase::.setSeedJASP(options)
 
   family      <- .sapmFamily(distribution)
-  constraint  <- .sapmConstraintSpec(options, distribution)
+  constraint  <- .sapmConstraintSpec(options, distribution, dataset, modelTerms)
   formula     <- .sapGetFormula(options, modelTerms)
   survObject  <- .saGetSurvObject(options, dataset)
   caseWeights <- if (options[["weights"]] != "") dataset[[options[["weights"]]]] else rep(1, nrow(dataset))
@@ -1167,6 +1167,33 @@
     weightPars    = weightPars
   ))
 }
+.sapmDWeibull <- function(x, shape, scale = 1, log = FALSE) {
+
+  if (length(x) == 0 || length(shape) == 0 || length(scale) == 0)
+    return(numeric(0))
+  n     <- max(length(x), length(shape), length(scale))
+  x     <- rep_len(x, n)
+  shape <- rep_len(shape, n)
+  scale <- rep_len(scale, n)
+  valid <- is.finite(x) & x > 0 & is.finite(shape) & shape > 0 & is.finite(scale) & scale > 0
+  logRatio <- rep(0, n)
+  logRatio[valid] <- log(x[valid]) - log(scale[valid])
+  logPower <- shape * logRatio
+  # Native dweibull forms powers before taking logs, which can yield Inf - Inf
+  # (or Inf * 0) in the tails of narrow components, including valid CI draws.
+  logMaximum <- log(.Machine$double.xmax)
+  tail <- rep(FALSE, n)
+  tail[valid] <- abs(logRatio[valid]) > logMaximum | logPower[valid] > logMaximum |
+    (shape[valid] - 1) * logRatio[valid] > logMaximum |
+    log(shape[valid]) - log(scale[valid]) + (shape[valid] - 1) * logRatio[valid] > logMaximum
+  out <- rep(NA_real_, n)
+  out[!tail] <- stats::dweibull(x[!tail], shape[!tail], scale[!tail], log = log)
+  logDensity <- log(shape[tail]) - log(scale[tail]) + (shape[tail] - 1) * logRatio[tail] - exp(logPower[tail])
+  logDensity[is.infinite(logPower[tail]) & logPower[tail] > 0] <- -Inf
+  out[tail] <- if (log) logDensity else exp(logDensity)
+
+  return(out)
+}
 .sapmFamily <- function(distribution) {
 
   specification <- flexsurv::flexsurv.dists[[distribution]]
@@ -1185,7 +1212,7 @@
                      rmst = flexsurv::rmst_llogis, mean = flexsurv::mean_llogis),
     "lnorm" = list(d = stats::dlnorm, p = stats::plnorm, q = stats::qlnorm, h = flexsurv::hlnorm,
                     rmst = flexsurv::rmst_lnorm, mean = flexsurv::mean_lnorm),
-    "weibull" = list(d = stats::dweibull, p = stats::pweibull, q = stats::qweibull, h = flexsurv::hweibull,
+    "weibull" = list(d = .sapmDWeibull, p = stats::pweibull, q = stats::qweibull, h = flexsurv::hweibull,
                       rmst = flexsurv::rmst_weibull, mean = flexsurv::mean_weibull),
     "gengamma.orig" = list(d = flexsurv::dgengamma.orig, p = flexsurv::pgengamma.orig, q = flexsurv::qgengamma.orig,
                             h = flexsurv::hgengamma.orig, rmst = flexsurv::rmst_gengamma.orig, mean = flexsurv::mean_gengamma.orig),

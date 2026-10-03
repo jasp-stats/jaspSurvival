@@ -451,7 +451,7 @@
       ymax     = as.name("uCi"),
       group    = if (hasLevel) as.name("Level")
     )
-    geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]), data = plotData[plotData[["Component"]] == levels(plotData[["Component"]])[1], ], fill = "grey60", alpha = 0.30)
+    geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]), data = plotData[plotData[["Component"]] == levels(plotData[["Component"]])[1], ], fill = "grey60", alpha = 0.30, na.rm = TRUE)
     plot <- plot + do.call(ggplot2::geom_ribbon, geomCall)
   }
 
@@ -466,12 +466,22 @@
     ggplot2::scale_color_manual(values = colors, name = gettext("Component"))
 
   xBreaks <- jaspGraphs::getPrettyAxisBreaks(range(c(plotData[["at"]], observedDensity[["lower"]], observedDensity[["upper"]]), na.rm = TRUE))
-  yBreaks <- jaspGraphs::getPrettyAxisBreaks(range(c(
+  yValues <- c(
     plotData[["estimate"]],
     observedDensity[["density"]],
     if (!is.null(observedDensity)) 0,
     if (options[["predictionsConfidenceInterval"]]) plotData[["lCi"]],
-    if (options[["predictionsConfidenceInterval"]]) plotData[["uCi"]]), na.rm = TRUE))
+    if (options[["predictionsConfidenceInterval"]]) plotData[["uCi"]])
+  yValues <- yValues[is.finite(yValues)]
+  if (options[["mixtureComponentPlotType"]] == "density") {
+    # Near-zero uncertainty can dwarf every fitted curve. Keep all point peaks
+    # and the observed histogram visible, with 50% headroom for uncertainty.
+    densities <- c(plotData[["estimate"]], observedDensity[["density"]])
+    upper <- 1.5 * max(densities[is.finite(densities)])
+    if (upper > 0 && any(yValues > upper))
+      yValues <- c(0, pmin(yValues, upper))
+  }
+  yBreaks <- jaspGraphs::getPrettyAxisBreaks(range(yValues))
 
   plot <- plot + jaspGraphs::scale_x_continuous(breaks = xBreaks, limits = range(xBreaks), oob = scales::oob_keep) +
     jaspGraphs::scale_y_continuous(breaks = yBreaks, limits = range(yBreaks), oob = scales::oob_keep) +
@@ -484,10 +494,9 @@
   horizontalLegend <- options[["plotLegend"]] %in% c("bottom", "top")
   if (horizontalLegend)
     plot <- plot + ggplot2::guides(color = ggplot2::guide_legend(ncol = 2, byrow = TRUE, title.position = "top"))
-  plot <- .sapPredictionPlotAddCaption(plot, predictionWarnings, 550)
 
   height <- 320 + if (horizontalLegend) 30 * (ceiling(length(colors) / 2) - 1) else 0
-  tempPlot <- createJaspPlot(width = 550, height = .sapPredictionPlotCaptionHeight(plot, height))
+  tempPlot <- createJaspPlot(width = 550, height = height)
   tempPlot$plotObject <- plot
 
   return(tempPlot)

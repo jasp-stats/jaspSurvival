@@ -513,8 +513,34 @@ Form
 				id:			mixtureConstrainSpread
 				name:		"mixtureConstrainSpread"
 				label:		qsTr("Constrain component spread")
-				checked:	false
+				checked:	true
 				info: qsTr("Fit by constrained maximum likelihood with a minimum standard deviation of the natural logarithm of survival time in every component, including one-component models. Available for log-normal, Weibull, log-logistic, and gamma distributions; other distributions are deselected. When the bound is active, point estimates remain available but standard errors, confidence intervals, covariance estimates, and regular inferential tests are not reported.")
+
+				DropDown
+				{
+					id:				mixtureSpreadType
+					name:			"mixtureSpreadType"
+					label:			qsTr("Minimum spread")
+					values: [
+						{ label: qsTr("Relative"), value: "relative" },
+						{ label: qsTr("Absolute"), value: "absolute" }
+					]
+					startValue:		"relative"
+					info: qsTr("Set the minimum log-time standard deviation relative to an unconstrained one-component fit of the same distribution, or as an absolute value. The reference fit uses the same data, predictors, censoring, and weights and is computed separately for each model and subgroup.")
+				}
+
+				PercentField
+				{
+					name:			"mixtureMinimumLogTimeSdRelative"
+					label:			qsTr("Minimum log-time SD")
+					defaultValue:	1
+					min:			0
+					max:			100
+					inclusive:		JASP.MaxOnly
+					decimals:		4
+					visible:		mixtureSpreadType.currentValue === "relative"
+					info: qsTr("Set a positive percentage of the unconstrained one-component model's log-time standard deviation as the minimum for every component. The default is 1%. For models with predictors, the reference is the conditional distribution's log-time standard deviation. For delayed entry, it refers to the distribution before conditioning on entry.")
+				}
 
 				DoubleField
 				{
@@ -525,6 +551,7 @@ Form
 					max:			100
 					inclusive:		JASP.MaxOnly
 					decimals:		6
+					visible:		mixtureSpreadType.currentValue === "absolute"
 					info: qsTr("Set a positive lower bound, up to 100, on the standard deviation of the natural logarithm of survival time. Choose a minimum justified by the application and check sensitivity to other values; 0.1 is an editable preset, not a universal recommendation. The bound is unchanged when the units of survival time change. For delayed entry, it bounds the component distribution before conditioning on entry.")
 				}
 			}

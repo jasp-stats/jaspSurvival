@@ -1,14 +1,21 @@
 # Minimum component standard deviation on the log-time scale.
 # Bounds are supplied to flexsurvreg on its transformed parameter scale.
 
-.sapmConstraintSpec <- function(options, distribution) {
+.sapmConstraintSpec <- function(options, distribution, dataset, modelTerms) {
 
   if (!options[["mixtureConstrainSpread"]])
     return(NULL)
 
-  epsilon <- options[["mixtureMinimumLogTimeSd"]]
   if (!distribution %in% c("lnorm", "weibull", "llogis", "gamma"))
     stop(gettextf("A minimum log-time standard deviation is not available for %1$s. Select log-normal, Weibull, log-logistic, or gamma.", .sapOption2DistributionName(distribution)))
+
+  referenceSd <- NULL
+  if (options[["mixtureSpreadType"]] == "relative") {
+    referenceSd <- .sapmReferenceLogTimeSd(dataset, options, distribution, modelTerms)
+    epsilon     <- options[["mixtureMinimumLogTimeSdRelative"]] * referenceSd
+  } else {
+    epsilon <- options[["mixtureMinimumLogTimeSd"]]
+  }
 
   bound <- switch(distribution,
     "lnorm"   = epsilon,
@@ -18,12 +25,40 @@
   )
 
   return(list(
-    family           = distribution,
-    minimumLogTimeSd  = epsilon,
-    parameter        = if (distribution == "lnorm") "sdlog" else "shape",
-    direction        = if (distribution == "lnorm") "lower" else "upper",
-    naturalBound     = bound
+    family            = distribution,
+    spreadType        = options[["mixtureSpreadType"]],
+    relativePercent   = if (options[["mixtureSpreadType"]] == "relative") 100 * options[["mixtureMinimumLogTimeSdRelative"]] else NULL,
+    referenceLogTimeSd = referenceSd,
+    minimumLogTimeSd   = epsilon,
+    parameter         = if (distribution == "lnorm") "sdlog" else "shape",
+    direction         = if (distribution == "lnorm") "lower" else "upper",
+    naturalBound      = bound
   ))
+}
+.sapmReferenceLogTimeSd <- function(dataset, options, distribution, modelTerms) {
+
+  # Use the same likelihood and predictors, without the component spread constraint.
+  reference <- try(suppressWarnings(flexsurv::flexsurvreg(
+    formula = .sapGetFormula(options, modelTerms),
+    data    = dataset,
+    dist    = distribution,
+    weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]],
+    hessian = FALSE
+  )), silent = TRUE)
+  if (jaspBase::isTryError(reference))
+    stop(gettext("The one-component reference model could not be fitted. Try a different distribution or use an absolute minimum log-time standard deviation."))
+
+  estimates   <- reference[["res"]][, "est"]
+  referenceSd <- switch(distribution,
+    "lnorm"   = estimates[["sdlog"]],
+    "weibull" = pi / (sqrt(6) * estimates[["shape"]]),
+    "llogis"  = pi / (sqrt(3) * estimates[["shape"]]),
+    "gamma"   = sqrt(trigamma(estimates[["shape"]]))
+  )
+  if (reference[["opt"]][["convergence"]] != 0 || !is.finite(reference[["loglik"]]) || !is.finite(referenceSd) || referenceSd <= 0)
+    stop(gettext("The one-component reference model did not yield a converged, positive log-time standard deviation. Try a different distribution or use an absolute minimum log-time standard deviation."))
+
+  return(unname(referenceSd))
 }
 .sapmGammaShapeBound <- function(epsilon) {
 
@@ -151,7 +186,7 @@
 }
 .sapmFitSingle <- function(dataset, options, distribution, modelTerms) {
 
-  constraint <- .sapmConstraintSpec(options, distribution)
+  constraint <- .sapmConstraintSpec(options, distribution, dataset, modelTerms)
   family     <- .sapmFamily(distribution)
   formula    <- .sapGetFormula(options, modelTerms)
   weights    <- if (options[["weights"]] != "") dataset[[options[["weights"]]]] else rep(1, nrow(dataset))

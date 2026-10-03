@@ -595,6 +595,8 @@
   constraints <- attr(fit, "constraints", exact = TRUE)
   if (is.null(constraints))
     return(NULL)
+  if (constraints[["spreadType"]] == "relative")
+    return(gettextf("The standard deviation of the natural logarithm of survival time was constrained to be at least %1$g in each component (%2$g%% of the unconstrained one-component model's log-time standard deviation, %3$g).", constraints[["minimumLogTimeSd"]], constraints[["relativePercent"]], constraints[["referenceLogTimeSd"]]))
   return(gettextf("The standard deviation of the natural logarithm of survival time was constrained to be at least %1$g in each component.", constraints[["minimumLogTimeSd"]]))
 }
 .sapConstraintWarning <- function(fit) {

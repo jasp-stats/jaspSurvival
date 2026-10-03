@@ -120,27 +120,6 @@
   return()
 }
 
-.sapPredictionPlotAddCaption <- function(plot, messages, width) {
-
-  if (length(messages) == 0)
-    return(plot)
-
-  lines <- strwrap(unique(messages), width = max(25L, floor((width - 40) / 7)))
-  return(plot + ggplot2::labs(caption = paste(lines, collapse = "\n")) + ggplot2::theme(
-    plot.caption = ggplot2::element_text(size = 8, hjust = 0, lineheight = 1.1, margin = ggplot2::margin(t = 8)),
-    plot.caption.position = "plot"
-  ))
-}
-.sapPredictionPlotCaptionHeight <- function(plot, height) {
-
-  caption <- plot$labels[["caption"]]
-  if (is.null(caption) || !nzchar(caption))
-    return(height)
-
-  # Reserve caption space instead of shrinking the original plotting area.
-  return(height + 16 + 16 * length(strsplit(caption, "\n", fixed = TRUE)[[1]]))
-}
-
 .sapSummaryPredictions <- function(fit, ..., ci) {
 
   activeBound <- .sapConstraintActive(fit)
@@ -584,9 +563,8 @@
   }
   plot <- .sapPredictionPlotAddTheme(plot, options)
   width <- if (hasDistribution || hasLevel) 550 else 400
-  plot  <- .sapPredictionPlotAddCaption(plot, predictionWarnings, width)
 
-  tempPlot <- createJaspPlot(width = width, height = .sapPredictionPlotCaptionHeight(plot, 320))
+  tempPlot <- createJaspPlot(width = width, height = 320)
   tempPlot$plotObject <- plot
 
   return(tempPlot)
