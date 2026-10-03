@@ -15,10 +15,26 @@
 ---
 # jaspSurvival 0.97.0
 ## Added
+* Parametric mixture survival analysis: constrained maximum likelihood fitting enforces a minimum standard deviation of log survival time in each component. The default Relative bound is 1% of the unconstrained one-component reference model's log-time SD; Absolute offers an editable 0.1 preset.
+* Parametric mixture survival analysis: added an estimation-diagnostics table summarizing starting values, distinct solutions, degeneracy, component sizes, optimizer convergence, and Hessian status.
+* Added per-observation exports of residuals and fitted values for Cox and parametric survival models, and posterior component probabilities and classifications for mixture models.
 * Added the Parametric Mixture Survival Analysis: finite mixtures of up to four components from the same parametric family estimated with the EM algorithm followed by a direct maximization of the likelihood, with the selection of the distribution and the number of components by AIC/BIC, the mixing probabilities of all components in the coefficients summary, component mean and median and classification tables, and a mixture components plot.
 * Parametric mixture survival analysis: models with coinciding, collapsed, or degenerated components are kept for the model comparison and reported with a warning; models with a lower log-likelihood than a nested model with fewer components are reported as local optima; left-truncated (counting) data are estimated by a direct maximization of the likelihood started from the EM solution of the untruncated data.
 
+## Changed
+* Parametric prediction and probability plots use adaptive, unrounded time grids; Round steps affects prediction tables. Parametric life-time steps now use the Equal spacing label.
+* Nonparametric life-table Quantiles now uses empirical quantiles of observed times, including censored times and frequency-expanded observations, in place of equally spaced times; these are not estimated-survival quantiles.
+* Probability plots color empirical points and censoring marks by factor level and retain fitted-curve tails beyond the 0.1%–99.9% display range instead of clamping them to it.
+
 ## Fixed
+* Survival summaries with case weights sum the weights of censored observations.
+* Residual diagnostics handle assigned factors absent from the fitted model.
+* Mixture component initialization handles neutral observations right-censored at time zero.
+* Parametric survival models consistently include the intercept; incorrect no-intercept formula handling was removed. Previously saved no-intercept analyses can recompute differently.
+* Parametric prediction plots: Kaplan–Meier overlays use case weights and the selected prediction confidence level, with survival starting at (0, 1).
+* Survival-time prediction sequences no longer drop their last probability when it is below 1; life-time sequences accept From = 0 or an empty From field.
+* Survival-data validation rejects infinite non-interval times or weights, reversed intervals, and equal counting-process endpoints; interval bounds allow only correctly signed infinities.
+* Kaplan–Meier tests count nonempty groups for degrees of freedom; Cox models match strata by exact variable name, align Schoenfeld residuals with event order, and pass the selected t-frailty degrees of freedom.
 * Parametric survival analysis: the best fitting distribution is selected within each subgroup regardless of the "Compare models across distributions" option, and the best fitting model is selected within each distribution when all distributions are displayed.
 * Parametric survival analysis: the sequential model comparison compares models only within the same distribution.
 * Parametric survival analysis: the coefficients covariance matrix displays the covariances of interaction terms.
