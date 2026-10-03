@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jaspSurvival 0.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
-"POT-Creation-Date: 2026-09-09 14:27\n"
+"POT-Creation-Date: 2026-10-03 05:57\n"
 "PO-Revision-Date: 2026-09-21 08:51+0000\n"
 "Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspsurvival-"
@@ -536,9 +536,6 @@ msgstr ""
 "e <em>p</em> log(<em>p</em>)) für <em>p</em> %3$s .37   (Sellke, Bayarri, & "
 "Berger, 2001)."
 
-msgid "Null model contains nuisance parameters: %s"
-msgstr "Das Nullmodell enthält Störparameter: %s"
-
 msgid "Results are stratified via: %1$s."
 msgstr "Die Ergebnisse sind geschichtet über: %1$s."
 
@@ -594,6 +591,9 @@ msgstr "Schoenfeld-Residuen"
 
 msgid "Scaled Schoenfeld Residuals"
 msgstr "Skalierte Schoenfeld-Residuen"
+
+#~ msgid "Null model contains nuisance parameters: %s"
+#~ msgstr "Das Nullmodell enthält Störparameter: %s"
 
 #, qt-format
 #~ msgid "Subject identification based on %1$s."

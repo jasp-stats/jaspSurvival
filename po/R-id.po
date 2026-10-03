@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2026-09-09 14:27\n"
+"POT-Creation-Date: 2026-10-03 05:57\n"
 "PO-Revision-Date: 2026-09-09 23:44+0000\n"
 "Last-Translator: Zahid Rizky Fakhri <zahidrizkyfakhri@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/jasp/"
@@ -467,9 +467,6 @@ msgid ""
 "  the maximum possible odds in favor of H%1$s over H%2$s equals\n"
 "  1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37\n"
 "  (Sellke, Bayarri, & Berger, 2001)."
-msgstr ""
-
-msgid "Null model contains nuisance parameters: %s"
 msgstr ""
 
 msgid "Results are stratified via: %1$s."

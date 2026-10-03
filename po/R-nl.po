@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jaspSurvival 0.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
-"POT-Creation-Date: 2026-09-09 14:27\n"
+"POT-Creation-Date: 2026-10-03 05:57\n"
 "PO-Revision-Date: 2026-01-01 00:00+0000\n"
 "Last-Translator: JASP translators\n"
 "Language-Team: Dutch\n"
@@ -527,9 +527,6 @@ msgstr ""
 "gelijk aan 1/(-e<em>p</em>log(<em>p</em>)) voor <em>p</em> %3$s, 37 (Sellke, "
 "Bayarri,& Berger, 2001)."
 
-msgid "Null model contains nuisance parameters: %s"
-msgstr "Het nulmodel bevat nuisanceparameters: %s"
-
 msgid "Results are stratified via: %1$s."
 msgstr "De resultaten zijn gestratificeerd via: %1$s."
 
@@ -585,6 +582,9 @@ msgstr "Schoenfeld-residuen"
 
 msgid "Scaled Schoenfeld Residuals"
 msgstr "Geschaalde Schoenfeld-residuen"
+
+#~ msgid "Null model contains nuisance parameters: %s"
+#~ msgstr "Het nulmodel bevat nuisanceparameters: %s"
 
 #~ msgid "Subject identification based on %1$s."
 #~ msgstr "Identificatie van de proefpersoon op basis van %1$s."

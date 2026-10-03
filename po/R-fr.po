@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: R-jaspSurvival\n"
-"POT-Creation-Date: 2026-09-09 14:27\n"
+"POT-Creation-Date: 2026-10-03 05:57\n"
 "PO-Revision-Date: 2026-08-10 00:00+0000\n"
 "Last-Translator: automated <noreply>\n"
 "Language-Team: French\n"
@@ -527,9 +527,6 @@ msgstr ""
 "maximales possibles en faveur de H%1$s contre H%2$s sont égales à 1/(-e p "
 "log(p)) pour p %3$s .37 (Sellke, Bayarri et Berger, 2001)."
 
-msgid "Null model contains nuisance parameters: %s"
-msgstr "Le modèle nul contient des paramètres de nuisance : %s"
-
 msgid "Results are stratified via: %1$s."
 msgstr "Les résultats sont stratifiés par : %1$s."
 
@@ -585,6 +582,9 @@ msgstr "Résidus de Schoenfeld"
 
 msgid "Scaled Schoenfeld Residuals"
 msgstr "Résidus de Schoenfeld mis à l'échelle"
+
+#~ msgid "Null model contains nuisance parameters: %s"
+#~ msgstr "Le modèle nul contient des paramètres de nuisance : %s"
 
 #, qt-format
 #~ msgid "Subject identification based on %1$s."
