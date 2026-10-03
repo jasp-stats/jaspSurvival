@@ -277,7 +277,7 @@ Form
 	SA.ParametricStatistics
 	{
 		multipleModels:		modelTerms.count > 1
-		multipleResults:	distribution.value === "all" || mixtureComponents.value === "all" || modelTerms.count > 1
+		multipleResults:	distribution.value === "all" || (multipleComponentsSelected && mixtureMaximumComponents.value > 1) || modelTerms.count > 1
 		modelSummaryInfo:	qsTr("Include a table with information about the model fit. The BIC uses the number of observations (including censored observations and weighted by the case weights) as the sample size.")
 
 		extraStatisticsControls: [
@@ -558,6 +558,7 @@ Form
 
 			IntegerField
 			{
+				id:				mixtureMaximumComponents
 				name:			"mixtureMaximumComponents"
 				label:			qsTr("Maximum components")
 				defaultValue:	4
