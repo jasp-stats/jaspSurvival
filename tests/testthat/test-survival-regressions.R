@@ -117,7 +117,7 @@ test_that("neutral right-zero component fits retain full-row parameters", {
     for (bounded in c(FALSE, TRUE)) {
       if (bounded && distribution == "exp") next
       family <- jaspSurvival:::.sapmFamily(distribution)
-      constraint <- if (bounded) jaspSurvival:::.sapmConstraintSpec(list(mixtureConstrainSpread = TRUE, mixtureSpreadType = "absolute", mixtureMinimumLogTimeSd = .1), distribution, dataset, NULL) else NULL
+      constraint <- if (bounded) jaspSurvival:::.sapmConstraintSpec(list(mixtureConstrainMinimumSpread = TRUE, mixtureConstrainMinimumSpreadType = "absolute", mixtureMinimumLogTimeSd = .1), distribution, dataset, NULL) else NULL
       fit <- jaspSurvival:::.sapmMStep(formula, dataset, as.matrix(dataset["x"]), family, rep(.5, 6), NULL, constraint)
       omitted <- jaspSurvival:::.sapmMStep(formula, dataset[-1, ], as.matrix(dataset[-1, "x", drop = FALSE]), family, rep(.5, 5), NULL, constraint)
       expect_equal(c(fit[["base"]], fit[["beta"]]), c(omitted[["base"]], omitted[["beta"]]), tolerance = 1e-8)
@@ -159,7 +159,7 @@ test_that("active component spread bounds survive neutral-row fitting", {
   formula <- survival::Surv(time, status) ~ 1
   for (distribution in c("lnorm", "weibull", "llogis", "gamma")) {
     family <- jaspSurvival:::.sapmFamily(distribution)
-    constraint <- jaspSurvival:::.sapmConstraintSpec(list(mixtureConstrainSpread = TRUE, mixtureSpreadType = "absolute", mixtureMinimumLogTimeSd = 3), distribution, dataset, NULL)
+    constraint <- jaspSurvival:::.sapmConstraintSpec(list(mixtureConstrainMinimumSpread = TRUE, mixtureConstrainMinimumSpreadType = "absolute", mixtureMinimumLogTimeSd = 3), distribution, dataset, NULL)
     fit <- jaspSurvival:::.sapmMStep(formula, dataset, matrix(numeric(0), 6, 0), family, rep(.5, 6), NULL, constraint)
     omitted <- jaspSurvival:::.sapmMStep(formula, dataset[-1, ], matrix(numeric(0), 5, 0), family, rep(.5, 5), NULL, constraint)
     point <- jaspSurvival:::.sapmConstraintPoint(fit[["base"]], constraint, family, 1L)
@@ -200,8 +200,8 @@ test_that("mixture analysis retains neutral rows and suppresses active-bound inf
   opts[["coefficients"]] <- TRUE
   dataset <- data.frame(time = c(0, exp(seq(-.3, .3, length.out = 20)), exp(seq(2.7, 3.3, length.out = 20))), status = c(0, rep(1, 40)))
   for (bounded in c(FALSE, TRUE)) {
-    opts[["mixtureConstrainSpread"]] <- bounded
-    opts[["mixtureSpreadType"]] <- "absolute"
+    opts[["mixtureConstrainMinimumSpread"]] <- bounded
+    opts[["mixtureConstrainMinimumSpreadType"]] <- "absolute"
     opts[["mixtureMinimumLogTimeSd"]] <- .5
     encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
     results <- jaspTools::runAnalysis("ParametricMixtureSurvivalAnalysis", encoded[["dataset"]], encoded[["options"]], encodedDataset = TRUE, view = FALSE)
@@ -233,8 +233,8 @@ test_that("relative spread bounds use the native one-component reference and sur
   opts[["covariates"]] <- list()
   opts[["factors"]] <- list()
   opts[["modelTerms"]] <- list()
-  opts[["mixtureConstrainSpread"]] <- TRUE
-  opts[["mixtureSpreadType"]] <- "relative"
+  opts[["mixtureConstrainMinimumSpread"]] <- TRUE
+  opts[["mixtureConstrainMinimumSpreadType"]] <- "relative"
   # PercentField GUI default 1% is passed to R as the fraction 0.01.
   opts[["mixtureMinimumLogTimeSdRelative"]] <- .01
   dataset <- data.frame(time = exp(seq(-1, 3, length.out = 40)), status = TRUE)

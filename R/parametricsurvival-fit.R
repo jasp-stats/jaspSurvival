@@ -215,7 +215,7 @@
 
   if (components > 1) {
     fit <- try(.sapmFitMixture(dataset, options, distribution, modelTerms, components, previous))
-  } else if (options[["analysisType"]] == "mixture" && options[["mixtureConstrainSpread"]]) {
+  } else if (options[["analysisType"]] == "mixture" && options[["mixtureConstrainMinimumSpread"]]) {
     fit <- try(.sapmFitSingle(dataset, options, distribution, modelTerms))
   } else {
     fit <- try(flexsurv::flexsurvreg(

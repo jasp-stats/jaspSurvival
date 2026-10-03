@@ -3,14 +3,14 @@
 
 .sapmConstraintSpec <- function(options, distribution, dataset, modelTerms) {
 
-  if (!options[["mixtureConstrainSpread"]])
+  if (!options[["mixtureConstrainMinimumSpread"]])
     return(NULL)
 
   if (!distribution %in% c("lnorm", "weibull", "llogis", "gamma"))
     stop(gettextf("A minimum log-time standard deviation is not available for %1$s. Select log-normal, Weibull, log-logistic, or gamma.", .sapOption2DistributionName(distribution)))
 
   referenceSd <- NULL
-  if (options[["mixtureSpreadType"]] == "relative") {
+  if (options[["mixtureConstrainMinimumSpreadType"]] == "relative") {
     referenceSd <- .sapmReferenceLogTimeSd(dataset, options, distribution, modelTerms)
     epsilon     <- options[["mixtureMinimumLogTimeSdRelative"]] * referenceSd
   } else {
@@ -26,8 +26,8 @@
 
   return(list(
     family            = distribution,
-    spreadType        = options[["mixtureSpreadType"]],
-    relativePercent   = if (options[["mixtureSpreadType"]] == "relative") 100 * options[["mixtureMinimumLogTimeSdRelative"]] else NULL,
+    spreadType        = options[["mixtureConstrainMinimumSpreadType"]],
+    relativePercent   = if (options[["mixtureConstrainMinimumSpreadType"]] == "relative") 100 * options[["mixtureMinimumLogTimeSdRelative"]] else NULL,
     referenceLogTimeSd = referenceSd,
     minimumLogTimeSd   = epsilon,
     parameter         = if (distribution == "lnorm") "sdlog" else "shape",

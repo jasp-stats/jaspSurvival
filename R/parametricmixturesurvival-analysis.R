@@ -21,13 +21,13 @@
   "mixtureComponents", "mixtureMaximumComponents",
   "mixtureStartKmeans", "mixtureStartQuantiles", "mixtureStartSplit", "mixtureStartRandom", "mixtureStartRandomCount",
   "mixtureEmIterations", "setSeed", "seed", "compareModelsAcrossComponents",
-  "mixtureConstrainSpread", "mixtureSpreadType", "mixtureMinimumLogTimeSdRelative", "mixtureMinimumLogTimeSd"
+  "mixtureConstrainMinimumSpread", "mixtureConstrainMinimumSpreadType", "mixtureMinimumLogTimeSdRelative", "mixtureMinimumLogTimeSd"
 )
 
 .sapmCheckDataset               <- function(dataset, options) {
 
   hasMixtures <- any(.sapComponents(options) > 1)
-  if (!hasMixtures && !options[["mixtureConstrainSpread"]])
+  if (!hasMixtures && !options[["mixtureConstrainMinimumSpread"]])
     return()
 
   if (hasMixtures && !options[["mixtureStartKmeans"]] && !options[["mixtureStartQuantiles"]] && !options[["mixtureStartSplit"]] && !options[["mixtureStartRandom"]])
@@ -213,7 +213,7 @@
   # the solution with one component fewer of the same cell: the fit of the analysis when it is available,
   # otherwise the chain (K-1, ..., 1) is fitted here and discarded afterwards
   if (is.null(previous) || jaspBase::isTryError(previous)) {
-    previous <- if (components == 2 && options[["mixtureConstrainSpread"]])
+    previous <- if (components == 2 && options[["mixtureConstrainMinimumSpread"]])
       try(.sapmFitSingle(dataset, options, distribution, modelTerms), silent = TRUE)
     else if (components == 2)
       try(flexsurv::flexsurvreg(
