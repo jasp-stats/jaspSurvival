@@ -17,6 +17,8 @@
 
 The module supports censoring summaries, group comparisons, model fit statistics, coefficient and hazard ratio estimates, diagnostic plots, and predictions for survival time, survival probability, hazard, cumulative hazard, and restricted mean survival time.
 
+See the [AFT statistical review](STATISTICAL_REVIEW.md) for methods, software conventions and known limitations.
+
 
 ## R Packages
 
