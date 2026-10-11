@@ -1,5 +1,7 @@
 import QtQuick
 import JASP.Module
+import "qml/qml_components/SurvivalUpgrade.js" as SurvivalUpgrade
+import "qml/qml_components" as UpgradeTools
 
 Upgrades
 {
@@ -19,6 +21,7 @@ Upgrades
 		ChangeJS
 		{
 			name: "subgroup"
+			condition: function(options) { return options["subgroup"] !== undefined; }
 			jsFunction: function(options)
 			{
 				let subgroup = options["subgroup"];
@@ -34,254 +37,404 @@ Upgrades
 	Upgrade
 	{
 		functionName: "ParametricSurvivalAnalysis"
-		fromVersion: "0.97.0"
-		toVersion: "0.97.1"
+		fromVersion: "0.97.1"
+		toVersion: "0.97.2"
+		msg: qsTr("Prediction and diagnostic settings have changed. Please review the updated options and results.")
 
-		ChangeJS
+		// Rename before initializing defaults; saved values take precedence.
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotHistogramBinWidthType"; to: "densityPlotObservedDataBinWidthType" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotHistogramManualNumberOfBins"; to: "densityPlotObservedDataNumberOfBins" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotConfidenceInterval"; to: "densityPlotConfidenceIntervals" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotConfidenceIntervalLevel"; to: "densityPlotConfidenceIntervalsLevel" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotTransformXAxis"; to: "densityPlotXAxisTransformation" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotPointCoordinates"; to: "probabilityPlotEmpiricalPointsCoordinates" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotConfidenceInterval"; to: "probabilityPlotConfidenceIntervals" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotConfidenceIntervalLevel"; to: "probabilityPlotConfidenceIntervalsLevel" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotTiesHandler"; to: "probabilityPlotTies" }
+
+		UpgradeTools.UpgradeRenameOption { from: "coefficientsConfidenceInterval"; to: "coefficientsConfidenceIntervals" }
+
+		UpgradeTools.UpgradeRenameOption { from: "coefficientsConfidenceIntervalLevel"; to: "coefficientsConfidenceIntervalsLevel" }
+
+		UpgradeTools.UpgradeRenameOption { from: "modelSummaryAicWeighs"; to: "modelSummaryAicWeights" }
+
+		UpgradeTools.UpgradeRenameOption { from: "modelSummaryBicWeighs"; to: "modelSummaryBicWeights" }
+
+		UpgradeTools.UpgradeRenameOption { from: "advancedSpecification"; to: "modelAdvancedSpecification" }
+
+		UpgradeTools.UpgradeRenameOption { from: "advancedSpecificationTerms"; to: "modelAdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameterRegression"; to: "modelAncillaryParameterRegression" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettings"; to: "predictionsCovariateXAxisSettings" }
+
+		UpgradeTools.UpgradeRenameOption { from: "includeFullDatasetInSubgroupAnalysis"; to: "outputFormattingIncludeFullDatasetInSubgroupAnalysis" }
+
+		UpgradeTools.UpgradeRenameOption { from: "compareModelsAcrossDistributions"; to: "outputFormattingCompareModelsAcrossDistributions" }
+
+		UpgradeTools.UpgradeRenameOption { from: "alwaysDisplayModelInformation"; to: "outputFormattingAlwaysDisplayModelInformation" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportFittedMean"; to: "exportFittedValuesMeanSurvivalTime" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportFittedMedian"; to: "exportFittedValuesMedianSurvivalTime" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportFittedRisk"; to: "exportFittedValuesRelativeRisk" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportFittedLinearPredictor"; to: "exportFittedValuesLinearPredictor" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportMixtureProbabilities"; to: "exportMixtureClassificationComponentProbabilities" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportMixtureClassification"; to: "exportMixtureClassificationComponentIndex" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotStratify"; to: "densityPlotStratifyBy" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotStratification"; to: "densityPlotStratifyByVariables" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotQuantileGroups"; to: "densityPlotStratifyByQuantiles" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotGroupUniqueLevels"; to: "densityPlotStratifyByGroupUniqueLevels" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotGroupUniqueLevelsLimit"; to: "densityPlotStratifyByGroupUniqueLevelsLimit" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotStratify"; to: "probabilityPlotStratifyBy" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotStratification"; to: "probabilityPlotStratifyByVariables" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotQuantileGroups"; to: "probabilityPlotStratifyByQuantiles" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotGroupUniqueLevels"; to: "probabilityPlotStratifyByGroupUniqueLevels" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotGroupUniqueLevelsLimit"; to: "probabilityPlotStratifyByGroupUniqueLevelsLimit" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter1ModelTerms"; to: "modelAncillaryParameter1ModelTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter1AdvancedSpecification"; to: "modelAncillaryParameter1AdvancedSpecification" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter1AdvancedSpecificationTerms"; to: "modelAncillaryParameter1AdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter1AvailableTerms"; to: "modelAncillaryParameter1AvailableTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter2ModelTerms"; to: "modelAncillaryParameter2ModelTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter2AdvancedSpecification"; to: "modelAncillaryParameter2AdvancedSpecification" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter2AdvancedSpecificationTerms"; to: "modelAncillaryParameter2AdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter2AvailableTerms"; to: "modelAncillaryParameter2AvailableTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter3ModelTerms"; to: "modelAncillaryParameter3ModelTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter3AdvancedSpecification"; to: "modelAncillaryParameter3AdvancedSpecification" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter3AdvancedSpecificationTerms"; to: "modelAncillaryParameter3AdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter3AvailableTerms"; to: "modelAncillaryParameter3AvailableTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettingsXAxisTransformation"; to: "predictionsCovariateXAxisSettingsXAxisTransformation" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettingsXAxisFrom"; to: "predictionsCovariateXAxisSettingsXAxisFrom" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettingsXAxisTo"; to: "predictionsCovariateXAxisSettingsXAxisTo" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettingsYAxisTransformation"; to: "predictionsCovariateXAxisSettingsYAxisTransformation" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettingsYAxisFrom"; to: "predictionsCovariateXAxisSettingsYAxisFrom" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettingsYAxisTo"; to: "predictionsCovariateXAxisSettingsYAxisTo" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionExponential"; to: "selectedParametricDistributionsExponential" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionGamma"; to: "selectedParametricDistributionsGamma" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionGeneralizedF"; to: "selectedParametricDistributionsGeneralizedF" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionGeneralizedGamma"; to: "selectedParametricDistributionsGeneralizedGamma" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionGompertz"; to: "selectedParametricDistributionsGompertz" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionLogLogistic"; to: "selectedParametricDistributionsLogLogistic" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionLogNormal"; to: "selectedParametricDistributionsLogNormal" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionWeibull"; to: "selectedParametricDistributionsWeibull" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionGeneralizedGammaOriginal"; to: "selectedParametricDistributionsGeneralizedGammaOriginal" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionGeneralizedFOriginal"; to: "selectedParametricDistributionsGeneralizedFOriginal" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsConfidenceInterval"; to: "predictionsDisplayConfidenceIntervals" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsConfidenceIntervalLevel"; to: "predictionsDisplayConfidenceIntervalsLevel" }
+
+		UpgradeTools.UpgradeRenameOption { from: "survivalProbabilityPlotKaplanMeier"; to: "predictionsDisplayKaplanMeier" }
+
+		UpgradeTools.UpgradeRenameOption { from: "survivalProbabilityPlotCensoringEvents"; to: "predictionsDisplayCensoringEvents" }
+
+		UpgradeTools.UpgradeRenameOption { from: "survivalProbabilityPlotTransformXAxis"; to: "predictionsXAxisTransformation" }
+
+		UpgradeTools.UpgradeRenameOption { from: "survivalProbabilityPlotTransformYAxis"; to: "predictionsProbabilityYAxisScale" }
+
+		UpgradeTools.UpgradeRenameOption { from: "lifeTimeMergeTablesAcrossMeasures"; to: "predictionsMergeTablesAcrossMeasures" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsLifeTimeRoundSteps"; to: "predictionsRoundTimeTableValues" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotMergePlotsAcrossFactors"; to: "probabilityPlotMergePlotsAcrossStrata" }
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "modelAdvancedSpecificationTerms"
+			condition: function(options) { return SurvivalUpgrade.hasOldModifierNames(options["modelAdvancedSpecificationTerms"]); }
+			jsFunction: function(options) { return SurvivalUpgrade.modifierNames(options["modelAdvancedSpecificationTerms"]); }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "modelAncillaryParameter1AdvancedSpecificationTerms"
+			condition: function(options) { return SurvivalUpgrade.hasOldModifierNames(options["modelAncillaryParameter1AdvancedSpecificationTerms"]); }
+			jsFunction: function(options) { return SurvivalUpgrade.modifierNames(options["modelAncillaryParameter1AdvancedSpecificationTerms"]); }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "modelAncillaryParameter2AdvancedSpecificationTerms"
+			condition: function(options) { return SurvivalUpgrade.hasOldModifierNames(options["modelAncillaryParameter2AdvancedSpecificationTerms"]); }
+			jsFunction: function(options) { return SurvivalUpgrade.modifierNames(options["modelAncillaryParameter2AdvancedSpecificationTerms"]); }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "modelAncillaryParameter3AdvancedSpecificationTerms"
+			condition: function(options) { return SurvivalUpgrade.hasOldModifierNames(options["modelAncillaryParameter3AdvancedSpecificationTerms"]); }
+			jsFunction: function(options) { return SurvivalUpgrade.modifierNames(options["modelAncillaryParameter3AdvancedSpecificationTerms"]); }
+		}
+
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutcomeSurvivalTime"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutcomeSurvivalTime"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["survivalTimePlot"] === true || options["survivalTimeTable"] === true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.outcome(options, "survivalTime"); }
 		}
 
-		ChangeJS
-		{
-			name: "predictionsOutcomeFailureProbability"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutcomeFailureProbability"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["survivalProbabilityAsFailureProbability"] === true &&
-					(options["survivalProbabilityPlot"] === true || options["survivalProbabilityTable"] === true || options["predictionsOutcomeSurvivalProbability"] === true);
-			}
-		}
-
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutcomeSurvivalProbability"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutcomeSurvivalProbability"] === undefined || options["survivalProbabilityAsFailureProbability"] !== undefined; }
-			jsFunction: function(options)
-			{
-				let selected = options["predictionsOutcomeSurvivalProbability"] === true || options["survivalProbabilityPlot"] === true || options["survivalProbabilityTable"] === true;
-				return selected && options["survivalProbabilityAsFailureProbability"] !== true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.outcome(options, "survivalProbability"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsOutcomeFailureProbability"
+			jsFunction: function(options) { return SurvivalUpgrade.outcome(options, "failureProbability"); }
+		}
+
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutcomeHazard"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutcomeHazard"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["hazardPlot"] === true || options["hazardTable"] === true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.outcome(options, "hazard"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutcomeCumulativeHazard"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutcomeCumulativeHazard"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["cumulativeHazardPlot"] === true || options["cumulativeHazardTable"] === true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.outcome(options, "cumulativeHazard"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutcomeRestrictedMeanSurvivalTime"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutcomeRestrictedMeanSurvivalTime"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["restrictedMeanSurvivalTimePlot"] === true || options["restrictedMeanSurvivalTimeTable"] === true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.outcome(options, "restrictedMeanSurvivalTime"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutputPlot"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutputPlot"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["survivalTimePlot"] === true || options["survivalProbabilityPlot"] === true || options["hazardPlot"] === true || options["cumulativeHazardPlot"] === true || options["restrictedMeanSurvivalTimePlot"] === true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.output(options, "Plot"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutputTable"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutputTable"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["survivalTimeTable"] === true || options["survivalProbabilityTable"] === true || options["hazardTable"] === true || options["cumulativeHazardTable"] === true || options["restrictedMeanSurvivalTimeTable"] === true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.output(options, "Table"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsPredictFor"
+			jsFunction: function(options) { return "variables"; }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsOutputPlotType"
+			jsFunction: function(options) { return "standard"; }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentiles"
+			jsFunction: function(options) { return options["predictionsOutcomeSurvivalTime"] === true; }
+		}
+
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsMergeSeriesAcrossDistributions"
-			isNewOption: true
-			condition: function(options) { return options["predictionsMergeSeriesAcrossDistributions"] === undefined; }
-			jsFunction: function(options)
-			{
-				let time = options["survivalTimePlot"] === true || options["survivalTimeTable"] === true;
-				let life = options["survivalProbabilityPlot"] === true || options["survivalProbabilityTable"] === true || options["hazardPlot"] === true || options["hazardTable"] === true || options["cumulativeHazardPlot"] === true || options["cumulativeHazardTable"] === true || options["restrictedMeanSurvivalTimePlot"] === true || options["restrictedMeanSurvivalTimeTable"] === true;
-				return (time && options["survivalTimeMergePlotsAcrossDistributions"] === true) || (life && options["lifeTimeMergePlotsAcrossDistributions"] === true);
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.merge(options, "Distributions"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsMergeSeriesAcrossSubgroups"
-			isNewOption: true
-			condition: function(options) { return options["predictionsMergeSeriesAcrossSubgroups"] === undefined; }
-			jsFunction: function(options)
-			{
-				let time = options["survivalTimePlot"] === true || options["survivalTimeTable"] === true;
-				let life = options["survivalProbabilityPlot"] === true || options["survivalProbabilityTable"] === true || options["hazardPlot"] === true || options["hazardTable"] === true || options["cumulativeHazardPlot"] === true || options["cumulativeHazardTable"] === true || options["restrictedMeanSurvivalTimePlot"] === true || options["restrictedMeanSurvivalTimeTable"] === true;
-				return (time && options["survivalTimeMergePlotsAcrossSubgroups"] === true) || (life && options["lifeTimeMergePlotsAcrossSubgroups"] === true);
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.merge(options, "Subgroups"); }
 		}
 
-		ChangeJS
-		{
-			name: "predictionsMergeSeriesAcrossComponents"
-			isNewOption: true
-			condition: function(options) { return options["predictionsMergeSeriesAcrossComponents"] === undefined; }
-			jsFunction: function(options)
-			{
-				let time = options["survivalTimePlot"] === true || options["survivalTimeTable"] === true;
-				let life = options["survivalProbabilityPlot"] === true || options["survivalProbabilityTable"] === true || options["hazardPlot"] === true || options["hazardTable"] === true || options["cumulativeHazardPlot"] === true || options["cumulativeHazardTable"] === true || options["restrictedMeanSurvivalTimePlot"] === true || options["restrictedMeanSurvivalTimeTable"] === true;
-				return (time && options["survivalTimeMergePlotsAcrossComponents"] === true) || (life && options["lifeTimeMergePlotsAcrossComponents"] === true);
-			}
-		}
-
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsLifetimeTimeId"
-			isNewOption: true
-			condition: function(options) { return options["predictionsLifetimeTimeId"] === undefined; }
-			jsFunction: function(options)
-			{
-				return "\uE000";
-			}
+			jsFunction: function(options) { return "\uE000"; }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsXAxisVariables"
-			isNewOption: true
-			condition: function(options) { return options["predictionsXAxisVariables"] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
-				return {value: options["predictionsLifetimeTimeId"], types: "unknown"};
-			}
+			jsFunction: function(options) { return Array.isArray(options["modelTerms"]) ? {value: options["predictionsLifetimeTimeId"], types: "unknown"} : {shouldEncode: true}; }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsSeparateLines"
-			isNewOption: true
-			condition: function(options) { return options["predictionsSeparateLines"] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
-				let factors = options["factors"];
-				let values = factors && factors.value !== undefined ? factors.value : factors;
-				values = Array.isArray(values) ? values : (values ? [values] : []);
-				let predictors = [];
-				for (let model of options["modelTerms"]) {
-					let terms = model.components && model.components.value;
-					if (!Array.isArray(terms)) continue;
-					for (let term of terms) for (let v of (Array.isArray(term) ? term : [term])) if (predictors.indexOf(v) < 0) predictors.push(v);
-				}
-				values = values.filter(function(v) { return predictors.indexOf(v) >= 0; });
-				return {value: values, types: values.map(function() { return "nominal"; })};
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.factorAssignments(options, false); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsSeparatePlots"
-			isNewOption: true
-			condition: function(options) { return options["predictionsSeparatePlots"] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
-				return {value: [], types: []};
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.factorAssignments(options, true); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsAssignedCovariateValuesQuantiles"
-			isNewOption: true
-			condition: function(options) { return options["predictionsAssignedCovariateValuesQuantiles"] === undefined; }
-			jsFunction: function(options)
-			{
-				return 3;
-			}
+			jsFunction: function(options) { return 3; }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsRolesAutomatic"
-			isNewOption: true
-			condition: function(options) { return options["predictionsRolesAutomatic"] === undefined; }
-			jsFunction: function(options)
-			{
-				return true;
-			}
+			jsFunction: function(options) { return !SurvivalUpgrade.separateFactors(options); }
 		}
 
-		ChangeRemove { name: "survivalTimePlot"; condition: function(options) { return options["survivalTimePlot"] !== undefined; } }
+		// Probability fractions become percentiles; table time counts become intervals.
 
-		ChangeRemove { name: "survivalTimeTable"; condition: function(options) { return options["survivalTimeTable"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentilesGrid"
+			condition: function(options) { return options["predictionsLifetimePercentilesGrid"] === undefined && options["predictionsSurvivalTimeStepsType"] !== undefined; }
+			jsFunction: function(options) { return SurvivalUpgrade.percentileGrid(options); }
+		}
 
-		ChangeRemove { name: "survivalProbabilityPlot"; condition: function(options) { return options["survivalProbabilityPlot"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentilesIntervals"
+			condition: function(options) { return options["predictionsLifetimePercentilesIntervals"] === undefined && options["predictionsSurvivalTimeStepsNumber"] !== undefined; }
+			jsFunction: function(options) { return options["predictionsSurvivalTimeStepsNumber"]; }
+		}
 
-		ChangeRemove { name: "survivalProbabilityTable"; condition: function(options) { return options["survivalProbabilityTable"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentilesFrom"
+			condition: function(options) { return options["predictionsLifetimePercentilesFrom"] === undefined && options["predictionsSurvivalTimeStepsType"] !== undefined; }
+			jsFunction: function(options) { return SurvivalUpgrade.percentileSequence(options, "From"); }
+		}
 
-		ChangeRemove { name: "survivalProbabilityAsFailureProbability"; condition: function(options) { return options["survivalProbabilityAsFailureProbability"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentilesStep"
+			condition: function(options) { return options["predictionsLifetimePercentilesStep"] === undefined && options["predictionsSurvivalTimeStepsType"] !== undefined; }
+			jsFunction: function(options) { return SurvivalUpgrade.percentileSequence(options, "Step"); }
+		}
 
-		ChangeRemove { name: "hazardPlot"; condition: function(options) { return options["hazardPlot"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentilesTo"
+			condition: function(options) { return options["predictionsLifetimePercentilesTo"] === undefined && options["predictionsSurvivalTimeStepsType"] !== undefined; }
+			jsFunction: function(options) { return SurvivalUpgrade.percentileSequence(options, "To"); }
+		}
 
-		ChangeRemove { name: "hazardTable"; condition: function(options) { return options["hazardTable"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentilesValues"
+			condition: function(options) { return options["predictionsLifetimePercentilesValues"] === undefined && options["predictionsSurvivalTimeCustom"] !== undefined; }
+			jsFunction: function(options) { return SurvivalUpgrade.percentileValues(options); }
+		}
 
-		ChangeRemove { name: "cumulativeHazardPlot"; condition: function(options) { return options["cumulativeHazardPlot"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeGrid"
+			condition: function(options) { return options["predictionsTimeGrid"] === undefined && options["predictionsLifeTimeStepsType"] !== undefined; }
+			jsFunction: function(options) { return SurvivalUpgrade.timeGrid(options); }
+		}
 
-		ChangeRemove { name: "cumulativeHazardTable"; condition: function(options) { return options["cumulativeHazardTable"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeGrid"
+			condition: function(options) { return options["predictionsTimeGrid"] === "custom"; }
+			jsFunction: function(options) { return "customAbsolute"; }
+		}
 
-		ChangeRemove { name: "restrictedMeanSurvivalTimePlot"; condition: function(options) { return options["restrictedMeanSurvivalTimePlot"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeIntervals"
+			condition: function(options) { return options["predictionsTimeIntervals"] === undefined && options["predictionsLifeTimeStepsNumber"] !== undefined; }
+			jsFunction: function(options) { return options["predictionsLifeTimeStepsNumber"] - 1; }
+		}
 
-		ChangeRemove { name: "restrictedMeanSurvivalTimeTable"; condition: function(options) { return options["restrictedMeanSurvivalTimeTable"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeFrom"
+			condition: function(options) { return options["predictionsTimeFrom"] === undefined && options["predictionsLifeTimeStepsFrom"] !== undefined; }
+			jsFunction: function(options) { return String(options["predictionsLifeTimeStepsFrom"]); }
+		}
 
-		ChangeRemove { name: "survivalTimeMergePlotsAcrossDistributions"; condition: function(options) { return options["survivalTimeMergePlotsAcrossDistributions"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeStep"
+			condition: function(options) { return options["predictionsTimeStep"] === undefined && options["predictionsLifeTimeStepsSize"] !== undefined; }
+			jsFunction: function(options) { return String(options["predictionsLifeTimeStepsSize"]); }
+		}
 
-		ChangeRemove { name: "survivalTimeMergePlotsAcrossSubgroups"; condition: function(options) { return options["survivalTimeMergePlotsAcrossSubgroups"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeTo"
+			condition: function(options) { return options["predictionsTimeTo"] === undefined && options["predictionsLifeTimeStepsTo"] !== undefined; }
+			jsFunction: function(options) { return String(options["predictionsLifeTimeStepsTo"]); }
+		}
 
-		ChangeRemove { name: "survivalTimeMergePlotsAcrossComponents"; condition: function(options) { return options["survivalTimeMergePlotsAcrossComponents"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeValues"
+			condition: function(options) { return options["predictionsTimeValues"] === undefined && options["predictionsLifeTimeCustom"] !== undefined; }
+			jsFunction: function(options) { return String(options["predictionsLifeTimeCustom"]); }
+		}
 
-		ChangeRemove { name: "survivalTimeMergePlotsAcrossFactors"; condition: function(options) { return options["survivalTimeMergePlotsAcrossFactors"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "probabilityPlotStratifyBy"
+			jsFunction: function(options) { return true; }
+		}
 
-		ChangeRemove { name: "lifeTimeMergePlotsAcrossDistributions"; condition: function(options) { return options["lifeTimeMergePlotsAcrossDistributions"] !== undefined; } }
-
-		ChangeRemove { name: "lifeTimeMergePlotsAcrossSubgroups"; condition: function(options) { return options["lifeTimeMergePlotsAcrossSubgroups"] !== undefined; } }
-
-		ChangeRemove { name: "lifeTimeMergePlotsAcrossComponents"; condition: function(options) { return options["lifeTimeMergePlotsAcrossComponents"] !== undefined; } }
-
-		ChangeRemove { name: "lifeTimeMergePlotsAcrossFactors"; condition: function(options) { return options["lifeTimeMergePlotsAcrossFactors"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "probabilityPlotStratifyByVariables"
+			jsFunction: function(options) { return SurvivalUpgrade.factorStrata(options); }
+		}
 
 		ChangeSetValue
 		{
@@ -310,11 +463,9 @@ Upgrades
 			jsonValue: false
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "modelAncillaryParameter1ModelTerms"
-			isNewOption: true
-			condition: function(options) { return options["modelAncillaryParameter1ModelTerms"] === undefined; }
 			jsFunction: function(options)
 			{
 				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
@@ -329,11 +480,9 @@ Upgrades
 			condition: function(options) { return options["modelAncillaryParameter1AdvancedSpecification"] === undefined; }
 			jsonValue: false
 		}
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "modelAncillaryParameter1AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return options["modelAncillaryParameter1AdvancedSpecificationTerms"] === undefined; }
 			jsFunction: function(options)
 			{
 				if (!Array.isArray(options["modelTerms"])) return {predictors: {shouldEncode: true}};
@@ -341,11 +490,9 @@ Upgrades
 			}
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "modelAncillaryParameter2ModelTerms"
-			isNewOption: true
-			condition: function(options) { return options["modelAncillaryParameter2ModelTerms"] === undefined; }
 			jsFunction: function(options)
 			{
 				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
@@ -360,11 +507,9 @@ Upgrades
 			condition: function(options) { return options["modelAncillaryParameter2AdvancedSpecification"] === undefined; }
 			jsonValue: false
 		}
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "modelAncillaryParameter2AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return options["modelAncillaryParameter2AdvancedSpecificationTerms"] === undefined; }
 			jsFunction: function(options)
 			{
 				if (!Array.isArray(options["modelTerms"])) return {predictors: {shouldEncode: true}};
@@ -372,11 +517,9 @@ Upgrades
 			}
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "modelAncillaryParameter3ModelTerms"
-			isNewOption: true
-			condition: function(options) { return options["modelAncillaryParameter3ModelTerms"] === undefined; }
 			jsFunction: function(options)
 			{
 				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
@@ -391,11 +534,9 @@ Upgrades
 			condition: function(options) { return options["modelAncillaryParameter3AdvancedSpecification"] === undefined; }
 			jsonValue: false
 		}
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "modelAncillaryParameter3AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return options["modelAncillaryParameter3AdvancedSpecificationTerms"] === undefined; }
 			jsFunction: function(options)
 			{
 				if (!Array.isArray(options["modelTerms"])) return {predictors: {shouldEncode: true}};
@@ -421,458 +562,743 @@ Upgrades
 			condition: function(options) { return options["restrictParametersValues"] === undefined; }
 			jsonValue: []
 		}
-		// Preserve released evaluation/display settings under their current names.
-		ChangeRename
-		{
-			from: "predictionsConfidenceInterval"
-			to: "predictionsDisplayConfidenceIntervals"
-		}
-		ChangeRename
-		{
-			from: "predictionsConfidenceIntervalLevel"
-			to: "predictionsDisplayConfidenceIntervalsLevel"
-		}
-		ChangeRename
-		{
-			from: "survivalProbabilityPlotKaplanMeier"
-			to: "predictionsDisplayKaplanMeier"
-		}
-		ChangeRename
-		{
-			from: "survivalProbabilityPlotCensoringEvents"
-			to: "predictionsDisplayCensoringEvents"
-		}
-		ChangeRename
-		{
-			from: "lifeTimeMergeTablesAcrossMeasures"
-			to: "predictionsMergeTablesAcrossMeasures"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeRoundSteps"
-			to: "predictionsRoundTimeTableValues"
-		}
-		ChangeRename
-		{
-			from: "predictionsSurvivalTimeStepsType"
-			to: "predictionsLifetimePercentilesGrid"
-		}
-		ChangeRename
-		{
-			from: "predictionsSurvivalTimeStepsNumber"
-			to: "predictionsLifetimePercentilesIntervals"
-		}
-		ChangeRename
-		{
-			from: "predictionsSurvivalTimeStepsFrom"
-			to: "predictionsLifetimePercentilesFrom"
-		}
-		ChangeRename
-		{
-			from: "predictionsSurvivalTimeStepsSize"
-			to: "predictionsLifetimePercentilesStep"
-		}
-		ChangeRename
-		{
-			from: "predictionsSurvivalTimeStepsTo"
-			to: "predictionsLifetimePercentilesTo"
-		}
-		ChangeRename
-		{
-			from: "predictionsSurvivalTimeCustom"
-			to: "predictionsLifetimePercentilesValues"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeStepsType"
-			to: "predictionsTimeGrid"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeStepsNumber"
-			to: "predictionsTimeIntervals"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeStepsFrom"
-			to: "predictionsTimeFrom"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeStepsSize"
-			to: "predictionsTimeStep"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeStepsTo"
-			to: "predictionsTimeTo"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeCustom"
-			to: "predictionsTimeValues"
-		}
+		// Consume old options only after every dependent setting has been converted.
 
-		// Preserve released settings after aligning option names with labels.
-		ChangeRename
-		{
-			from: "probabilityPlotPointCoordinates"
-			to: "probabilityPlotEmpiricalPointsCoordinates"
-		}
-		ChangeRename
-		{
-			from: "probabilityPlotConfidenceInterval"
-			to: "probabilityPlotConfidenceIntervals"
-		}
-		ChangeRename
-		{
-			from: "probabilityPlotConfidenceIntervalLevel"
-			to: "probabilityPlotConfidenceIntervalsLevel"
-		}
-		ChangeRename
-		{
-			from: "probabilityPlotTiesHandler"
-			to: "probabilityPlotTies"
-		}
-		ChangeRename
-		{
-			from: "coefficientsConfidenceInterval"
-			to: "coefficientsConfidenceIntervals"
-		}
-		ChangeRename
-		{
-			from: "coefficientsConfidenceIntervalLevel"
-			to: "coefficientsConfidenceIntervalsLevel"
-		}
-		ChangeRename
-		{
-			from: "modelSummaryAicWeighs"
-			to: "modelSummaryAicWeights"
-		}
-		ChangeRename
-		{
-			from: "modelSummaryBicWeighs"
-			to: "modelSummaryBicWeights"
-		}
-		ChangeRename
-		{
-			from: "includeFullDatasetInSubgroupAnalysis"
-			to: "outputFormattingIncludeFullDatasetInSubgroupAnalysis"
-		}
-		ChangeRename
-		{
-			from: "compareModelsAcrossDistributions"
-			to: "outputFormattingCompareModelsAcrossDistributions"
-		}
-		ChangeRename
-		{
-			from: "alwaysDisplayModelInformation"
-			to: "outputFormattingAlwaysDisplayModelInformation"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionExponential"
-			to: "selectedParametricDistributionsExponential"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionGamma"
-			to: "selectedParametricDistributionsGamma"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionGeneralizedF"
-			to: "selectedParametricDistributionsGeneralizedF"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionGeneralizedGamma"
-			to: "selectedParametricDistributionsGeneralizedGamma"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionGompertz"
-			to: "selectedParametricDistributionsGompertz"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionLogLogistic"
-			to: "selectedParametricDistributionsLogLogistic"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionLogNormal"
-			to: "selectedParametricDistributionsLogNormal"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionWeibull"
-			to: "selectedParametricDistributionsWeibull"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionGeneralizedGammaOriginal"
-			to: "selectedParametricDistributionsGeneralizedGammaOriginal"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionGeneralizedFOriginal"
-			to: "selectedParametricDistributionsGeneralizedFOriginal"
-		}
+		UpgradeTools.UpgradeRemoveOption { name: "advancedSpecification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "advancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "alwaysDisplayModelInformation" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter1AdvancedSpecification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter1AdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter1AvailableTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter1ModelTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter2AdvancedSpecification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter2AdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter2AvailableTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter2ModelTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter3AdvancedSpecification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter3AdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter3AvailableTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter3ModelTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameterRegression" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "coefficientsConfidenceInterval" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "coefficientsConfidenceIntervalLevel" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "compareModelsAcrossDistributions" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "cumulativeHazardPlot" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "cumulativeHazardTable" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotConfidenceInterval" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotConfidenceIntervalLevel" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotGroupUniqueLevels" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotGroupUniqueLevelsLimit" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotHistogramBinWidthType" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotHistogramManualNumberOfBins" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotQuantileGroups" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotStratification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotStratify" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotTransformXAxis" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportFittedLinearPredictor" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportFittedMean" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportFittedMedian" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportFittedRisk" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportMixtureClassification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportMixtureProbabilities" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "hazardPlot" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "hazardTable" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "includeFullDatasetInSubgroupAnalysis" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "lifeTimeMergePlotsAcrossDistributions" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "lifeTimeMergePlotsAcrossFactors" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "lifeTimeMergePlotsAcrossSubgroups" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "lifeTimeMergeTablesAcrossMeasures" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "modelSummaryAicWeighs" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "modelSummaryBicWeighs" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsConfidenceInterval" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsConfidenceIntervalLevel" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettings" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettingsXAxisFrom" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettingsXAxisTo" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettingsXAxisTransformation" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettingsYAxisFrom" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettingsYAxisTo" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettingsYAxisTransformation" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeCustom" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeRoundSteps" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeStepsFrom" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeStepsNumber" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeStepsSize" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeStepsTo" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeStepsType" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsSurvivalTimeCustom" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsSurvivalTimeStepsFrom" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsSurvivalTimeStepsNumber" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsSurvivalTimeStepsSize" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsSurvivalTimeStepsTo" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsSurvivalTimeStepsType" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotConfidenceInterval" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotConfidenceIntervalLevel" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotGroupUniqueLevels" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotGroupUniqueLevelsLimit" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotMergePlotsAcrossFactors" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotPointCoordinates" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotQuantileGroups" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotStratification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotStratify" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotTiesHandler" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "restrictedMeanSurvivalTimePlot" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "restrictedMeanSurvivalTimeTable" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionExponential" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionGamma" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionGeneralizedF" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionGeneralizedFOriginal" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionGeneralizedGamma" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionGeneralizedGammaOriginal" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionGompertz" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionLogLogistic" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionLogNormal" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionWeibull" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityAsFailureProbability" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityPlot" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityPlotCensoringEvents" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityPlotKaplanMeier" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityPlotTransformXAxis" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityPlotTransformYAxis" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityTable" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalTimeMergePlotsAcrossDistributions" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalTimeMergePlotsAcrossFactors" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalTimeMergePlotsAcrossSubgroups" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalTimePlot" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalTimeTable" }
 
 	}
 
 	Upgrade
 	{
 		functionName: "ParametricMixtureSurvivalAnalysis"
-		fromVersion: "0.97.0"
-		toVersion: "0.97.1"
+		fromVersion: "0.97.1"
+		toVersion: "0.97.2"
+		msg: qsTr("Prediction, diagnostic and starting-value settings have changed. Please review the updated options and results.")
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "mixtureStartingValuesQuantiles"
+			condition: function(options) { return options["mixtureStartingValuesQuantiles"] === undefined && (options["mixtureStartQuantiles"] !== undefined || options["mixtureStartTails"] !== undefined); }
+			jsFunction: function(options) { return options["mixtureStartQuantiles"] === true || options["mixtureStartTails"] === true; }
+		}
+
+		// Rename before initializing defaults; saved values take precedence.
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureComponentsTable"; to: "mixtureMeanAndMedian" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureClassificationTable"; to: "mixtureClassification" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureDiagnosticsTable"; to: "mixtureEstimationDiagnostics" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureComponentPlotTransformXAxis"; to: "mixtureComponentPlotXAxisTransformation" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureComponentPlotTransformYAxis"; to: "mixtureComponentPlotYAxisTransformation" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureStartKmeans"; to: "mixtureStartingValuesKMeans" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureStartQuantiles"; to: "mixtureStartingValuesQuantiles" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureStartSplit"; to: "mixtureStartingValuesSplitOfThePreviousSolution" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureStartRandom"; to: "mixtureStartingValuesRandom" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureStartRandomCount"; to: "mixtureStartingValuesRandomCount" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotHistogramBinWidthType"; to: "densityPlotObservedDataBinWidthType" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotHistogramManualNumberOfBins"; to: "densityPlotObservedDataNumberOfBins" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotConfidenceInterval"; to: "densityPlotConfidenceIntervals" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotConfidenceIntervalLevel"; to: "densityPlotConfidenceIntervalsLevel" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotTransformXAxis"; to: "densityPlotXAxisTransformation" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotPointCoordinates"; to: "probabilityPlotEmpiricalPointsCoordinates" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotConfidenceInterval"; to: "probabilityPlotConfidenceIntervals" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotConfidenceIntervalLevel"; to: "probabilityPlotConfidenceIntervalsLevel" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotTiesHandler"; to: "probabilityPlotTies" }
+
+		UpgradeTools.UpgradeRenameOption { from: "coefficientsConfidenceInterval"; to: "coefficientsConfidenceIntervals" }
+
+		UpgradeTools.UpgradeRenameOption { from: "coefficientsConfidenceIntervalLevel"; to: "coefficientsConfidenceIntervalsLevel" }
+
+		UpgradeTools.UpgradeRenameOption { from: "modelSummaryAicWeighs"; to: "modelSummaryAicWeights" }
+
+		UpgradeTools.UpgradeRenameOption { from: "modelSummaryBicWeighs"; to: "modelSummaryBicWeights" }
+
+		UpgradeTools.UpgradeRenameOption { from: "advancedSpecification"; to: "modelAdvancedSpecification" }
+
+		UpgradeTools.UpgradeRenameOption { from: "advancedSpecificationTerms"; to: "modelAdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameterRegression"; to: "modelAncillaryParameterRegression" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettings"; to: "predictionsCovariateXAxisSettings" }
+
+		UpgradeTools.UpgradeRenameOption { from: "includeFullDatasetInSubgroupAnalysis"; to: "outputFormattingIncludeFullDatasetInSubgroupAnalysis" }
+
+		UpgradeTools.UpgradeRenameOption { from: "compareModelsAcrossDistributions"; to: "outputFormattingCompareModelsAcrossDistributions" }
+
+		UpgradeTools.UpgradeRenameOption { from: "compareModelsAcrossComponents"; to: "outputFormattingCompareModelsAcrossComponents" }
+
+		UpgradeTools.UpgradeRenameOption { from: "alwaysDisplayModelInformation"; to: "outputFormattingAlwaysDisplayModelInformation" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportFittedMean"; to: "exportFittedValuesMeanSurvivalTime" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportFittedMedian"; to: "exportFittedValuesMedianSurvivalTime" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportFittedRisk"; to: "exportFittedValuesRelativeRisk" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportFittedLinearPredictor"; to: "exportFittedValuesLinearPredictor" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportMixtureProbabilities"; to: "exportMixtureClassificationComponentProbabilities" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportMixtureClassification"; to: "exportMixtureClassificationComponentIndex" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotStratify"; to: "densityPlotStratifyBy" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotStratification"; to: "densityPlotStratifyByVariables" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotQuantileGroups"; to: "densityPlotStratifyByQuantiles" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotGroupUniqueLevels"; to: "densityPlotStratifyByGroupUniqueLevels" }
+
+		UpgradeTools.UpgradeRenameOption { from: "densityPlotGroupUniqueLevelsLimit"; to: "densityPlotStratifyByGroupUniqueLevelsLimit" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotStratify"; to: "probabilityPlotStratifyBy" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotStratification"; to: "probabilityPlotStratifyByVariables" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotQuantileGroups"; to: "probabilityPlotStratifyByQuantiles" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotGroupUniqueLevels"; to: "probabilityPlotStratifyByGroupUniqueLevels" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotGroupUniqueLevelsLimit"; to: "probabilityPlotStratifyByGroupUniqueLevelsLimit" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureComponentPlotStratify"; to: "mixtureComponentPlotStratifyBy" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureComponentPlotStratification"; to: "mixtureComponentPlotStratifyByVariables" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureComponentPlotQuantileGroups"; to: "mixtureComponentPlotStratifyByQuantiles" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureComponentPlotGroupUniqueLevels"; to: "mixtureComponentPlotStratifyByGroupUniqueLevels" }
+
+		UpgradeTools.UpgradeRenameOption { from: "mixtureComponentPlotGroupUniqueLevelsLimit"; to: "mixtureComponentPlotStratifyByGroupUniqueLevelsLimit" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter1ModelTerms"; to: "modelAncillaryParameter1ModelTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter1AdvancedSpecification"; to: "modelAncillaryParameter1AdvancedSpecification" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter1AdvancedSpecificationTerms"; to: "modelAncillaryParameter1AdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter1AvailableTerms"; to: "modelAncillaryParameter1AvailableTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter2ModelTerms"; to: "modelAncillaryParameter2ModelTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter2AdvancedSpecification"; to: "modelAncillaryParameter2AdvancedSpecification" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter2AdvancedSpecificationTerms"; to: "modelAncillaryParameter2AdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter2AvailableTerms"; to: "modelAncillaryParameter2AvailableTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter3ModelTerms"; to: "modelAncillaryParameter3ModelTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter3AdvancedSpecification"; to: "modelAncillaryParameter3AdvancedSpecification" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter3AdvancedSpecificationTerms"; to: "modelAncillaryParameter3AdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "ancillaryParameter3AvailableTerms"; to: "modelAncillaryParameter3AvailableTerms" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettingsXAxisTransformation"; to: "predictionsCovariateXAxisSettingsXAxisTransformation" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettingsXAxisFrom"; to: "predictionsCovariateXAxisSettingsXAxisFrom" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettingsXAxisTo"; to: "predictionsCovariateXAxisSettingsXAxisTo" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettingsYAxisTransformation"; to: "predictionsCovariateXAxisSettingsYAxisTransformation" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettingsYAxisFrom"; to: "predictionsCovariateXAxisSettingsYAxisFrom" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsCovariateAxisSettingsYAxisTo"; to: "predictionsCovariateXAxisSettingsYAxisTo" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionExponential"; to: "selectedParametricDistributionsExponential" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionGamma"; to: "selectedParametricDistributionsGamma" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionGeneralizedF"; to: "selectedParametricDistributionsGeneralizedF" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionGeneralizedGamma"; to: "selectedParametricDistributionsGeneralizedGamma" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionGompertz"; to: "selectedParametricDistributionsGompertz" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionLogLogistic"; to: "selectedParametricDistributionsLogLogistic" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionLogNormal"; to: "selectedParametricDistributionsLogNormal" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionWeibull"; to: "selectedParametricDistributionsWeibull" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionGeneralizedGammaOriginal"; to: "selectedParametricDistributionsGeneralizedGammaOriginal" }
+
+		UpgradeTools.UpgradeRenameOption { from: "selectedParametricDistributionGeneralizedFOriginal"; to: "selectedParametricDistributionsGeneralizedFOriginal" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsConfidenceInterval"; to: "predictionsDisplayConfidenceIntervals" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsConfidenceIntervalLevel"; to: "predictionsDisplayConfidenceIntervalsLevel" }
+
+		UpgradeTools.UpgradeRenameOption { from: "survivalProbabilityPlotKaplanMeier"; to: "predictionsDisplayKaplanMeier" }
+
+		UpgradeTools.UpgradeRenameOption { from: "survivalProbabilityPlotCensoringEvents"; to: "predictionsDisplayCensoringEvents" }
+
+		UpgradeTools.UpgradeRenameOption { from: "survivalProbabilityPlotTransformXAxis"; to: "predictionsXAxisTransformation" }
+
+		UpgradeTools.UpgradeRenameOption { from: "survivalProbabilityPlotTransformYAxis"; to: "predictionsProbabilityYAxisScale" }
+
+		UpgradeTools.UpgradeRenameOption { from: "lifeTimeMergeTablesAcrossMeasures"; to: "predictionsMergeTablesAcrossMeasures" }
+
+		UpgradeTools.UpgradeRenameOption { from: "predictionsLifeTimeRoundSteps"; to: "predictionsRoundTimeTableValues" }
+
+		UpgradeTools.UpgradeRenameOption { from: "probabilityPlotMergePlotsAcrossFactors"; to: "probabilityPlotMergePlotsAcrossStrata" }
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "modelAdvancedSpecificationTerms"
+			condition: function(options) { return SurvivalUpgrade.hasOldModifierNames(options["modelAdvancedSpecificationTerms"]); }
+			jsFunction: function(options) { return SurvivalUpgrade.modifierNames(options["modelAdvancedSpecificationTerms"]); }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "modelAncillaryParameter1AdvancedSpecificationTerms"
+			condition: function(options) { return SurvivalUpgrade.hasOldModifierNames(options["modelAncillaryParameter1AdvancedSpecificationTerms"]); }
+			jsFunction: function(options) { return SurvivalUpgrade.modifierNames(options["modelAncillaryParameter1AdvancedSpecificationTerms"]); }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "modelAncillaryParameter2AdvancedSpecificationTerms"
+			condition: function(options) { return SurvivalUpgrade.hasOldModifierNames(options["modelAncillaryParameter2AdvancedSpecificationTerms"]); }
+			jsFunction: function(options) { return SurvivalUpgrade.modifierNames(options["modelAncillaryParameter2AdvancedSpecificationTerms"]); }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "modelAncillaryParameter3AdvancedSpecificationTerms"
+			condition: function(options) { return SurvivalUpgrade.hasOldModifierNames(options["modelAncillaryParameter3AdvancedSpecificationTerms"]); }
+			jsFunction: function(options) { return SurvivalUpgrade.modifierNames(options["modelAncillaryParameter3AdvancedSpecificationTerms"]); }
+		}
+
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutcomeSurvivalTime"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutcomeSurvivalTime"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["survivalTimePlot"] === true || options["survivalTimeTable"] === true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.outcome(options, "survivalTime"); }
 		}
 
-		ChangeJS
-		{
-			name: "predictionsOutcomeFailureProbability"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutcomeFailureProbability"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["survivalProbabilityAsFailureProbability"] === true &&
-					(options["survivalProbabilityPlot"] === true || options["survivalProbabilityTable"] === true || options["predictionsOutcomeSurvivalProbability"] === true);
-			}
-		}
-
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutcomeSurvivalProbability"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutcomeSurvivalProbability"] === undefined || options["survivalProbabilityAsFailureProbability"] !== undefined; }
-			jsFunction: function(options)
-			{
-				let selected = options["predictionsOutcomeSurvivalProbability"] === true || options["survivalProbabilityPlot"] === true || options["survivalProbabilityTable"] === true;
-				return selected && options["survivalProbabilityAsFailureProbability"] !== true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.outcome(options, "survivalProbability"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsOutcomeFailureProbability"
+			jsFunction: function(options) { return SurvivalUpgrade.outcome(options, "failureProbability"); }
+		}
+
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutcomeHazard"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutcomeHazard"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["hazardPlot"] === true || options["hazardTable"] === true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.outcome(options, "hazard"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutcomeCumulativeHazard"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutcomeCumulativeHazard"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["cumulativeHazardPlot"] === true || options["cumulativeHazardTable"] === true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.outcome(options, "cumulativeHazard"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutcomeRestrictedMeanSurvivalTime"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutcomeRestrictedMeanSurvivalTime"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["restrictedMeanSurvivalTimePlot"] === true || options["restrictedMeanSurvivalTimeTable"] === true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.outcome(options, "restrictedMeanSurvivalTime"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutputPlot"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutputPlot"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["survivalTimePlot"] === true || options["survivalProbabilityPlot"] === true || options["hazardPlot"] === true || options["cumulativeHazardPlot"] === true || options["restrictedMeanSurvivalTimePlot"] === true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.output(options, "Plot"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsOutputTable"
-			isNewOption: true
-			condition: function(options) { return options["predictionsOutputTable"] === undefined; }
-			jsFunction: function(options)
-			{
-				return options["survivalTimeTable"] === true || options["survivalProbabilityTable"] === true || options["hazardTable"] === true || options["cumulativeHazardTable"] === true || options["restrictedMeanSurvivalTimeTable"] === true;
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.output(options, "Table"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsPredictFor"
+			jsFunction: function(options) { return "variables"; }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsOutputPlotType"
+			jsFunction: function(options) { return "standard"; }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentiles"
+			jsFunction: function(options) { return options["predictionsOutcomeSurvivalTime"] === true; }
+		}
+
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsMergeSeriesAcrossDistributions"
-			isNewOption: true
-			condition: function(options) { return options["predictionsMergeSeriesAcrossDistributions"] === undefined; }
-			jsFunction: function(options)
-			{
-				let time = options["survivalTimePlot"] === true || options["survivalTimeTable"] === true;
-				let life = options["survivalProbabilityPlot"] === true || options["survivalProbabilityTable"] === true || options["hazardPlot"] === true || options["hazardTable"] === true || options["cumulativeHazardPlot"] === true || options["cumulativeHazardTable"] === true || options["restrictedMeanSurvivalTimePlot"] === true || options["restrictedMeanSurvivalTimeTable"] === true;
-				return (time && options["survivalTimeMergePlotsAcrossDistributions"] === true) || (life && options["lifeTimeMergePlotsAcrossDistributions"] === true);
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.merge(options, "Distributions"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsMergeSeriesAcrossSubgroups"
-			isNewOption: true
-			condition: function(options) { return options["predictionsMergeSeriesAcrossSubgroups"] === undefined; }
-			jsFunction: function(options)
-			{
-				let time = options["survivalTimePlot"] === true || options["survivalTimeTable"] === true;
-				let life = options["survivalProbabilityPlot"] === true || options["survivalProbabilityTable"] === true || options["hazardPlot"] === true || options["hazardTable"] === true || options["cumulativeHazardPlot"] === true || options["cumulativeHazardTable"] === true || options["restrictedMeanSurvivalTimePlot"] === true || options["restrictedMeanSurvivalTimeTable"] === true;
-				return (time && options["survivalTimeMergePlotsAcrossSubgroups"] === true) || (life && options["lifeTimeMergePlotsAcrossSubgroups"] === true);
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.merge(options, "Subgroups"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsMergeSeriesAcrossComponents"
-			isNewOption: true
-			condition: function(options) { return options["predictionsMergeSeriesAcrossComponents"] === undefined; }
-			jsFunction: function(options)
-			{
-				let time = options["survivalTimePlot"] === true || options["survivalTimeTable"] === true;
-				let life = options["survivalProbabilityPlot"] === true || options["survivalProbabilityTable"] === true || options["hazardPlot"] === true || options["hazardTable"] === true || options["cumulativeHazardPlot"] === true || options["cumulativeHazardTable"] === true || options["restrictedMeanSurvivalTimePlot"] === true || options["restrictedMeanSurvivalTimeTable"] === true;
-				return (time && options["survivalTimeMergePlotsAcrossComponents"] === true) || (life && options["lifeTimeMergePlotsAcrossComponents"] === true);
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.merge(options, "Components"); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsLifetimeTimeId"
-			isNewOption: true
-			condition: function(options) { return options["predictionsLifetimeTimeId"] === undefined; }
-			jsFunction: function(options)
-			{
-				return "\uE000";
-			}
+			jsFunction: function(options) { return "\uE000"; }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsXAxisVariables"
-			isNewOption: true
-			condition: function(options) { return options["predictionsXAxisVariables"] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
-				return {value: options["predictionsLifetimeTimeId"], types: "unknown"};
-			}
+			jsFunction: function(options) { return Array.isArray(options["modelTerms"]) ? {value: options["predictionsLifetimeTimeId"], types: "unknown"} : {shouldEncode: true}; }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsSeparateLines"
-			isNewOption: true
-			condition: function(options) { return options["predictionsSeparateLines"] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
-				let factors = options["factors"];
-				let values = factors && factors.value !== undefined ? factors.value : factors;
-				values = Array.isArray(values) ? values : (values ? [values] : []);
-				let predictors = [];
-				for (let model of options["modelTerms"]) {
-					let terms = model.components && model.components.value;
-					if (!Array.isArray(terms)) continue;
-					for (let term of terms) for (let v of (Array.isArray(term) ? term : [term])) if (predictors.indexOf(v) < 0) predictors.push(v);
-				}
-				values = values.filter(function(v) { return predictors.indexOf(v) >= 0; });
-				return {value: values, types: values.map(function() { return "nominal"; })};
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.factorAssignments(options, false); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsSeparatePlots"
-			isNewOption: true
-			condition: function(options) { return options["predictionsSeparatePlots"] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
-				return {value: [], types: []};
-			}
+			jsFunction: function(options) { return SurvivalUpgrade.factorAssignments(options, true); }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsAssignedCovariateValuesQuantiles"
-			isNewOption: true
-			condition: function(options) { return options["predictionsAssignedCovariateValuesQuantiles"] === undefined; }
-			jsFunction: function(options)
-			{
-				return 3;
-			}
+			jsFunction: function(options) { return 3; }
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "predictionsRolesAutomatic"
-			isNewOption: true
-			condition: function(options) { return options["predictionsRolesAutomatic"] === undefined; }
-			jsFunction: function(options)
-			{
-				return true;
-			}
+			jsFunction: function(options) { return !SurvivalUpgrade.separateFactors(options); }
 		}
 
-		ChangeRemove { name: "survivalTimePlot"; condition: function(options) { return options["survivalTimePlot"] !== undefined; } }
+		// Probability fractions become percentiles; table time counts become intervals.
 
-		ChangeRemove { name: "survivalTimeTable"; condition: function(options) { return options["survivalTimeTable"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentilesGrid"
+			condition: function(options) { return options["predictionsLifetimePercentilesGrid"] === undefined && options["predictionsSurvivalTimeStepsType"] !== undefined; }
+			jsFunction: function(options) { return SurvivalUpgrade.percentileGrid(options); }
+		}
 
-		ChangeRemove { name: "survivalProbabilityPlot"; condition: function(options) { return options["survivalProbabilityPlot"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentilesIntervals"
+			condition: function(options) { return options["predictionsLifetimePercentilesIntervals"] === undefined && options["predictionsSurvivalTimeStepsNumber"] !== undefined; }
+			jsFunction: function(options) { return options["predictionsSurvivalTimeStepsNumber"]; }
+		}
 
-		ChangeRemove { name: "survivalProbabilityTable"; condition: function(options) { return options["survivalProbabilityTable"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentilesFrom"
+			condition: function(options) { return options["predictionsLifetimePercentilesFrom"] === undefined && options["predictionsSurvivalTimeStepsType"] !== undefined; }
+			jsFunction: function(options) { return SurvivalUpgrade.percentileSequence(options, "From"); }
+		}
 
-		ChangeRemove { name: "survivalProbabilityAsFailureProbability"; condition: function(options) { return options["survivalProbabilityAsFailureProbability"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentilesStep"
+			condition: function(options) { return options["predictionsLifetimePercentilesStep"] === undefined && options["predictionsSurvivalTimeStepsType"] !== undefined; }
+			jsFunction: function(options) { return SurvivalUpgrade.percentileSequence(options, "Step"); }
+		}
 
-		ChangeRemove { name: "hazardPlot"; condition: function(options) { return options["hazardPlot"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentilesTo"
+			condition: function(options) { return options["predictionsLifetimePercentilesTo"] === undefined && options["predictionsSurvivalTimeStepsType"] !== undefined; }
+			jsFunction: function(options) { return SurvivalUpgrade.percentileSequence(options, "To"); }
+		}
 
-		ChangeRemove { name: "hazardTable"; condition: function(options) { return options["hazardTable"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsLifetimePercentilesValues"
+			condition: function(options) { return options["predictionsLifetimePercentilesValues"] === undefined && options["predictionsSurvivalTimeCustom"] !== undefined; }
+			jsFunction: function(options) { return SurvivalUpgrade.percentileValues(options); }
+		}
 
-		ChangeRemove { name: "cumulativeHazardPlot"; condition: function(options) { return options["cumulativeHazardPlot"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeGrid"
+			condition: function(options) { return options["predictionsTimeGrid"] === undefined && options["predictionsLifeTimeStepsType"] !== undefined; }
+			jsFunction: function(options) { return SurvivalUpgrade.timeGrid(options); }
+		}
 
-		ChangeRemove { name: "cumulativeHazardTable"; condition: function(options) { return options["cumulativeHazardTable"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeGrid"
+			condition: function(options) { return options["predictionsTimeGrid"] === "custom"; }
+			jsFunction: function(options) { return "customAbsolute"; }
+		}
 
-		ChangeRemove { name: "restrictedMeanSurvivalTimePlot"; condition: function(options) { return options["restrictedMeanSurvivalTimePlot"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeIntervals"
+			condition: function(options) { return options["predictionsTimeIntervals"] === undefined && options["predictionsLifeTimeStepsNumber"] !== undefined; }
+			jsFunction: function(options) { return options["predictionsLifeTimeStepsNumber"] - 1; }
+		}
 
-		ChangeRemove { name: "restrictedMeanSurvivalTimeTable"; condition: function(options) { return options["restrictedMeanSurvivalTimeTable"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeFrom"
+			condition: function(options) { return options["predictionsTimeFrom"] === undefined && options["predictionsLifeTimeStepsFrom"] !== undefined; }
+			jsFunction: function(options) { return String(options["predictionsLifeTimeStepsFrom"]); }
+		}
 
-		ChangeRemove { name: "survivalTimeMergePlotsAcrossDistributions"; condition: function(options) { return options["survivalTimeMergePlotsAcrossDistributions"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeStep"
+			condition: function(options) { return options["predictionsTimeStep"] === undefined && options["predictionsLifeTimeStepsSize"] !== undefined; }
+			jsFunction: function(options) { return String(options["predictionsLifeTimeStepsSize"]); }
+		}
 
-		ChangeRemove { name: "survivalTimeMergePlotsAcrossSubgroups"; condition: function(options) { return options["survivalTimeMergePlotsAcrossSubgroups"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeTo"
+			condition: function(options) { return options["predictionsTimeTo"] === undefined && options["predictionsLifeTimeStepsTo"] !== undefined; }
+			jsFunction: function(options) { return String(options["predictionsLifeTimeStepsTo"]); }
+		}
 
-		ChangeRemove { name: "survivalTimeMergePlotsAcrossComponents"; condition: function(options) { return options["survivalTimeMergePlotsAcrossComponents"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "predictionsTimeValues"
+			condition: function(options) { return options["predictionsTimeValues"] === undefined && options["predictionsLifeTimeCustom"] !== undefined; }
+			jsFunction: function(options) { return String(options["predictionsLifeTimeCustom"]); }
+		}
 
-		ChangeRemove { name: "survivalTimeMergePlotsAcrossFactors"; condition: function(options) { return options["survivalTimeMergePlotsAcrossFactors"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "probabilityPlotStratifyBy"
+			jsFunction: function(options) { return true; }
+		}
 
-		ChangeRemove { name: "lifeTimeMergePlotsAcrossDistributions"; condition: function(options) { return options["lifeTimeMergePlotsAcrossDistributions"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "probabilityPlotStratifyByVariables"
+			jsFunction: function(options) { return SurvivalUpgrade.factorStrata(options); }
+		}
 
-		ChangeRemove { name: "lifeTimeMergePlotsAcrossSubgroups"; condition: function(options) { return options["lifeTimeMergePlotsAcrossSubgroups"] !== undefined; } }
+		// Observed histograms now belong to the separate density diagnostic.
 
-		ChangeRemove { name: "lifeTimeMergePlotsAcrossComponents"; condition: function(options) { return options["lifeTimeMergePlotsAcrossComponents"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "densityPlot"
+			jsFunction: function(options) { return SurvivalUpgrade.observedDensity(options); }
+		}
 
-		ChangeRemove { name: "lifeTimeMergePlotsAcrossFactors"; condition: function(options) { return options["lifeTimeMergePlotsAcrossFactors"] !== undefined; } }
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "densityPlotObservedData"
+			condition: function(options) { return options["densityPlotObservedData"] === undefined && options["mixtureComponentPlotObservedData"] !== undefined; }
+			jsFunction: function(options) { return options["mixtureComponentPlotObservedData"] === true; }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "densityPlotXAxisTransformation"
+			condition: function(options) { return options["densityPlotXAxisTransformation"] === undefined && options["mixtureComponentPlotXAxisTransformation"] !== undefined; }
+			jsFunction: function(options) { return options["mixtureComponentPlotXAxisTransformation"]; }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "densityPlotMergePlotsAcrossDistributions"
+			condition: function(options) { return options["densityPlotMergePlotsAcrossDistributions"] === undefined && options["mixtureComponentPlotMergePlotsAcrossDistributions"] !== undefined; }
+			jsFunction: function(options) { return options["mixtureComponentPlotMergePlotsAcrossDistributions"] === true; }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "densityPlotConfidenceIntervals"
+			condition: function(options) { return options["densityPlotConfidenceIntervals"] === undefined && options["predictionsDisplayConfidenceIntervals"] !== undefined; }
+			jsFunction: function(options) { return options["predictionsDisplayConfidenceIntervals"] === true; }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "densityPlotConfidenceIntervalsLevel"
+			condition: function(options) { return options["densityPlotConfidenceIntervalsLevel"] === undefined && options["predictionsDisplayConfidenceIntervalsLevel"] !== undefined; }
+			jsFunction: function(options) { return options["predictionsDisplayConfidenceIntervalsLevel"]; }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "densityPlotObservedDataBinWidthType"
+			condition: function(options) { return options["densityPlotObservedDataBinWidthType"] === undefined && options["mixtureComponentPlotHistogramBinWidthType"] !== undefined; }
+			jsFunction: function(options) { return options["mixtureComponentPlotHistogramBinWidthType"]; }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "densityPlotObservedDataNumberOfBins"
+			condition: function(options) { return options["densityPlotObservedDataNumberOfBins"] === undefined && options["mixtureComponentPlotHistogramManualNumberOfBins"] !== undefined; }
+			jsFunction: function(options) { return options["mixtureComponentPlotHistogramManualNumberOfBins"]; }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "densityPlotStratifyBy"
+			condition: function(options) { return options["densityPlotStratifyBy"] === undefined && options["mixtureComponentPlotObservedData"] !== undefined; }
+			jsFunction: function(options) { return true; }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "densityPlotStratifyByVariables"
+			condition: function(options) { return options["densityPlotStratifyByVariables"] === undefined && options["mixtureComponentPlotObservedData"] !== undefined; }
+			jsFunction: function(options) { return SurvivalUpgrade.factorStrata(options); }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "mixtureComponentPlotStratifyBy"
+			jsFunction: function(options) { return true; }
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "mixtureComponentPlotStratifyByVariables"
+			jsFunction: function(options) { return SurvivalUpgrade.factorStrata(options); }
+		}
 
 		ChangeSetValue
 		{
@@ -901,11 +1327,9 @@ Upgrades
 			jsonValue: false
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "modelAncillaryParameter1ModelTerms"
-			isNewOption: true
-			condition: function(options) { return options["modelAncillaryParameter1ModelTerms"] === undefined; }
 			jsFunction: function(options)
 			{
 				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
@@ -920,11 +1344,9 @@ Upgrades
 			condition: function(options) { return options["modelAncillaryParameter1AdvancedSpecification"] === undefined; }
 			jsonValue: false
 		}
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "modelAncillaryParameter1AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return options["modelAncillaryParameter1AdvancedSpecificationTerms"] === undefined; }
 			jsFunction: function(options)
 			{
 				if (!Array.isArray(options["modelTerms"])) return {predictors: {shouldEncode: true}};
@@ -932,11 +1354,9 @@ Upgrades
 			}
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "modelAncillaryParameter2ModelTerms"
-			isNewOption: true
-			condition: function(options) { return options["modelAncillaryParameter2ModelTerms"] === undefined; }
 			jsFunction: function(options)
 			{
 				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
@@ -951,11 +1371,9 @@ Upgrades
 			condition: function(options) { return options["modelAncillaryParameter2AdvancedSpecification"] === undefined; }
 			jsonValue: false
 		}
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "modelAncillaryParameter2AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return options["modelAncillaryParameter2AdvancedSpecificationTerms"] === undefined; }
 			jsFunction: function(options)
 			{
 				if (!Array.isArray(options["modelTerms"])) return {predictors: {shouldEncode: true}};
@@ -963,11 +1381,9 @@ Upgrades
 			}
 		}
 
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "modelAncillaryParameter3ModelTerms"
-			isNewOption: true
-			condition: function(options) { return options["modelAncillaryParameter3ModelTerms"] === undefined; }
 			jsFunction: function(options)
 			{
 				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
@@ -982,11 +1398,9 @@ Upgrades
 			condition: function(options) { return options["modelAncillaryParameter3AdvancedSpecification"] === undefined; }
 			jsonValue: false
 		}
-		ChangeJS
+		UpgradeTools.UpgradeNewOption
 		{
 			name: "modelAncillaryParameter3AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return options["modelAncillaryParameter3AdvancedSpecificationTerms"] === undefined; }
 			jsFunction: function(options)
 			{
 				if (!Array.isArray(options["modelTerms"])) return {predictors: {shouldEncode: true}};
@@ -1012,205 +1426,303 @@ Upgrades
 			condition: function(options) { return options["restrictParametersValues"] === undefined; }
 			jsonValue: []
 		}
-		// Preserve released evaluation/display settings under their current names.
-		ChangeRename
-		{
-			from: "predictionsConfidenceInterval"
-			to: "predictionsDisplayConfidenceIntervals"
-		}
-		ChangeRename
-		{
-			from: "predictionsConfidenceIntervalLevel"
-			to: "predictionsDisplayConfidenceIntervalsLevel"
-		}
-		ChangeRename
-		{
-			from: "survivalProbabilityPlotKaplanMeier"
-			to: "predictionsDisplayKaplanMeier"
-		}
-		ChangeRename
-		{
-			from: "survivalProbabilityPlotCensoringEvents"
-			to: "predictionsDisplayCensoringEvents"
-		}
-		ChangeRename
-		{
-			from: "lifeTimeMergeTablesAcrossMeasures"
-			to: "predictionsMergeTablesAcrossMeasures"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeRoundSteps"
-			to: "predictionsRoundTimeTableValues"
-		}
-		ChangeRename
-		{
-			from: "predictionsSurvivalTimeStepsType"
-			to: "predictionsLifetimePercentilesGrid"
-		}
-		ChangeRename
-		{
-			from: "predictionsSurvivalTimeStepsNumber"
-			to: "predictionsLifetimePercentilesIntervals"
-		}
-		ChangeRename
-		{
-			from: "predictionsSurvivalTimeStepsFrom"
-			to: "predictionsLifetimePercentilesFrom"
-		}
-		ChangeRename
-		{
-			from: "predictionsSurvivalTimeStepsSize"
-			to: "predictionsLifetimePercentilesStep"
-		}
-		ChangeRename
-		{
-			from: "predictionsSurvivalTimeStepsTo"
-			to: "predictionsLifetimePercentilesTo"
-		}
-		ChangeRename
-		{
-			from: "predictionsSurvivalTimeCustom"
-			to: "predictionsLifetimePercentilesValues"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeStepsType"
-			to: "predictionsTimeGrid"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeStepsNumber"
-			to: "predictionsTimeIntervals"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeStepsFrom"
-			to: "predictionsTimeFrom"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeStepsSize"
-			to: "predictionsTimeStep"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeStepsTo"
-			to: "predictionsTimeTo"
-		}
-		ChangeRename
-		{
-			from: "predictionsLifeTimeCustom"
-			to: "predictionsTimeValues"
-		}
+		// Consume old options only after every dependent setting has been converted.
 
-		// Preserve released settings after aligning option names with labels.
-		ChangeRename
-		{
-			from: "probabilityPlotPointCoordinates"
-			to: "probabilityPlotEmpiricalPointsCoordinates"
-		}
-		ChangeRename
-		{
-			from: "probabilityPlotConfidenceInterval"
-			to: "probabilityPlotConfidenceIntervals"
-		}
-		ChangeRename
-		{
-			from: "probabilityPlotConfidenceIntervalLevel"
-			to: "probabilityPlotConfidenceIntervalsLevel"
-		}
-		ChangeRename
-		{
-			from: "probabilityPlotTiesHandler"
-			to: "probabilityPlotTies"
-		}
-		ChangeRename
-		{
-			from: "coefficientsConfidenceInterval"
-			to: "coefficientsConfidenceIntervals"
-		}
-		ChangeRename
-		{
-			from: "coefficientsConfidenceIntervalLevel"
-			to: "coefficientsConfidenceIntervalsLevel"
-		}
-		ChangeRename
-		{
-			from: "modelSummaryAicWeighs"
-			to: "modelSummaryAicWeights"
-		}
-		ChangeRename
-		{
-			from: "modelSummaryBicWeighs"
-			to: "modelSummaryBicWeights"
-		}
-		ChangeRename
-		{
-			from: "includeFullDatasetInSubgroupAnalysis"
-			to: "outputFormattingIncludeFullDatasetInSubgroupAnalysis"
-		}
-		ChangeRename
-		{
-			from: "compareModelsAcrossDistributions"
-			to: "outputFormattingCompareModelsAcrossDistributions"
-		}
-		ChangeRename
-		{
-			from: "alwaysDisplayModelInformation"
-			to: "outputFormattingAlwaysDisplayModelInformation"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionExponential"
-			to: "selectedParametricDistributionsExponential"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionGamma"
-			to: "selectedParametricDistributionsGamma"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionGeneralizedF"
-			to: "selectedParametricDistributionsGeneralizedF"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionGeneralizedGamma"
-			to: "selectedParametricDistributionsGeneralizedGamma"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionGompertz"
-			to: "selectedParametricDistributionsGompertz"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionLogLogistic"
-			to: "selectedParametricDistributionsLogLogistic"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionLogNormal"
-			to: "selectedParametricDistributionsLogNormal"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionWeibull"
-			to: "selectedParametricDistributionsWeibull"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionGeneralizedGammaOriginal"
-			to: "selectedParametricDistributionsGeneralizedGammaOriginal"
-		}
-		ChangeRename
-		{
-			from: "selectedParametricDistributionGeneralizedFOriginal"
-			to: "selectedParametricDistributionsGeneralizedFOriginal"
-		}
+		UpgradeTools.UpgradeRemoveOption { name: "advancedSpecification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "advancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "alwaysDisplayModelInformation" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter1AdvancedSpecification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter1AdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter1AvailableTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter1ModelTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter2AdvancedSpecification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter2AdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter2AvailableTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter2ModelTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter3AdvancedSpecification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter3AdvancedSpecificationTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter3AvailableTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameter3ModelTerms" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "ancillaryParameterRegression" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "coefficientsConfidenceInterval" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "coefficientsConfidenceIntervalLevel" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "compareModelsAcrossComponents" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "compareModelsAcrossDistributions" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "cumulativeHazardPlot" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "cumulativeHazardTable" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotConfidenceInterval" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotConfidenceIntervalLevel" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotGroupUniqueLevels" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotGroupUniqueLevelsLimit" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotHistogramBinWidthType" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotHistogramManualNumberOfBins" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotQuantileGroups" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotStratification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotStratify" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "densityPlotTransformXAxis" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportFittedLinearPredictor" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportFittedMean" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportFittedMedian" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportFittedRisk" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportMixtureClassification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportMixtureProbabilities" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "hazardPlot" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "hazardTable" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "includeFullDatasetInSubgroupAnalysis" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "lifeTimeMergePlotsAcrossComponents" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "lifeTimeMergePlotsAcrossDistributions" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "lifeTimeMergePlotsAcrossFactors" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "lifeTimeMergePlotsAcrossSubgroups" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "lifeTimeMergeTablesAcrossMeasures" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureClassificationTable" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureComponentPlotGroupUniqueLevels" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureComponentPlotGroupUniqueLevelsLimit" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureComponentPlotHistogramBinWidthType" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureComponentPlotHistogramManualNumberOfBins" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureComponentPlotMergePlotsAcrossFactors" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureComponentPlotObservedData" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureComponentPlotQuantileGroups" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureComponentPlotStratification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureComponentPlotStratify" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureComponentPlotTransformXAxis" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureComponentPlotTransformYAxis" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureComponentsTable" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureDiagnosticsTable" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartKmeans" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartMembershipProbabilities" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartQuantiles" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartRandom" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartRandomCount" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartSplit" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartTails" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "modelSummaryAicWeighs" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "modelSummaryBicWeighs" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsConfidenceInterval" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsConfidenceIntervalLevel" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettings" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettingsXAxisFrom" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettingsXAxisTo" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettingsXAxisTransformation" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettingsYAxisFrom" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettingsYAxisTo" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsCovariateAxisSettingsYAxisTransformation" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeCustom" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeRoundSteps" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeStepsFrom" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeStepsNumber" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeStepsSize" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeStepsTo" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsLifeTimeStepsType" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsSurvivalTimeCustom" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsSurvivalTimeStepsFrom" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsSurvivalTimeStepsNumber" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsSurvivalTimeStepsSize" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsSurvivalTimeStepsTo" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "predictionsSurvivalTimeStepsType" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotConfidenceInterval" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotConfidenceIntervalLevel" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotGroupUniqueLevels" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotGroupUniqueLevelsLimit" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotMergePlotsAcrossFactors" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotPointCoordinates" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotQuantileGroups" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotStratification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotStratify" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "probabilityPlotTiesHandler" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "restrictedMeanSurvivalTimePlot" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "restrictedMeanSurvivalTimeTable" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionExponential" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionGamma" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionGeneralizedF" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionGeneralizedFOriginal" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionGeneralizedGamma" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionGeneralizedGammaOriginal" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionGompertz" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionLogLogistic" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionLogNormal" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "selectedParametricDistributionWeibull" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityAsFailureProbability" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityPlot" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityPlotCensoringEvents" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityPlotKaplanMeier" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityPlotTransformXAxis" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityPlotTransformYAxis" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalProbabilityTable" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalTimeMergePlotsAcrossComponents" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalTimeMergePlotsAcrossDistributions" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalTimeMergePlotsAcrossFactors" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalTimeMergePlotsAcrossSubgroups" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalTimePlot" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "survivalTimeTable" }
+
+	}
+
+	Upgrade
+	{
+		functionName: "SemiParametricSurvivalAnalysis"
+		fromVersion: "0.97.1"
+		toVersion: "0.97.2"
+
+		// Rename before initializing defaults; saved values take precedence.
+
+		UpgradeTools.UpgradeRenameOption { from: "coefficientsConfidenceInterval"; to: "coefficientsConfidenceIntervals" }
+
+		UpgradeTools.UpgradeRenameOption { from: "coefficientsConfidenceIntervalLevel"; to: "coefficientsConfidenceIntervalsLevel" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportFittedMean"; to: "exportFittedValuesMeanSurvivalTime" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportFittedMedian"; to: "exportFittedValuesMedianSurvivalTime" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportFittedRisk"; to: "exportFittedValuesRelativeRisk" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportFittedLinearPredictor"; to: "exportFittedValuesLinearPredictor" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportMixtureProbabilities"; to: "exportMixtureClassificationComponentProbabilities" }
+
+		UpgradeTools.UpgradeRenameOption { from: "exportMixtureClassification"; to: "exportMixtureClassificationComponentIndex" }
+
+		// Consume old options only after every dependent setting has been converted.
+
+		UpgradeTools.UpgradeRemoveOption { name: "coefficientsConfidenceInterval" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "coefficientsConfidenceIntervalLevel" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportFittedLinearPredictor" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportFittedMean" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportFittedMedian" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportFittedRisk" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportMixtureClassification" }
+
+		UpgradeTools.UpgradeRemoveOption { name: "exportMixtureProbabilities" }
 
 	}
 }
-
