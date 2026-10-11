@@ -74,7 +74,7 @@ Section
 
 		CheckBox
 		{
-			name:		"modelSummaryAicWeighs"
+			name:		"modelSummaryAicWeights"
 			label:		qsTr("AIC weights")
 			enabled:	statisticsRoot.multipleResults
 			info: qsTr("Include AIC weights in the model summary.")
@@ -82,7 +82,7 @@ Section
 
 		CheckBox
 		{
-			name:		"modelSummaryBicWeighs"
+			name:		"modelSummaryBicWeights"
 			label:		qsTr("BIC weights")
 			enabled:	statisticsRoot.multipleResults
 			info: qsTr("Include BIC weights in the model summary.")
@@ -95,12 +95,12 @@ Section
 		{
 			label:		qsTr("Coefficients")
 			name:		"coefficients"
-			checked:	false
+			checked:	true
 			info: qsTr("Include a table with coefficient estimates.")
 
 			CheckBox
 			{
-				name:				"coefficientsConfidenceInterval"
+				name:				"coefficientsConfidenceIntervals"
 				label:				qsTr("Confidence intervals")
 				checked:			true
 				childrenOnSameRow:	true
@@ -108,7 +108,7 @@ Section
 
 				CIField
 				{
-					name: "coefficientsConfidenceIntervalLevel"
+					name: "coefficientsConfidenceIntervalsLevel"
 					info: qsTr("Set the confidence level for the confidence intervals.")
 				}
 			}
@@ -126,6 +126,24 @@ Section
 		{
 			id:		statisticsExtras
 			visible:	hasChildren
+		}
+	}
+
+	CheckBox
+	{
+		name:	"fittedModelEquation"
+		label:	qsTr("Fitted model equation")
+		checked:	false
+		info:	qsTr("Show the fitted model equations in a table.")
+
+		IntegerField
+		{
+			name:	"fittedModelEquationDecimals"
+			label:	qsTr("Decimals")
+			defaultValue:	3
+			min:	0
+			max:	15
+			info:	qsTr("Set the number of decimal places displayed in the fitted equations.")
 		}
 	}
 

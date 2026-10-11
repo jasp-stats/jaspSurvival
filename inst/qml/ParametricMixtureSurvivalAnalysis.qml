@@ -34,6 +34,7 @@ Form
 	SA.ParametricVariables
 	{
 		id: variables
+		modelPredictors: models.rawPredictors
 		mixture: true
 		rightCensoring: censoring.rightCensoring
 		intervalCensoring: censoring.intervalCensoring
@@ -54,6 +55,8 @@ Form
 			mixture: true
 			depends: mixtureConstrainMinimumSpread
 			constraintActive: mixtureConstrainMinimumSpread.checked
+			selectedFamilies: distributions.selectedFamilies
+			componentCount: form.multipleComponentsSelected ? mixtureMaximumComponents.value : Number(mixtureComponents.value)
 		}
 
 		DropDown
@@ -62,7 +65,7 @@ Form
 			id:			mixtureComponents
 			label:		qsTr("Components")
 			startValue:	"2"
-			info: qsTr("Choose the number of mixture components. 'All' fits and displays results for one up to the maximum number of components set in the 'Advanced' section. 'Best AIC' and 'Best BIC' fit the same models and display the results only for the number of components with the lowest AIC/BIC. A fixed number of components is not limited by the maximum number of components.")
+			info: qsTr("Choose the number of mixture components, or compare several numbers using All, Best AIC or Best BIC. Set the maximum in Advanced.")
 			values:
 			[
 				{ label: "1",					value: "1"},
@@ -76,17 +79,28 @@ Form
 		}
 	}
 
+	SA.ParametricParameterRestrictions
+	{
+		selector: distribution
+	}
+
 	SA.ParametricModel
 	{
+		analysisForm: form
 		id: models
+		selector: distribution
+		covariateNames: variables.covariateNames
+		factorNames: variables.factorNames
+		predictorSourcesReady: variables.predictorSourcesReady
 		mixture: true
+		componentCount: distribution.componentCount
 	}
 
 	SA.ParametricStatistics
 	{
 		multipleModels:		models.modelCount > 1
 		multipleResults:	distribution.value === "all" || (multipleComponentsSelected && mixtureMaximumComponents.value > 1) || models.modelCount > 1
-		modelSummaryInfo:	qsTr("Include a table with information about the model fit. The BIC uses the number of observations (including censored observations and weighted by the case weights) as the sample size.")
+		modelSummaryInfo:	qsTr("Show a table summarizing model fit.")
 
 		extraStatisticsControls: [
 			Group
@@ -96,17 +110,17 @@ Form
 				CheckBox
 				{
 					label:		qsTr("Mean and median")
-					name:		"mixtureComponentsTable"
+					name:		"mixtureMeanAndMedian"
 					checked:	false
-					info: qsTr("Include a table with the mean and the median lifetime of each mixture component. They correspond to the reference level of factors and zero value of covariates. The mixing probabilities and the parameters of the components are reported in the coefficients summary. Components are ordered by their median lifetime.")
+					info: qsTr("Show the baseline mean and median lifetime of each mixture component.")
 				}
 
 				CheckBox
 				{
 					label:		qsTr("Classification")
-					name:		"mixtureClassificationTable"
+					name:		"mixtureClassification"
 					checked:	false
-					info: qsTr("Include a table with the number and proportion of observations assigned to each component based on their highest posterior probability, the mean posterior probability of the assigned observations, and the relative entropy of the classification.")
+					info: qsTr("Summarize the assignment of observations to mixture components and the quality of the classification.")
 				}
 			}
 		]
@@ -114,42 +128,27 @@ Form
 
 	SA.ParametricPredictions
 	{
+		mixture: true
+		mergeComponentsAvailable: mergeAcrossComponentsPossible
+		analysisForm: form
+		modelPredictors: models.rawPredictors
+		covariateNames: variables.covariateNames
+		factorNames: variables.factorNames
+		predictorSourcesReady: models.predictorsInitialized && variables.predictorSourcesReady
+		predictionPredictors: variables.predictionPredictors
 		rightCensoring:	censoring.rightCensoring
 		mergeDistributionsAvailable:	form.mergeDistributionsAvailable
 		categoricalLevelsPossible:	categoricalPredictionLevelsPossible
 		subgroupsAvailable:	variables.subgroupCount > 0
-		extraPlotSelected:	mixtureComponentPlot.checked
-		mergeTimeComponentsActive:	survivalTimeMergePlotsAcrossComponents.checked && survivalTimeMergePlotsAcrossComponents.enabled
-		mergeLifeComponentsActive:	lifeTimeMergePlotsAcrossComponents.checked && lifeTimeMergePlotsAcrossComponents.enabled
-		quantileStepsInfo: qsTr("Select the quantiles at which survival times are predicted: evenly spaced Quantiles, a Sequence, or Custom probabilities.")
-		quantileNumberInfo: qsTr("Specify the number of quantiles of the predicted survival when using Quantiles as the steps type.")
-		lifeTimeStepsInfo: qsTr("Select the time points for prediction tables: Equal spacing, a Sequence, or Custom times. Time plots place unrounded points adaptively within the selected range.")
-		lifeTimeSizeInfo: qsTr("Define the time increment when using Sequence steps. Leaving this blank uses one tenth of the selected time range.")
-		lifeTimeCustomInfo: qsTr("Specify custom time points for predictions.")
+		extraPlotSelected:	mixtureComponentPlot.checked || densityPlot.checked
+		componentPlotSelected: mixtureComponentPlot.checked
+		quantileStepsInfo: qsTr("Choose how to specify lifetime percentiles: equal intervals, a sequence or custom values.")
+		quantileNumberInfo: qsTr("Set the number of equal intervals between 0 and 100.")
+		lifeTimeStepsInfo: qsTr("Choose how to specify prediction times: equal intervals, a sequence or custom values.")
+		lifeTimeSizeInfo: qsTr("Set the time increment for the sequence. Leave blank to use the default increment.")
+		lifeTimeCustomInfo: qsTr("Enter non-negative prediction times, separated by commas. Leave blank to use the default times.")
 
-		survivalTimeExtraControls: [
-			CheckBox
-			{
-				label:		qsTr("Components")
-				id:			survivalTimeMergePlotsAcrossComponents
-				name:		"survivalTimeMergePlotsAcrossComponents"
-				checked:	false
-				enabled:	mergeAcrossComponentsPossible
-				info: qsTr("Merge the plots for survival time across the numbers of components into a single plot. Only available when all numbers of components are displayed and no model selection is being performed.")
-			}
-		]
 
-		lifeTimeExtraControls: [
-			CheckBox
-			{
-				label:		qsTr("Components")
-				id:			lifeTimeMergePlotsAcrossComponents
-				name:		"lifeTimeMergePlotsAcrossComponents"
-				checked:	false
-				enabled:	mergeAcrossComponentsPossible
-				info: qsTr("Merge the plots for survival probabilities, hazard, cumulative hazard, and restricted mean survival across the numbers of components into a single plot. Only available when all numbers of components are displayed and no model selection is being performed.")
-			}
-		]
 	}
 
 	Section
@@ -164,6 +163,18 @@ Form
 				residualVsPredictedLabel:	qsTr("Residuals vs. predicted time")
 			}
 
+			SA.ParametricDensityPlot
+			{
+				id: densityPlot
+				rightCensoring: censoring.rightCensoring
+				mergeDistributionsAvailable: form.mergeDistributionsAvailable
+				analysisForm: form
+				modelPredictors: models.rawPredictors
+				covariateNames: variables.covariateNames
+				factorNames: variables.factorNames
+				predictorSourcesReady: models.predictorsInitialized && variables.predictorSourcesReady
+			}
+
 			Group
 			{
 				title:		qsTr("Mixture")
@@ -171,7 +182,7 @@ Form
 				CheckBox
 				{
 					label:		qsTr("Estimation diagnostics")
-					name:		"mixtureDiagnosticsTable"
+					name:		"mixtureEstimationDiagnostics"
 					checked:	false
 					info: qsTr("Include a table with the diagnostics of the estimation of each mixture model: the number of starting values, how many of them reached the reported solution, the log-likelihood of the reported and of the next best distinct solution, the number of degenerate candidate solutions, the effective sample size and the effective number of events of the smallest component, optimizer convergence, and whether the Hessian of the likelihood is positive definite. Replications indicate agreement between starts, not proof of a global maximum.")
 				}
@@ -181,7 +192,7 @@ Form
 					id:			mixtureComponentPlot
 					label:		qsTr("Component plot")
 					name:		"mixtureComponentPlot"
-					info: qsTr("Include a plot with the fitted mixture and its components. Densities are averaged over the observed predictor values, separately for each factor combination unless plots are merged. Other plot types use the combined prediction convention: observed levels for models with categorical predictors only, or the pooled unweighted mean model design for models with numeric predictors.")
+					info: qsTr("Show the overall mixture and the contribution of each component to the selected measure.")
 
 					DropDown
 					{
@@ -189,22 +200,25 @@ Form
 						id:			mixtureComponentPlotType
 						label:		qsTr("Type")
 						startValue:	"density"
-						info: qsTr("Select the displayed function: the survival probability of the mixture and of each component, the failure probability of the mixture and of each component, the density of the mixture and the weighted density of each component (which sum to the mixture density), or the hazard of the mixture and of each component.")
+						fieldWidth: 150 * jaspTheme.uiScale
+						info: qsTr("Choose the measure to display in the component plot.")
 						values:
 						[
 							{ label: qsTr("Survival probability"),	value: "survival"},
 							{ label: qsTr("Failure probability"),	value: "failureProbability"},
 							{ label: qsTr("Density"),				value: "density"},
-							{ label: qsTr("Hazard"),				value: "hazard"}
+							{ label: qsTr("Hazard"),				value: "hazard"},
+							{ label: qsTr("Cumulative hazard"), 	value: "cumulativeHazard"},
+							{ label: qsTr("Restricted mean survival time"), value: "restrictedMeanSurvivalTime"}
 						]
 					}
 
 					DropDown
 					{
-						name:		"mixtureComponentPlotTransformXAxis"
+						name:		"mixtureComponentPlotXAxisTransformation"
 						label:		qsTr("X-axis transformation")
 						startValue:	"log"
-						info: qsTr("Select the transformation for the x-axis of the component plot. With Log selected, density curves and histogram bins are computed for log time.")
+						info: qsTr("Choose the transformation for the x-axis of the component plot.")
 						values:
 						[
 							{ label: qsTr("None"),	value: "none"},
@@ -212,60 +226,55 @@ Form
 						]
 					}
 
-					CheckBox
+					DropDown
 					{
-						name:		"mixtureComponentPlotMergePlotsAcrossFactors"
-						label:		qsTr("Merge plots across factors")
-						checked:	false
-						enabled:	mixtureComponentPlotType.value === "density"
-						info: qsTr("For density plots, average the mixture and its weighted component densities over the observed predictor values, using the proportions of observations in each factor combination and any case weights. When unchecked, show a separate plot for each observed factor combination, averaging over its observed covariate values.")
+						name: "mixtureComponentPlotYAxisTransformation"
+						label: qsTr("Y-axis transformation")
+						startValue: "none"
+						values: [{label: qsTr("Linear"), value: "none"}, {label: qsTr("Log"), value: "log"}]
+						info: qsTr("Display the selected measure on a linear or logarithmic y-axis.")
 					}
 
-					CheckBox
+					SA.ParametricObservedStrata
 					{
-						name:		"mixtureComponentPlotObservedData"
-						label:		qsTr("Observed data")
-						checked:	true
-						enabled:	censoring.rightCensoring && mixtureComponentPlotType.value === "density"
-						info: qsTr("Overlay a histogram of the observed time distribution on the fitted densities, using the same observations as the curves: each factor combination separately, or the pooled sample when plots are merged. For right-censored data, bin probabilities are estimated with Kaplan-Meier and any unobserved tail probability is retained.")
-
-						DropDown
-						{
-							name:		"mixtureComponentPlotHistogramBinWidthType"
-							id:			mixtureComponentPlotHistogramBinWidthType
-							label:		qsTr("Bin width type")
-							startValue:	"fd"
-							info: qsTr("Select the rule for histogram bin widths. With Log selected, the rule is applied to log time. Select Manual to specify the number of bins.")
-							values:
-							[
-								{ label: qsTr("Sturges"),			value: "sturges" },
-								{ label: qsTr("Scott"),				value: "scott" },
-								{ label: qsTr("Doane"),				value: "doane" },
-								{ label: qsTr("Freedman-Diaconis"),	value: "fd" },
-								{ label: qsTr("Manual"),				value: "manual" }
-							]
-						}
-
-						IntegerField
-						{
-							name:			"mixtureComponentPlotHistogramManualNumberOfBins"
-							label:			qsTr("Number of bins")
-							defaultValue:	30
-							min:			3
-							max:			10000
-							enabled:		mixtureComponentPlotHistogramBinWidthType.currentValue === "manual"
-							info: qsTr("Specify the target number of histogram bins. Bin boundaries are rounded to convenient values, as in Descriptive Statistics.")
-						}
+						prefix: "mixtureComponentPlot"
+						analysisForm: form
+						modelPredictors: models.rawPredictors
+						covariateNames: variables.covariateNames
+						factorNames: variables.factorNames
+						predictorSourcesReady: models.predictorsInitialized && variables.predictorSourcesReady
 					}
+
+					Group
+					{
+						title: qsTr("Merge Plots Across")
+						columns: 2
+
+						CheckBox
+						{
+							name: "mixtureComponentPlotMergePlotsAcrossDistributions"
+							label: qsTr("Distributions")
+							checked: false
+							enabled: form.mergeDistributionsAvailable
+							info: qsTr("Overlay the component plots for the selected distributions.")
+						}
+
+					}
+
+
 				}
 			}
 		}
 
 		SA.ParametricProbabilityPlot
 		{
+			analysisForm: form
+			modelPredictors: models.rawPredictors
+			covariateNames: variables.covariateNames
+			factorNames: variables.factorNames
+			predictorSourcesReady: models.predictorsInitialized && variables.predictorSourcesReady
 			rightCensoring:	censoring.rightCensoring
 			mergeDistributionsAvailable:	form.mergeDistributionsAvailable
-			categoricalLevelsPossible:	categoricalPredictionLevelsPossible
 			subgroupsAvailable:	variables.subgroupCount > 0
 			mergeComponentsActive:	probabilityPlotMergePlotsAcrossComponents.checked && probabilityPlotMergePlotsAcrossComponents.enabled
 
@@ -277,7 +286,7 @@ Form
 					label:		qsTr("Components")
 					checked:	false
 					enabled:	mergeAcrossComponentsPossible
-					info: qsTr("Merge the probability plots across the numbers of components into a single plot. Only available when all numbers of components are displayed and no model selection is being performed.")
+					info: qsTr("Overlay probability plots for different numbers of mixture components.")
 				}
 			]
 		}
@@ -295,6 +304,7 @@ Form
 
 		SA.ParametricDistributions
 		{
+			id: distributions
 			selectedDistribution: distribution.value
 			constraintControl: mixtureConstrainMinimumSpread
 			constraintActive: mixtureConstrainMinimumSpread.checked
@@ -313,7 +323,7 @@ Form
 					label:		qsTr("Constrain minimum spread")
 					checked:	false
 					childrenOnSameRow:	true
-					info: qsTr("Fit by constrained maximum likelihood with a minimum standard deviation of the natural logarithm of survival time in every component, including one-component models. Available for log-normal, Weibull, log-logistic, and gamma distributions; other distributions are deselected. Checkbox choices made in Selected Parametric Distributions before turning the constraint on are restored when it is turned off again, provided the analysis form has not been reloaded. When the bound is active, point estimates remain available but standard errors, confidence intervals, covariance estimates, and regular inferential tests are not reported.")
+					info: qsTr("Set a minimum spread for each mixture component to avoid very narrow components. Uncertainty estimates are unavailable with this constraint.")
 
 					DropDown
 					{
@@ -325,7 +335,7 @@ Form
 							{ label: qsTr("Absolute"), value: "absolute" }
 						]
 						startValue:		"relative"
-						info: qsTr("Set the minimum log-time standard deviation relative to an unconstrained one-component fit of the same distribution, or as an absolute value. The reference fit uses the same data, predictors, censoring, and weights and is computed separately for each model and subgroup.")
+						info: qsTr("Express the minimum spread relative to a one-component model, or as an absolute value.")
 					}
 				}
 
@@ -339,7 +349,7 @@ Form
 					inclusive:		JASP.MaxOnly
 					decimals:		4
 					visible:		mixtureConstrainMinimumSpreadType.currentValue === "relative"
-					info: qsTr("Set a positive percentage of the unconstrained one-component model's log-time standard deviation as the minimum for every component. The default is 1%. For models with predictors, the reference is the conditional distribution's log-time standard deviation. For delayed entry, it refers to the distribution before conditioning on entry.")
+					info: qsTr("Set the minimum log-time standard deviation as a percentage of that in a one-component model.")
 				}
 
 				DoubleField
@@ -352,7 +362,7 @@ Form
 					inclusive:		JASP.MaxOnly
 					decimals:		6
 					visible:		mixtureConstrainMinimumSpreadType.currentValue === "absolute"
-					info: qsTr("Set a positive lower bound, up to 100, on the standard deviation of the natural logarithm of survival time. Choose a minimum justified by the application and check sensitivity to other values; 0.1 is an editable preset, not a universal recommendation. The bound is unchanged when the units of survival time change. For delayed entry, it bounds the component distribution before conditioning on entry.")
+					info: qsTr("Set the minimum standard deviation of log survival time for each component.")
 				}
 			}
 
@@ -365,7 +375,7 @@ Form
 				min:			1
 				max:			4
 				enabled:		multipleComponentsSelected
-				info: qsTr("Set the maximum number of components fitted when 'All', 'Best AIC', or 'Best BIC' is selected as the number of components.")
+				info: qsTr("Set the maximum number of components to compare when All, Best AIC or Best BIC is selected.")
 			}
 
 			Group
@@ -375,15 +385,15 @@ Form
 
 				CheckBox
 				{
-					name:		"mixtureStartKmeans"
+					name:		"mixtureStartingValuesKMeans"
 					label:		qsTr("K-means")
 					checked:	true
-					info: qsTr("Start from a k-means clustering of the log survival times. The likelihood is maximized directly from this starting value.")
+					info: qsTr("Use k-means clustering of log survival times to obtain starting values.")
 				}
 
 				CheckBox
 				{
-					name:		"mixtureStartQuantiles"
+					name:		"mixtureStartingValuesQuantiles"
 					label:		qsTr("Equal-sized groups")
 					checked:	true
 					info: qsTr("Start from one partition of the ordered survival times into groups of equal size.")
@@ -399,7 +409,7 @@ Form
 
 				CheckBox
 				{
-					name:		"mixtureStartSplit"
+					name:		"mixtureStartingValuesSplitOfThePreviousSolution"
 					label:		qsTr("Split simpler model")
 					checked:	true
 					info: qsTr("Start from a model with one component fewer. Each start splits one of its components at its median, keeping the other components unchanged. The simpler model is fitted when needed.")
@@ -407,7 +417,7 @@ Form
 
 				CheckBox
 				{
-					name:				"mixtureStartRandom"
+					name:				"mixtureStartingValuesRandom"
 					label:				qsTr("Random")
 					checked:			true
 					childrenOnSameRow:	true
@@ -415,7 +425,7 @@ Form
 
 					IntegerField
 					{
-						name:			"mixtureStartRandomCount"
+						name:			"mixtureStartingValuesRandomCount"
 						label:			""
 						defaultValue:	10
 						min:			1
@@ -463,11 +473,11 @@ Form
 			extraControls: [
 				CheckBox
 				{
-					name: "compareModelsAcrossComponents"
+					name: "outputFormattingCompareModelsAcrossComponents"
 					text: qsTr("Compare models across components")
 					enabled: multipleComponentsSelected && models.modelCount > 1
 					checked: true
-					info: qsTr("Compare models across the numbers of components. This option is only available when multiple models and numbers of components are specified.")
+					info: qsTr("Compare models across different numbers of mixture components.")
 				}
 			]
 		}

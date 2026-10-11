@@ -37,14 +37,8 @@
 }
 .sapmReferenceLogTimeSd <- function(dataset, options, distribution, modelTerms) {
 
-  # Use the same likelihood and predictors, without the component spread constraint.
-  reference <- try(suppressWarnings(flexsurv::flexsurvreg(
-    formula = .sapGetFormula(options, modelTerms),
-    data    = dataset,
-    dist    = distribution,
-    weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]],
-    hessian = FALSE
-  )), silent = TRUE)
+  # Use the same predictors and first-component fixes, without the spread constraint.
+  reference <- try(suppressWarnings(.sapFitSingle(dataset, options, distribution, modelTerms, hessian = FALSE)), silent = TRUE)
   if (jaspBase::isTryError(reference))
     stop(gettext("The one-component reference model could not be fitted. Try a different distribution or use an absolute minimum log-time standard deviation."))
 
@@ -124,10 +118,11 @@
     stop(gettext("The fitted parameters do not satisfy the minimum log-time standard deviation. Results cannot be reported reliably."))
 
   parameters <- rownames(fit[["res"]])[point[["index"]]]
+  active     <- point[["active"]] & !point[["index"]] %in% fit[["fixedpars"]]
   return(c(constraint, list(
     boundedParameters  = parameters,
-    boundaryParameters = parameters[point[["active"]]],
-    active             = any(point[["active"]])
+    boundaryParameters = parameters[active],
+    active             = any(active)
   )))
 }
 .sapmApplyConstraintInference <- function(fit, info) {
@@ -136,7 +131,7 @@
   if (is.null(info))
     return(fit)
 
-  parameters <- rownames(fit[["res.t"]])
+  parameters <- rownames(fit[["res.t"]])[setdiff(seq_len(nrow(fit[["res.t"]])), fit[["fixedpars"]])]
   missingCovariance <- !is.matrix(fit[["cov"]]) || !identical(dim(fit[["cov"]]), rep(length(parameters), 2))
   if (info[["active"]] || missingCovariance) {
     # An ordinary inverse Hessian does not describe inference at a constraint boundary.
@@ -188,19 +183,26 @@
 
   constraint <- .sapmConstraintSpec(options, distribution, dataset, modelTerms)
   family     <- .sapmFamily(distribution)
-  formula    <- .sapGetFormula(options, modelTerms)
+  fixed      <- .sapFixedParameters(options, distribution)
+  .sapCheckFixedConstraint(fixed, constraint)
+  fixed      <- fixed[[1L]]
+  specification <- .sapCompileEquations(dataset, options, family, modelTerms)
+  formula    <- specification[["formula"]]
+  fixed      <- c(fixed, specification[["fixed"]])
+  parameterNames <- specification[["parameterNames"]]
   weights    <- if (options[["weights"]] != "") dataset[[options[["weights"]]]] else rep(1, nrow(dataset))
   dlist      <- .sapmConstraintDistribution(distribution, constraint, family)
 
   # Native initialization with only the feasibility repair above; no preliminary optimization.
-  pilotCall <- list(formula = formula, data = dataset, dist = dlist,
+  pilotCall <- list(formula = formula, anc = specification[["anc"]], data = dataset, dist = dlist,
                     method = "BFGS", hessian = FALSE, control = list(maxit = 0))
   if (options[["weights"]] != "")
     pilotCall[["weights"]] <- weights
-  pilot <- suppressWarnings(do.call(flexsurv::flexsurvreg, pilotCall))
+  schema <- .sapNativeSchema(pilotCall, specification, fixed)
+  pilot <- schema[["fit"]]
   descriptor <- list(dlist = flexsurv::flexsurv.dists[[distribution]], dfns = NULL)
   native <- .sapmNativeFit(formula, dataset, options, family, 1L, descriptor,
-                           unname(pilot[["res"]][, "est"]), weights, constraint = constraint)
+                           unname(pilot[["res"]][, "est"]), weights, constraint = constraint, fixed = fixed, parameterNames = parameterNames, specification = specification)
   if (jaspBase::isTryError(native[["fit"]]))
     stop(jaspBase::.extractErrorMessage(native[["fit"]]))
   candidate <- native[["fit"]]
@@ -210,7 +212,7 @@
 
   inits <- unname(candidate[["res"]][, "est"])
   native <- .sapmNativeFit(formula, dataset, options, family, 1L, descriptor,
-                           inits, weights, hessian = TRUE, constraint = constraint)
+                           inits, weights, hessian = TRUE, constraint = constraint, fixed = fixed, parameterNames = parameterNames, specification = specification, searchProvenance = attr(candidate, "searchProvenance"))
   if (jaspBase::isTryError(native[["fit"]]))
     stop(jaspBase::.extractErrorMessage(native[["fit"]]))
   fit <- native[["fit"]]

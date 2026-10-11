@@ -35,12 +35,12 @@
 
   # the random draws are seeded so that the starting values do not depend on the preceding fits
   # (the solution with one component fewer is fitted first when it is not part of the analysis)
-  if (options[["mixtureStartKmeans"]]) {
+  if (options[["mixtureStartingValuesKMeans"]]) {
     jaspBase::.setSeedJASP(options)
     addPartition("kmeans", .sapmKmeansMembership(logTime, components))
   }
 
-  if (options[["mixtureStartQuantiles"]])
+  if (options[["mixtureStartingValuesQuantiles"]])
     addPartition("quantiles", .sapmQuantileMembership(logTime, components))
 
   if (options[["mixtureStartTails"]]) {
@@ -49,17 +49,17 @@
       addPartition(paste0("tails", i), .sapmTailMembership(logTime, shares[[i]], components))
   }
 
-  if (options[["mixtureStartSplit"]] && !is.null(previous))
+  if (options[["mixtureStartingValuesSplitOfThePreviousSolution"]] && !is.null(previous))
     for (j in seq_len(components - 1)) for (i in seq_along(probabilities)) {
       posterior <- try(.sapmSplitPosterior(family, survObject, previous, j, softness[i]), silent = TRUE)
       if (!jaspBase::isTryError(posterior))
         add(paste0("split", j), posterior, i)
     }
 
-  if (options[["mixtureStartRandom"]]) {
+  if (options[["mixtureStartingValuesRandom"]]) {
     jaspBase::.setSeedJASP(options)
     events <- .sapmEventIndicator(emSurvObject)
-    for (i in seq_len(options[["mixtureStartRandomCount"]]))
+    for (i in seq_len(options[["mixtureStartingValuesRandomCount"]]))
       addPartition(paste0("random", i), .sapmRandomMembership(logTime, events, components))
   }
 

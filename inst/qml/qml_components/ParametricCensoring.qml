@@ -38,7 +38,7 @@ Group
 		title:					qsTr("Censoring Type")
 		radioButtonsOnSameRow:	true
 		columns:				3
-		info: mixture ? qsTranslate("ParametricMixtureSurvivalAnalysis", "Select right-censored data, counting-process data with entry and exit times, or interval-censored data (including left-censored observations).") : qsTr("Select right-censored data, counting-process data with delayed entry, or interval-censored data.")
+		info: mixture ? qsTranslate("ParametricMixtureSurvivalAnalysis", "Specify whether the data are right-censored, interval-censored or include delayed entry.") : qsTr("Specify whether the data are right-censored, interval-censored or include delayed entry.")
 
 		RadioButton
 		{

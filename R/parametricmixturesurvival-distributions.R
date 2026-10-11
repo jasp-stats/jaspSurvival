@@ -18,6 +18,10 @@
 # Component parameters and native mixture distribution functions.
 .sapmOrderedInits               <- function(fit, family, components) {
 
+  # Fixed values identify components; median ordering would assign them to other components.
+  if (length(setdiff(fit[["fixedpars"]], match(names(attr(fit, "structuralParameters")), rownames(fit[["res"]])))) > 0L)
+    return(unname(fit[["res"]][, "est"]))
+
   # order estimates before flexsurvreg constructs their covariance and confidence intervals
   estimates <- .sapmComponentEstimates(fit, family, components)
   order     <- .sapmComponentOrder(family, estimates[["base"]])
@@ -25,15 +29,29 @@
   if (components == 1 || identical(order, seq_len(components)))
     return(unname(inits))
 
-  parameters  <- length(family[["pars"]])
-  effects     <- fit[["ncoveffs"]] / components
-  baseIndex   <- as.vector(vapply(order, function(k) (k - 1) * parameters + seq_len(parameters), numeric(parameters)))
-  weightIndex <- components * parameters + seq_len(components - 1)
-  effectIndex <- if (effects > 0) as.vector(vapply(order, function(k) max(weightIndex) + (k - 1) * effects + seq_len(effects), numeric(effects))) else numeric(0)
-  inits <- inits[c(baseIndex, weightIndex, effectIndex)]
+  original <- inits
+  for (k in seq_len(components)) for (parameter in family[["pars"]]) {
+    native <- paste0(parameter, k)
+    source <- paste0(parameter, order[k])
+    inits[native] <- original[source]
+    targetIndex <- fit[["covpars"]][fit[["mx"]][[native]]]
+    sourceIndex <- fit[["covpars"]][fit[["mx"]][[source]]]
+    if (length(targetIndex) != length(sourceIndex))
+      stop("Component equation designs differ during component reordering.")
+    inits[targetIndex] <- original[sourceIndex]
+  }
+  weightIndex <- match(.sapmParameterNames(family, components)[["weightPars"]], names(inits))
   inits[weightIndex] <- stats::plogis(.sapmReorderedWeights(fit[["res.t"]][weightIndex, "est"], order))
 
   return(unname(inits))
+}
+.sapmFixedNativeParameters      <- function(fixed) {
+
+  return(unlist(lapply(seq_along(fixed), function(k) {
+    if (length(fixed[[k]]) == 0L)
+      return(numeric(0))
+    return(stats::setNames(fixed[[k]], paste0(names(fixed[[k]]), k)))
+  }), use.names = TRUE))
 }
 .sapmReorderedWeights           <- function(estimates, order) {
 
@@ -45,7 +63,7 @@
     probabilities[k] - .sapmLogSumExp(matrix(probabilities[seq.int(k + 1, length(probabilities))], nrow = 1))
   }, numeric(1)))
 }
-.sapmInits                      <- function(mixture, base, beta, probabilities) {
+.sapmInits                      <- function(mixture, base, beta, probabilities, specification = NULL) {
 
   # flexsurvreg order: component parameters, stick-breaking weights, location effects of the first component, location effects of the remaining components
   components <- length(base)
@@ -56,11 +74,26 @@
     remaining <- remaining - probabilities[k]
   }
 
-  return(c(
+  inits <- c(
     stats::setNames(unlist(base, use.names = FALSE), mixture[["componentPars"]]),
     stats::setNames(weights, mixture[["weightPars"]]),
     unlist(beta, use.names = FALSE)
-  ))
+  )
+  if (!is.null(specification)) {
+    slopes <- numeric(0)
+    for (native in names(specification[["equations"]])) {
+      equation <- specification[["equations"]][[native]]
+      values <- beta[[equation[["component"]]]]
+      if (length(equation[["slopeNames"]]) == 0L) values <- numeric(0)
+      else if (is.list(values)) values <- values[[equation[["parameter"]]]]
+      if (length(values) != length(equation[["slopeNames"]]))
+        stop("Component starting coefficients differ from the native equation design.")
+      slopes <- c(slopes, stats::setNames(as.numeric(values), equation[["slopeNames"]]))
+    }
+    inits <- c(inits[mixture[["dlist"]][["pars"]]], slopes)
+    inits <- inits[specification[["parameterNames"]]]
+  }
+  return(inits)
 }
 .sapmComponentOrder             <- function(family, base) {
 
@@ -97,7 +130,6 @@
 
   estimates  <- fit[["res.t"]][, "est"]
   parameters <- .sapmBaseParameters(estimates, family, components)
-  isLog      <- vapply(family[["transforms"]], function(f) identical(f, log), logical(1)) & family[["pars"]] != family[["location"]]
 
   return(list(
     base          = parameters[["base"]],
@@ -109,20 +141,13 @@
       return(estimates[fit[["covpars"]][index]])
     }),
     # exclude the location, whose scale changes with the time units
-    collapsed     = vapply(seq_len(components), function(k) {
-      any(abs(estimates[paste0(family[["pars"]], k)][isLog]) > 15)
-    }, logical(1))
+    collapsed     = .sapmConditionalMagnitude(fit, family, components)
   ))
 }
 .sapmObservationParameters      <- function(fit, family, components) {
 
   # natural parameters of each component for each observation of the fitted mixture
-  estimates  <- .sapmComponentEstimates(fit, family, components)
-  covariates <- fit[["data"]][["mml"]][[paste0(family[["location"]], 1)]]
-  if (!is.null(covariates))
-    covariates <- covariates[, -1, drop = FALSE]
-
-  return(.sapmComponentParameters(family, estimates, covariates))
+  return(.sapmObservationParametersWithoutDiagnostics(fit, family, components))
 }
 .sapmPosterior                  <- function(fit, family, components, survObject) {
   return(.sapmPosteriorProbabilities(
@@ -191,7 +216,9 @@
     arguments <- splitArguments(list(...), length(x))
     x         <- rep_len(x, arguments[["n"]])
     logs      <- vapply(seq_len(components), function(k) {
-      log(arguments[["probabilities"]][, k]) + do.call(family[["d"]], c(list(x), arguments[["components"]][[k]], list(log = TRUE)))
+      contribution <- log(arguments[["probabilities"]][, k]) + do.call(family[["d"]], c(list(x), arguments[["components"]][[k]], list(log = TRUE)))
+      contribution[arguments[["probabilities"]][, k] == 0] <- -Inf
+      return(contribution)
     }, numeric(arguments[["n"]]))
     out       <- .sapmLogSumExp(matrix(logs, nrow = arguments[["n"]]))
     return(if (log) out else exp(out))
@@ -210,41 +237,48 @@
     return(.sapmLogSumExp(matrix(logs, nrow = arguments[["n"]])))
   }
   qMixture <- function(p, ..., lower.tail = TRUE, log.p = FALSE) {
-    if (log.p)
-      p <- exp(p)
-    if (!lower.tail)
-      p <- 1 - p
+    if (!length(p)) return(numeric(0))
+    logLower <- if (log.p) if (lower.tail) p else log(-expm1(p)) else if (lower.tail) log(p) else log1p(-p)
+    logUpper <- if (log.p) if (lower.tail) log(-expm1(p)) else p else if (lower.tail) log1p(-p) else log(p)
     arguments <- list(...)
     n         <- max(length(p), lengths(arguments))
     arguments <- lapply(arguments, rep_len, length.out = n)
-    p         <- rep_len(p, n)
+    logLower  <- rep_len(logLower, n)
+    logUpper  <- rep_len(logUpper, n)
     out       <- rep(NA_real_, n)
-    out[which(p == 0)] <- 0
-    out[which(p == 1)] <- Inf
+    out[which(logLower == -Inf)] <- 0
+    out[which(logUpper == -Inf)] <- Inf
 
     # Negative Gompertz shapes can leave a cure fraction. Quantiles at or above
     # the finite-event probability are infinite, rather than numerical failures.
-    limit    <- do.call(pMixture, c(list(q = Inf), arguments))
-    interior <- is.finite(p) & p > 0 & p < 1 & is.finite(limit)
-    out[which(interior & p >= limit)] <- Inf
-    index <- which(interior & p < limit)
+    logCure  <- do.call(pMixture, c(list(q = Inf, lower.tail = FALSE, log.p = TRUE), arguments))
+    interior <- is.finite(logLower) & is.finite(logUpper) & logLower <= 0 & logUpper <= 0 & !is.na(logCure)
+    out[which(interior & logUpper <= logCure)] <- Inf
+    index <- which(interior & logUpper > logCure)
     if (length(index) == 0)
       return(out)
 
     parameters <- lapply(arguments, function(x) x[index])
-    # Invert on log time with flexsurv's native solver so units do not set the root tolerance.
-    logTimeCdf <- function(q, ...) pMixture(exp(q), ...)
-    quantiles  <- try(do.call(flexsurv::qgeneric, c(list(pdist = logTimeCdf, p = p[index]), parameters)), silent = TRUE)
+    upperTail <- logLower[index] > log(.5)
+    target    <- ifelse(upperTail, logUpper[index], logLower[index])
+    # Scale log-tail probabilities to an ordinary CDF for the native solver.
+    # Its target stays away from 0/1, retaining small upper-tail probabilities.
+    logTimeCdf <- function(q, targetLog, upperTail, ...) {
+      lower <- pMixture(exp(q), ..., log.p = TRUE)
+      upper <- pMixture(exp(q), ..., lower.tail = FALSE, log.p = TRUE)
+      value <- ifelse(upperTail, upper, lower) / -targetLog
+      return(ifelse(upperTail, -expm1(value), exp(value)))
+    }
+    quantiles <- try(do.call(flexsurv::qgeneric, c(list(pdist = logTimeCdf,
+      p = ifelse(upperTail, -expm1(-1), exp(-1)), targetLog = target, upperTail = upperTail), parameters)), silent = TRUE)
     if (!inherits(quantiles, "try-error")) {
       quantiles   <- exp(quantiles)
-      probability <- do.call(pMixture, c(list(q = quantiles), parameters))
-      upperTail   <- p[index] > 0.5
+      probability <- do.call(pMixture, c(list(q = quantiles, log.p = TRUE), parameters))
       if (any(upperTail)) {
-        survival <- do.call(pMixture, c(list(q = quantiles, lower.tail = FALSE), parameters))
+        survival <- do.call(pMixture, c(list(q = quantiles, lower.tail = FALSE, log.p = TRUE), parameters))
         probability[upperTail] <- survival[upperTail]
       }
-      target   <- ifelse(upperTail, 1 - p[index], p[index])
-      accurate <- is.finite(quantiles) & quantiles > 0 & is.finite(probability) & abs(probability - target) <= 1e-7 * target
+      accurate <- is.finite(quantiles) & quantiles > 0 & is.finite(probability) & abs(probability - target) <= 1e-7
       out[index[accurate]] <- quantiles[accurate]
     }
     if (anyNA(out[index]))
@@ -259,7 +293,9 @@
     arguments <- splitArguments(list(...), length(t))
     t         <- rep_len(t, arguments[["n"]])
     return(Reduce(`+`, lapply(seq_len(components), function(k) {
-      arguments[["probabilities"]][, k] * do.call(family[["rmst"]], c(list(t), arguments[["components"]][[k]]))
+      contribution <- arguments[["probabilities"]][, k] * do.call(family[["rmst"]], c(list(t), arguments[["components"]][[k]]))
+      contribution[arguments[["probabilities"]][, k] == 0] <- 0
+      return(contribution)
     })))
   }
   meanMixture <- function(..., start = 0) {
@@ -267,7 +303,9 @@
       return(flexsurv::rmst_generic(pMixture, t = Inf, start = start, ...))
     arguments <- splitArguments(list(...), 1)
     return(Reduce(`+`, lapply(seq_len(components), function(k) {
-      arguments[["probabilities"]][, k] * do.call(family[["mean"]], arguments[["components"]][[k]])
+      contribution <- arguments[["probabilities"]][, k] * do.call(family[["mean"]], arguments[["components"]][[k]])
+      contribution[arguments[["probabilities"]][, k] == 0] <- 0
+      return(contribution)
     })))
   }
   rMixture <- function(n, ...) {
@@ -323,6 +361,18 @@
 
   return(out)
 }
+.sapMeanGompertz <- function(shape, rate = 1) {
+  # A negative shape leaves positive survival at infinity: unrestricted mean
+  # lifetime is infinite even when numerical integration returns a finite value.
+  size <- max(length(shape), length(rate))
+  shape <- rep_len(shape, size)
+  rate <- rep_len(rate, size)
+  infinite <- !is.na(shape) & shape < 0 & !is.na(rate) & rate > 0
+  value <- rep(Inf, size)
+  if (any(!infinite))
+    value[!infinite] <- flexsurv::mean_gompertz(shape[!infinite], rate[!infinite])
+  return(value)
+}
 .sapmFamily <- function(distribution) {
 
   specification <- flexsurv::flexsurv.dists[[distribution]]
@@ -336,7 +386,7 @@
     "gengamma" = list(d = flexsurv::dgengamma, p = flexsurv::pgengamma, q = flexsurv::qgengamma, h = flexsurv::hgengamma,
                        rmst = flexsurv::rmst_gengamma, mean = flexsurv::mean_gengamma),
     "gompertz" = list(d = flexsurv::dgompertz, p = flexsurv::pgompertz, q = flexsurv::qgompertz, h = flexsurv::hgompertz,
-                       rmst = flexsurv::rmst_gompertz, mean = flexsurv::mean_gompertz),
+                       rmst = flexsurv::rmst_gompertz, mean = .sapMeanGompertz),
     "llogis" = list(d = flexsurv::dllogis, p = flexsurv::pllogis, q = flexsurv::qllogis, h = flexsurv::hllogis,
                      rmst = flexsurv::rmst_llogis, mean = flexsurv::mean_llogis),
     "lnorm" = list(d = stats::dlnorm, p = stats::plnorm, q = stats::qlnorm, h = flexsurv::hlnorm,

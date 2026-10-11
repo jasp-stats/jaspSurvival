@@ -32,6 +32,7 @@ Form
 	SA.ParametricVariables
 	{
 		id: variables
+		modelPredictors: models.rawPredictors
 		rightCensoring: censoring.rightCensoring
 		intervalCensoring: censoring.intervalCensoring
 		countingCensoring: censoring.countingCensoring
@@ -45,11 +46,22 @@ Form
 	SA.ParametricDistribution
 	{
 		id: distribution
+		selectedFamilies: distributions.selectedFamilies
+	}
+
+	SA.ParametricParameterRestrictions
+	{
+		selector: distribution
 	}
 
 	SA.ParametricModel
 	{
+		analysisForm: form
 		id: models
+		selector: distribution
+		covariateNames: variables.covariateNames
+		factorNames: variables.factorNames
+		predictorSourcesReady: variables.predictorSourcesReady
 	}
 
 	SA.ParametricStatistics
@@ -60,26 +72,52 @@ Form
 
 	SA.ParametricPredictions
 	{
+		analysisForm: form
+		modelPredictors: models.rawPredictors
+		covariateNames: variables.covariateNames
+		factorNames: variables.factorNames
+		predictorSourcesReady: models.predictorsInitialized && variables.predictorSourcesReady
+		predictionPredictors: variables.predictionPredictors
 		rightCensoring:	censoring.rightCensoring
 		mergeDistributionsAvailable:	form.mergeDistributionsAvailable
 		categoricalLevelsPossible:	categoricalPredictionLevelsPossible
 		subgroupsAvailable:	variables.subgroupCount > 0
+		extraPlotSelected:	densityPlot.checked
 	}
 
 	Section
 	{
 		title:	qsTr("Diagnostics")
 
-		SA.ParametricResidualPlots
+		Group
 		{
-			rightCensoring:	censoring.rightCensoring
+			SA.ParametricResidualPlots
+			{
+				rightCensoring:	censoring.rightCensoring
+			}
+
+			SA.ParametricDensityPlot
+			{
+				id: densityPlot
+				rightCensoring: censoring.rightCensoring
+				mergeDistributionsAvailable: form.mergeDistributionsAvailable
+				analysisForm: form
+				modelPredictors: models.rawPredictors
+				covariateNames: variables.covariateNames
+				factorNames: variables.factorNames
+				predictorSourcesReady: models.predictorsInitialized && variables.predictorSourcesReady
+			}
 		}
 
 		SA.ParametricProbabilityPlot
 		{
+			analysisForm: form
+			modelPredictors: models.rawPredictors
+			covariateNames: variables.covariateNames
+			factorNames: variables.factorNames
+			predictorSourcesReady: models.predictorsInitialized && variables.predictorSourcesReady
 			rightCensoring:	censoring.rightCensoring
 			mergeDistributionsAvailable:	form.mergeDistributionsAvailable
-			categoricalLevelsPossible:	categoricalPredictionLevelsPossible
 			subgroupsAvailable:	variables.subgroupCount > 0
 		}
 	}
@@ -95,6 +133,7 @@ Form
 
 		SA.ParametricDistributions
 		{
+			id: distributions
 			selectedDistribution: distribution.value
 		}
 

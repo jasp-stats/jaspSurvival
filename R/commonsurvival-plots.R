@@ -249,7 +249,16 @@
     return()
   }
 
-  surivalPlot$plotObject <- tempPlot
+  surivalPlot$plotObject <- .sapPlotCanvasPadding(tempPlot)
+
+  return()
+}
+.saFillResidualPlot <- function(plot, object) {
+
+  if (jaspBase::isTryError(object))
+    plot$setError(object)
+  else
+    plot$plotObject <- .sapPlotCanvasPadding(object)
 
   return()
 }

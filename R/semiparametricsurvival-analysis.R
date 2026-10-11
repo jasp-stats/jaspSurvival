@@ -615,7 +615,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     tempPlot <- tempPlot + jaspGraphs::geom_rangeframe(sides = "bl") + jaspGraphs::themeJaspRaw()
 
     tempJaspPlot <- createJaspPlot(
-      plot   = tempPlot,
+      plot   = .sapPlotCanvasPadding(tempPlot),
       title  = .saTermNames(tempVariable, c(options[["covariates"]], options[["factors"]])),
       width  = 450,
       height = 320
@@ -683,10 +683,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
       timeVariable <- if (options[["censoringType"]] == "counting") options[["intervalEnd"]] else options[["timeToEvent"]]
       tempPlot <- try(.saResidualsPlot(x = dataset[[timeVariable]][varIndx], y = residuals, xlab = gettext("Time"), ylab = .saResidualsPlotName(options)))
 
-      if (jaspBase::isTryError(tempPlot))
-        residualPlotResidualVsTime$setError(tempPlot)
-      else
-        residualPlotResidualVsTime$plotObject <- tempPlot
+      .saFillResidualPlot(residualPlotResidualVsTime, tempPlot)
     }
   }
 
@@ -726,10 +723,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
         residualsPlots[[paste0("residualPlotResidualVsPredictors", i)]] <- tempPlot
         plotObject <- try(.saResidualsPlot(x = predictorsFit[varIndx, i], y = tempResiduals,
                                           xlab = tempPredictorName, ylab = .saResidualsPlotName(options)))
-        if (jaspBase::isTryError(plotObject))
-          tempPlot$setError(plotObject)
-        else
-          tempPlot$plotObject <- plotObject
+        .saFillResidualPlot(tempPlot, plotObject)
       }
     }
   }
@@ -745,10 +739,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     } else {
       tempPlot <- try(.saResidualsPlot(y = exp(-predict(fit, type = "expected")[varIndx]), x = residuals, ylab = gettext("Predicted Survival"), xlab = .saResidualsPlotName(options)))
 
-      if (jaspBase::isTryError(tempPlot))
-        residualPlotResidualVsPredicted$setError(tempPlot)
-      else
-        residualPlotResidualVsPredicted$plotObject <- tempPlot
+      .saFillResidualPlot(residualPlotResidualVsPredicted, tempPlot)
     }
   }
 
@@ -763,10 +754,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     } else {
       tempPlot <- try(jaspGraphs::jaspHistogram(residuals, xName = .saResidualsPlotName(options)))
 
-      if (jaspBase::isTryError(tempPlot))
-        residualPlotResidualHistogram$setError(tempPlot)
-      else
-        residualPlotResidualHistogram$plotObject <- tempPlot
+      .saFillResidualPlot(residualPlotResidualHistogram, tempPlot)
     }
   }
 
@@ -818,8 +806,10 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   # add confidence intervals
   if (!HR && options[["coefficientsConfidenceIntervals"]]) {
-    estimatesFit$lower <- estimatesFit[, "est"] + qnorm((1 - options[["coefficientsConfidenceIntervalsLevel"]]) / 2) * estimatesFit[, if("rse" %in% colnames(estimatesFit)) "rse" else "se"]
-    estimatesFit$upper <- estimatesFit[, "est"] - qnorm((1 - options[["coefficientsConfidenceIntervalsLevel"]]) / 2) * estimatesFit[, if("rse" %in% colnames(estimatesFit)) "rse" else "se"]
+    critical <- stats::qnorm((1 - options[["coefficientsConfidenceIntervalsLevel"]]) / 2)
+    error    <- estimatesFit[, if ("rse" %in% colnames(estimatesFit)) "rse" else "se"]
+    estimatesFit$lower <- estimatesFit[, "est"] + critical * error
+    estimatesFit$upper <- estimatesFit[, "est"] - critical * error
   }
 
   estimatesFit <- cbind(

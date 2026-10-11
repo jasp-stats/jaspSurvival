@@ -40,6 +40,12 @@
   covariatesVariable <- if (type != "KM") Filter(function(s) s != "", options[["covariates"]])
   # only for parametric
   subgroupVariable   <- if (type == "parametric" && .sapHasSubgroups(options)) options[["subgroup"]]
+  validationVariables <- colnames(dataset)
+  if (type == "parametric") {
+    predictors <- .sapOptionsVariables(options)
+    covariatesVariable <- intersect(predictors, unlist(options[["covariates"]], use.names = FALSE))
+    validationVariables <- unique(c(eventVariable, timeVariable, weightsVariable, subgroupVariable, predictors))
+  }
 
   # clean from NAs
   if (options[["censoringType"]] == "interval") {
@@ -48,7 +54,7 @@
       .quitAnalysis(gettext("An open interval may use negative infinity for its start or positive infinity for its end, but not the reverse."))
 
     # !!! interval data use NA's in the interval indication !!!
-    keep <- stats::complete.cases(dataset[setdiff(colnames(dataset), timeVariable)]) &
+    keep <- stats::complete.cases(dataset[setdiff(validationVariables, timeVariable)]) &
       (is.finite(dataset[[options[["intervalStart"]]]]) | is.finite(dataset[[options[["intervalEnd"]]]]))
     dataset <- dataset[keep, ]
     dataset <- droplevels(dataset)
@@ -57,7 +63,10 @@
     dataset[[options[["intervalStart"]]]][is.nan(dataset[[options[["intervalStart"]]]]) | is.infinite(dataset[[options[["intervalStart"]]]])] <- NA
     dataset[[options[["intervalEnd"]]]][is.nan(dataset[[options[["intervalEnd"]]]])     | is.infinite(dataset[[options[["intervalEnd"]]]])] <- NA
   } else {
-    dataset <- na.omit(dataset)
+    if (type == "parametric")
+      dataset <- dataset[stats::complete.cases(dataset[validationVariables]), , drop = FALSE]
+    else
+      dataset <- na.omit(dataset)
     dataset <- droplevels(dataset)
 
     # recode the event status variable
@@ -90,13 +99,12 @@
   if (!is.null(covariatesVariable) && length(covariatesVariable) > 0)
     .hasErrors(
       dataset                      = dataset,
-      type                         = c("infinity", "observations", "variance", if (length(covariatesVariable) > 1) "varCovData"),
+      type                         = c("infinity", "observations", "variance", if (type != "parametric" && length(covariatesVariable) > 1) "varCovData"),
       all.target                   = covariatesVariable,
       varCovData.corFun            = stats::cov,
       observations.amount          = "< 2",
       exitAnalysisIfErrors         = TRUE
     )
-
   if (!is.null(subgroupVariable))
     .hasErrors(
       dataset                      = dataset,
@@ -115,7 +123,7 @@
     )
 
   if (!is.null(weightsVariable)) {
-    if (!all(isWholenumber(dataset[[weightsVariable]])))
+    if (!all(.saIsWholeNumber(dataset[[weightsVariable]])))
       .quitAnalysis(gettextf("The weights variable must be an integer."))
     if (anyNA(dataset[[weightsVariable]]))
       .quitAnalysis(gettextf("The weights variable must not contain missing values."))
@@ -250,12 +258,12 @@
 
   return(as.formula(formula, env = parent.frame(1)))
 }
-.sapGetFormula        <- function(options, modelTerms) {
+.sapGetFormula        <- function(options, modelTerms, dataset) {
 
   # flexsurv estimates a baseline distribution parameter in every model and
   # removes the first design column as its intercept. Omitting the intercept
   # from the formula would silently discard the first predictor instead.
-  predictors <- .sapGetPredictors(modelTerms)
+  predictors <- .sapGetPredictors(modelTerms, dataset, .sapCaseWeights(dataset, options))
   survival   <- .saGetSurv(options)
   formula    <- paste(survival, "~", if (length(predictors) == 0) "1" else paste(predictors, collapse = "+"))
 
@@ -294,15 +302,21 @@
 
   return(t)
 }
-.sapGetPredictors     <- function(modelTerms) {
+.sapGetPredictors     <- function(modelTerms, dataset, weights) {
 
   t <- NULL
   for (i in seq_along(modelTerms[["components"]])) {
-    term <- modelTerms[["components"]][[i]]
+    term <- vapply(modelTerms[["components"]][[i]], function(variable)
+      .sapPredictorExpression(variable, modelTerms, dataset, weights), character(1))
     if (length(term) == 1)
       t <- c(t, term)
     else
       t <- c(t, paste(unlist(term), collapse = ":"))
+  }
+  for (variable in names(modelTerms[["transformations"]])) {
+    transformation <- modelTerms[["transformations"]][[variable]]
+    if (transformation[["transformation"]] == "eyring")
+      t <- c(t, .sapEyringLogExpression(variable, transformation[["temperatureUnit"]]))
   }
 
   return(t)
@@ -416,13 +430,15 @@
     return()
 
   censoringSummaryTable <- createJaspTable(title = gettext("Censoring Summary"))
+  parametric <- options[["analysisType"]] %in% c("parametric", "mixture")
   censoringSummaryTable$dependOn(c("censoringType", "timeToEvent", "eventStatus", "eventIndicator", "intervalStart", "intervalEnd", "weights", "subgroup", "censoringSummary",
-                                  "covariates", "factors", "strata", "cluster", "frailty"))
+                                  "covariates", "factors", "strata", "cluster", "frailty",
+                                  if (parametric) c("modelTerms", "modelAncillaryParameterRegression", paste0("modelAncillaryParameter", 1:3, "ModelTerms"),
+                                    "distribution", .sapDistributionOptions, "modelAdvancedSpecification", "modelAdvancedSpecificationTerms")))
   censoringSummaryTable$position <- 0
   jaspResults[["censoringSummaryTable"]] <- censoringSummaryTable
 
   censoringSummaryTable$addColumnInfo(name = "type",  title = "", type = "string")
-  parametric <- options[["analysisType"]] %in% c("parametric", "mixture")
   if (parametric && .sapHasSubgroups(options))
     censoringSummaryTable$addColumnInfo(name = "subgroup", title = gettext("Subgroup"), type = "string")
   censoringSummaryTable$addColumnInfo(name = "count", title = gettext("Count"), type = "integer")
@@ -463,13 +479,9 @@
 }
 .saSafeRbind     <- function(dfs) {
 
-  # this function allows combining data.frames with different columns
-  # the main issue is that some models might be missing coefficients/terms,
-  # or complete fit failure, as such, simple rbind might misaligned the grouped output
-  # importantly, the order of the output data.frame
-  # does not matter as order is determined by the table itself
+  # Failed fits may omit columns. Align rows by column name before stacking them.
 
-  dfs <- dfs[!sapply(dfs, function(x) is.null(x) || length(x) == 0 || nrow(x) == 0)]
+  dfs <- dfs[!vapply(dfs, function(x) is.null(x) || length(x) == 0 || nrow(x) == 0, logical(1))]
   if (length(dfs) == 0)
     return(NULL)
 
@@ -484,7 +496,7 @@
         dfs[[i]][[col]] <- NA
       }
     }
-    dfs[[i]] <- dfs[[i]][,colnamesUnique,drop=FALSE]
+    dfs[[i]] <- dfs[[i]][, colnamesUnique, drop = FALSE]
   }
 
   df <- do.call(rbind, dfs)
@@ -492,24 +504,22 @@
 }
 .saSafeSimplify  <- function(df) {
 
-  # transform into factors to keep the order during splitting
-  df[["model"]]        <- factor(df[["model"]],        levels = unique(df[["model"]]))
-  df[["components"]]   <- factor(df[["components"]],   levels = unique(df[["components"]]))
-  df[["distribution"]] <- factor(df[["distribution"]], levels = unique(df[["distribution"]]))
-  df[["subgroup"]]     <- factor(df[["subgroup"]],     levels = unique(df[["subgroup"]]))
+  # Preserve display order while grouping rows and suppressing repeated labels.
+  for (column in c("model", "components", "distribution", "subgroup"))
+    df[[column]] <- factor(df[[column]], levels = unique(df[[column]]))
 
   # simplifying output tables
-  df <- do.call(rbind, lapply(split(df, df[["subgroup"]]), function(x) {
-    x <- do.call(rbind, lapply(split(x, x[["distribution"]]), function(xx) {
-      xx <- do.call(rbind, lapply(split(xx, xx[["components"]]), function(xxx) {
-        xxx[["model"]][duplicated(xxx[["model"]])] <- NA
-        return(xxx)
+  df <- do.call(rbind, lapply(split(df, df[["subgroup"]]), function(subgroup) {
+    subgroup <- do.call(rbind, lapply(split(subgroup, subgroup[["distribution"]]), function(distribution) {
+      distribution <- do.call(rbind, lapply(split(distribution, distribution[["components"]]), function(component) {
+        component[["model"]][duplicated(component[["model"]])] <- NA
+        return(component)
       }))
-      xx[["components"]][duplicated(xx[["components"]])] <- NA
-      return(xx)
+      distribution[["components"]][duplicated(distribution[["components"]])] <- NA
+      return(distribution)
     }))
-    x[["distribution"]][duplicated(x[["distribution"]])] <- NA
-    return(x)
+    subgroup[["distribution"]][duplicated(subgroup[["distribution"]])] <- NA
+    return(subgroup)
   }))
   df[["subgroup"]][duplicated(df[["subgroup"]])] <- NA
 
@@ -521,4 +531,7 @@
 
   return(df)
 }
-isWholenumber            <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
+.saIsWholeNumber <- function(x, tolerance = .Machine$double.eps^0.5) {
+  # Frequency columns may be stored as floating-point numbers.
+  return(abs(x - round(x)) < tolerance)
+}

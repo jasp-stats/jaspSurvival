@@ -30,8 +30,17 @@ VariablesForm
 	property bool rightCensoring: true
 	property bool intervalCensoring: false
 	property bool countingCensoring: false
+	property var modelPredictors: []
+	readonly property var factorNames: factors.columnsNames
+	readonly property var covariateNames: covariates.columnsNames
+	readonly property bool predictorSourcesReady: covariates.initialized && factors.initialized
 	readonly property int factorCount: factors.count
 	readonly property int subgroupCount: subgroup.count
+	readonly property var predictionPredictors:
+	{
+		let predictors = modelPredictors.concat(subgroup.columnsNames);
+		return predictors.filter(function(value, index, values) { return values.indexOf(value) === index; });
+	}
 
 	removeInvisibles:	true
 	preferredHeight:	((rightCensoring  || intervalCensoring) ? 475 : 550 ) * jaspTheme.uiScale
@@ -106,7 +115,7 @@ VariablesForm
 		name:			 	"covariates"
 		title:			 	qsTr("Covariates")
 		allowedColumns:		["scale"]
-		info: mixture ? qsTranslate("ParametricMixtureSurvivalAnalysis", "Add continuous variables as covariates to include them in the mixture model. The covariates affect the location parameter of each component with separate coefficients.") : qsTr("Add continuous variables as covariates to include them in the parametric survival model.")
+		info: mixture ? qsTranslate("ParametricMixtureSurvivalAnalysis", "Add continuous predictors to the mixture model. Each component has its own coefficients.") : qsTr("Add continuous predictors to the survival model.")
 	}
 
 	AssignedVariablesList
@@ -115,7 +124,7 @@ VariablesForm
 		name:			 	"factors"
 		title:			 	qsTr("Factors")
 		allowedColumns:		["nominal"]
-		info: mixture ? qsTranslate("ParametricMixtureSurvivalAnalysis", "Add categorical variables as factors to include them in the mixture model. The factors affect the location parameter of each component with separate coefficients.") : qsTr("Add categorical variables as factors to include them in the parametric survival model.")
+		info: mixture ? qsTranslate("ParametricMixtureSurvivalAnalysis", "Add categorical predictors to the mixture model. Each component has its own coefficients.") : qsTr("Add categorical predictors to the survival model.")
 	}
 
 
@@ -125,7 +134,7 @@ VariablesForm
 		title:			 	qsTr("Weights")
 		allowedColumns:		["scale"]
 		singleVariable:		true
-		info: qsTr("Select a variable for case weights, weighting each observation accordingly in the model.")
+		info: qsTr("Select a variable of positive integer case frequencies. Each value gives the number of observations represented by that row.")
 	}
 
 	AssignedVariablesList
@@ -135,6 +144,6 @@ VariablesForm
 		title:			 	qsTr("Subgroup")
 		height:				1.5 * jaspTheme.defaultSingleItemListHeight
 		allowedColumns:		["nominal"]
-		info: qsTr("Select one or more factors for subgroup analysis. Separate models are fitted for each observed combination of their levels.")
+		info: qsTr("Fit separate models for each combination of the selected factors' levels.")
 	}
 }

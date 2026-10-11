@@ -29,7 +29,7 @@
 
   # output dependencies
   outputDependencies <- c(.sapGetDependencies(options), .sapSelectedOutputDependencies,
-                          "mixtureComponentsTable", "coefficientsConfidenceInterval", "coefficientsConfidenceIntervalLevel")
+                          "mixtureMeanAndMedian", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel", "confidenceIntervalBounds")
 
   .sapSectionWrapper(
     jaspResults    = jaspResults,
@@ -55,7 +55,7 @@
     return()
 
   outputDependencies <- c(.sapGetDependencies(options), .sapSelectedOutputDependencies,
-                          "mixtureClassificationTable")
+                          "mixtureClassification")
 
   .sapSectionWrapper(
     jaspResults    = jaspResults,
@@ -81,7 +81,7 @@
     return()
 
   outputDependencies <- c(.sapGetDependencies(options), .sapSelectedOutputDependencies,
-                          "mixtureDiagnosticsTable")
+                          "mixtureEstimationDiagnostics")
 
   # every mixture model is displayed as a column of a single table
   .sapSectionWrapper(
@@ -102,19 +102,19 @@
   if (!is.null(jaspResults[["mixtureComponentPlot"]]))
     return()
 
-  fit <- .sapExtractFit(jaspResults, options, type = "selected")
-  fit <- .sapFlattenFit(fit, options)
+  if (.sapMergePlotsAcrossFamilies(options, "mixtureComponentPlot")) {
+    fit <- .sapExtractFit(jaspResults, options, type = "byModel", output = "mixtureComponentPlot")
+  } else {
+    fit <- .sapNestFit(.sapFlattenFit(.sapExtractFit(jaspResults, options, type = "selected"), options))
+  }
   if (.saSurvivalReady(options) && length(fit) == 0)
     return()
-  fit <- .sapNestFit(fit)
 
   outputDependencies <- c(.sapGetDependencies(options), .sapSelectedOutputDependencies,
-                          "mixtureComponentPlot", "mixtureComponentPlotType", "mixtureComponentPlotObservedData", "mixtureComponentPlotMergePlotsAcrossFactors",
-                          "mixtureComponentPlotTransformXAxis",
-                          "mixtureComponentPlotHistogramBinWidthType", "mixtureComponentPlotHistogramManualNumberOfBins",
-                          .sapPredictionCiDependencies,
-                          "predictionsLifeTimeStepsType", "predictionsLifeTimeStepsNumber", "predictionsLifeTimeStepsFrom", "predictionsLifeTimeStepsSize",
-                          "predictionsLifeTimeStepsTo", "predictionsLifeTimeCustom",
+                          "mixtureComponentPlot", "mixtureComponentPlotType", .sapObservedStrataDependencies("mixtureComponentPlot"),
+                          "mixtureComponentPlotXAxisTransformation", "mixtureComponentPlotYAxisTransformation", "mixtureComponentPlotMergePlotsAcrossDistributions",
+                          "predictionsTimeGrid", "predictionsTimeIntervals", "predictionsTimeFrom", "predictionsTimeStep",
+                          "predictionsTimeTo", "predictionsTimeValues", "predictionsTimePercentages",
                           "colorPalette", "plotLegend", "plotTheme"
   )
 
@@ -149,17 +149,15 @@
   componentsTable$addColumnInfo(name = "quantity",  title = "",                        type = "string")
   componentsTable$addColumnInfo(name = "est",       title = gettext("Estimate"),       type = "number")
   componentsTable$addColumnInfo(name = "se",        title = gettext("Standard Error"), type = "number")
-  if (options[["coefficientsConfidenceInterval"]]) {
-    overtitleCi <- gettextf("%s%% CI", 100 * options[["coefficientsConfidenceIntervalLevel"]])
-    componentsTable$addColumnInfo(name = "lower", title = gettext("Lower"), type = "number", overtitle = overtitleCi)
-    componentsTable$addColumnInfo(name = "upper", title = gettext("Upper"), type = "number", overtitle = overtitleCi)
+  if (options[["coefficientsConfidenceIntervals"]]) {
+    .sapAddBoundColumns(componentsTable, options[["coefficientsConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]])
   }
 
   if (!.saSurvivalReady(options) || jaspBase::isTryError(fit))
     return(componentsTable)
 
   # Mixing probabilities and native parameters are reported in the coefficients table.
-  data <- .sapmComponentsTableData(fit, options[["coefficientsConfidenceIntervalLevel"]], kinds = c("mean", "median"))
+  data <- .sapmComponentsTableData(fit, options[["coefficientsConfidenceIntervalsLevel"]], kinds = c("mean", "median"), direction = options[["confidenceIntervalBounds"]])
 
   data <- .sapAddRowModelInformation(data, fit)
 
@@ -168,18 +166,21 @@
     componentsTable$addFootnote(attr(fit, "label"))
   if (anyNA(data[["est"]]))
     componentsTable$addFootnote(gettext("Some component means or medians are infinite or could not be evaluated numerically and are shown as missing."))
-  if (!.sapConstraintActive(fit) && (anyNA(data[["se"]]) || (options[["coefficientsConfidenceInterval"]] && anyNA(data[c("lower", "upper")]))))
+  if (!.sapConstraintActive(fit) && (anyNA(data[["se"]]) || (options[["coefficientsConfidenceIntervals"]] && anyNA(data[.sapBoundFields(options[["confidenceIntervalBounds"]], "lower", "upper")]))))
     componentsTable$addFootnote(gettext("Some standard errors or confidence intervals could not be evaluated and are shown as missing."))
   componentsTable$addFootnote(gettext("Standard errors and confidence intervals are based on the delta method."))
   if (length(fit[["covpars"]]) > 0)
-    componentsTable$addFootnote(gettext("The component means and medians correspond to the reference level of factors and zero value of covariates."))
+    componentsTable$addFootnote(if (any(vapply(attr(fit, "equations")[["equations"]], function(equation)
+        length(equation[["equation"]][["factorContrasts"]]) > 0L, logical(1))))
+      gettext("The component means and medians describe the baseline distribution at zero fitted design. Treatment and SAS factor contrasts have zero design at their omitted reference level; other contrasts can have a baseline that does not correspond to an observed category.") else
+      gettext("The component means and medians correspond to the reference level of factors and zero value of covariates."))
 
   componentsTable$setData(data)
   componentsTable$showSpecifiedColumnsOnly <- TRUE
 
   return(componentsTable)
 }
-.sapmComponentsTableData        <- function(fit, level, kinds) {
+.sapmComponentsTableData        <- function(fit, level, kinds, direction = "twoSided") {
 
   mixture    <- attr(fit, "mixture")
   family     <- .sapmFamily(mixture[["family"]])
@@ -204,9 +205,9 @@
   # delta method with a numerical Jacobian (covariate effects do not affect the baseline quantities)
   estimate      <- quantities(estimates)
   standardError <- rep(NA_real_, length(estimate))
-  if (!.sapConstraintActive(fit)) {
+  if (!.sapConstraintActive(fit) && (fit[["npars"]] == 0L || .sapUsableCovariance(fit))) {
     jacobian  <- matrix(0, length(estimate), length(estimates))
-    baseIndex <- setdiff(seq_along(estimates), fit[["covpars"]])
+    baseIndex <- setdiff(seq_along(estimates), c(fit[["covpars"]], fit[["fixedpars"]]))
     for (i in baseIndex) {
       step          <- 1e-5 * max(abs(estimates[i]), 1)
       upper         <- lower <- estimates
@@ -214,7 +215,7 @@
       lower[i]      <- lower[i] - step
       jacobian[, i] <- (quantities(upper) - quantities(lower)) / (2 * step)
     }
-    standardError <- sqrt(pmax(diag(jacobian %*% fit[["cov"]] %*% t(jacobian)), 0))
+    standardError <- sqrt(pmax(diag(jacobian %*% .sapParameterCovariance(fit) %*% t(jacobian)), 0))
   }
 
   estimate[!is.finite(estimate)]           <- NA
@@ -222,7 +223,7 @@
 
   # confidence intervals are computed on the link scale of each quantity (logit for probabilities, log for positive quantities)
   links        <- rep(ifelse(kinds == "probability", "logit", "log"), components)
-  z            <- stats::qnorm((1 + level) / 2)
+  z            <- .sapBoundCritical(level, direction)
   lower        <- upper <- rep(NA_real_, length(estimate))
   logitLink    <- links == "logit"    & !is.na(standardError)
   logLink      <- links == "log"      & !is.na(standardError) & estimate > 0
@@ -231,6 +232,8 @@
   upper[logitLink]    <- stats::plogis(stats::qlogis(estimate[logitLink]) + z * standardError[logitLink] / (estimate[logitLink] * (1 - estimate[logitLink])))
   lower[logLink]      <- exp(log(estimate[logLink]) - z * standardError[logLink] / estimate[logLink])
   upper[logLink]      <- exp(log(estimate[logLink]) + z * standardError[logLink] / estimate[logLink])
+  if (direction == "lower") upper[] <- NA_real_
+  if (direction == "upper") lower[] <- NA_real_
   lower[!is.finite(lower)] <- NA
   upper[!is.finite(upper)] <- NA
 
@@ -413,7 +416,7 @@
   isMixture      <- vapply(successfulFits, function(x) !is.null(attr(x, "mixture")), logical(1))
   mixtures       <- successfulFits[isMixture]
 
-  messages[["notes"]] <- unique(unlist(lapply(successfulFits, .sapConstraintNote)))
+  messages[["notes"]] <- unique(c(unlist(lapply(successfulFits, .sapConstraintNote)), unlist(lapply(successfulFits, .sapInformationNote))))
   for (model in successfulFits[!isMixture]) {
     message <- paste(.sapmFitMessages(model), collapse = " ")
     if (message != "")
@@ -484,7 +487,7 @@
 
   return(Filter(function(x) length(x) > 1, unname(split(seq_len(components), set))))
 }
-.sapmCoefficientsNames          <- function(coeffTable, fit) {
+.sapmCoefficientsNames          <- function(coeffTable, fit, options) {
 
   mixture     <- attr(fit, "mixture")
   family      <- .sapmFamily(mixture[["family"]])
@@ -501,14 +504,9 @@
       coeffTable[["mixtureComponent"]][names == paste0(par, k)] <- k
     }
 
-    # covariate effects on the location parameter of the component (the effects of the first component are not prefixed)
-    index <- fit[["covpars"]][fit[["mx"]][[paste0(family[["location"]], k)]]]
-    if (length(index) > 0) {
+    for (parameter in family[["pars"]]) {
+      index <- fit[["covpars"]][fit[["mx"]][[paste0(parameter, k)]]]
       coeffTable[["mixtureComponent"]][index] <- k
-      if (k > 1) {
-        prefix <- paste0(family[["location"]], k, "(")
-        coeffTable[["coefficient"]][index] <- substr(names[index], nchar(prefix) + 1, nchar(names[index]) - 1)
-      }
     }
   }
 
@@ -517,7 +515,7 @@
   weightIndex <- which(names %in% paste0("v", seq_len(components - 1)))
   if (length(weightIndex) > 0) {
 
-    probabilities <- .sapmMixingProbabilities(fit, fit[["cl"]])
+    probabilities <- .sapmMixingProbabilities(fit, options[["coefficientsConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]])
     replacement   <- coeffTable[rep(weightIndex[1], components), , drop = FALSE]
 
     replacement[["coefficient"]]             <- gettext("mixing probability")
@@ -541,10 +539,14 @@
 
   return(coeffTable)
 }
-.sapmMixingProbabilities        <- function(fit, level) {
+.sapmMixingProbabilities        <- function(fit, level, direction = "twoSided") {
 
   # the mixing probabilities, their standard errors, and their confidence intervals of all components
-  data <- .sapmComponentsTableData(fit, level, kinds = "probability")
+  data <- .sapmComponentsTableData(fit, level, kinds = "probability", direction = direction)
+  weights <- match(paste0("v", seq_len(attr(fit, "components") - 1L)), rownames(fit[["res.t"]]))
+  for (k in seq_len(nrow(data)))
+    if (all(weights[seq_len(min(k, length(weights)))] %in% fit[["fixedpars"]]))
+      data[k, c("se", "lower", "upper")] <- NA_real_
 
   return(data[c("est", "se", "lower", "upper")])
 }

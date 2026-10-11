@@ -17,7 +17,19 @@
 
 .sapProbabilityPlot                   <- function(jaspResults, options) {
 
-  if (!is.null(jaspResults[["probabilityPlot"]]) || options[["censoringType"]] != "right")
+  if (options[["censoringType"]] != "right")
+    return()
+
+  # Saved plots must redraw when their definition or layout options change.
+  definition <- jaspResults[["probabilityPlotDefinition"]]
+  if (is.null(definition) || !identical(definition$object, 4L)) {
+    definition <- createJaspState()
+    definition$dependOn(c("probabilityPlotStratifyBy", "probabilityPlotStratifyByVariables"))
+    definition$object <- 4L
+    jaspResults[["probabilityPlotDefinition"]] <- definition
+    jaspResults[["probabilityPlot"]] <- NULL
+  }
+  if (!is.null(jaspResults[["probabilityPlot"]]))
     return()
 
   # Probability-paper diagnostics are distribution-level checks by default.
@@ -32,12 +44,13 @@
 
   outputDependencies <- c(
     .sapGetDependencies(options), .sapSelectedOutputDependencies,
-    "probabilityPlot", "probabilityPlotCanvas", "probabilityPlotEmpiricalPoints",
-    "probabilityPlotPointCoordinates", "probabilityPlotFittedCurve",
-    "probabilityPlotCensoringEvents", "probabilityPlotMergePlotsAcrossDistributions", "probabilityPlotMergePlotsAcrossFactors", "probabilityPlotMergePlotsAcrossSubgroups",
+    "probabilityPlot", "probabilityPlotCanvas", "probabilityPlotStratifyBy", "probabilityPlotStratifyByVariables",
+    "probabilityPlotStratifyByQuantiles", "probabilityPlotStratifyByGroupUniqueLevels", "probabilityPlotStratifyByGroupUniqueLevelsLimit", "probabilityPlotEmpiricalPoints",
+    "probabilityPlotEmpiricalPointsCoordinates", "probabilityPlotFittedCurve",
+    "probabilityPlotCensoringEvents", "probabilityPlotMergePlotsAcrossDistributions", "probabilityPlotMergePlotsAcrossStrata", "probabilityPlotMergePlotsAcrossSubgroups",
     .sapProbabilityCiDependencies,
     "probabilityPlotGrid", "probabilityPlotPlottingPosition", "probabilityPlotRankAdjustment",
-    "probabilityPlotTiesHandler", "probabilityPlotLegend", "probabilityPlotColorPalette",
+    "probabilityPlotTies", "probabilityPlotLegend", "probabilityPlotColorPalette",
     "probabilityPlotTheme",
     if (options[["analysisType"]] == "mixture") "probabilityPlotMergePlotsAcrossComponents"
   )
@@ -58,9 +71,11 @@
 
 .sapProbabilityPlotFun <- function(fit, options) {
   fit <- .sapProbabilityPlotAsFitList(fit)
-  return(.sapPlotAcrossFactors(fit, options, "probabilityPlotMergePlotsAcrossFactors", .sapProbabilityPlotForData))
+  if (!length(.sapProbabilityPlotValidFits(fit)))
+    return(.sapProbabilityPlotForData(fit, options))
+  return(.sapProbabilityPlotAcrossStrata(fit, options))
 }
-.sapProbabilityPlotForData <- function(fit, options) {
+.sapProbabilityPlotForData <- function(fit, options, axisSetup = NULL) {
 
   fitList  <- .sapProbabilityPlotAsFitList(fit)
   fitValid <- .sapProbabilityPlotValidFits(fitList)
@@ -71,11 +86,13 @@
   if (length(fitValid) == 0)
     return(tempPlot)
 
-  plot <- try(.sapCreateProbabilityPlot(fitList, options))
+  plot <- try(.sapCreateProbabilityPlot(fitList, options, axisSetup))
 
-  if (jaspBase::isTryError(plot))
-    tempPlot$setError(gettext("The model failed to produce a probability plot. Consider simplifying the model."))
-  else
+  if (jaspBase::isTryError(plot)) {
+    condition <- attr(plot, "condition", exact = TRUE)
+    tempPlot$setError(if (inherits(condition, "probabilityPlotError")) conditionMessage(condition) else
+      gettext("The model failed to produce a probability plot. Consider simplifying the model."))
+  } else
     tempPlot$plotObject <- plot
 
   return(tempPlot)
@@ -135,62 +152,55 @@
 
 .sapProbabilityPlotFitCanShowLevels <- function(fit, options) {
 
-  predictionX <- attr(fit, "predictionX", exact = TRUE)
-  if (!is.null(predictionX) && nrow(predictionX) == 1)
-    return(FALSE)
-
-  factors <- options[["factors"]]
-  if (is.null(factors) || length(factors) == 0 || all(factors == ""))
-    return(FALSE)
-
-  modelTerms <- attr(fit, "modelTerms")
-  if (is.null(modelTerms) || is.null(modelTerms[["components"]]))
-    return(FALSE)
-
-  components <- unlist(modelTerms[["components"]], use.names = FALSE)
-  return(any(components %in% factors))
+  return(length(attr(fit, "probabilityPlotStrata")) > 1L && options[["probabilityPlotMergePlotsAcrossStrata"]])
 }
 
-.sapCreateProbabilityPlot <- function(fit, options) {
+.sapProbabilityPlotData <- function(fit, options, axisSetup = NULL) {
 
   fitList <- .sapProbabilityPlotValidFits(fit)
 
   if (length(fitList) == 0)
     stop(gettext("The probability plot requires at least one fitted model."))
 
-  mergeSubgroups <- .sapMergePlotsAcrossSubgroups(options, "probabilityPlot")
-  dataset <- attr(if (mergeSubgroups) .sapPlotTimeFit(fitList) else fitList[[1]], "dataset")
-  observedTimeRange <- .sapProbabilityPlotTimeRange(.saExtractSurvTimes(dataset, options))
-  timeSequence <- .sapProbabilityPlotTimeSequence(observedTimeRange, options)
-  observedFits <- if (mergeSubgroups) .sapPlotSubgroupFits(fitList) else fitList[1]
+  if (any(vapply(fitList, function(model) is.null(attr(model, "probabilityPlotStrata")), logical(1))))
+    fitList <- .sapProbabilityPlotPrepareFits(fitList, options)
+  displayDatasets <- lapply(fitList, function(model) .sapProbabilityPlotDisplayDataset(.sapPlotObservedDataset(model), model, options))
+  observedTimeRange <- .sapProbabilityPlotTimeRange(unlist(lapply(displayDatasets, .saExtractSurvTimes, options = options), use.names = FALSE))
+  timeSequence <- if (is.null(axisSetup)) .sapProbabilityPlotTimeSequence(observedTimeRange, options) else
+    .sapProbabilityPlotTimeSequence(axisSetup[["timeRange"]], options, expand = FALSE)
+  adjusted <- any(vapply(displayDatasets, function(dataset) identical(attr(dataset, "probabilityPlotAdjusted"), TRUE), logical(1)))
+  observedIndices <- seq_along(fitList)
+  observedData <- function(index, dataFunction) {
+    data <- .sapProbabilityPlotObservedData(displayDatasets[[index]], fitList[[index]], options, dataFunction)
+    data[["Distribution"]] <- .sapProbabilityPlotDistributionLabel(fitList[[index]], options)
+    return(data)
+  }
 
   empiricalData <- data.frame(time = numeric(0), probability = numeric(0), label = character(0))
   if (options[["probabilityPlotEmpiricalPoints"]])
-    empiricalData <- .sapBindPlotData(lapply(observedFits, function(model)
-      .sapProbabilityPlotObservedData(.sapPlotObservedDataset(model), model, options, .sapProbabilityPlotEmpiricalData)))
+    empiricalData <- .sapBindPlotData(lapply(observedIndices, observedData, dataFunction = .sapProbabilityPlotEmpiricalData))
 
   censoringData <- data.frame(time = numeric(0))
   if (options[["probabilityPlotCensoringEvents"]])
-    censoringData <- .sapBindPlotData(lapply(observedFits, function(model)
-      .sapProbabilityPlotObservedData(.sapPlotObservedDataset(model), model, options, .sapProbabilityPlotCensoringData)))
+    censoringData <- .sapBindPlotData(lapply(observedIndices, observedData, dataFunction = .sapProbabilityPlotCensoringData))
 
   curveData <- .sapProbabilityPlotEmptyCurveData()
   if (options[["probabilityPlotFittedCurve"]]) {
     canvas <- .sapProbabilityPlotCanvasTransform(options[["probabilityPlotCanvas"]])
-    probabilityRange <- if (.sapProbabilityPlotIsDetailed(options))
+    probabilityRange <- if (!is.null(axisSetup)) axisSetup[["probabilityRange"]] else if (.sapProbabilityPlotIsDetailed(options))
       .sapProbabilityPlotDetailedProbabilityRange(empiricalData[["probability"]]) else .sapProbabilityPlotProbabilityRange()
-    limits <- if (.sapProbabilityPlotIsDetailed(options) && nrow(empiricalData) == 0)
-      function(values) canvas[["transform"]](.sapProbabilityPlotDetailedProbabilityRange(.sapProbabilityPlotCurveProbability(1 - values)))
+    limits <- if (is.null(axisSetup) && .sapProbabilityPlotIsDetailed(options) && nrow(empiricalData) == 0)
+      function(values) canvas[["transform"]](.sapProbabilityPlotDetailedProbabilityRange(.sapProbabilityPlotCurveProbability(values)))
       else canvas[["transform"]](probabilityRange)
     evaluate <- function(times) do.call(cbind, lapply(fitList, function(model)
-      .sapPlotPredictionMatrix(.sapSummaryPredictions(model, type = "survival", t = times, ci = FALSE))))
+      .sapPlotPredictionMatrix(.sapProbabilityPlotPredictions(model, options, times, ci = FALSE))))
     anchors <- try(.sapPlotFeatureTimes(fitList, timeSequence), silent = TRUE)
     timeSequence <- .sapAdaptivePlotTimes(timeSequence[timeSequence > 0], evaluate,
       xTransform = if (.sapProbabilityPlotUsesLogTime(canvas)) log else identity,
       xInverse = if (.sapProbabilityPlotUsesLogTime(canvas)) exp else identity,
-      yTransform = function(values) canvas[["transform"]](.sapProbabilityPlotCurveProbability(1 - values)),
-      limits = limits, minimum = if (options[["probabilityPlotConfidenceInterval"]]) 65L else 17L,
-      maximum = if (options[["probabilityPlotConfidenceInterval"]]) 129L else 201L,
+      yTransform = function(values) canvas[["transform"]](.sapProbabilityPlotCurveProbability(values)),
+      limits = limits, minimum = if (options[["probabilityPlotConfidenceIntervals"]]) 65L else 17L,
+      maximum = if (options[["probabilityPlotConfidenceIntervals"]]) 129L else 201L,
       anchors = if (inherits(anchors, "try-error")) numeric(0) else anchors)
     curveData <- .sapProbabilityPlotCurveData(fitList, options, timeSequence)
   }
@@ -198,7 +208,19 @@
   if (nrow(empiricalData) == 0 && nrow(curveData) == 0 && nrow(censoringData) == 0)
     stop(gettext("The probability plot requires at least one positive observed failure time, censored observation, or fitted curve."))
 
-  hasDistribution <- nrow(curveData) > 0 && length(unique(stats::na.omit(curveData[["Distribution"]]))) > 1
+  return(list(empiricalData = empiricalData, curveData = curveData, censoringData = censoringData,
+    observedTimeRange = observedTimeRange, adjusted = adjusted))
+}
+
+.sapCreateProbabilityPlot <- function(fit, options, axisSetup = NULL) {
+
+  data <- .sapProbabilityPlotData(fit, options, axisSetup)
+  empiricalData <- data[["empiricalData"]]
+  curveData     <- data[["curveData"]]
+  censoringData <- data[["censoringData"]]
+
+  hasDistribution <- length(unique(stats::na.omit(c(curveData[["Distribution"]], empiricalData[["Distribution"]], censoringData[["Distribution"]])))) > 1
+  empiricalDistributions <- hasDistribution
   levelLabels     <- sort(unique(stats::na.omit(c(curveData[["Level"]], empiricalData[["Level"]], censoringData[["Level"]]))))
   hasLevel        <- length(levelLabels) > 1
   hasGroup        <- nrow(curveData) > 0 && length(unique(stats::na.omit(curveData[["Group"]]))) > 1
@@ -211,19 +233,12 @@
 
   plot <- ggplot2::ggplot()
 
-  if (nrow(curveData) > 0 && options[["probabilityPlotConfidenceInterval"]] && any(is.finite(curveData[["lCi"]]) & is.finite(curveData[["uCi"]]))) {
-    aesCall <- list(
-      x     = as.name("time"),
-      ymin  = as.name("lCi"),
-      ymax  = as.name("uCi"),
-      fill  = if (hasLevel) as.name("Level") else if (hasDistribution) as.name("Distribution"),
-      group = if (hasGroup) as.name("Group")
-    )
-    geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]), data = curveData, alpha = 0.22)
-    if (!hasDistribution && !hasLevel)
-      geomCall[["fill"]] <- "grey60"
-    plot <- plot + do.call(ggplot2::geom_ribbon, geomCall)
-  }
+  if (nrow(curveData) > 0 && options[["probabilityPlotConfidenceIntervals"]])
+    plot <- .sapAddModelBoundLayer(plot, curveData, options[["probabilityPlotConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]],
+      x = "time", groups = "Group", color = if (hasLevel) "Level" else if (hasDistribution) "Distribution",
+      fill = if (hasLevel) "Level" else if (hasDistribution) "Distribution", defaultFill = "grey60", alpha = .22,
+      twoSidedMapping = list(x = as.name("time"), ymin = as.name("lCi"), ymax = as.name("uCi"),
+        fill = if (hasLevel) as.name("Level") else if (hasDistribution) as.name("Distribution"), group = if (hasGroup) as.name("Group")))
 
   if (nrow(curveData) > 0) {
     aesCall <- list(
@@ -233,27 +248,31 @@
       linetype = if (hasDistribution && hasLevel) as.name("Distribution"),
       group    = if (hasGroup) as.name("Group")
     )
-    geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]), data = curveData)
+    geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!vapply(aesCall, is.null, logical(1))]), data = curveData)
     if (!hasDistribution && !hasLevel)
       geomCall[["color"]] <- "black"
     plot <- plot + do.call(jaspGraphs::geom_line, geomCall)
   }
 
   if (nrow(empiricalData) > 0 && options[["probabilityPlotEmpiricalPoints"]]) {
-    aesCall <- list(x = as.name("time"), y = as.name("probability"), fill = if (hasLevel) as.name("Level"))
+    aesCall <- list(x = as.name("time"), y = as.name("probability"), fill = if (hasLevel) as.name("Level"),
+      shape = if (empiricalDistributions) as.name("Distribution"),
+      color = if (empiricalDistributions) if (hasLevel) as.name("Level") else as.name("Distribution"))
     geomCall <- list(
       data    = empiricalData,
-      mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]),
-      color   = "black",
-      shape   = 21,
+      mapping = do.call(ggplot2::aes, aesCall[!vapply(aesCall, is.null, logical(1))]),
       size    = 2.1,
       stroke  = 0.6
     )
+    if (!empiricalDistributions) {
+      geomCall[["color"]] <- "black"
+      geomCall[["shape"]] <- 21
+    }
     if (!hasLevel)
       geomCall[["fill"]] <- "white"
     plot <- plot + do.call(ggplot2::geom_point, geomCall)
 
-    if (options[["probabilityPlotPointCoordinates"]]) {
+    if (options[["probabilityPlotEmpiricalPointsCoordinates"]]) {
       plot <- plot + ggplot2::geom_text(
         data    = empiricalData,
         mapping = ggplot2::aes(x = time, y = probability, label = label),
@@ -273,17 +292,24 @@
       do.call(jaspGraphs::scale_JASPcolor_discrete, scaleCall) +
       do.call(jaspGraphs::scale_JASPfill_discrete, scaleCall)
   }
+  if (empiricalDistributions)
+    plot <- plot + ggplot2::scale_shape_manual(values = rep_len(c(1, 2, 0, 5, 6, 3, 4, 7, 8, 9),
+      length(unique(empiricalData[["Distribution"]]))))
 
-  plot <- .sapProbabilityPlotAddAxes(plot, empiricalData, curveData, censoringData, options, observedTimeRange, hasLevel)
+  plot <- .sapProbabilityPlotAddAxes(plot, empiricalData, curveData, censoringData, options, data[["observedTimeRange"]], hasLevel,
+    hasDistribution, axisSetup)
   plot <- .sapProbabilityPlotAddTheme(plot, options)
+  if (data[["adjusted"]])
+    plot <- plot + ggplot2::xlab(if (.sapProbabilityPlotUsesLogTime(.sapProbabilityPlotCanvasTransform(options[["probabilityPlotCanvas"]])))
+      gettext("Adjusted time (log scale)") else gettext("Adjusted time"))
 
   return(plot)
 }
 
-.sapProbabilityPlotTimeSequence <- function(timeRange, options) {
+.sapProbabilityPlotTimeSequence <- function(timeRange, options, expand = TRUE) {
 
   canvas <- .sapProbabilityPlotCanvasTransform(options[["probabilityPlotCanvas"]])
-  if (.sapProbabilityPlotIsDetailed(options))
+  if (expand && .sapProbabilityPlotIsDetailed(options))
     timeRange <- .sapProbabilityPlotDetailedTimeRange(timeRange, canvas)
 
   if (.sapProbabilityPlotUsesLogTime(canvas))
@@ -294,25 +320,11 @@
 
 .sapProbabilityPlotObservedData <- function(dataset, fit, options, dataFunction, output = "probabilityPlot") {
 
-  modelFrame <- stats::model.frame(fit)
-  factors    <- intersect(unique(attr(modelFrame, "covnames.orig")), unlist(options[["factors"]], use.names = FALSE))
-
-  mergeSubgroups <- .sapMergePlotsAcrossSubgroups(options, output)
-  if (length(factors) == 0 || (mergeSubgroups && !options[[paste0(output, "MergePlotsAcrossFactors")]])) {
-    data <- dataFunction(dataset, options)
-    if (mergeSubgroups)
-      data[["Level"]] <- .sapPlotLevelLabel(rep(NA_character_, nrow(data)), fit, options, output)
-    return(data)
-  }
-
-  labels <- vapply(seq_len(nrow(dataset)), function(i) {
-    values <- vapply(factors, function(factor) as.character(dataset[[factor]][i]), character(1))
-    return(paste0(factors, "=", values, collapse = ","))
-  }, character(1))
-
-  out <- lapply(unique(labels), function(label) {
-    data <- dataFunction(dataset[labels == label, , drop = FALSE], options)
-    data[["Level"]] <- .sapPlotLevelLabel(rep(decodeColNames(label), nrow(data)), fit, options, output)
+  groups <- attr(fit, "probabilityPlotStrata")
+  labels <- .sapProbabilityPlotLabels(fit, options)
+  out <- lapply(seq_along(groups), function(index) {
+    data <- dataFunction(dataset[groups[[index]], , drop = FALSE], options)
+    data[["Level"]] <- rep(labels[index], nrow(data))
     return(data)
   })
 
@@ -388,7 +400,7 @@
   if (nrow(rankData) == 0)
     return(data.frame(time = numeric(0), probability = numeric(0), label = character(0)))
 
-  rankData <- .sapProbabilityPlotHandleTies(rankData, options[["probabilityPlotTiesHandler"]])
+  rankData <- .sapProbabilityPlotHandleTies(rankData, options[["probabilityPlotTies"]])
 
   probability <- switch(
     options[["probabilityPlotPlottingPosition"]],
@@ -504,25 +516,23 @@
   if (length(fitList) == 0)
     return(.sapProbabilityPlotEmptyCurveData())
 
-  ciLevel <- options[["probabilityPlotConfidenceIntervalLevel"]]
-
   out <- list()
   predictionWarnings <- character(0)
   for (i in seq_along(fitList)) {
 
-    data <- .sapSummaryPredictions(fitList[[i]], type = "survival", t = timeSequence, ci = options[["probabilityPlotConfidenceInterval"]], cl = ciLevel, B = options[["confidenceIntervalSimulationDraws"]], seed = if (options[["setSeed"]]) options[["seed"]])
+    data <- .sapProbabilityPlotPredictions(fitList[[i]], options, timeSequence, ci = options[["probabilityPlotConfidenceIntervals"]])
     predictionWarnings <- c(predictionWarnings, attr(data, "predictionWarnings"))
-    levelLabels <- .sapPlotPredictionLevels(data, fitList[[i]], options, "probabilityPlot")
+    levelLabels <- .sapProbabilityPlotLabels(fitList[[i]], options)
 
     for (j in seq_along(data)) {
       colnames(data[[j]]) <- c("time", "survival", "survivalLCI", "survivalUCI")
 
-      data[[j]][["probability"]]  <- 1 - data[[j]][["survival"]]
-      data[[j]][["lCi"]]          <- 1 - data[[j]][["survivalUCI"]]
-      data[[j]][["uCi"]]          <- 1 - data[[j]][["survivalLCI"]]
+      data[[j]][["probability"]]  <- data[[j]][["survival"]]
+      data[[j]][["lCi"]]          <- data[[j]][["survivalLCI"]]
+      data[[j]][["uCi"]]          <- data[[j]][["survivalUCI"]]
       data[[j]][["Level"]]        <- levelLabels[if (length(levelLabels) > 1) j else 1]
       data[[j]][["Distribution"]] <- .sapProbabilityPlotDistributionLabel(fitList[[i]], options)
-      data[[j]][["Group"]]        <- paste(data[[j]][["Distribution"]], data[[j]][["Level"]], sep = " | ")
+      data[[j]][["Group"]]        <- paste(i, data[[j]][["Distribution"]], data[[j]][["Level"]], sep = " | ")
 
       out[[length(out) + 1]] <- data[[j]][, c("time", "probability", "lCi", "uCi", "Level", "Distribution", "Group"), drop = FALSE]
     }
@@ -567,24 +577,33 @@
   ))
 }
 
-.sapProbabilityPlotAddAxes <- function(plot, empiricalData, curveData, censoringData, options, observedTimeRange = NULL, hasLevel = FALSE) {
+.sapProbabilityPlotAxisSetup <- function(data, options) {
+
+  canvas <- .sapProbabilityPlotCanvasTransform(options[["probabilityPlotCanvas"]])
+  if (.sapProbabilityPlotIsDetailed(options))
+    return(.sapProbabilityPlotDetailedAxisSetup(data[["empiricalData"]], data[["curveData"]], data[["censoringData"]],
+      data[["observedTimeRange"]], canvas))
+  return(.sapProbabilityPlotDefaultAxisSetup(data[["empiricalData"]], data[["curveData"]], data[["censoringData"]], canvas))
+}
+
+.sapProbabilityPlotAddAxes <- function(plot, empiricalData, curveData, censoringData, options, observedTimeRange = NULL, hasLevel = FALSE, hasDistribution = FALSE, axisSetup = NULL) {
 
   canvas   <- .sapProbabilityPlotCanvasTransform(options[["probabilityPlotCanvas"]])
   detailed <- .sapProbabilityPlotIsDetailed(options)
+  if (is.null(axisSetup))
+    axisSetup <- .sapProbabilityPlotAxisSetup(list(empiricalData = empiricalData, curveData = curveData,
+      censoringData = censoringData, observedTimeRange = observedTimeRange), options)
 
   if (detailed) {
-    axisSetup <- .sapProbabilityPlotDetailedAxisSetup(empiricalData, curveData, censoringData, observedTimeRange, canvas)
     plot <- plot + ggplot2::geom_hline(
       yintercept = canvas[["inverse"]](0),
       linetype   = 3,
       color      = "grey70",
       linewidth  = 0.35
     )
-  } else {
-    axisSetup <- .sapProbabilityPlotDefaultAxisSetup(empiricalData, curveData, censoringData, canvas)
   }
 
-  plot <- .sapProbabilityPlotCensoringEvents(plot, censoringData, hasLevel)
+  plot <- .sapProbabilityPlotCensoringEvents(plot, censoringData, hasLevel, hasDistribution)
 
   xScaleCall <- list(
     trans        = canvas[["xTransform"]],
@@ -659,20 +678,20 @@
   ))
 }
 
-.sapProbabilityPlotCensoringEvents <- function(plot, censoringData, hasLevel = FALSE) {
+.sapProbabilityPlotCensoringEvents <- function(plot, censoringData, hasLevel = FALSE, hasDistribution = FALSE) {
 
   if (is.null(censoringData) || nrow(censoringData) == 0)
     return(plot)
 
-  aesCall <- list(x = as.name("time"), color = if (hasLevel) as.name("Level"))
+  aesCall <- list(x = as.name("time"), color = if (hasLevel) as.name("Level") else if (hasDistribution) as.name("Distribution"))
   geomCall <- list(
     data    = censoringData,
-    mapping = do.call(ggplot2::aes, aesCall[!sapply(aesCall, is.null)]),
+    mapping = do.call(ggplot2::aes, aesCall[!vapply(aesCall, is.null, logical(1))]),
     sides   = "b",
     alpha   = 0.5,
     size    = 0.5
   )
-  if (!hasLevel)
+  if (!hasLevel && !hasDistribution)
     geomCall[["color"]] <- "darkblue"
   plot <- plot + do.call(ggplot2::geom_rug, geomCall)
 
@@ -767,7 +786,7 @@
     )
   }
 
-  return(plot)
+  return(.sapPlotCanvasPadding(plot))
 }
 
 .sapProbabilityPlotLegendTheme <- function(legendPosition) {

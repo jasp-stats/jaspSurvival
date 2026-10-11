@@ -48,6 +48,8 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 }
 
 .sanpDependencies <- c("timeToEvent", "eventStatus", "eventIndicator", "strata", "weights")
+.sanpTestStates <- c(testsLogRank = "testLogRank", testsPetoAndPeto = "testPetoAndPeto",
+                     testsFlemmingHarrington = "testFlemmingHarrington")
 
 .sanpWeightDataset   <- function(dataset, options) {
 
@@ -90,48 +92,22 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   if (length(options[["strata"]]) == 0)
     return()
 
-  if (options[["testsLogRank"]] && is.null(jaspResults[["testLogRank"]])) {
+  # These tests use the same fitting procedure; rho sets the event-time weighting.
+  for (option in names(.sanpTestStates)) {
+    name <- .sanpTestStates[[option]]
+    if (!options[[option]] || !is.null(jaspResults[[name]]))
+      next
 
-    tempContainer <- createJaspState()
-    tempContainer$dependOn(c(.sanpDependencies, "testsLogRank"))
-    jaspResults[["testLogRank"]] <- tempContainer
+    dependencies <- c(.sanpDependencies, option,
+                      if (option == "testsFlemmingHarrington") "testsFlemmingHarringtonRho")
+    state <- createJaspState()
+    state$dependOn(dependencies)
+    jaspResults[[name]] <- state
 
-    fit <- try(survdiff(
-      formula = .saGetFormula(options, type = "KM"),
-      data    = dataset
-    ))
-
-    jaspResults[["testLogRank"]]$object <- fit
-  }
-
-  if (options[["testsPetoAndPeto"]] && is.null(jaspResults[["testPetoAndPeto"]])) {
-
-    tempContainer <- createJaspState()
-    tempContainer$dependOn(c(.sanpDependencies, "testsPetoAndPeto"))
-    jaspResults[["testPetoAndPeto"]] <- tempContainer
-
-    fit <- try(survdiff(
-      formula = .saGetFormula(options, type = "KM"),
-      data    = dataset,
-      rho     = 1
-    ))
-
-    jaspResults[["testPetoAndPeto"]]$object <- fit
-  }
-
-  if (options[["testsFlemmingHarrington"]] && is.null(jaspResults[["testFlemmingHarrington"]])) {
-
-    tempContainer <- createJaspState()
-    tempContainer$dependOn(c(.sanpDependencies, "testsFlemmingHarrington", "testsFlemmingHarringtonRho"))
-    jaspResults[["testFlemmingHarrington"]] <- tempContainer
-
-    fit <- try(survdiff(
-      formula = .saGetFormula(options, type = "KM"),
-      data    = dataset,
-      rho     = options[["testsFlemmingHarringtonRho"]]
-    ))
-
-    jaspResults[["testFlemmingHarrington"]]$object <- fit
+    rho <- switch(option, testsLogRank = 0, testsPetoAndPeto = 1,
+                  testsFlemmingHarrington = options[["testsFlemmingHarringtonRho"]])
+    state$object <- try(survival::survdiff(formula = .saGetFormula(options, type = "KM"),
+                                        data = dataset, rho = rho))
   }
 
   return()
@@ -203,28 +179,17 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   if (!.saSurvivalReady(options))
     return()
 
-  if (options[["testsLogRank"]]) {
-    fit <- jaspResults[["testLogRank"]]$object
+  titles <- c(testsLogRank = gettext("Log-rank (Mantel-Haenszel)"),
+              testsPetoAndPeto = gettext("Peto and Peto"),
+              testsFlemmingHarrington = gettext("Flemming-Harrington"))
+  for (option in names(.sanpTestStates)) {
+    if (!options[[option]])
+      next
+    fit <- jaspResults[[.sanpTestStates[[option]]]]$object
     if (jaspBase::isTryError(fit))
       testsTable$addFootnote(fit, symbol = "Warning:")
     else
-      testsTable$addRows(.sanpExtractTest(fit, gettext("Log-rank (Mantel-Haenszel)")))
-  }
-
-  if (options[["testsPetoAndPeto"]]) {
-    fit <- jaspResults[["testPetoAndPeto"]]$object
-    if (jaspBase::isTryError(fit))
-      testsTable$addFootnote(fit, symbol = "Warning:")
-    else
-      testsTable$addRows(.sanpExtractTest(fit, gettext("Peto and Peto")))
-  }
-
-  if (options[["testsFlemmingHarrington"]]) {
-    fit <- jaspResults[["testFlemmingHarrington"]]$object
-    if (jaspBase::isTryError(fit))
-      testsTable$addFootnote(fit, symbol = "Warning:")
-    else
-      testsTable$addRows(.sanpExtractTest(fit, gettext("Flemming-Harrington")))
+      testsTable$addRows(.sanpExtractTest(fit, titles[[option]]))
   }
 
   return()

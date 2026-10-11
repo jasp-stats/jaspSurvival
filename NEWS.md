@@ -13,6 +13,19 @@
 
 
 ---
+# jaspSurvival 0.97.1
+## Added
+* Component-specific ancillary regression and independent parameter equations for parametric survival models.
+* Temperature/Eyring models with consistent units and structural coefficient restrictions.
+* Symbolic and fitted model equations, baseline parameters and parameter-specific regression tables.
+* Shared one-sided or two-sided confidence bounds from joint parameter draws.
+* Consolidated model predictions with predictor axes and reference scenarios.
+* New-observation time measures, curves and aligned dataset exports.
+## Fixed
+* Stabilized exact-event Eyring Generalized F (original) standard errors and confidence intervals while retaining fitted estimates.
+* Initialize new model-specification, parameter-restriction, and custom-prediction options when upgrading saved parametric and mixture survival analyses.
+* Custom dataset predictions target missing-outcome rows with predictor values; means and percentiles share one output row per observation.
+
 # jaspSurvival 0.97.0
 ## Added
 * Added the Parametric Mixture Survival Analysis

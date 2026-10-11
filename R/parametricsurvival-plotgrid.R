@@ -8,6 +8,11 @@
   if (!.saSurvivalReady(options) || !any(valid))
     return(plotFunction(fit, options))
 
+  # Continuous-only diagnostics also need an explicit frequency-weighted design.
+  for (j in which(valid))
+    if (length(.sapFittedFactors(fit[[j]], options)) == 0L)
+      fit[[j]] <- .sapPlotFactorPredictions(fit[[j]], options)
+
   if (options[[mergeOption]]) {
     for (j in which(valid))
       fit[[j]] <- .sapPlotFactorPredictions(fit[[j]], options)
@@ -18,7 +23,7 @@
     return(.sapPlotAcrossSubgroupFactors(fit, options, plotFunction))
 
   firstFit <- fit[[which(valid)[1]]]
-  factors  <- intersect(names(stats::model.frame(firstFit)), unlist(options[["factors"]], use.names = FALSE))
+  factors  <- .sapFittedFactors(firstFit, options)
   if (firstFit[["ncovs"]] == 0 || length(factors) == 0)
     return(plotFunction(fit, options))
 
@@ -44,7 +49,8 @@
         stopifnot(length(groupRows) > 0, !anyDuplicated(rownames(modelDataset)), !anyDuplicated(rownames(design)),
                   !anyNA(datasetRows), !anyNA(designRows), ncol(design) == model[["ncoveffs"]])
         # Use the original expanded columns, retaining native positional order.
-        attr(model, "predictionX") <- matrix(unname(colMeans(design[designRows, , drop = FALSE])), nrow = 1L)
+        attr(model, "predictionX") <- matrix(.sapWeightedColumnMeans(design[designRows, , drop = FALSE],
+          .sapCaseWeights(modelDataset[datasetRows, , drop = FALSE], options)), nrow = 1L)
         attr(model, "plotDataset") <- modelDataset[datasetRows, , drop = FALSE]
         plotFit[[j]] <- model
       }
@@ -69,7 +75,7 @@
 
   valid <- vapply(fit, function(x) !is.null(x) && !jaspBase::isTryError(x) && length(x) > 0, logical(1))
   factors <- unique(unlist(lapply(fit[valid], function(model)
-    intersect(names(stats::model.frame(model)), unlist(options[["factors"]], use.names = FALSE))), use.names = FALSE))
+    .sapFittedFactors(model, options)), use.names = FALSE))
   if (length(factors) == 0)
     return(plotFunction(fit, options))
 
@@ -90,7 +96,8 @@
         design <- stats::model.matrix(model)
         designRows <- match(rownames(modelDataset)[rows], rownames(design))
         stopifnot(!anyNA(designRows), ncol(design) == model[["ncoveffs"]])
-        attr(model, "predictionX") <- matrix(unname(colMeans(design[designRows, , drop = FALSE])), nrow = 1L)
+        attr(model, "predictionX") <- matrix(.sapWeightedColumnMeans(design[designRows, , drop = FALSE],
+          .sapCaseWeights(modelDataset[rows, , drop = FALSE], options)), nrow = 1L)
         attr(model, "predictionLabels") <- NULL
         attr(model, "plotDataset") <- modelDataset[rows, , drop = FALSE]
       }
@@ -120,7 +127,7 @@
 .sapPlotPredictionLevels <- function(predictions, fit, options, output, emptyLabel = NA_character_) {
   labels <- if (length(predictions) > 1) decodeColNames(names(predictions)) else emptyLabel
   if (.sapMergePlotsAcrossSubgroups(options, output) && options[[paste0(output, "MergePlotsAcrossFactors")]]) {
-    factors <- intersect(names(stats::model.frame(fit)), unlist(options[["factors"]], use.names = FALSE))
+    factors <- .sapFittedFactors(fit, options)
     if (length(factors) > 0)
       labels <- decodeColNames(names(predictions))
   }
@@ -133,22 +140,35 @@
 }
 .sapPlotFactorPredictions <- function(fit, options) {
 
+  if (fit[["ncovs"]] == 0L)
+    return(fit)
   modelFrame <- stats::model.frame(fit)
-  predictors <- unique(attr(modelFrame, "covnames.orig"))
-  factors    <- intersect(predictors, unlist(options[["factors"]], use.names = FALSE))
+  predictors <- .sapModelVariables(attr(fit, "modelTerms"))
+  factors    <- .sapFittedFactors(fit, options)
   covariates <- intersect(predictors, unlist(options[["covariates"]], use.names = FALSE))
-  if (length(factors) == 0 || length(covariates) == 0)
+  transformedFactors <- intersect(factors, unique(unlist(lapply(.sapModelTransformations(attr(fit, "modelTerms")), names))))
+  if (length(factors) > 0L && length(covariates) == 0L && length(transformedFactors) == 0L)
     return(fit)
 
   # Match separate panels: average the expanded design within each factor cell.
   # This retains interactions and flexsurv's native positional column order.
   design <- stats::model.matrix(fit)
-  groups <- split(seq_len(nrow(modelFrame)), .sapPredictorGroups(modelFrame[factors]))
+  dataset <- attr(fit, "dataset")
+  rows <- match(rownames(modelFrame), rownames(dataset))
+  stopifnot(!anyNA(rows), identical(rownames(modelFrame), rownames(design)), ncol(design) == fit[["ncoveffs"]])
+  weights <- .sapCaseWeights(dataset[rows, , drop = FALSE], options)
+  if (length(factors) == 0L) {
+    attr(fit, "predictionX") <- matrix(.sapWeightedColumnMeans(design, weights), nrow = 1L)
+    attr(fit, "predictionLabels") <- NULL
+    return(fit)
+  }
+  factorData <- dataset[rows, factors, drop = FALSE]
+  groups <- split(seq_len(nrow(modelFrame)), .sapPredictorGroups(factorData))
   stopifnot(identical(rownames(modelFrame), rownames(design)), ncol(design) == fit[["ncoveffs"]])
   attr(fit, "predictionX") <- do.call(rbind, lapply(groups, function(rows)
-    unname(colMeans(design[rows, , drop = FALSE]))))
+    .sapWeightedColumnMeans(design[rows, , drop = FALSE], weights[rows])))
   attr(fit, "predictionLabels") <- vapply(groups, function(rows) {
-    values <- vapply(modelFrame[rows[1], factors, drop = FALSE], as.character, character(1))
+    values <- vapply(factorData[rows[1], , drop = FALSE], as.character, character(1))
     paste0(factors, "=", values, collapse = ",")
   }, character(1))
 
