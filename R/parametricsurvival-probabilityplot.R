@@ -22,10 +22,10 @@
 
   # Saved plots must redraw when their definition or layout options change.
   definition <- jaspResults[["probabilityPlotDefinition"]]
-  if (is.null(definition) || !identical(definition$object, 4L)) {
+  if (is.null(definition) || !identical(definition$object, 5L)) {
     definition <- createJaspState()
     definition$dependOn(c("probabilityPlotStratifyBy", "probabilityPlotStratifyByVariables"))
-    definition$object <- 4L
+    definition$object <- 5L
     jaspResults[["probabilityPlotDefinition"]] <- definition
     jaspResults[["probabilityPlot"]] <- NULL
   }
@@ -825,8 +825,9 @@
 
 .sapProbabilityPlotClampProbability <- function(probability) {
 
-  probabilityRange <- .sapProbabilityPlotProbabilityRange()
-  return(pmin(pmax(probability, probabilityRange[1]), probabilityRange[2]))
+  # Display limits must not change valid ranks, especially with many censored
+  # units. Only keep the probability-paper transformations away from endpoints.
+  return(pmin(pmax(probability, .Machine$double.xmin), 1 - .Machine$double.eps))
 }
 
 .sapProbabilityPlotCurveProbability <- function(probability) {
