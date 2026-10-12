@@ -68,7 +68,7 @@
   nativeFixed <- c(.sapmFixedNativeParameters(fixed), specification[["fixed"]])
   regression  <- lapply(seq_len(components), function(k) .sapRegressionFixed(dataset, modelTerms, formula, k, .sapCaseWeights(dataset, options)))
   survObject  <- .saGetSurvObject(options, dataset)
-  caseWeights <- if (options[["weights"]] != "") dataset[[options[["weights"]]]] else rep(1, nrow(dataset))
+  caseWeights <- .sapCaseWeights(dataset, options)
   truncated   <- options[["censoringType"]] == "counting"
 
   # the truncated mixture likelihood does not separate into weighted component fits, the EM algorithm therefore

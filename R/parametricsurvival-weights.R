@@ -1,5 +1,21 @@
 # Case weights are frequencies: data-derived references must match repeated rows.
+.sapUnrollFrequencyDataset <- function(dataset, options) {
+  if (options[["weights"]] == "")
+    return(dataset)
+
+  # Expand before constructing bases and diagnostics so frequencies represent
+  # repeated units throughout; unit weights prevent applying them twice.
+  rows         <- rep(seq_len(nrow(dataset)), round(dataset[[options[["weights"]]]]))
+  originalRows <- rownames(dataset)[rows]
+  dataset      <- dataset[rows, , drop = FALSE]
+  attr(dataset, "frequencyRowNames") <- stats::setNames(originalRows, rownames(dataset))
+
+  return(dataset)
+}
+
 .sapCaseWeights <- function(dataset, options) {
+  if (!is.null(attr(dataset, "frequencyRowNames", exact = TRUE)))
+    return(rep(1, nrow(dataset)))
   if (options[["weights"]] != "")
     return(dataset[[options[["weights"]]]])
   return(rep(1, nrow(dataset)))

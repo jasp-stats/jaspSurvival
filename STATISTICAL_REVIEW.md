@@ -15,7 +15,9 @@ no estimator, default or statistical policy.
 
 User follow-up, 12 October 2026: retain interval-tail behavior as an upstream
 flexsurv limitation and leave the minimum-spread policy unchanged. These are
-excluded from follow-up implementation. Other items remain discussion points.
+excluded from follow-up implementation. Prediction intervals and candidate
+filtering are also retained. Frequency expansion for both parametric analyses
+was explicitly requested; other items remain discussion points.
 
 ## Findings and follow-up decisions
 
@@ -24,7 +26,7 @@ excluded from follow-up implementation. Other items remain discussion points.
 | Failed simulation draws can disappear from a CI | New `.sapDrawBounds()` uses `quantile(..., na.rm = TRUE)` without counting missing evaluations. A synthetic helper check with 100 draws, 50 missing, still returned finite 95% limits, 2.225 and 48.775. Originating prediction functions may emit generic warnings; the missing-draw count is not reported. This demonstrates the mechanism, not a failure rate observed in a fitted dataset. | Record valid/failed counts per quantity. Warn or withhold unreliable bounds; distinguish numerical failures from mathematically infinite outcomes. More draws alone does not correct selective omission. |
 | Tail interval probabilities can round to zero | Inherited `.sapmComponentLogLikelihood()` subtracts ordinary CDFs. For an exponential rate of 1 and interval (40, 41], the code gives `-Inf`; the correct log probability is `-40.4586751453871`. Native flexsurv 2.3.2 also fails at these fixed parameters; a fixed equal-rate mixture returns `-Inf`. This is an inherited/upstream numerical limitation affecting fitting, initialization and classification. | User decision: retain as an upstream limitation; no implementation change requested. A future upstream fix would need stable probabilities in fitting and membership calculations. |
 | Minimum spread is only a baseline bound | The inherited bound is combined with new ancillary regression. `.sapmConstraintBounds()` bounds baseline shape/scale coefficients, not their covariate-dependent values. A log-normal example passes a baseline bound of 0.5 with SDs 0.76315 at x=0 and 0.083417 at x=1. The results note correctly says baseline; GUI help is broader. | User decision: leave this policy unchanged; no follow-up implementation requested. |
-| Frequencies do not define every automatic basis | New spline knots and orthogonal polynomial bases use stored predictor rows without frequency weighting. For x=0,...,9 and weights (8,5,1,...,1), spline knots are (3,6); expanding the rows gives approximately (0.29167,2.33333). This follows ordinary R basis construction. | Prefer retaining native R defaults with a documented basis convention. Weighted spline knots are an optional enhancement if exact compressed/expanded equivalence is required. Unrestricted full polynomial models retain the same function space; fixed basis coefficients require particular care. |
+| Frequency expansion — implemented after review | Earlier automatic bases used compressed rows. For x=0,...,9 and weights (8,5,1,...,1), spline knots were (3,6), versus approximately (0.29167,2.33333) for repeated rows. Both parametric analyses now expand frequency units before bases, fitting and diagnostics. | Implemented per user direction. Raw frequency values remain available as predictors/subgroups, while internal fitting weights are one. Exports collapse replicas back to original rows. Automatic bases and fixed transformed coefficients now use the literal repeated-unit convention. |
 | Counting input needs a clear scope | Inherited row-wise mixture likelihood supports independent delayed entry. It differs from a persistent latent-class likelihood for multiple intervals from one subject when predictors change. The independently checked two-interval example is detailed below. | State the supported delayed-entry scope. Longitudinal mixture support requires subject IDs and class-specific covariate histories. |
 
 Locations: [bounds](R/parametricsurvival-bounds.R),
@@ -40,6 +42,11 @@ beyond the representable time range. The quantile function warns generically;
 the bound function discards the NA and returns 38.575 to 60.379. This illustrates
 why reporting the rejected fraction matters. These are handpicked parameters,
 not a measured failure rate from a fitted model's normal simulation.
+Tracing the actual native call clarified provenance: flexsurv's qgeneric returns
+a finite value at the representable time boundary for that extreme case. Our
+custom mixture accuracy check rejects it and returns NA; our bound helper then
+drops it. A native single-Weibull quantile returns Inf in the corresponding
+out-of-range case. The interval-filtering behavior is our implementation.
 
 The counting limitation is not an incorrectly connected flexsurv argument.
 Our custom mixture is fitted through flexsurvreg's per-row distribution likelihood.
@@ -125,12 +132,11 @@ For the order of averaging and back-transformation, see
   improve search evidence but do not prove global optimality. Retain convergence,
   replication and boundary diagnostics.
 - **Frequency weights are replication counts.** Positive integers enter the
-  weighted likelihood and data-derived references. They are not survey weights or
-  inverse-censoring weights. The spline/polynomial exception above concerns
-  automatic basis construction, not the weighted likelihood for a fixed design.
-  Free complete polynomial models retain their polynomial span across basis
-  changes; fixed basis coefficients need not. Ordinary R `ns()`/`poly()` likewise
-  construct their basis from the supplied x values.
+  parametric analyses through literal row expansion. They are not survey weights
+  or inverse-censoring weights. The former spline/polynomial exception is resolved
+  by constructing their ordinary R bases on the expanded dataset. Missing-outcome
+  predictions use the original input rows. Fit-cache mapping detects old compressed
+  fits and refreshes retained outputs; standalone KM/Cox behavior is unchanged.
 - **Response residuals are naive.** The difference between observed follow-up and
   fitted mean treats censored follow-up as if it were a realized lifetime. It matches
   [flexsurv's response residual](https://chjackson.github.io/flexsurv/reference/residuals.flexsurvreg.html),
@@ -206,6 +212,25 @@ term is needed. Fixed coordinates are excluded from that matrix.
 Numerical agreement is evidence, not a proof of coverage or exhaustive edge-case
 correctness. The full suite is not green: existing saved-option/imported-default
 and Windows figure mismatches remain. No human tests or snapshots were edited or
-accepted. Full scripts, logs, result files and reproduced limitations are retained
+accepted by this work. Full scripts, logs, result files and reproduced limitations are retained
 locally under `.work/statistical-review/`; initial harness errors were corrected
-before the successful final runs. Production R/QML are unchanged by this review.
+before the successful final runs. The initial review changed no production code;
+the subsequent user-authorized frequency expansion is documented above.
+
+Follow-up implementation and explanation checks are retained in
+`.work/frequency-unroll/`. Direct native experiments confirm that ordinary
+single-component exponential counting data reproduce a piecewise-rate likelihood;
+the persistent-class mixture issue does not apply to that single-component case.
+Standsurv successfully evaluated our custom mixture survival and quantiles, but
+its public type selector does not offer unrestricted mean. Its population-averaged
+estimand differs from our current link-averaged reference profile. It is a suitable
+candidate for a separate population-standardized prediction mode.
+
+For Eyring interactions, the existing equation compiler already forms reciprocal
+temperature times another stress while keeping the fixed log-temperature term
+separate. Both QML equation forms already permit interaction terms; the current
+R validation blocks them when Eyring is present. Relaxing that policy would still
+need fit/inference/label verification. For example, log lifetime
+`a - log(T) + b/T + c*V + d*V/T` gives voltage effect `c + d/T`;
+the current guard is the obstacle, not the equation compiler. No interaction
+policy change was requested or implemented by this follow-up.

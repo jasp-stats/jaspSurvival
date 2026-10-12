@@ -221,7 +221,7 @@
 
   # Survival drops supply probability masses. Do not normalize an unidentified tail away.
   outcome <- .saGetSurvObject(options, dataset)
-  km <- survival::survfit(outcome ~ 1, weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]])
+  km <- survival::survfit(outcome ~ 1, weights = .sapCaseWeights(dataset, options))
   mass <- -diff(c(1, km[["surv"]]))
   kmTime <- if (logTime) log(km[["time"]]) else km[["time"]]
   bin <- as.integer(cut(kmTime, breaks = breaks, include.lowest = TRUE))
@@ -248,7 +248,7 @@
     predictionData <- dataset[!duplicated(groups), predictors, drop = FALSE]
     # Combine identical predictor rows, retaining their observed proportions.
     rowIndex <- match(groups, groups[!duplicated(groups)])
-    weights <- if (options[["weights"]] != "") dataset[[options[["weights"]]]] else rep(1, nrow(dataset))
+    weights <- .sapCaseWeights(dataset, options)
     predictionWeights <- vapply(seq_len(nrow(predictionData)), function(i) sum(weights[rowIndex == i]), numeric(1))
     predictionWeights <- predictionWeights / sum(predictionWeights)
   }

@@ -117,7 +117,7 @@
   # model.frame drops C() attributes when applying xlev; native flexsurv then
   # rebuilds every equation with these exact stored contrasts. Keep all other
   # warnings, including warnings for ordinary factor terms.
-  expressions <- unique(unlist(lapply(fit[["all.contrasts"]], names), use.names = FALSE))
+  expressions <- as.character(unique(unlist(lapply(fit[["all.contrasts"]], names), use.names = FALSE)))
   expressions <- expressions[startsWith(expressions, "stats::C(")]
   if (!length(expressions)) return(FALSE)
   # Match the upstream stats translation key exactly, including its domain.

@@ -151,7 +151,7 @@
     cl      = options[["coefficientsConfidenceIntervalsLevel"]]
   )
   if (options[["weights"]] != "")
-    fitCall[["weights"]] <- dataset[[options[["weights"]]]]
+    fitCall[["weights"]] <- .sapCaseWeights(dataset, options)
 
   schema <- .sapNativeSchema(fitCall, specification, fixed)
   if (!is.null(schema[["restrictedInitials"]]))

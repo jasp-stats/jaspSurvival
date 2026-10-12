@@ -150,14 +150,18 @@
 
 .saExportAlign <- function(fit, values) {
 
-  dataset  <- attr(fit, "dataset")
-  rowNames <- attr(dataset, "exportRowNames")
-  rows     <- match(rownames(dataset), rowNames)
+  dataset      <- attr(fit, "dataset")
+  rowNames     <- attr(dataset, "exportRowNames")
+  originalRows <- attr(dataset, "frequencyRowNames", exact = TRUE)
+  originalRows <- if (is.null(originalRows)) rownames(dataset) else unname(originalRows[rownames(dataset)])
+  rows         <- match(originalRows, rowNames)
   if (length(values) != nrow(dataset) || anyNA(rows))
     stop(gettext("Exported values could not be matched to the original observations."))
 
   aligned <- rep(NA_real_, length(rowNames))
-  aligned[rows] <- values
+  # Replicas share fitted values, residuals and classification; export once.
+  keep <- !duplicated(rows)
+  aligned[rows[keep]] <- values[keep]
 
   return(aligned)
 }

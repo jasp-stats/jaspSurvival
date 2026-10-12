@@ -87,6 +87,9 @@
     exitAnalysisIfErrors         = TRUE
   )
 
+  if (type == "parametric" && !is.null(weightsVariable))
+    .saCheckFrequencyWeights(dataset[[weightsVariable]])
+
   # check that interval start < end
   if (options[["censoringType"]] == "counting") {
     if (any(dataset[[options[["intervalStart"]]]] >= dataset[[options[["intervalEnd"]]]]))
@@ -95,6 +98,9 @@
     if (any(dataset[[options[["intervalStart"]]]] > dataset[[options[["intervalEnd"]]]], na.rm = TRUE))
       .quitAnalysis(gettext("The interval end must be greater than or equal to the interval start."))
   }
+
+  if (type == "parametric")
+    dataset <- .sapUnrollFrequencyDataset(dataset, options)
 
   if (!is.null(covariatesVariable) && length(covariatesVariable) > 0)
     .hasErrors(
@@ -122,16 +128,19 @@
       exitAnalysisIfErrors         = TRUE
     )
 
-  if (!is.null(weightsVariable)) {
-    if (!all(.saIsWholeNumber(dataset[[weightsVariable]])))
-      .quitAnalysis(gettextf("The weights variable must be an integer."))
-    if (anyNA(dataset[[weightsVariable]]))
-      .quitAnalysis(gettextf("The weights variable must not contain missing values."))
-    if (any(dataset[[weightsVariable]] < 1))
-      .quitAnalysis(gettextf("The weights variable must be positive."))
-  }
+  if (type != "parametric" && !is.null(weightsVariable))
+    .saCheckFrequencyWeights(dataset[[weightsVariable]])
 
   return(dataset)
+}
+.saCheckFrequencyWeights <- function(weights) {
+  if (!all(.saIsWholeNumber(weights)))
+    .quitAnalysis(gettextf("The weights variable must be an integer."))
+  if (anyNA(weights))
+    .quitAnalysis(gettextf("The weights variable must not contain missing values."))
+  if (any(weights < 1))
+    .quitAnalysis(gettextf("The weights variable must be positive."))
+  return()
 }
 .saMissingObservations <- function(x) {
 
@@ -447,8 +456,7 @@
     return()
 
   if (weighted) {
-    # non-parametric survival repeats data for each weight
-    # - they are already weighted and shouldn't be re-weigted again
+    # Expanded frequency data already contain the repeated units.
     options[["weights"]] <- ""
   }
 

@@ -47,23 +47,24 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
     .sapValidatePredictionReferences(dataset, options)
   }
 
-  # Censoring summary table
-  if (options[["censoringSummary"]])
-    .saCensoringSummaryTable(jaspResults, dataset, options)
-
   # Fit the models
   informationChanged <- .sapFit(jaspResults, dataset, options)
   if (informationChanged) {
-    for (key in c("fitErrors", "summaryTable", "coefficientsTable", "coefficientsCovarianceMatrixTable", "modelEquations",
+    for (key in c("fitErrors", "censoringSummaryTable", "summaryTable", "sequentialModelComparisonTable", "coefficientsTable", "coefficientsCovarianceMatrixTable", "modelEquations",
       "survivalTimeTable", "survivalTimePlot", "survivalProbabilityTable", "survivalProbabilityPlot",
       "failureProbabilityTable", "failureProbabilityPlot",
       "relativeSurvivalTimeTable", "relativeSurvivalTimePlot",
       "meanSurvivalTimeTable", "meanSurvivalTimePlot", "medianSurvivalTimeTable", "medianSurvivalTimePlot",
       "relativeMeanSurvivalTimeTable", "relativeMeanSurvivalTimePlot", "relativeMedianSurvivalTimeTable", "relativeMedianSurvivalTimePlot",
       "hazardTable", "hazardPlot", "cumHazardTable", "cumulativeHazardPlot", "rmstTable",
-      "restrictedMeanSurvivalTimePlot", "lifeTimeTable", "probabilityPlot", "densityPlot", "mixtureComponentPlot", "customPredictionsResult", "kaplanMeierAvailability"))
+      "restrictedMeanSurvivalTimePlot", "lifeTimeTable", "probabilityPlot", "densityPlot", "mixtureComponentPlot", "customPredictionsResult", "kaplanMeierAvailability",
+      "residualsVsTimePlot", "residualsVsPredictorsPlot", "residualVsPredictedPlot", "residualHistogram",
+      "mixtureComponentsTable", "mixtureClassificationTable", "mixtureDiagnosticsTable"))
       jaspResults[[key]] <- NULL
   }
+  if (options[["censoringSummary"]])
+    .saCensoringSummaryTable(jaspResults, dataset, options, weighted = TRUE)
+
   options[["simulationContext"]] <- .sapSimulationContext(jaspResults, options)
   on.exit(.sapReleaseSimulationContext(options[["simulationContext"]]), add = TRUE)
   .sapFitErrorsTable(jaspResults, options)

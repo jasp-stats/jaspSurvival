@@ -291,7 +291,7 @@
     formula = .saGetFormula(options, type = "KM"),
     type    = "kaplan-meier",
     data    = dataset,
-    weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]],
+    weights = .sapCaseWeights(dataset, options),
     conf.int = options[["predictionsDisplayConfidenceIntervalsLevel"]]
   )
   kmTable <- summary(kmFit) # , times = optionsSequence

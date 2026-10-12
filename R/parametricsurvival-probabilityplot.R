@@ -336,11 +336,7 @@
   time  <- .saExtractSurvTimes(dataset, options)
   event <- dataset[[options[["eventStatus"]]]]
 
-  if (options[["weights"]] != "") {
-    weights <- dataset[[options[["weights"]]]]
-  } else {
-    weights <- rep(1L, length(time))
-  }
+  weights <- .sapCaseWeights(dataset, options)
 
   keep <- is.finite(time) & time > 0 & !is.na(event) & is.finite(weights) & weights > 0
   if (censored)

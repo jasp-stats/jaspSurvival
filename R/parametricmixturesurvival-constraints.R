@@ -190,7 +190,7 @@
   formula    <- specification[["formula"]]
   fixed      <- c(fixed, specification[["fixed"]])
   parameterNames <- specification[["parameterNames"]]
-  weights    <- if (options[["weights"]] != "") dataset[[options[["weights"]]]] else rep(1, nrow(dataset))
+  weights    <- .sapCaseWeights(dataset, options)
   dlist      <- .sapmConstraintDistribution(distribution, constraint, family)
 
   # Native initialization with only the feasibility repair above; no preliminary optimization.

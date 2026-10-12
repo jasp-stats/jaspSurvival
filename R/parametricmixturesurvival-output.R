@@ -269,7 +269,7 @@
   components <- mixture[["components"]]
   posterior  <- mixture[["posterior"]]
   dataset    <- attr(fit, "dataset")
-  weights    <- if (options[["weights"]] != "") dataset[[options[["weights"]]]] else rep(1, nrow(posterior))
+  weights    <- .sapCaseWeights(dataset, options)
 
   # observations are classified to the component with the highest posterior probability
   assigned <- max.col(posterior, ties.method = "first")

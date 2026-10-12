@@ -39,7 +39,9 @@
 
   # Every complete model and family shares the actual NA-filtered cohort.
   # A changed cohort also discards previous-component starts and posteriors.
-  if (!is.null(out) && !identical(attr(out, "fittingRows", exact = TRUE), rownames(dataset))) {
+  cohortChanged <- !is.null(out) && (!identical(attr(out, "fittingRows", exact = TRUE), rownames(dataset)) ||
+      !identical(attr(out, "frequencyRowNames", exact = TRUE), attr(dataset, "frequencyRowNames", exact = TRUE)))
+  if (cohortChanged) {
     out <- NULL
     fitContainer$object <- NULL
   }
@@ -52,7 +54,7 @@
 
   assessment <- .sapAssessInformationStore(out, options[["censoringType"]])
   out <- assessment[["store"]]
-  informationChanged <- assessment[["changed"]]
+  informationChanged <- cohortChanged || assessment[["changed"]]
   # Rebuild retained output when a fitted transformation's constants change.
   if (!is.null(out) && !isTRUE(all.equal(lapply(attr(out, "modelTerms"), .sapModelTransformations),
       lapply(options[["modelTerms"]], .sapModelTransformations))))
@@ -118,6 +120,7 @@
   attr(out, "distributions")                        <- distributions
   attr(out, "includeFullDatasetInSubgroupAnalysis") <- options[["outputFormattingIncludeFullDatasetInSubgroupAnalysis"]]
   attr(out, "fittingRows")                          <- rownames(dataset)
+  attr(out, "frequencyRowNames")                    <- attr(dataset, "frequencyRowNames", exact = TRUE)
   attr(out, "informationPolicyVersion")             <- .sapInformationPolicyVersion
 
   fitContainer$object <- out
