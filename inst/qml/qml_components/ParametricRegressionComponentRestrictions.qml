@@ -18,11 +18,12 @@ ParametricRestrictionSlots
 	restrictionKeys: ["1", "2", "3", "4"]
 	rowComponent: ParametricFixedParameter
 	{
+		readonly property int component: Number(rowValue)
 		name: "parameterRestriction"
 		positive: false
 		fieldWidth: 125 * jaspTheme.uiScale
 		fieldHeight: listView.rowHeight
-		visible: Number(rowValue) <= listView.componentCount
+		visible: component <= listView.componentCount
 		info: qsTr("Fix this component's regression coefficients at specified values. Leave empty to estimate them; separate multiple values with commas or semicolons.")
 	}
 	Column
@@ -35,7 +36,7 @@ ParametricRestrictionSlots
 			delegate: ParametricRestrictionRow
 			{
 				rowComponentItem: model.rowComponent
-				visible: Number(model.value) <= restrictions.componentCount
+				visible: rowComponentItem && rowComponentItem.component <= restrictions.componentCount
 			}
 		}
 	}

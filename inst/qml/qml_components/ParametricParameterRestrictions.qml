@@ -77,8 +77,7 @@ ParametricRestrictionSlots
 			delegate: ParametricRestrictionRow
 			{
 				rowComponentItem: model.rowComponent
-				readonly property var specification: String(model.value).split(":")
-				visible: restrictions.activeFamilies.indexOf(specification[0]) >= 0 && Number(specification[1]) <= restrictions.selector.componentCount
+				visible: rowComponentItem && restrictions.activeFamilies.indexOf(rowComponentItem.distribution) >= 0 && rowComponentItem.component <= restrictions.selector.componentCount
 			}
 		}
 	}
