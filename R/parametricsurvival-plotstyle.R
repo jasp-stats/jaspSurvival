@@ -21,25 +21,38 @@
   return(if (seriesCount == 1L) function(n) rep("grey40", n) else palette)
 }
 
-# Colours describe predictor lines; a second visual channel identifies merged fits.
-.sapPredictionPlotEncoding <- function(fit, data, options, modelIndex) {
+# Colours describe predictor lines; line types identify percentiles or merged fits.
+.sapPredictionPlotEncoding <- function(fit, data, options, modelIndex, percentileLines = FALSE) {
   subgroups <- vapply(fit, function(model) attr(model, "subgroupLabel"), character(1))
   distributions <- vapply(fit, function(model) attr(model, "distribution"), character(1))
   field <- if (length(unique(subgroups)) > 1L) "subgroup" else if (
     length(unique(distributions)) > 1L && length(unique(data[["Line"]])) > 1L) "distribution" else NULL
+  percentileLines <- percentileLines && length(unique(data[["at"]])) > 1L
+  colourTitle <- NULL
+  if (percentileLines) {
+    # Keep percentile keys independent of predictor and merged-model keys.
+    labels <- .sapPredictionFitLabels(fit, options)
+    otherLines <- length(setdiff(options[["predictionsSeparateLines"]],
+      options[["predictionsLifetimeTimeId"]])) > 0L || any(nzchar(labels))
+    field <- if (otherLines) "percentile" else NULL
+    if (!otherLines) colourTitle <- gettext("Lifetime percentile")
+  }
   labels <- .sapPredictionFitLabels(fit, options, exclude = field)
+  lines <- if (percentileLines) data[["ConditionLine"]] else data[["Line"]]
   colours <- vapply(seq_len(nrow(data)), function(i)
-    .sapPredictionSeriesLabel(labels[modelIndex[i]], data[["Line"]][i]), character(1))
+    .sapPredictionSeriesLabel(labels[modelIndex[i]], lines[i]), character(1))
+  percentileLabels <- if (percentileLines) .sapModelPredictionPercentileLabels(data[["at"]])
+  if (percentileLines && is.null(field)) colours <- percentileLabels
   colours[!nzchar(colours)] <- gettext("Prediction")
   rowOrder <- if (is.factor(data[["Series"]])) order(data[["Series"]]) else seq_len(nrow(data))
   data[["Colour"]] <- factor(colours, levels = unique(colours[rowOrder]))
   data[["Type"]] <- ""
   typeLabels <- typeTitle <- NULL
   if (!is.null(field)) {
-    types <- if (field == "subgroup") subgroups else distributions
+    types <- if (field == "percentile") percentileLabels else if (field == "subgroup") subgroups else distributions
     levels <- unique(types)
-    data[["Type"]] <- factor(types[modelIndex], levels = levels)
-    typeTitle <- if (field == "subgroup") gettext("Subgroup") else gettext("Distribution")
+    data[["Type"]] <- factor(if (field == "percentile") types else types[modelIndex], levels = levels)
+    typeTitle <- if (field == "percentile") gettext("Lifetime percentile") else if (field == "subgroup") gettext("Subgroup") else gettext("Distribution")
     typeLabels <- levels
     if (field == "subgroup") typeLabels <- vapply(match(levels, types), function(i) {
       if (subgroups[i] == gettext("Full dataset")) return(subgroups[i])
@@ -49,7 +62,7 @@
       return(paste(paste0(jaspBase::decodeColNames(variables), " = ", values), collapse = ", "))
     }, character(1))
   }
-  return(list(data = data, field = field, title = typeTitle, labels = typeLabels))
+  return(list(data = data, field = field, title = typeTitle, labels = typeLabels, colourTitle = colourTitle))
 }
 .sapPredictionLayerEncoding <- function(layer, data) {
   index <- match(as.character(layer[["Series"]]), as.character(data[["Series"]]))

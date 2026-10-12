@@ -179,6 +179,14 @@
     lines = label(lines), panels = label(panels), observedRows = observedRows, notes = notes))
 }
 
+.sapModelPredictionPercentileLabels <- function(at) {
+
+  at <- 100 * at
+  labels <- as.character(at)
+  if (anyDuplicated(labels[!duplicated(at)])) labels <- format(at, digits = 17L, trim = TRUE)
+  return(labels)
+}
+
 .sapModelPredictionEvaluationLabels <- function(at, type) {
 
   if (type == "quantile") at <- 100 * at
@@ -393,7 +401,8 @@
     data[["Series"]] <- factor(data[["Series"]], levels = unique(data[["Series"]][rows]))
     data[["Panel"]] <- factor(data[["Panel"]], levels = unique(data[["Panel"]][rows]))
   }
-  encoding <- .sapPredictionPlotEncoding(fit, data, options, modelIndex)
+  encoding <- .sapPredictionPlotEncoding(fit, data, options, modelIndex,
+    percentileLines = type == "quantile" && timeRole == "lines")
   data <- encoding[["data"]]
   typed <- !is.null(encoding[["field"]])
   plot <- ggplot2::ggplot(data, ggplot2::aes(x = x, y = estimate, color = Colour, group = Series))
@@ -516,7 +525,9 @@
   plot <- plot + .sapPredictionOutcomeScale(options, type)
   plot <- .sapPredictionPlotAddTheme(plot, options)
   if (measure == "relativeSurvivalTime") plot <- plot + ggplot2::geom_hline(yintercept = 1, linetype = 3, colour = "grey50")
-  plot <- plot + ggplot2::labs(colour = NULL, fill = NULL) + ggplot2::guides(fill = "none")
+  plot <- plot + ggplot2::labs(colour = encoding[["colourTitle"]], fill = NULL) + ggplot2::guides(fill = "none")
+  if (!is.null(encoding[["colourTitle"]]) || identical(encoding[["field"]], "percentile"))
+    plot <- plot + ggplot2::theme(legend.title.position = "top")
   if (typed) plot <- plot + ggplot2::guides(
     colour = ggplot2::guide_legend(order = 1, override.aes = list(linetype = 1, shape = 16)),
     linetype = ggplot2::guide_legend(order = 2, override.aes = list(colour = "grey40")),
