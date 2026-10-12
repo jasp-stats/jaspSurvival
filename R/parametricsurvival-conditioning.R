@@ -35,6 +35,15 @@
 .sapPredictionPointCoefficients <- function(fit) {
   return(matrix(fit[["res.t"]][, "est"], nrow = 1L, dimnames = list(NULL, rownames(fit[["res.t"]]))))
 }
+.sapPredictionPointParameters <- function(fit, newdata = NULL, X = NULL) {
+  # Native normboot inspects cov[1] even with supplied deterministic values.
+  # Its unused sentinel belongs only to this local copy of a fully fixed fit.
+  if (fit[["npars"]] == 0L) fit[["cov"]] <- matrix(0, 1L, 1L)
+  return(withCallingHandlers(flexsurv::normboot.flexsurvreg(fit, B = 1L, newdata = newdata, X = X,
+    rawsim = .sapPredictionPointCoefficients(fit), transform = FALSE), warning = function(warning) {
+      if (.sapRetainedFactorContrastWarning(warning, fit)) invokeRestart("muffleWarning")
+    }))
+}
 .sapPredictionConditionDesign <- function(fit, data, options, used) {
   if (fit[["ncovs"]] == 0L) return(matrix(numeric(0), nrow = nrow(data), ncol = 0L))
   factors <- .sapPredictionMarginalFactors(fit, options, used)
@@ -47,8 +56,7 @@
     if (any(.sapTransformationInvalid(as.numeric(as.character(expanded[[variable]])), transformations[[variable]])))
       stop(gettextf("The reference value of %1$s is outside its transformation domain. Choose Average or valid Custom values.", jaspBase::decodeColNames(variable)))
   }
-  native <- flexsurv::normboot.flexsurvreg(fit, B = 1L, newdata = expanded,
-    rawsim = .sapPredictionPointCoefficients(fit), transform = FALSE)
+  native <- .sapPredictionPointParameters(fit, newdata = expanded)
   design <- attr(native, "X")
   averaged <- rowsum(design, rows, reorder = FALSE) / nrow(grid)
   rownames(averaged) <- NULL
@@ -64,8 +72,7 @@
   return(setdiff(unique(c(xVariable, options[["predictionsSeparateLines"]], options[["predictionsSeparatePlots"]])), options[["predictionsLifetimeTimeId"]]))
 }
 .sapPredictionPointSummary <- function(fit, data, type, at, transform = identity, fn = NULL) {
-  parameters <- flexsurv::normboot.flexsurvreg(fit, B = 1L, X = attr(fit, "predictionX"),
-    rawsim = .sapPredictionPointCoefficients(fit), transform = FALSE)
+  parameters <- .sapPredictionPointParameters(fit, X = attr(fit, "predictionX"))
   parameters <- if (is.matrix(parameters)) parameters[rep(1L, nrow(data)), , drop = FALSE] else do.call(rbind, parameters)
   nt <- length(at)
   expanded <- parameters[rep(seq_len(nrow(parameters)), each = nt), fit[["dlist"]][["pars"]], drop = FALSE]

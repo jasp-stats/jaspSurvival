@@ -266,6 +266,9 @@
     covariates, parts[["linkBaseline"]][[k]])))
 }
 .sapmLogLikelihoodMatrix        <- function(family, survObject, parameters) {
+  # Rows have separate component memberships. A longitudinal extension needs a
+  # subject ID, class-specific interval histories combined once per subject,
+  # subject-level EM memberships and entry conditioning for a persistent class.
   return(matrix(
     vapply(parameters, function(x) .sapmComponentLogLikelihood(family, survObject, x), numeric(nrow(survObject))),
     nrow = nrow(survObject)

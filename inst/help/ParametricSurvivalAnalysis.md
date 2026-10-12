@@ -1,5 +1,7 @@
 # Parametric survival
 
+Eyring interactions use the reciprocal-temperature term and the chosen transformation of the other predictor. The preset's fixed log-temperature prefactor remains separate. Add interactions using the existing model-term controls.
+
 Confidence bounds retain infinite simulated values. If a simulated prediction cannot be evaluated, the affected bounds are left missing and a note reports the failed evaluations.
 
 Ancillary parameter models start with no predictors, including when adding a location model. Assign their terms independently; existing selections are retained.

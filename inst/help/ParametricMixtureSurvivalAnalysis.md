@@ -1,5 +1,9 @@
 # Parametric mixture survival
 
+Eyring interactions use the reciprocal-temperature term and the chosen transformation of the other predictor. The preset's fixed log-temperature prefactor remains separate. Add interactions using the existing model-term controls.
+
+For models with two or more components, Counting and Interval input produce a summary warning that rows are independent. Repeated records from the same subject are not linked to one persistent component. Ordinary interval censoring represents a single unknown event time between two bounds; it does not itself provide a longitudinal history.
+
 Confidence bounds retain infinite simulated values, including lifetime percentiles beyond numerical range. If a simulated prediction cannot be evaluated, the affected bounds are left missing and a note reports the failed evaluations.
 
 Ancillary parameter models start with no predictors, including when adding a location model. Assign their terms independently; existing selections are retained.

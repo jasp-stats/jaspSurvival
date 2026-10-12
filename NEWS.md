@@ -15,6 +15,7 @@
 ---
 # jaspSurvival 0.97.2
 ## Added
+* Eyring temperature/stress interactions through the existing model-term controls.
 * Component-specific ancillary regression and independent parameter equations for parametric survival models.
 * Temperature/Eyring models with consistent units and structural coefficient restrictions.
 * Symbolic and fitted model equations, baseline parameters and parameter-specific regression tables.
@@ -22,6 +23,8 @@
 * Consolidated model predictions with predictor axes and reference scenarios.
 * New-observation time measures, curves and aligned dataset exports.
 ## Fixed
+* Evaluate deterministic predictions for fully fixed models without requiring a nonempty covariance matrix.
+* Clarify independent-row assumptions for interval/counting mixture input in model summaries.
 * Retain overflowing mixture percentiles and infinite confidence draws; withhold affected bounds when simulated predictions fail instead of dropping draws.
 * Expand frequency-weighted parametric and mixture data before fitting, transformation bases and diagnostics; retain one exported value per original row.
 * Preserve saved prediction grids, factor layouts, diagnostic histograms, and export settings when upgrading earlier survival analyses.

@@ -27,10 +27,6 @@
     for (equation in model[["ancillaryEquations"]])
       if (.sapEquationHasEyring(equation))
         .quitAnalysis(gettext("The Eyring preset is available only for the location equation. Choose another transformation for ancillary parameters."))
-    if (!.sapEquationHasEyring(model)) next
-    equations <- c(list(model), model[["ancillaryEquations"]])
-    if (any(vapply(equations, function(equation) any(lengths(equation[["components"]]) > 1L), logical(1))))
-      .quitAnalysis(gettext("Eyring models cannot include interactions in any parameter equation. Remove the interaction terms or choose another transformation."))
   }
   return()
 }

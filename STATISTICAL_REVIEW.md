@@ -18,7 +18,13 @@ flexsurv limitation and leave the minimum-spread policy unchanged. These are
 excluded from follow-up implementation. Prediction intervals and candidate
 filtering are also retained. Frequency expansion for both parametric analyses
 was explicitly requested. The subsequent user concern about selective omission
-also prompted the confidence-draw correction; other items remain discussion points.
+also prompted the confidence-draw correction, which is closed. The later
+follow-up enabled Eyring interactions,
+and added the independent-row mixture warning and longitudinal extension comment.
+Population standardization and longitudinal fitting remain discussion points.
+The user clarified that the component discussion concerned diagnostic plots
+and chose to retain weighted contributions. Prediction/component-ratio controls
+are therefore unchanged.
 
 ## Findings and follow-up decisions
 
@@ -28,7 +34,7 @@ also prompted the confidence-draw correction; other items remain discussion poin
 | Tail interval probabilities can round to zero | Inherited `.sapmComponentLogLikelihood()` subtracts ordinary CDFs. For an exponential rate of 1 and interval (40, 41], the code gives `-Inf`; the correct log probability is `-40.4586751453871`. Native flexsurv 2.3.2 also fails at these fixed parameters; a fixed equal-rate mixture returns `-Inf`. This is an inherited/upstream numerical limitation affecting fitting, initialization and classification. | User decision: retain as an upstream limitation; no implementation change requested. A future upstream fix would need stable probabilities in fitting and membership calculations. |
 | Minimum spread is only a baseline bound | The inherited bound is combined with new ancillary regression. `.sapmConstraintBounds()` bounds baseline shape/scale coefficients, not their covariate-dependent values. A log-normal example passes a baseline bound of 0.5 with SDs 0.76315 at x=0 and 0.083417 at x=1. The results note correctly says baseline; GUI help is broader. | User decision: leave this policy unchanged; no follow-up implementation requested. |
 | Frequency expansion — implemented after review | Earlier automatic bases used compressed rows. For x=0,...,9 and weights (8,5,1,...,1), spline knots were (3,6), versus approximately (0.29167,2.33333) for repeated rows. Both parametric analyses now expand frequency units before bases, fitting and diagnostics. | Implemented per user direction. Raw frequency values remain available as predictors/subgroups, while internal fitting weights are one. Exports collapse replicas back to original rows. Automatic bases and fixed transformed coefficients now use the literal repeated-unit convention. |
-| Counting input needs a clear scope | Inherited row-wise mixture likelihood supports independent delayed entry. It differs from a persistent latent-class likelihood for multiple intervals from one subject when predictors change. The independently checked two-interval example is detailed below. | State the supported delayed-entry scope. Longitudinal mixture support requires subject IDs and class-specific covariate histories. |
+| Counting input needs a clear scope | Inherited row-wise mixture likelihood supports independent delayed entry. It differs from a persistent latent-class likelihood for multiple intervals from one subject when predictors change. The independently checked two-interval example is detailed below. | Summary warnings now state independent-row scope for >=2-component Counting/Interval fits. A code comment describes the subject-ID, class-specific history and subject-level entry/EM extension. Longitudinal support itself remains unimplemented. |
 
 Locations: [bounds](R/parametricsurvival-bounds.R),
 [component likelihood](R/parametricmixturesurvival-analysis.R),
@@ -77,7 +83,7 @@ already present in the Mixture PR, though the new interface may expose it more w
 | **Original generalized gamma/F available — new** | These are legitimate native distribution families, not aliases of the stable parameterizations. Coefficients and some model restrictions differ. flexsurv recommends its stable versions for routine modeling. | Keep original forms for compatibility or specific equations. Prefer stable forms in examples; warn about weak identification near limiting distributions. |
 | **Predictor transformations and factor coding — new** | Scaling, powers, logarithms, roots, orthogonal polynomials and natural splines transform predictors within parameter equations. Splines are not Royston–Parmar baseline-hazard splines. Polynomial factor contrasts use category order with equally spaced scores, not measured distances between category labels. | Keep. Preserve fitted bases for prediction, as implemented. State what a fixed transformed coefficient constrains; document knot/basis choices. |
 | **Arrhenius in eV — new** | Temperature converts to Kelvin; predictor is 1/(k_B T). With fixed ancillary parameters and no temperature interactions, the log-lifetime slope is activation energy in eV; for log(rate), energy has the opposite sign. k_B uses the exact SI constants. | Sound. Keep the sign/unit explanation. Ancillary temperature effects or interactions require interpreting the complete model, not one slope as a universal activation energy. |
-| **Restricted Eyring preset — new** | Log lifetime includes `-log(T) + beta/T`; log(rate) includes `+log(T) + beta/T`. Thus the lifetime prefactor is T^-1. Unlike Arrhenius, the reciprocal term is 1/T and multiplying its slope by k_B gives energy in eV, with the appropriate rate/lifetime sign. Interactions are prohibited, Eyring is location-only and Gompertz is excluded. NIST's general reliability Eyring form permits an estimated temperature exponent and stress-temperature interactions. | Sound restricted model. Describe it as a preset, not the entire general Eyring family. Add a free log-temperature exponent and supported interactions only if that broader model is wanted. Ancillary regression can still change the overall acceleration pattern. |
+| **Restricted Eyring preset — new** | Log lifetime includes `-log(T) + beta/T`; log(rate) includes `+log(T) + beta/T`. Thus the lifetime prefactor is T^-1. Unlike Arrhenius, the reciprocal term is 1/T and multiplying its slope by k_B gives energy in eV, with the appropriate rate/lifetime sign. Interactions now use the reciprocal-temperature term separately from the fixed prefactor. Eyring remains location-only and Gompertz is excluded. | Interactions enabled by user direction through existing model controls. The fixed temperature exponent remains a preset, rather than an estimated general Eyring exponent. With interactions, interpret the full temperature/stress equation. Ancillary regression can still change the overall acceleration pattern. |
 | **Analytic GenF-original information — new** | One-component canonical Eyring GenF-original fits with entirely exact events in right-censoring mode replace numerical information with analytic observed density information at the same estimates. It is not an expected-information calculation or a refit. Other cases retain native information. | Independent derivative and regression-mapping checks passed. Keep scope and provenance explicit. Extend to censored contributions only after deriving and checking their derivatives. Positive information alone does not establish a global optimum. |
 | **Fixed baselines and regression coefficients — new** | Fixed coefficients contribute to the model but not the free parameter count. Inference is conditional on those values being known. Fully fixed finite predictions have zero estimation uncertainty; they still have event-time variability. | Sound. Fixed values estimated elsewhere do not become known constants statistically; sensitivity analysis or joint uncertainty is needed in that situation. |
 | **Average reference profile — new** | Unused numeric predictors use frequency-weighted means. Unused factors have equal weights over their level combinations. The design is averaged on each parameter's link scale before evaluating the distribution. This is the same style as link-scale reference-grid averaging in emmeans, and differs from response-scale population standardization in `standsurv`. | Valid reference-profile estimand. Keep notes explicit; a separately named population-standardized option is optional. Example: two exponential groups with means 10 and 40 give reference-profile mean 20, versus equally weighted population mean 25. |
@@ -238,9 +244,10 @@ candidate for a separate population-standardized prediction mode.
 
 For Eyring interactions, the existing equation compiler already forms reciprocal
 temperature times another stress while keeping the fixed log-temperature term
-separate. Both QML equation forms already permit interaction terms; the current
-R validation blocks them when Eyring is present. Relaxing that policy would still
-need fit/inference/label verification. For example, log lifetime
+separate. Both QML equation forms already permit interaction terms; the blanket
+R rejection is removed in the subsequent user-authorized implementation.
+For example, log lifetime
 `a - log(T) + b/T + c*V + d*V/T` gives voltage effect `c + d/T`;
-the current guard is the obstacle, not the equation compiler. No interaction
-policy change was requested or implemented by this follow-up.
+the fixed prefactor remains independent of this interaction. No new Eyring
+GUI options are required. Fit, inference and displayed-equation checks accompany
+the implementation in .work/mixture-followup/.

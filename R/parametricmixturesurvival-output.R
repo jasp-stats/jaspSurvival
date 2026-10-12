@@ -426,6 +426,10 @@
   if (length(mixtures) == 0)
     return(messages)
 
+  if (options[["censoringType"]] %in% c("counting", "interval") &&
+      any(vapply(mixtures, function(model) attr(model, "components") > 1L, logical(1))))
+    messages[["warnings"]] <- c(messages[["warnings"]], gettext("Each row is treated as an independent observation. Repeated intervals from the same subject are not linked to a common mixture component."))
+
   # the messages of each model are reported in a single footnote, models of the same distribution with the same messages are reported together
   fitMessages <- vapply(mixtures, function(x) paste(.sapmFitMessages(x), collapse = " "), character(1))
   # A one-component fit is also nested in every mixture of the same family and model.
