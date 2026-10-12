@@ -9,24 +9,44 @@ may describe newer package versions; numerical comparisons used the installed ve
 The checked model definitions and main formulas for independent observations are
 sound. This is not a blanket claim about convergence, identification or interval
 coverage for every dataset.
-Two numerical limitations need fixes; several deliberate conventions need to be
-understood when comparing results with other software. This review changes no
-estimator, default or statistical policy.
+Missing simulation evaluations need better reporting; several deliberate conventions
+need to be understood when comparing results with other software. This review changes
+no estimator, default or statistical policy.
 
-## Issues to address first
+User follow-up, 12 October 2026: retain interval-tail behavior as an upstream
+flexsurv limitation and leave the minimum-spread policy unchanged. These are
+excluded from follow-up implementation. Other items remain discussion points.
+
+## Findings and follow-up decisions
 
 | Issue | Implementation and evidence | Recommended action |
 | --- | --- | --- |
-| Failed simulation draws can disappear from a CI | New `.sapDrawBounds()` uses `quantile(..., na.rm = TRUE)` without counting missing evaluations. A synthetic helper check with 100 draws, 50 missing, still returned finite 95% limits, 2.225 and 48.775. This demonstrates the mechanism, not a failure rate observed in a fitted dataset. | Record valid/failed counts per quantity. Warn or withhold unreliable bounds; distinguish numerical failures from mathematically infinite outcomes. More draws alone does not correct selective omission. |
-| Tail interval probabilities can round to zero | Inherited `.sapmComponentLogLikelihood()` subtracts ordinary CDFs. For an exponential rate of 1 and interval (40, 41], the code gives `-Inf`; the correct log probability is `-40.4586751453871`. Native flexsurv 2.3.2 also fails at these fixed parameters; a fixed equal-rate mixture returns `-Inf`. This is an inherited/upstream numerical limitation affecting fitting, initialization and classification. | Use a stable log difference of survival probabilities in the upper tail, or CDFs in the lower tail. Fix both the native fitting likelihood and membership calculations; changing this helper alone is insufficient. Verify extreme and narrow intervals. |
-| Minimum spread is only a baseline bound | The inherited bound is combined with new ancillary regression. `.sapmConstraintBounds()` bounds baseline shape/scale coefficients, not their covariate-dependent values. A log-normal example passes a baseline bound of 0.5 with SDs 0.76315 at x=0 and 0.083417 at x=1. The results note correctly says baseline; GUI help is broader. | Either explicitly call it a baseline constraint, or enforce the desired bound over supported predictor profiles. Also correct help that says uncertainty is always unavailable: code suppresses it when the fitted bound is active or covariance is unusable. |
-| Frequencies do not define every automatic basis | New spline knots and orthogonal polynomial bases use stored predictor rows without frequency weighting. For x=0,...,9 and weights (8,5,1,...,1), spline knots are (3,6); expanding the rows gives approximately (0.29167,2.33333). | Decide whether automatic bases should reproduce expanded data. Weighted knot selection would achieve that for splines. Polynomial coefficients need explicit basis documentation, especially when fixed; changing their normalization changes the meaning of a restriction. |
+| Failed simulation draws can disappear from a CI | New `.sapDrawBounds()` uses `quantile(..., na.rm = TRUE)` without counting missing evaluations. A synthetic helper check with 100 draws, 50 missing, still returned finite 95% limits, 2.225 and 48.775. Originating prediction functions may emit generic warnings; the missing-draw count is not reported. This demonstrates the mechanism, not a failure rate observed in a fitted dataset. | Record valid/failed counts per quantity. Warn or withhold unreliable bounds; distinguish numerical failures from mathematically infinite outcomes. More draws alone does not correct selective omission. |
+| Tail interval probabilities can round to zero | Inherited `.sapmComponentLogLikelihood()` subtracts ordinary CDFs. For an exponential rate of 1 and interval (40, 41], the code gives `-Inf`; the correct log probability is `-40.4586751453871`. Native flexsurv 2.3.2 also fails at these fixed parameters; a fixed equal-rate mixture returns `-Inf`. This is an inherited/upstream numerical limitation affecting fitting, initialization and classification. | User decision: retain as an upstream limitation; no implementation change requested. A future upstream fix would need stable probabilities in fitting and membership calculations. |
+| Minimum spread is only a baseline bound | The inherited bound is combined with new ancillary regression. `.sapmConstraintBounds()` bounds baseline shape/scale coefficients, not their covariate-dependent values. A log-normal example passes a baseline bound of 0.5 with SDs 0.76315 at x=0 and 0.083417 at x=1. The results note correctly says baseline; GUI help is broader. | User decision: leave this policy unchanged; no follow-up implementation requested. |
+| Frequencies do not define every automatic basis | New spline knots and orthogonal polynomial bases use stored predictor rows without frequency weighting. For x=0,...,9 and weights (8,5,1,...,1), spline knots are (3,6); expanding the rows gives approximately (0.29167,2.33333). This follows ordinary R basis construction. | Prefer retaining native R defaults with a documented basis convention. Weighted spline knots are an optional enhancement if exact compressed/expanded equivalence is required. Unrestricted full polynomial models retain the same function space; fixed basis coefficients require particular care. |
 | Counting input needs a clear scope | Inherited row-wise mixture likelihood supports independent delayed entry. It differs from a persistent latent-class likelihood for multiple intervals from one subject when predictors change. The independently checked two-interval example is detailed below. | State the supported delayed-entry scope. Longitudinal mixture support requires subject IDs and class-specific covariate histories. |
 
 Locations: [bounds](R/parametricsurvival-bounds.R),
 [component likelihood](R/parametricmixturesurvival-analysis.R),
 [constraints](R/parametricmixturesurvival-constraints.R),
 [transformations](R/parametricsurvival-transformations.R).
+
+A smaller native-function example evaluates the 95th percentile of two equally
+weighted Weibull components, with scales 10 and 20. Five handpicked parameter
+draws use common shapes 0.8, 1, 1.2, 0.001 and 1.3. Returned times are approximately
+61.40, 47.80, 40.75, NA and 38.40. The very small shape puts the requested percentile
+beyond the representable time range. The quantile function warns generically;
+the bound function discards the NA and returns 38.575 to 60.379. This illustrates
+why reporting the rejected fraction matters. These are handpicked parameters,
+not a measured failure rate from a fitted model's normal simulation.
+
+The counting limitation is not an incorrectly connected flexsurv argument.
+Our custom mixture is fitted through flexsurvreg's per-row distribution likelihood.
+A persistent-class longitudinal model requires a different joint likelihood and
+subject histories; the current custom distribution supplies neither. This does
+not invalidate independent delayed-entry observations or ordinary single-component
+counting-process likelihoods.
 
 ## Implemented changes and conventions
 
@@ -43,7 +63,7 @@ already present in the Mixture PR, though the new interface may expose it more w
 | **Restricted Eyring preset — new** | Log lifetime includes `-log(T) + beta/T`; log(rate) includes `+log(T) + beta/T`. Thus the lifetime prefactor is T^-1. Unlike Arrhenius, the reciprocal term is 1/T and multiplying its slope by k_B gives energy in eV, with the appropriate rate/lifetime sign. Interactions are prohibited, Eyring is location-only and Gompertz is excluded. NIST's general reliability Eyring form permits an estimated temperature exponent and stress-temperature interactions. | Sound restricted model. Describe it as a preset, not the entire general Eyring family. Add a free log-temperature exponent and supported interactions only if that broader model is wanted. Ancillary regression can still change the overall acceleration pattern. |
 | **Analytic GenF-original information — new** | One-component canonical Eyring GenF-original fits with entirely exact events in right-censoring mode replace numerical information with analytic observed density information at the same estimates. It is not an expected-information calculation or a refit. Other cases retain native information. | Independent derivative and regression-mapping checks passed. Keep scope and provenance explicit. Extend to censored contributions only after deriving and checking their derivatives. Positive information alone does not establish a global optimum. |
 | **Fixed baselines and regression coefficients — new** | Fixed coefficients contribute to the model but not the free parameter count. Inference is conditional on those values being known. Fully fixed finite predictions have zero estimation uncertainty; they still have event-time variability. | Sound. Fixed values estimated elsewhere do not become known constants statistically; sensitivity analysis or joint uncertainty is needed in that situation. |
-| **Average reference profile — new** | Unused numeric predictors use frequency-weighted means. Unused factors have equal weights over their level combinations. The design is averaged on each parameter's link scale before evaluating the distribution. This differs from response-scale population standardization in `standsurv`. | Valid reference-profile estimand. Keep notes explicit; consider a separately named population-standardized option. Example: two rates 0.2 and 0.8 at t=2 give link-average survival 0.449329 versus equal-weight marginal survival 0.436108. |
+| **Average reference profile — new** | Unused numeric predictors use frequency-weighted means. Unused factors have equal weights over their level combinations. The design is averaged on each parameter's link scale before evaluating the distribution. This is the same style as link-scale reference-grid averaging in emmeans, and differs from response-scale population standardization in `standsurv`. | Valid reference-profile estimand. Keep notes explicit; a separately named population-standardized option is optional. Example: two exponential groups with means 10 and 40 give reference-profile mean 20, versus equally weighted population mean 25. |
 | **Density and probability diagnostics use different references — new/extended** | Density averages fitted densities over actual weighted predictor profiles. Probability plots map each observation to a stratum's frequency-weighted mean design, preserving its individual fitted survival probability. Their reference is independent of the Predictions reference selector. | Both are coherent, but answer different questions. Explain the distinction. Adjusted probability points depend on the fitted model; model confidence bands do not constitute a calibrated goodness-of-fit test. |
 | **Reference/current relative lifetime — new** | Ratios divide reference lifetime by current lifetime, using paired draws from the same fit. Standard location-only AFT coefficients in survreg describe current/reference lifetime through exp(beta), so that comparison may require taking a reciprocal. Ratios can depend on percentile when ancillary parameters vary. | Sound chosen direction. Retain the direction in titles/help and avoid presenting it as an invariant time ratio for arbitrary parameter regression. This is not population-relative survival based on expected mortality. |
 | **Pointwise normal-simulation confidence bounds — extended** | Joint transformed coefficients are drawn from their asymptotic multivariate normal distribution. Each derived quantity is evaluated within a draw, then bounded by its quantiles. At 95%, two-sided bounds use 2.5/97.5%; lower or upper bounds use 5% or 95%. This agrees with native flexsurv's pointwise simulation approach. | Sound under regular likelihood assumptions. These are not simultaneous bands, data-resampling bootstrap intervals or uncertainty after model selection. Fix missing-draw handling and report Monte Carlo adequacy. Shared draws correctly retain within-fit dependence for ratios and averages. |
@@ -73,6 +93,8 @@ See [original GenF](https://chjackson.github.io/flexsurv/reference/GenF.orig.htm
 [Gompertz](https://chjackson.github.io/flexsurv/reference/Gompertz.html),
 [natural splines](https://stat.ethz.ch/R-manual/R-devel/library/splines/html/ns.html)
 and [orthogonal polynomials](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/poly.html).
+For the order of averaging and back-transformation, see
+[emmeans transformations](https://rvlenth.github.io/emmeans/articles/transformations.html).
 
 ## Inherited limitations relevant to the new features
 
