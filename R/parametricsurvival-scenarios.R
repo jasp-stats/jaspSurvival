@@ -476,9 +476,18 @@
   colours <- unique(c(kaplanMeierColours, colours))
   colorScale <- jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]])
   fillScale  <- jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
+  singleTrace <- length(setdiff(colours, kaplanMeierColours)) == 1L && length(kaplanMeierColours) <= 1L
   if (length(kaplanMeierColours)) {
     colorScale$palette <- .sapKaplanMeierPalette(colorScale$palette, colours, kaplanMeierColours, "black")
     fillScale$palette <- .sapKaplanMeierPalette(fillScale$palette, colours, kaplanMeierColours, "#333333FF")
+  }
+  if (singleTrace) {
+    # Censoring marks keep their original colours; only curves and bands turn gray.
+    for (layer in plot$layers) if (inherits(layer$geom, "GeomRug"))
+      layer$aes_params$colour <- unname(colorScale$palette(length(colours))[
+        match(unique(layer$data[["Colour"]]), colours)])
+    colorScale$palette <- .sapPlotPalette(colorScale$palette, 1L)
+    fillScale$palette  <- .sapPlotPalette(fillScale$palette, 1L)
   }
   colorScale$limits <- fillScale$limits <- colours
   plot <- plot + ggplot2::xlab(if (timeAxis) if (type %in% c("mean", "median")) "" else

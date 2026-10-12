@@ -16,6 +16,11 @@
     t = max(margin[1L], 0) + 8, r = max(margin[2L], 0) + 10, b = margin[3L], l = margin[4L], unit = "pt")))
 }
 
+# A single colour category uses gray, including its confidence bands.
+.sapPlotPalette <- function(palette, seriesCount) {
+  return(if (seriesCount == 1L) function(n) rep("grey40", n) else palette)
+}
+
 # Colours describe predictor lines; a second visual channel identifies merged fits.
 .sapPredictionPlotEncoding <- function(fit, data, options, modelIndex) {
   subgroups <- vapply(fit, function(model) attr(model, "subgroupLabel"), character(1))

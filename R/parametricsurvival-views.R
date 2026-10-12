@@ -318,6 +318,7 @@
   if (length(options[["predictionsContourSeparateLines"]])) {
     colorScale <- jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]])
     colorScale$limits <- as.character(sort(unique(unlist(levels, use.names = FALSE))))
+    colorScale$palette <- .sapPlotPalette(colorScale$palette, length(colorScale$limits))
     plot <- plot + colorScale +
       ggplot2::labs(colour = .sapPredictionTitle(type, options, measure), linetype = gettext("Separate lines")) +
       ggplot2::guides(linetype = ggplot2::guide_legend(override.aes = list(colour = "grey40")))

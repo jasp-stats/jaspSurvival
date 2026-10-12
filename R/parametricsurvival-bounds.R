@@ -44,6 +44,7 @@
   mapping <- list(x = as.name(x), y = as.name(fields), group = as.name(".boundGroup"), color = if (!is.null(color)) as.name(color))
   arguments <- list(mapping = do.call(ggplot2::aes, mapping[!vapply(mapping, is.null, logical(1))]),
     data = data, linetype = 2L, alpha = .7, show.legend = FALSE)
+  if (is.null(color)) arguments[["colour"]] <- "grey40"
   return(plot + do.call(jaspGraphs::geom_line, arguments) + ggplot2::labs(caption = .sapBoundTitle(level, direction)))
 }
 .sapUsableCovariance <- function(fit) {

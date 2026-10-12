@@ -64,7 +64,7 @@
   if (identical(colorField, "Series"))
     plotData[["Series"]] <- factor(paste(plotData[["Distribution"]], plotData[["Component"]], sep = ": "),
       levels = unique(paste(plotData[["Distribution"]], plotData[["Component"]], sep = ": ")))
-  colors <- if (is.null(colorField)) "black" else jaspGraphs::JASPcolors(options[["colorPalette"]], asFunction = TRUE)(nlevels(plotData[[colorField]]))
+  colors <- if (is.null(colorField)) "grey40" else jaspGraphs::JASPcolors(options[["colorPalette"]], asFunction = TRUE)(nlevels(plotData[[colorField]]))
   if (identical(colorField, "Component"))
     colors <- c("black", jaspGraphs::JASPcolors(options[["colorPalette"]], asFunction = TRUE)(nlevels(plotData[["Component"]]) - 1L))
   if (!is.null(colorField))
@@ -128,6 +128,8 @@
     linetype = if (hasLevel) as.name("Level")
   )
   geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!vapply(aesCall, is.null, logical(1))]), na.rm = TRUE)
+  if (is.null(colorField))
+    geomCall[["color"]] <- "grey40"
   if (hasComponents) {
     # Draw the dashed components first so the full mixture stays visible.
     componentData <- plotData[plotData[["Component"]] != levels(plotData[["Component"]])[1], , drop = FALSE]

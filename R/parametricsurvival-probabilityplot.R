@@ -250,7 +250,7 @@
     )
     geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!vapply(aesCall, is.null, logical(1))]), data = curveData)
     if (!hasDistribution && !hasLevel)
-      geomCall[["color"]] <- "black"
+      geomCall[["color"]] <- "grey40"
     plot <- plot + do.call(jaspGraphs::geom_line, geomCall)
   }
 

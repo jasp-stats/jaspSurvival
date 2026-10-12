@@ -300,7 +300,11 @@
     rawRange  <- at[is.finite(transform$transform(at))]
     if (length(rawRange)) scale$limits <- sort(transform$transform(range(rawRange)))
     if (measure[["type"]] == "quantile") scale$labels <- scales::label_number(scale = 100)
-    figure <- figure + jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]]) + jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
+    colorScale <- jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]])
+    fillScale  <- jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
+    colorScale$palette <- .sapPlotPalette(colorScale$palette, nlevels(data[["Observation"]]))
+    fillScale$palette  <- .sapPlotPalette(fillScale$palette, nlevels(data[["Observation"]]))
+    figure <- figure + colorScale + fillScale
   }
   figure <- figure + .sapPredictionOutcomeScale(options, measure[["type"]])
   figure <- figure + ggplot2::labs(x = if (scalar) gettext("Observation") else if (measure[["type"]] == "quantile") gettext("Lifetime percentile") else gettext("Time"),
