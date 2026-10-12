@@ -193,6 +193,8 @@
   arguments <- .sapPredictionArguments(fit, options, type, at, measure)
   if (measure == "relativeSurvivalTime") {
     result <- .sapPredictionRatioSummary(fit, scenarios, options, at, type)
+  } else if (options[["predictionsUnassignedReferenceValues"]] == "population") {
+    result <- .sapPopulationSummary(fit, options, if (measure == "failureProbability") "failure" else type, at, fast)
   } else if (fast) {
     result <- .sapPredictionPointSummary(fit, scenarios[["data"]], type, at, fn = arguments[["fn"]])
   } else {

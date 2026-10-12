@@ -35,6 +35,7 @@
 }
 .sapValidatePredictionReferences <- function(dataset, options) {
   if (!.sapModelPredictionActive(options)) return()
+  if (options[["predictionsUnassignedReferenceValues"]] == "population") return()
   variables <- .sapOptionsVariables(options)
   # The selected coding reference is validated for each fitting subgroup by
   # the equation compiler. Here only arbitrary Custom entries need validation.
@@ -170,6 +171,7 @@
   currentFit <- .sapPredictionConditionedFit(fit, data, options, .sapPredictionUsedVariables(options))
   referenceFit <- .sapPredictionConditionedFit(fit, reference, options, setdiff(.sapPredictionUsedVariables(options), variable))
   evaluate <- function(model) {
+    if (!is.null(attr(model, "predictionPopulation"))) return(.sapPopulationPointSummary(model, type, at))
     arguments <- list(object = model, X = attr(model, "predictionX"), type = type, ci = FALSE,
       fn = if (type == "mean") .sapNativePredictionFunction(model, type))
     if (type == "quantile") arguments[["quantiles"]] <- at
@@ -197,7 +199,10 @@
       for (field in .sapBoundFields(options[["confidenceIntervalBounds"]])) point[[i]][[field]] <- point[[i]][["est"]]
     }
   }
-  attr(point, "predictionWarnings") <- c(attr(bounds, "predictionWarnings"), if (type == "quantile")
+  attr(point, "predictionWarnings") <- c(attr(bounds, "predictionWarnings"),
+    if (options[["predictionsUnassignedReferenceValues"]] == "population")
+      gettext("The reference lifetime averages over the fitting population, holding line and panel predictors fixed."),
+    if (type == "quantile")
     gettext("Relative life is reference/current lifetime. Ratios may depend on the percentile.") else
     if (type == "mean") gettext("Relative mean survival time is the reference mean divided by the current mean.") else
     gettext("Relative median survival time is the reference median divided by the current median."))

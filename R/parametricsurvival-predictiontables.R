@@ -110,6 +110,9 @@
 
 .sapPredictionConditionNotes <- function(fit, options, used = .sapPredictionTableVariables(options)) {
 
+  if (options[["predictionsUnassignedReferenceValues"]] == "population")
+    return(gettext("Predictions average survival over observed fitting-data profiles, holding displayed predictors fixed."))
+
   training  <- attr(fit, "dataset")
   variables <- setdiff(.sapModelVariables(attr(fit, "modelTerms")), used)
   if (!length(variables)) return(character(0))

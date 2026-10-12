@@ -133,6 +133,10 @@
     rmst = function(t, start, ...) fit[["dfns"]][["rmst"]](t, start = start, ...)))
 }
 .sapPredictionDrawValues <- function(fit, point, type, fn, start, B, rawsim, transform, context) {
+  if (!is.null(attr(point, "population"))) {
+    stopifnot(all(start == 0))
+    return(.sapPopulationDrawValues(fit, point, type, rawsim, transform))
+  }
   X <- attr(point, "X")
   signature <- .sapFitSimulationSignature(fit)
   key <- .sapFitSimulationKey(fit)
@@ -191,6 +195,7 @@
     part <- lapply(value[rows], function(frame) frame[times, , drop = FALSE])
     X <- attr(value, "X")
     attr(part, "X") <- if (!is.null(X)) X[rows, , drop = FALSE]
+    attr(part, "population") <- attr(value, "population")[rows]
     return(part)
   }
   for (first in seq.int(1L, nx, by = rowsPerBlock)) {

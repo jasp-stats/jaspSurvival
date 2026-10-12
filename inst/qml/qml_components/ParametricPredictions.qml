@@ -498,8 +498,8 @@ Section
 		Layout.columnSpan: 2
 		enabled: predictionsRoot.unassignedPredictors.length > 0
 		startValue: "average"
-		values: [{label: qsTr("Average"), value: "average"}, {label: qsTr("Default"), value: "reference"}, {label: qsTr("Custom"), value: "custom"}]
-		info: qsTr("Choose how to set unassigned predictors: average over their values, use zeros and reference factor levels, or enter custom values.")
+		values: [{label: qsTr("Average (design)"), value: "average"}, {label: qsTr("Average (population)"), value: "population"}, {label: qsTr("Default"), value: "reference"}, {label: qsTr("Custom"), value: "custom"}]
+		info: qsTr("Choose a design average, a population average, default reference values or custom values.")
 	}
 	ParametricPredictionData
 	{
@@ -512,7 +512,7 @@ Section
 		predictionPredictors: predictionsRoot.unassignedPredictors
 		predictorsSourceReady: predictionsRoot.predictorSourcesReady
 		visible: predictionsRoot.variableInput && conditioning.enabled && conditioning.value === "custom"
-		info: qsTr("Enter reference values for unassigned predictors. Leave cells empty to average over their values.")
+		info: qsTr("Enter reference values for unassigned predictors. Leave cells empty to use design averages.")
 	}
 	Group
 	{

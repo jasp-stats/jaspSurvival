@@ -11,6 +11,8 @@
 }
 .sapPredictionReferenceValue <- function(value, variable, options, weights, referenceLevel) {
   mode <- options[["predictionsUnassignedReferenceValues"]]
+  # Population predictions retain full fitting profiles; this only seeds a scenario.
+  if (mode == "population") return(value[1L])
   text <- .sapPredictionCustomValues(options)[[variable]]
   if (is.factor(value)) {
     level <- if (mode == "custom" && nzchar(text)) text else referenceLevel
@@ -36,9 +38,9 @@
   return(matrix(fit[["res.t"]][, "est"], nrow = 1L, dimnames = list(NULL, rownames(fit[["res.t"]]))))
 }
 .sapPredictionPointParameters <- function(fit, newdata = NULL, X = NULL) {
-  # Native normboot inspects cov[1] even with supplied deterministic values.
-  # Its unused sentinel belongs only to this local copy of a fully fixed fit.
-  if (fit[["npars"]] == 0L) fit[["cov"]] <- matrix(0, 1L, 1L)
+  # Native normboot checks covariance even with supplied point coefficients.
+  # This unused local sentinel leaves cached inference metadata unchanged.
+  fit[["cov"]] <- matrix(0, 1L, 1L)
   return(withCallingHandlers(flexsurv::normboot.flexsurvreg(fit, B = 1L, newdata = newdata, X = X,
     rawsim = .sapPredictionPointCoefficients(fit), transform = FALSE), warning = function(warning) {
       if (.sapRetainedFactorContrastWarning(warning, fit)) invokeRestart("muffleWarning")
@@ -63,6 +65,15 @@
   return(averaged)
 }
 .sapPredictionConditionedFit <- function(fit, data, options, used) {
+  if (options[["predictionsUnassignedReferenceValues"]] == "population") {
+    attr(fit, "predictionPopulation") <- .sapPopulationDesigns(fit, data, options, used)
+    times <- .saExtractSurvTimes(attr(fit, "dataset"), options)
+    times <- times[is.finite(times) & times > 0]
+    attr(fit, "populationAnchor") <- if (length(times)) log(stats::median(times)) else 0
+    attr(fit, "predictionX") <- NULL
+    return(fit)
+  }
+  attr(fit, "predictionPopulation") <- NULL
   attr(fit, "predictionX") <- .sapPredictionConditionDesign(fit, data, options, used)
   attr(fit, "predictionLabels") <- NULL
   return(fit)

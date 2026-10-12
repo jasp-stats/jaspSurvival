@@ -15,6 +15,7 @@
 ---
 # jaspSurvival 0.97.2
 ## Added
+* Average (design) and Average (population) predictions, including standardized survival, lifetime summaries and shared-draw confidence bounds.
 * Eyring temperature/stress interactions through the existing model-term controls.
 * Component-specific ancillary regression and independent parameter equations for parametric survival models.
 * Temperature/Eyring models with consistent units and structural coefficient restrictions.
