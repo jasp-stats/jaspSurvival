@@ -18,6 +18,10 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 1) results match", {
   set.seed(1)
   results <- jaspTools::runAnalysis("ParametricMixtureSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
 
+  plotName <- results[["results"]][["densityPlot"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  jaspTools::expect_equal_plots(testPlot, "analysis-1_figure-1_density-plot")
+
   table <- results[["results"]][["mixtureClassificationTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
     list("Component 1", 29, 0.646586793108261, 0.379712648571903, 0.12719298245614,
@@ -26,7 +30,7 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 1) results match", {
 
   plotName <- results[["results"]][["mixtureComponentPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-1_figure-1_mixture-components")
+  jaspTools::expect_equal_plots(testPlot, "analysis-1_figure-2_mixture-components")
 
   table <- results[["results"]][["mixtureComponentsTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -39,7 +43,7 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 1) results match", {
 
   plotName <- results[["results"]][["probabilityPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-1_figure-2_probability-plot")
+  jaspTools::expect_equal_plots(testPlot, "analysis-1_figure-3_probability-plot")
 
   table <- results[["results"]][["summaryTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -47,19 +51,19 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 1) results match", {
 
   plotName <- results[["results"]][["survivalProbabilityPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-1_figure-3_predicted-survival-probability")
+  jaspTools::expect_equal_plots(testPlot, "analysis-1_figure-4_predicted-survival-probability")
 
   table <- results[["results"]][["survivalProbabilityTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
     list(0, 1, 1, 1, 114, 0.837510703478608, 0.693178240969771, 0.964192449060135,
      227, 0.647920773432955, 0.470098117709105, 0.843438556165969,
-     341, 0.470336727384008, 0.250904155473358, 0.678041467484831,
+     341, 0.470336727384009, 0.250904155473358, 0.678041467484831,
      454, 0.326105530081854, 0.0994359634430418, 0.515573892032043,
      568, 0.217234048516009, 0.0330615667534956, 0.388371736964099,
-     681, 0.141939013302123, 0.00980299877721949, 0.295459762409128,
-     795, 0.0916474779022491, 0.0026277940101676, 0.229572598981349,
-     908, 0.0598044075375614, 0.000697699434125319, 0.18510871858919,
-     1022, 0.039633433062926, 0.000144626482750973, 0.147912378739373
+     681, 0.141939013302123, 0.00980299877721943, 0.295459762409128,
+     795, 0.0916474779022492, 0.0026277940101676, 0.229572598981349,
+     908, 0.0598044075375614, 0.000697699434125296, 0.18510871858919,
+     1022, 0.039633433062926, 0.000144626482750903, 0.147912378739373
     ))
 
 })
@@ -106,6 +110,18 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 2) results match", {
      "sdlog", "", 0.730315270780268, 0.63659179900518, "", 0.0511780387748292,
      0.837837363862296))
 
+  plotName <- results[["results"]][["densityPlot"]][["collection"]][["densityPlot_table1"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-1_1-component")
+
+  plotName <- results[["results"]][["densityPlot"]][["collection"]][["densityPlot_table2"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-2_2-components")
+
+  plotName <- results[["results"]][["densityPlot"]][["collection"]][["densityPlot_table3"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-3_3-components")
+
   table <- results[["results"]][["mixtureClassificationTable"]][["collection"]][["mixtureClassificationTable_table1"]][["data"]]
   jaspTools::expect_equal_tables(table,
     list("Component 1", 9, 0.962328133834908, 0.0419319818976908, 0.0394736842105263,
@@ -121,15 +137,15 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 2) results match", {
 
   plotName <- results[["results"]][["mixtureComponentPlot"]][["collection"]][["mixtureComponentPlot_table1"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-1_1-component")
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-4_1-component")
 
   plotName <- results[["results"]][["mixtureComponentPlot"]][["collection"]][["mixtureComponentPlot_table2"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-2_2-components")
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-5_2-components")
 
   plotName <- results[["results"]][["mixtureComponentPlot"]][["collection"]][["mixtureComponentPlot_table3"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-3_3-components")
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-6_3-components")
 
   table <- results[["results"]][["mixtureComponentsTable"]][["collection"]][["mixtureComponentsTable_table1"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -154,15 +170,15 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 2) results match", {
 
   plotName <- results[["results"]][["probabilityPlot"]][["collection"]][["probabilityPlot_table1"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-4_1-component")
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-7_1-component")
 
   plotName <- results[["results"]][["probabilityPlot"]][["collection"]][["probabilityPlot_table2"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-5_2-components")
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-8_2-components")
 
   plotName <- results[["results"]][["probabilityPlot"]][["collection"]][["probabilityPlot_table3"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-6_3-components")
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-9_3-components")
 
   table <- results[["results"]][["summaryTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -174,15 +190,15 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 2) results match", {
 
   plotName <- results[["results"]][["survivalProbabilityPlot"]][["collection"]][["survivalProbabilityPlot_table1"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-7_1-component")
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-10_1-component")
 
   plotName <- results[["results"]][["survivalProbabilityPlot"]][["collection"]][["survivalProbabilityPlot_table2"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-8_2-components")
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-11_2-components")
 
   plotName <- results[["results"]][["survivalProbabilityPlot"]][["collection"]][["survivalProbabilityPlot_table3"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-9_3-components")
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-12_3-components")
 
   table <- results[["results"]][["survivalProbabilityTable"]][["collection"]][["survivalProbabilityTable_table1"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -199,27 +215,27 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 2) results match", {
 
   table <- results[["results"]][["survivalProbabilityTable"]][["collection"]][["survivalProbabilityTable_table2"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(0, 1, 1, 1, 114, 0.853256753765902, 0.806291868098778, 0.889761626998848,
+    list(0, 1, 1, 1, 114, 0.853256753765902, 0.806291868098777, 0.889761626998848,
      227, 0.625152143187991, 0.568070921548917, 0.677186853395178,
      341, 0.439822288936137, 0.379807485790561, 0.494789567862438,
      454, 0.312377432026856, 0.253343588001033, 0.367727207553959,
-     568, 0.224906337670458, 0.17058472910074, 0.278498849159668,
+     568, 0.224906337670458, 0.17058472910074, 0.278498849159667,
      681, 0.165360082692482, 0.117102180092034, 0.21575349185885,
-     795, 0.12337851476492, 0.081566658504393, 0.169608112575294,
+     795, 0.12337851476492, 0.0815666585043931, 0.169608112575293,
      908, 0.093761486662801, 0.0579075234743802, 0.135718185375931,
      1022, 0.0721109123749698, 0.0416630973870258, 0.109749232586348
     ))
 
   table <- results[["results"]][["survivalProbabilityTable"]][["collection"]][["survivalProbabilityTable_table3"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(0, 1, 1, 1, 114, 0.853294873673174, 0.79747787334471, 0.887355684454728,
+    list(0, 1, 1, 1, 114, 0.853294873673173, 0.79747787334471, 0.887355684454728,
      227, 0.64367254169095, 0.582051908134309, 0.694378311044195,
-     341, 0.448140998465913, 0.386435015028645, 0.503497137788211,
+     341, 0.448140998465913, 0.386435015028646, 0.503497137788211,
      454, 0.309037909904176, 0.249362051403086, 0.364158209403286,
-     568, 0.214052744856342, 0.160103158147051, 0.26588655707751,
+     568, 0.214052744856341, 0.160103158147051, 0.26588655707751,
      681, 0.150834548358567, 0.103883877430994, 0.19810879591378,
-     795, 0.107633017325534, 0.0681352512572418, 0.149839696451766,
-     908, 0.0782231090840424, 0.0453695396438526, 0.115502668438779,
+     795, 0.107633017325534, 0.0681352512572417, 0.149839696451766,
+     908, 0.0782231090840424, 0.0453695396438525, 0.115502668438779,
      1022, 0.0575230308219395, 0.0306824864275962, 0.0901867645527847
     ))
 
@@ -245,15 +261,23 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 3) results match", {
      "", 0.493114616985993, 0.992791006752066, "", "shape", 1.34192760465771,
      1.06120580810848, "", "", 0.160692809669193, 1.69690900896229,
      "", "scale", 246.481011744193, 100.711653216279, "", "", 112.556294774281,
-     603.235943510666, "", "jaspColumn2 (2)", 0.731221613397204,
+     603.235943510666, "", "jaspColumn1 (2)", 0.731221613397204,
      -0.252427777665525, "", 0.145118943986272, 0.501871156215946,
      1.71487100445993, 1.45699071233847, "mixing probability", 0.344308054993938,
      0.00720899324793435, 2, "", 0.493114616985993, 0.974341381862964,
      "", "shape", 1.89917115461318, 0.838026380521219, "", "", 0.792747264504092,
      4.30398273652367, "", "scale", 603.719557309404, 214.82546578949,
-     "", "", 318.278134316468, 1696.62056841537, "", "jaspColumn2 (2)",
+     "", "", 318.278134316468, 1696.62056841537, "", "jaspColumn1 (2)",
      -0.109518617076801, -1.18554213519553, "", 0.841881926670181,
      0.549001678911585, 0.966504901041928, -0.199486852743192))
+
+  plotName <- results[["results"]][["densityPlot"]][["collection"]][["densityPlot_plot1"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-1_jaspcolumn1-1")
+
+  plotName <- results[["results"]][["densityPlot"]][["collection"]][["densityPlot_plot2"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-2_jaspcolumn1-2")
 
   table <- results[["results"]][["mixtureClassificationTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -263,11 +287,11 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 3) results match", {
 
   plotName <- results[["results"]][["mixtureComponentPlot"]][["collection"]][["mixtureComponentPlot_plot1"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-1_jaspcolumn2-1", tolerance = 1e-4)
+  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-3_jaspcolumn1-1")
 
   plotName <- results[["results"]][["mixtureComponentPlot"]][["collection"]][["mixtureComponentPlot_plot2"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-2_jaspcolumn2-2", tolerance = 1e-4)
+  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-4_jaspcolumn1-2")
 
   table <- results[["results"]][["mixtureComponentsTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -280,7 +304,7 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 3) results match", {
 
   plotName <- results[["results"]][["probabilityPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-3_probability-plot")
+  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-5_probability-plot")
 
   table <- results[["results"]][["summaryTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -288,27 +312,29 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 3) results match", {
 
   plotName <- results[["results"]][["survivalProbabilityPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-4_predicted-survival-probability")
+  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-6_predicted-survival-probability")
 
   table <- results[["results"]][["survivalProbabilityTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(0, 1, 1, 1, 1, 1, 1, 114, 0.789693970235256, 0.552705089020884,
-     0.932212127803108, 0.90080983124853, 0.708493516057809, 0.943785420802411,
-     227, 0.562380667261367, 0.335140843253013, 0.80912916437891,
-     0.752873293474043, 0.517074864346998, 0.841554435557279, 341,
-     0.385316601504714, 0.206055324720256, 0.667909876463435, 0.594433203786424,
-     0.360678084096817, 0.724020647704619, 454, 0.260151166103601,
-     0.118708489828183, 0.53143236297966, 0.448199211702786, 0.238111520842074,
-     0.611355816691495, 568, 0.171870992836269, 0.062060196727296,
-     0.411528497938918, 0.322794182123546, 0.14737346657931, 0.511036684203508,
-     681, 0.111082269993614, 0.0300184347113388, 0.308180703956782,
-     0.2246162281039, 0.0883859892455577, 0.42640255412536, 795,
-     0.0690706322608892, 0.0123557665160708, 0.225369204120071, 0.151072563758134,
-     0.0504660058870758, 0.354945407599891, 908, 0.0413584896548977,
-     0.00461719877177426, 0.163838488370058, 0.0996471383253963,
-     0.027138446791387, 0.296444425702438, 1022, 0.023509448194203,
-     0.00140878959862499, 0.117687076424568, 0.0644848665302737,
-     0.0138330043194995, 0.246394098904181))
+    list(0, 1, 1, 1, 1, 114, 0.789693970235256, 0.552705089020884, 0.932212127803108,
+     1, 227, 0.562380667261367, 0.335140843253013, 0.809129164378911,
+     1, 341, 0.385316601504714, 0.206055324720256, 0.667909876463435,
+     1, 454, 0.260151166103601, 0.118708489828183, 0.53143236297966,
+     1, 568, 0.171870992836269, 0.0620601967272959, 0.411528497938918,
+     1, 681, 0.111082269993614, 0.0300184347113388, 0.308180703956782,
+     1, 795, 0.0690706322608891, 0.0123557665160709, 0.22536920412007,
+     1, 908, 0.0413584896548977, 0.00461719877177417, 0.163838488370058,
+     1, 1022, 0.0235094481942029, 0.00140878959862504, 0.117687076424568,
+     1, 0, 1, 1, 1, 2, 114, 0.90080983124853, 0.708493516057809,
+     0.943785420802411, 2, 227, 0.752873293474043, 0.517074864346997,
+     0.841554435557279, 2, 341, 0.594433203786424, 0.360678084096817,
+     0.724020647704619, 2, 454, 0.448199211702786, 0.238111520842074,
+     0.611355816691495, 2, 568, 0.322794182123546, 0.14737346657931,
+     0.511036684203508, 2, 681, 0.2246162281039, 0.0883859892455576,
+     0.42640255412536, 2, 795, 0.151072563758134, 0.0504660058870758,
+     0.354945407599891, 2, 908, 0.0996471383253964, 0.0271384467913869,
+     0.296444425702438, 2, 1022, 0.0644848665302739, 0.0138330043194995,
+     0.246394098904181, 2))
 
 })
 
