@@ -179,6 +179,7 @@
   nx <- if (shared) 1L else length(point)
   nt <- nrow(point[[1L]])
   bounds <- matrix(NA_real_, 2L, nx * nt, dimnames = list(c("lower", "upper"), NULL))
+  failed <- evaluated <- 0L
   # Retain all draws, but calculate their quantiles before the next grid block.
   cells <- max(250000L, B)
   rowsPerBlock <- max(1L, min(nx, floor(cells / B)))
@@ -205,17 +206,27 @@
         numerator <- .sapPredictionDrawValues(reference[["fit"]], baseline, type, fn, partStart, B, rawsim, transform, context)
         values <- numerator / values
       }
+      failed <- failed + sum(is.na(values))
+      evaluated <- evaluated + length(values)
       bounds[, columns] <- .sapDrawBounds(values, level, direction)
     }
   }
+  messages <- character(0)
+  if (failed > 0L)
+    messages <- gettextf("Some confidence bounds are missing because simulated predictions could not be evaluated (%1$i of %2$i evaluations).", failed, evaluated)
+  if (any(is.infinite(bounds)))
+    messages <- c(messages, gettext("Some confidence bounds are infinite or exceed numerical range."))
+  if (length(messages)) attr(bounds, "predictionWarnings") <- messages
   return(bounds)
 }
 .sapDrawBounds <- function(values, level, direction) {
   probabilities <- .sapBoundProbabilities(level, direction)
   bounds <- matrix(NA_real_, 2L, ncol(values), dimnames = list(c("lower", "upper"), NULL))
   for (j in seq_len(ncol(values))) {
-    if (all(is.na(values[, j]))) next
-    bounds[names(probabilities), j] <- stats::quantile(values[, j], probabilities, type = 7L, na.rm = TRUE, names = FALSE)
+    # Omitting failed draws changes the simulated distribution and can shrink
+    # its upper tail. Withhold affected bounds; retain valid infinite values.
+    if (anyNA(values[, j])) next
+    bounds[names(probabilities), j] <- stats::quantile(values[, j], probabilities, type = 7L, names = FALSE)
   }
   return(bounds)
 }

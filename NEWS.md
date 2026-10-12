@@ -22,6 +22,7 @@
 * Consolidated model predictions with predictor axes and reference scenarios.
 * New-observation time measures, curves and aligned dataset exports.
 ## Fixed
+* Retain overflowing mixture percentiles and infinite confidence draws; withhold affected bounds when simulated predictions fail instead of dropping draws.
 * Expand frequency-weighted parametric and mixture data before fitting, transformation bases and diagnostics; retain one exported value per original row.
 * Preserve saved prediction grids, factor layouts, diagnostic histograms, and export settings when upgrading earlier survival analyses.
 * Stabilized exact-event Eyring Generalized F (original) standard errors and confidence intervals while retaining fitted estimates.

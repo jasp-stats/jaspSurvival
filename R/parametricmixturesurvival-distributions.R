@@ -255,6 +255,12 @@
     interior <- is.finite(logLower) & is.finite(logUpper) & logLower <= 0 & logUpper <= 0 & !is.na(logCure)
     out[which(interior & logUpper <= logCure)] <- Inf
     index <- which(interior & logUpper > logCure)
+    # A percentile beyond the largest representable time is overflow, not a
+    # failed draw. Keep it infinite so confidence bounds retain the upper tail.
+    logSurvival <- do.call(pMixture, c(list(q = .Machine$double.xmax, lower.tail = FALSE, log.p = TRUE), arguments))
+    overflow <- which(interior & logUpper > logCure & logSurvival > logUpper)
+    out[overflow] <- Inf
+    index <- setdiff(index, overflow)
     if (length(index) == 0)
       return(out)
 

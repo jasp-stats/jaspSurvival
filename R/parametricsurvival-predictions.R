@@ -197,6 +197,7 @@
       rawsim <- .sapJointDraws(fit, B, seed, context)
       .sapPredictionBounds(fit, data, type, fn, start, B, rawsim, transform, context, cl, direction)
     }, warning = captureWarning)
+    messages <- c(messages, attr(bounds, "predictionWarnings"))
   }
   predictionLabels <- attr(fit, "predictionLabels", exact = TRUE)
   if (!is.null(predictionLabels))

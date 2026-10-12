@@ -9,21 +9,22 @@ may describe newer package versions; numerical comparisons used the installed ve
 The checked model definitions and main formulas for independent observations are
 sound. This is not a blanket claim about convergence, identification or interval
 coverage for every dataset.
-Missing simulation evaluations need better reporting; several deliberate conventions
+The confidence-draw follow-up below corrects missing evaluation handling; several deliberate conventions
 need to be understood when comparing results with other software. This review changes
-no estimator, default or statistical policy.
+no estimator or default; the subsequent confidence-draw correction is documented below.
 
 User follow-up, 12 October 2026: retain interval-tail behavior as an upstream
 flexsurv limitation and leave the minimum-spread policy unchanged. These are
 excluded from follow-up implementation. Prediction intervals and candidate
 filtering are also retained. Frequency expansion for both parametric analyses
-was explicitly requested; other items remain discussion points.
+was explicitly requested. The subsequent user concern about selective omission
+also prompted the confidence-draw correction; other items remain discussion points.
 
 ## Findings and follow-up decisions
 
 | Issue | Implementation and evidence | Recommended action |
 | --- | --- | --- |
-| Failed simulation draws can disappear from a CI | New `.sapDrawBounds()` uses `quantile(..., na.rm = TRUE)` without counting missing evaluations. A synthetic helper check with 100 draws, 50 missing, still returned finite 95% limits, 2.225 and 48.775. Originating prediction functions may emit generic warnings; the missing-draw count is not reported. This demonstrates the mechanism, not a failure rate observed in a fitted dataset. | Record valid/failed counts per quantity. Warn or withhold unreliable bounds; distinguish numerical failures from mathematically infinite outcomes. More draws alone does not correct selective omission. |
+| Failed simulation draws — omission corrected after review | Previously `.sapDrawBounds()` discarded missing evaluations. It now retains infinite draws and withholds bounds for each prediction with any unresolved draw. Mixture percentiles exceeding the largest representable time return `Inf` after a survival-probability comparison at that limit. Prediction notes report failed evaluation counts and infinite bounds, including relative-lifetime outputs. | Implemented following the user's bias concern. Unresolved draws are not reclassified as infinite without numerical evidence. Ordinary finite type-7 bounds are unchanged. This prevents selective omission; it does not guarantee nominal coverage of asymptotic mixture inference. |
 | Tail interval probabilities can round to zero | Inherited `.sapmComponentLogLikelihood()` subtracts ordinary CDFs. For an exponential rate of 1 and interval (40, 41], the code gives `-Inf`; the correct log probability is `-40.4586751453871`. Native flexsurv 2.3.2 also fails at these fixed parameters; a fixed equal-rate mixture returns `-Inf`. This is an inherited/upstream numerical limitation affecting fitting, initialization and classification. | User decision: retain as an upstream limitation; no implementation change requested. A future upstream fix would need stable probabilities in fitting and membership calculations. |
 | Minimum spread is only a baseline bound | The inherited bound is combined with new ancillary regression. `.sapmConstraintBounds()` bounds baseline shape/scale coefficients, not their covariate-dependent values. A log-normal example passes a baseline bound of 0.5 with SDs 0.76315 at x=0 and 0.083417 at x=1. The results note correctly says baseline; GUI help is broader. | User decision: leave this policy unchanged; no follow-up implementation requested. |
 | Frequency expansion — implemented after review | Earlier automatic bases used compressed rows. For x=0,...,9 and weights (8,5,1,...,1), spline knots were (3,6), versus approximately (0.29167,2.33333) for repeated rows. Both parametric analyses now expand frequency units before bases, fitting and diagnostics. | Implemented per user direction. Raw frequency values remain available as predictors/subgroups, while internal fitting weights are one. Exports collapse replicas back to original rows. Automatic bases and fixed transformed coefficients now use the literal repeated-unit convention. |
@@ -34,7 +35,7 @@ Locations: [bounds](R/parametricsurvival-bounds.R),
 [constraints](R/parametricmixturesurvival-constraints.R),
 [transformations](R/parametricsurvival-transformations.R).
 
-A smaller native-function example evaluates the 95th percentile of two equally
+Before the correction, a smaller native-function example evaluated the 95th percentile of two equally
 weighted Weibull components, with scales 10 and 20. Five handpicked parameter
 draws use common shapes 0.8, 1, 1.2, 0.001 and 1.3. Returned times are approximately
 61.40, 47.80, 40.75, NA and 38.40. The very small shape puts the requested percentile
@@ -46,7 +47,16 @@ Tracing the actual native call clarified provenance: flexsurv's qgeneric returns
 a finite value at the representable time boundary for that extreme case. Our
 custom mixture accuracy check rejects it and returns NA; our bound helper then
 drops it. A native single-Weibull quantile returns Inf in the corresponding
-out-of-range case. The interval-filtering behavior is our implementation.
+out-of-range case. The interval-filtering behavior was our implementation.
+
+The follow-up correction retains that fourth draw as `Inf`: an independent
+80-digit log-time inversion gives log(t)=1099.83798, or approximately
+4.50 x 10^477. This is a mathematically finite percentile beyond double range.
+Its Weibull expectation is also mathematically finite, despite numerical
+overflow; an infinite expectation does not itself make an interior percentile
+infinite. With all five draws retained, the illustrative 95% upper confidence
+bound is infinite. Any unresolved `NA`/`NaN` draw now withholds that prediction's
+bounds instead of selecting only successful evaluations. Counts reach output notes.
 
 The counting limitation is not an incorrectly connected flexsurv argument.
 Our custom mixture is fitted through flexsurvreg's per-row distribution likelihood.
@@ -73,7 +83,7 @@ already present in the Mixture PR, though the new interface may expose it more w
 | **Average reference profile — new** | Unused numeric predictors use frequency-weighted means. Unused factors have equal weights over their level combinations. The design is averaged on each parameter's link scale before evaluating the distribution. This is the same style as link-scale reference-grid averaging in emmeans, and differs from response-scale population standardization in `standsurv`. | Valid reference-profile estimand. Keep notes explicit; a separately named population-standardized option is optional. Example: two exponential groups with means 10 and 40 give reference-profile mean 20, versus equally weighted population mean 25. |
 | **Density and probability diagnostics use different references — new/extended** | Density averages fitted densities over actual weighted predictor profiles. Probability plots map each observation to a stratum's frequency-weighted mean design, preserving its individual fitted survival probability. Their reference is independent of the Predictions reference selector. | Both are coherent, but answer different questions. Explain the distinction. Adjusted probability points depend on the fitted model; model confidence bands do not constitute a calibrated goodness-of-fit test. |
 | **Reference/current relative lifetime — new** | Ratios divide reference lifetime by current lifetime, using paired draws from the same fit. Standard location-only AFT coefficients in survreg describe current/reference lifetime through exp(beta), so that comparison may require taking a reciprocal. Ratios can depend on percentile when ancillary parameters vary. | Sound chosen direction. Retain the direction in titles/help and avoid presenting it as an invariant time ratio for arbitrary parameter regression. This is not population-relative survival based on expected mortality. |
-| **Pointwise normal-simulation confidence bounds — extended** | Joint transformed coefficients are drawn from their asymptotic multivariate normal distribution. Each derived quantity is evaluated within a draw, then bounded by its quantiles. At 95%, two-sided bounds use 2.5/97.5%; lower or upper bounds use 5% or 95%. This agrees with native flexsurv's pointwise simulation approach. | Sound under regular likelihood assumptions. These are not simultaneous bands, data-resampling bootstrap intervals or uncertainty after model selection. Fix missing-draw handling and report Monte Carlo adequacy. Shared draws correctly retain within-fit dependence for ratios and averages. |
+| **Pointwise normal-simulation confidence bounds — extended** | Joint transformed coefficients are drawn from their asymptotic multivariate normal distribution. Each derived quantity is evaluated within a draw, then bounded by its quantiles. At 95%, two-sided bounds use 2.5/97.5%; lower or upper bounds use 5% or 95%. This agrees with native flexsurv's pointwise simulation approach. | Sound under regular likelihood assumptions. These are not simultaneous bands, data-resampling bootstrap intervals or uncertainty after model selection. Missing-draw handling is corrected above; Monte Carlo adequacy remains relevant. Shared draws correctly retain within-fit dependence for ratios and averages. |
 | **Individual event-time prediction range — new** | Endpoints are fitted distribution quantiles. They include individual variability, exclude parameter-estimation uncertainty and can be asymmetric around a mean or median. The GUI says “Prediction interval”; output notes/table headings say “prediction range.” | Legitimate plug-in range. Prefer one consistent label identifying this convention. Add parameter uncertainty only with a clearly defined predictive procedure, not by simply adding confidence limits to quantile endpoints. |
 | **Additive component plots — new** | Survival/failure/density/RMST curves are weighted component contributions. Hazard contributions are pi_k f_k(t)/S_mix(t); cumulative hazard contributions integrate these terms. They add to the mixture quantities. The Mixture PR showed standalone component survival/failure/hazard curves instead. | Correct changed interpretation. Label them as contributions, not standalone component hazards or survival probabilities. A latent mixture does not by itself identify competing-risk causes. Component quantiles are not averaged to obtain mixture quantiles. |
 | **Tail-safe mixture quantiles and Gompertz means — new** | Quantiles invert log-tail probabilities on log time and check accuracy. Negative Gompertz shape leaves a positive mass at infinity; sufficiently high quantiles and unrestricted means are therefore infinite. Zero-weight components contribute nothing. This follows unrestricted flexsurv Gompertz, while implementations restricting positive shape cannot represent that mass. | Sound. Keep infinite outcomes distinct from numerical failure. Recommend RMST for a finite horizon. Do not silently replace an infinite mean by a finite integration result. |

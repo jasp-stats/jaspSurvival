@@ -197,10 +197,10 @@
       for (field in .sapBoundFields(options[["confidenceIntervalBounds"]])) point[[i]][[field]] <- point[[i]][["est"]]
     }
   }
-  attr(point, "predictionWarnings") <- if (type == "quantile")
+  attr(point, "predictionWarnings") <- c(attr(bounds, "predictionWarnings"), if (type == "quantile")
     gettext("Relative life is reference/current lifetime. Ratios may depend on the percentile.") else
     if (type == "mean") gettext("Relative mean survival time is the reference mean divided by the current mean.") else
-    gettext("Relative median survival time is the reference median divided by the current median.")
+    gettext("Relative median survival time is the reference median divided by the current median."))
   return(point)
 }
 

@@ -1,5 +1,7 @@
 # Parametric mixture survival
 
+Confidence bounds retain infinite simulated values, including lifetime percentiles beyond numerical range. If a simulated prediction cannot be evaluated, the affected bounds are left missing and a note reports the failed evaluations.
+
 Ancillary parameter models start with no predictors, including when adding a location model. Assign their terms independently; existing selections are retained.
 
 When ancillary regression is enabled, the location model is titled with its native parameter: rate, scale, meanlog, or mu. Selecting multiple distributions shows their distinct location parameters; ancillary model titles identify the corresponding non-location parameters.
