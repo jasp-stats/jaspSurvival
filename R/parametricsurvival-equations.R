@@ -396,7 +396,9 @@
   fitCall <- .sapEyringInitials(fitCall, schema, fixed)
   fitCall <- .sapFixedFitCall(fitCall, fixed, current[["parameterNames"]])
   fitCall <- .sapEyringControls(fitCall, schema)
-  fit <- suppressWarnings(suppressMessages(.sapEyringNativeFit(fitCall, schema, options[["censoringType"]])))
+  fit <- suppressWarnings(suppressMessages(.sapmCompressedFit(fitCall, function(...) {
+    .sapEyringNativeFit(list(...), schema, options[["censoringType"]])
+  })))
   .sapVerifyNativeSchema(fit, current)
   base <- fit[["res"]][family[["pars"]], "est"]
   beta <- .sapEquationBetas(fit, family)

@@ -542,7 +542,7 @@
       initial <- fitCall[["dist"]][["inits"]](t = times, mf = NULL, mml = NULL, aux = NULL)
       fitCall[["inits"]] <- c(initial, rep(0, ncol(covariates)))
     }
-    fit <- try(suppressWarnings(suppressMessages(do.call(flexsurv::flexsurvreg, fitCall))), silent = TRUE)
+    fit <- try(suppressWarnings(suppressMessages(.sapmCompressedFit(fitCall))), silent = TRUE)
     if (jaspBase::isTryError(fit)) {
       # This weighted component fit supplies starts only. Native BFGS can backtrack
       # through a nonfinite trial where L-BFGS-B aborts; project its result below.
@@ -550,7 +550,7 @@
       fitCall[["lower"]]   <- NULL
       fitCall[["upper"]]   <- NULL
       fitCall[["control"]] <- list(maxit = 1000, reltol = 1e-10, ndeps = rep(1e-6, length(bounds[["lower"]])), fnscale = sum(weights))
-      fit <- suppressWarnings(suppressMessages(do.call(flexsurv::flexsurvreg, fitCall)))
+      fit <- suppressWarnings(suppressMessages(.sapmCompressedFit(fitCall)))
     }
     base <- fit[["res"]][family[["pars"]], "est"]
     beta <- fit[["res"]][fit[["covpars"]], "est"]
@@ -570,15 +570,15 @@
       dist    = family[["survreg"]]
     )
     if (is.null(constraint)) {
-      fit <- suppressWarnings(do.call(survival::survreg, fitCall))
+      fit <- suppressWarnings(.sapmCompressedFit(fitCall, survival::survreg))
     } else {
-      fit <- try(suppressWarnings(do.call(survival::survreg, fitCall)), silent = TRUE)
+      fit <- try(suppressWarnings(.sapmCompressedFit(fitCall, survival::survreg)), silent = TRUE)
       minimumScale <- if (family[["family"]] == "lnorm") constraint[["naturalBound"]] else 1 / constraint[["naturalBound"]]
       if (jaspBase::isTryError(fit) || any(!is.finite(stats::coef(fit))) || !is.finite(fit[["scale"]]) || fit[["scale"]] < minimumScale) {
         # The public fixed-scale fit supplies feasible location/covariate starts
         # without subtracting extreme component CDFs in flexsurvreg's likelihood.
         fitCall[["scale"]] <- minimumScale
-        fit <- suppressWarnings(do.call(survival::survreg, fitCall))
+        fit <- suppressWarnings(.sapmCompressedFit(fitCall, survival::survreg))
       }
     }
 
@@ -605,7 +605,7 @@
     if (!is.null(previous))
       fitCall[["inits"]] <- c(previous[["base"]], previous[["beta"]])
 
-    fit  <- suppressWarnings(suppressMessages(do.call(flexsurv::flexsurvreg, fitCall)))
+    fit  <- suppressWarnings(suppressMessages(.sapmCompressedFit(fitCall)))
     base <- fit[["res"]][family[["pars"]], "est"]
     beta <- fit[["res"]][fit[["covpars"]], "est"]
   }
@@ -657,7 +657,7 @@
 
   parameterNames <- c(family[["pars"]], colnames(covariates))
   fitCall        <- .sapFixedFitCall(fitCall, fixed, parameterNames)
-  return(suppressWarnings(suppressMessages(do.call(flexsurv::flexsurvreg, fitCall))))
+  return(suppressWarnings(suppressMessages(.sapmCompressedFit(fitCall))))
 }
 
 .sapmParameters                 <- function(family, base, beta, covariates, linkBaseline = NULL) {
@@ -803,7 +803,9 @@
   if (!is.null(schema))
     fitCall <- .sapEyringControls(fitCall, schema)
   fit <- try(withCallingHandlers(
-    suppressMessages(.sapEyringNativeFit(fitCall, schema, options[["censoringType"]], searchProvenance)),
+    suppressMessages(.sapmCompressedFit(fitCall, function(...) {
+      .sapEyringNativeFit(list(...), schema, options[["censoringType"]], searchProvenance)
+    })),
     warning = function(w) {
       message <- conditionMessage(w)
       if (grepl("hessian|covariance", message, ignore.case = TRUE))

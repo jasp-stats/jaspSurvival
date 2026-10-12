@@ -24,6 +24,7 @@
 * Consolidated model predictions with predictor axes and reference scenarios.
 * New-observation time measures, curves and aligned dataset exports.
 ## Fixed
+* Compress identical records during mixture fitting while preserving frequency-expanded transformation bases, starts, diagnostics, and exports.
 * Evaluate deterministic predictions for fully fixed models without requiring a nonempty covariance matrix.
 * Clarify independent-row assumptions for interval/counting mixture input in model summaries.
 * Retain overflowing mixture percentiles and infinite confidence draws; withhold affected bounds when simulated predictions fail instead of dropping draws.
