@@ -60,6 +60,7 @@ BasicThreeButtonTableView
 
 		QtControls.ComboBox
 		{
+			id: factorSelector
 			visible: predictionCell.factor
 			enabled: predictionCell.cellEditable
 			anchors.verticalCenter: parent.verticalCenter
@@ -68,6 +69,55 @@ BasicThreeButtonTableView
 			font: jaspTheme.font
 			implicitContentWidthPolicy: QtControls.ComboBox.WidestText
 			popup.width: Math.max(width, implicitContentWidth + leftPadding + rightPadding)
+			background: Rectangle
+			{
+				color: "white"
+				border.color: "#b0b0b0"
+			}
+			palette.text: "black"
+			palette.buttonText: "black"
+			palette.highlightedText: "black"
+			indicator: Canvas
+			{
+				width: 10 * jaspTheme.uiScale
+				height: 6 * jaspTheme.uiScale
+				x: factorSelector.width - width - 4 * jaspTheme.uiScale
+				anchors.verticalCenter: parent.verticalCenter
+				onPaint:
+				{
+					let context = getContext("2d");
+					context.fillStyle = "black";
+					context.beginPath();
+					context.moveTo(0, 0);
+					context.lineTo(width, 0);
+					context.lineTo(width / 2, height);
+					context.closePath();
+					context.fill();
+				}
+			}
+			popup.background: Rectangle
+			{
+				color: "white"
+				border.color: "#b0b0b0"
+			}
+			delegate: QtControls.ItemDelegate
+			{
+				text: modelData
+				width: factorSelector.popup.width
+				highlighted: factorSelector.highlightedIndex === index
+				font: factorSelector.font
+				palette.text: "black"
+				palette.buttonText: "black"
+				palette.highlightedText: "black"
+				contentItem: Text
+				{
+					text: parent.text
+					font: factorSelector.font
+					color: "black"
+					verticalAlignment: Text.AlignVCenter
+				}
+				background: Rectangle { color: parent.highlighted ? "#e5e5e5" : "white" }
+			}
 			model:
 			{
 				observations.factorLevelsRevision;
