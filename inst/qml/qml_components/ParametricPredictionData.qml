@@ -1,6 +1,7 @@
 pragma Translator: "ParametricSurvivalAnalysis"
 
 import QtQuick
+import QtQuick.Controls as QtControls
 import QtQuick.Layouts
 import JASP.Controls
 import JASP
@@ -9,12 +10,36 @@ BasicThreeButtonTableView
 {
 	id: observations
 	property var predictionPredictors: []
+	property var factorPredictors: []
 	property var disabledPredictors: []
 	property bool singleRow: false
 	property bool predictorsSourceReady: false
 	property bool mappingAdopted: false
 	property bool schemaError: false
 	property var previousPredictors: []
+	property int factorLevelsRevision: 0
+
+	// Level sources live outside the table's dynamic cell context so JASP initializes them.
+	Repeater
+	{
+		id: factorSources
+		model: observations.factorPredictors
+		delegate: AvailableVariablesList
+		{
+			isBound: false
+			visible: false
+			source: [{values: [modelData], use: "levels"}]
+			onColumnsNamesChanged: observations.factorLevelsRevision++
+		}
+		onItemAdded: observations.factorLevelsRevision++
+		onItemRemoved: observations.factorLevelsRevision++
+	}
+	function levelsFor(predictor)
+	{
+		let index = factorPredictors.indexOf(predictor);
+		let source = index >= 0 && index < factorSources.count ? factorSources.itemAt(index) : null;
+		return source ? source.columnsNames : [];
+	}
 
 	name: "predictionsManualInput"
 	modelType: JASP.Simple
@@ -25,6 +50,59 @@ BasicThreeButtonTableView
 	defaultValue: ""
 	tableView.parseDefaultValue: false
 	tableView.showAddRemoveButtons: false
+	tableView.itemDelegate: Item
+	{
+		id: predictionCell
+		readonly property string predictor: observations.previousPredictors[columnIndex] || ""
+		readonly property bool factor: observations.factorPredictors.indexOf(predictor) >= 0
+		readonly property string cellValue: String(itemText)
+		readonly property bool cellEditable: observations.tableView.enabled && itemEditable && observations.getEditable(columnIndex, rowIndex)
+
+		QtControls.ComboBox
+		{
+			visible: predictionCell.factor
+			enabled: predictionCell.cellEditable
+			anchors.verticalCenter: parent.verticalCenter
+			width: parent.width
+			height: jaspTheme.comboBoxHeight
+			font: jaspTheme.font
+			implicitContentWidthPolicy: QtControls.ComboBox.WidestText
+			popup.width: Math.max(width, implicitContentWidth + leftPadding + rightPadding)
+			model:
+			{
+				observations.factorLevelsRevision;
+				return [""].concat(observations.levelsFor(predictionCell.predictor));
+			}
+			currentIndex: model.indexOf(predictionCell.cellValue)
+			// Only user selections change the table; loading or refreshing levels must not overwrite saved cells.
+			onActivated: function(index)
+			{
+				observations.tableView.itemChanged(columnIndex, rowIndex, model[index], "string");
+			}
+		}
+		FormulaField
+		{
+			visible: !predictionCell.factor
+			inputType: "string"
+			isBound: false
+			anchors.left: parent.left
+			anchors.top: parent.top
+			anchors.topMargin: -8 * jaspTheme.uiScale
+			fieldHeight: parent.height + 16 * jaspTheme.uiScale
+			fieldWidth: parent.width
+			useExternalBorder: false
+			showBorder: false
+			value: itemText
+			useLastValidValue: false
+			parseDefaultValue: observations.tableView.parseDefaultValue
+			defaultValue: observations.getDefaultValue(columnIndex, rowIndex)
+			selectValueOnFocus: true
+			validator: observations.getValidator(columnIndex, rowIndex)
+			editable: predictionCell.cellEditable
+			onPressed: observations.tableView.colSelected = columnIndex
+			onEditingFinished: observations.tableView.itemChanged(columnIndex, rowIndex, displayValue, inputType)
+		}
+	}
 	buttonsInRow: true
 	showButtons: false
 	Layout.minimumWidth: singleRow ? 100 * jaspTheme.uiScale : observationButtons.implicitWidth

@@ -485,6 +485,7 @@ Section
 		Layout.columnSpan: 2
 		Layout.fillWidth: true
 		predictionPredictors: predictionsRoot.predictionPredictors
+		factorPredictors: predictionsRoot.predictionPredictors.filter(function(v) { return predictionsRoot.covariateNames.indexOf(v) < 0; })
 		predictorsSourceReady: predictionsRoot.predictorSourcesReady
 		visible: predictionInput.value === "manual"
 	}
@@ -510,6 +511,7 @@ Section
 		Layout.columnSpan: 2
 		Layout.fillWidth: true
 		predictionPredictors: predictionsRoot.unassignedPredictors
+		factorPredictors: predictionsRoot.factorNames
 		predictorsSourceReady: predictionsRoot.predictorSourcesReady
 		visible: predictionsRoot.variableInput && conditioning.enabled && conditioning.value === "custom"
 		info: qsTr("Enter reference values for unassigned predictors. Leave cells empty to use design averages.")
