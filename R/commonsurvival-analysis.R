@@ -23,6 +23,7 @@
 .saCheckDataset       <- function(dataset, options, type) {
 
   nOriginal <- nrow(dataset)
+  exportRowNames <- rownames(dataset)
 
   # load the data
   eventVariable <- if (options[["censoringType"]] != "interval") options[["eventStatus"]]
@@ -34,18 +35,21 @@
     "left"     = options[["timeToEvent"]]
   )
 
-  strataVariable     <- Filter(function(s) s != "", options[["strata"]])
   weightsVariable    <- if (options[["weights"]] != "") options[["weights"]]
   # only for (semi)parametric
-  covariatesVariable <- Filter(function(s) s != "", options[["covariates"]])
-  factorsVariable    <- Filter(function(s) s != "", options[["factors"]])
+  covariatesVariable <- if (type != "KM") Filter(function(s) s != "", options[["covariates"]])
   # only for parametric
-  subgroupVariable   <- if (!is.null(options[["subgroup"]]) && options[["subgroup"]] != "") options[["subgroup"]]
+  subgroupVariable   <- if (type == "parametric" && .sapHasSubgroups(options)) options[["subgroup"]]
 
   # clean from NAs
   if (options[["censoringType"]] == "interval") {
+    if (any(dataset[[options[["intervalStart"]]]] == Inf, na.rm = TRUE) ||
+        any(dataset[[options[["intervalEnd"]]]] == -Inf, na.rm = TRUE))
+      .quitAnalysis(gettext("An open interval may use negative infinity for its start or positive infinity for its end, but not the reverse."))
+
     # !!! interval data use NA's in the interval indication !!!
-    keep <- stats::complete.cases(dataset[setdiff(colnames(dataset), timeVariable)])
+    keep <- stats::complete.cases(dataset[setdiff(colnames(dataset), timeVariable)]) &
+      (is.finite(dataset[[options[["intervalStart"]]]]) | is.finite(dataset[[options[["intervalEnd"]]]]))
     dataset <- dataset[keep, ]
     dataset <- droplevels(dataset)
 
@@ -60,25 +64,33 @@
     dataset[[eventVariable]] <- .saRecodeEventStatus(dataset, options)
   }
   attr(dataset, "missingObservations") <- nOriginal - nrow(dataset)
+  attr(dataset, "exportRowNames") <- exportRowNames
+
+  if (nrow(dataset) == 0)
+    .quitAnalysis(gettext("No observations remain after excluding missing values."))
 
   # check of errors
   .hasErrors(
     dataset                      = dataset,
-    type                         = c("negativeValues"),
+    type                         = c("negativeValues", "infinity"),
     negativeValues.target        = c(timeVariable, weightsVariable),
+    infinity.target              = c(timeVariable, weightsVariable),
     exitAnalysisIfErrors         = TRUE
   )
 
   # check that interval start < end
   if (options[["censoringType"]] == "counting") {
-    if (any(dataset[[options[["intervalStart"]]]] > dataset[[options[["intervalEnd"]]]]))
+    if (any(dataset[[options[["intervalStart"]]]] >= dataset[[options[["intervalEnd"]]]]))
       .quitAnalysis(gettextf("The end time must be larger than the start time."))
+  } else if (options[["censoringType"]] == "interval") {
+    if (any(dataset[[options[["intervalStart"]]]] > dataset[[options[["intervalEnd"]]]], na.rm = TRUE))
+      .quitAnalysis(gettext("The interval end must be greater than or equal to the interval start."))
   }
 
   if (!is.null(covariatesVariable) && length(covariatesVariable) > 0)
     .hasErrors(
       dataset                      = dataset,
-      type                         = c("infinity", "observations", "variance", "varCovData"),
+      type                         = c("infinity", "observations", "variance", if (length(covariatesVariable) > 1) "varCovData"),
       all.target                   = covariatesVariable,
       varCovData.corFun            = stats::cov,
       observations.amount          = "< 2",
@@ -88,13 +100,13 @@
   if (!is.null(subgroupVariable))
     .hasErrors(
       dataset                      = dataset,
-      type                         = c("observations", "variance"),
+      type                         = c("observations"),
       all.target                   = subgroupVariable,
       observations.amount          = "< 2",
       exitAnalysisIfErrors         = TRUE
     )
 
-  if (!is.null(options[["modelTerms"]]) && type == "Cox")
+  if (type == "Cox" && !is.null(options[["modelTerms"]]))
     .hasErrors(
       dataset                      = dataset,
       type                         = c("modelInteractions"),
@@ -116,6 +128,23 @@
 .saMissingObservations <- function(x) {
 
   return(as.integer(attr(x, "missingObservations", exact = TRUE)))
+}
+.sapHasSubgroups <- function(options) {
+  return(length(options[["subgroup"]]) > 0 && any(options[["subgroup"]] != ""))
+}
+.sapSubgroupFactor <- function(dataset, options) {
+
+  variables <- unlist(options[["subgroup"]], use.names = FALSE)
+  if (length(variables) == 1)
+    return(dataset[[variables]])
+
+  # Numeric combination keys keep distinct cells separate even when labels contain separators.
+  groups <- .sapPredictorGroups(dataset[variables])
+  labels <- vapply(levels(groups), function(group) {
+    row <- match(group, as.character(groups))
+    paste(vapply(dataset[row, variables, drop = FALSE], as.character, character(1)), collapse = " / ")
+  }, character(1))
+  return(factor(groups, levels = levels(groups), labels = make.unique(labels)))
 }
 .saAddMissingObservationsFootnote <- function(tempTable, x) {
 
@@ -206,44 +235,29 @@
 
   if (type == "KM") {
     # nonparametric (Kaplan-Meier) only stratifies by strata
-    predictors    <- options[["strata"]]
-    interceptTerm <- TRUE
+    predictors <- options[["strata"]]
   } else if (type == "Cox") {
     # Cox proportional hazards always includes intercept
-    predictors    <- c(.saGetPredictors(options, null = null), .saGetFrailty(options))
-    interceptTerm <- TRUE
+    predictors <- c(.saGetPredictors(options, null = null), .saGetFrailty(options))
   }
 
   survival <- .saGetSurv(options)
 
-  if (length(predictors) == 0 && !interceptTerm)
-    stop(gettext("We need at least one predictor, or an intercept to make a formula"))
-
   if (length(predictors) == 0)
     formula <- paste(survival, "~", "1")
-  else if (interceptTerm)
-    formula <- paste(survival, "~", paste(predictors, collapse = "+"))
   else
-    formula <- paste(survival, "~", paste(predictors, collapse = "+"), "-1")
+    formula <- paste(survival, "~", paste(predictors, collapse = "+"))
 
   return(as.formula(formula, env = parent.frame(1)))
 }
 .sapGetFormula        <- function(options, modelTerms) {
 
-  predictors    <- .sapGetPredictors(modelTerms)
-  interceptTerm <- options[["includeIntercept"]]
-
-  survival <- .saGetSurv(options)
-
-  if (length(predictors) == 0 && !interceptTerm)
-    stop(gettext("At least one predictor, or an intercept, is needed to fit the model."))
-
-  if (length(predictors) == 0)
-    formula <- paste(survival, "~", "1")
-  else if (interceptTerm)
-    formula <- paste(survival, "~", paste(predictors, collapse = "+"))
-  else
-    formula <- paste(survival, "~", paste(predictors, collapse = "+"), "-1")
+  # flexsurv estimates a baseline distribution parameter in every model and
+  # removes the first design column as its intercept. Omitting the intercept
+  # from the formula would silently discard the first predictor instead.
+  predictors <- .sapGetPredictors(modelTerms)
+  survival   <- .saGetSurv(options)
+  formula    <- paste(survival, "~", if (length(predictors) == 0) "1" else paste(predictors, collapse = "+"))
 
   return(stats::as.formula(formula, env = parent.frame(1)))
 }
@@ -255,11 +269,9 @@
   # add "strata" calls
   for (i in seq_along(options[["strata"]])) {
     for (j in seq_along(modelTerms)) {
-      modelTerms[[j]]$components <- gsub(
-        options[["strata"]][[i]],
-        paste0("strata(", options[["strata"]][[i]], ")"),
-        modelTerms[[j]]$components
-      )
+      components <- modelTerms[[j]]$components
+      components[components == options[["strata"]][[i]]] <- paste0("strata(", options[["strata"]][[i]], ")")
+      modelTerms[[j]]$components <- components
     }
   }
 
@@ -312,7 +324,7 @@
     if (options[["frailtyMethod"]] != "fixed") ""
     else if (options[["frailtyMethodFixed"]] == "df")    paste0(", df = ",    options[["frailtyMethodFixedDf"]])
     else if (options[["frailtyMethodFixed"]] == "theta") paste0(", theta = ", options[["frailtyMethodFixedTheta"]]),
-    if (options[["frailtyMethod"]] == "t")  paste0("tdf = ", options[["frailtyMethodTDf"]]) else ""
+    if (options[["frailtyDistribution"]] == "t") paste0(", tdf = ", options[["frailtyMethodTDf"]]) else ""
   )
 
   return(frailty)
@@ -327,7 +339,7 @@
 
   timeSteps <- switch(
     options[["lifeTableStepsType"]],
-    "quantiles" = seq(from = min(times), to = max(times), length.out = options[["lifeTableStepsNumber"]]),
+    "quantiles" = stats::quantile(times, probs = seq(0, 1, length.out = options[["lifeTableStepsNumber"]]), names = FALSE),
     "fixedSize" = seq(from = options[["lifeTableStepsFrom"]], to = options[["lifeTableStepsTo"]], by = options[["lifeTableStepsSize"]])
   )
 
@@ -376,7 +388,7 @@
       "type"    = c(gettext("Events"), gettext("Censored")),
       "count"   = c(
         if (options[["weights"]] == "") sum( dataset[[options[["eventStatus"]]]]) else sum( dataset[[options[["eventStatus"]]]] * dataset[[options[["weights"]]]]),
-        if (options[["weights"]] == "") sum(!dataset[[options[["eventStatus"]]]]) else sum(!dataset[[options[["eventStatus"]]]] * dataset[[options[["weights"]]]])
+        if (options[["weights"]] == "") sum(!dataset[[options[["eventStatus"]]]]) else sum((!dataset[[options[["eventStatus"]]]]) * dataset[[options[["weights"]]]])
       )
     ))
 
@@ -404,12 +416,14 @@
     return()
 
   censoringSummaryTable <- createJaspTable(title = gettext("Censoring Summary"))
-  censoringSummaryTable$dependOn(c("censoringType", "timeToEvent", "eventStatus", "eventIndicator", "intervalStart", "intervalEnd", "weights", "subgroup", "censoringSummary"))
+  censoringSummaryTable$dependOn(c("censoringType", "timeToEvent", "eventStatus", "eventIndicator", "intervalStart", "intervalEnd", "weights", "subgroup", "censoringSummary",
+                                  "covariates", "factors", "strata", "cluster", "frailty"))
   censoringSummaryTable$position <- 0
   jaspResults[["censoringSummaryTable"]] <- censoringSummaryTable
 
   censoringSummaryTable$addColumnInfo(name = "type",  title = "", type = "string")
-  if (!is.null(options[["subgroup"]]) && options[["subgroup"]] != "")
+  parametric <- options[["analysisType"]] %in% c("parametric", "mixture")
+  if (parametric && .sapHasSubgroups(options))
     censoringSummaryTable$addColumnInfo(name = "subgroup", title = gettext("Subgroup"), type = "string")
   censoringSummaryTable$addColumnInfo(name = "count", title = gettext("Count"), type = "integer")
 
@@ -422,11 +436,12 @@
     options[["weights"]] <- ""
   }
 
-  if (!is.null(options[["subgroup"]]) && options[["subgroup"]] != "") {
+  if (parametric && .sapHasSubgroups(options)) {
 
-    subgroupLevels  <- unique(dataset[[options[["subgroup"]]]])
+    subgroups       <- .sapSubgroupFactor(dataset, options)
+    subgroupLevels  <- unique(subgroups)
     subgroupSummary <- lapply(subgroupLevels, function(subgroupLevel) {
-      out <- cbind("subgroup" = subgroupLevel, .saCensoringSummaryFun(dataset[dataset[[options[["subgroup"]]]] == subgroupLevel,,drop=FALSE], options))
+      out <- cbind("subgroup" = subgroupLevel, .saCensoringSummaryFun(dataset[subgroups == subgroupLevel,,drop=FALSE], options))
       out$order <- 1:nrow(out) # for sorting across subgroups
       return(out)
     })
@@ -446,144 +461,6 @@
 
   return()
 }
-.saGetSurvivalPlotHeight <- function(options) {
-  if (!options[["plotRiskTable"]])
-    return(400)
-  else if (!options[["plotRiskTableAsASingleLine"]])
-    return(450)
-  else
-    return(400 + 50 * sum(c(
-      options[["plotRiskTableNumberAtRisk"]],
-      options[["plotRiskTableCumulativeNumberOfObservedEvents"]],
-      options[["plotRiskTableCumulativeNumberOfCensoredObservations"]],
-      options[["plotRiskTableNumberOfEventsInTimeInterval"]],
-      options[["plotRiskTableNumberOfCensoredObservationsInTimeInterval"]]
-    )))
-}
-.saSurvivalPlot          <- function(jaspResults, dataset, options, type) {
-
-  if (!is.null(jaspResults[["surivalPlot"]]))
-    surivalPlot <- jaspResults[["surivalPlot"]]
-  else {
-    surivalPlot <- createJaspPlot(title = switch(
-      options[["plotType"]],
-      "survival"             = gettext("Survival Plot"),
-      "risk"                 = gettext("Risk Plot"),
-      "cumulativeHazard"     = gettext("Cumulative Hazard Plot"),
-      "complementaryLogLog"  = gettext("Complementary Log-Log Plot")
-    ), width = 450, height = .saGetSurvivalPlotHeight(options))
-    surivalPlot$dependOn(c(.sanpDependencies, "plot", "plotType", "plotStrata", "plotCi", "plotRiskTable",
-                           "plotRiskTableNumberAtRisk", "plotRiskTableCumulativeNumberOfObservedEvents",
-                           "plotRiskTableCumulativeNumberOfCensoredObservations", "plotRiskTableNumberOfEventsInTimeInterval",
-                           "plotRiskTableNumberOfCensoredObservationsInTimeInterval", "plotRiskTableAsASingleLine",
-                           "plotAddQuantile", "plotAddQuantileValue",
-                           "colorPalette", "plotLegend", "plotTheme"))
-    surivalPlot$position <- switch(
-      type,
-      "KM"  = 3,
-      "Cox" = 7
-    )
-    jaspResults[["surivalPlot"]] <- surivalPlot
-  }
-
-  if (is.null(jaspResults[["fit"]]))
-    return()
-
-  fit <- jaspResults[["fit"]][["object"]]
-
-  if (jaspBase::isTryError(fit))
-    return()
-
-  .ggsurvfit2JaspPlot <- function(x) {
-    grDevices::png(f <- tempfile())
-    on.exit({
-      grDevices::dev.off()
-      if (file.exists(f))
-        file.remove(f)
-    })
-    return(ggsurvfit:::ggsurvfit_build(tempPlot))
-  }
-
-  if (type == "KM")
-    tempPlot <- try(ggsurvfit::ggsurvfit(
-      x    = ggsurvfit::survfit2(.saGetFormula(options, type = type), data = dataset),
-      type = switch(
-        options[["plotType"]],
-        "survival"             = "survival",
-        "risk"                 = "risk",
-        "cumulativeHazard"     = "cumhaz",
-        "complementaryLogLog"  = "cloglog"
-      ),
-      linewidth = 1
-    ))
-  else if (type == "Cox")
-    tempPlot <- try(ggsurvfit::ggsurvfit(
-      x    = ggsurvfit::survfit2(fit),
-      type = switch(
-        options[["plotType"]],
-        "survival"             = "survival",
-        "risk"                 = "risk",
-        "cumulativeHazard"     = "cumhaz",
-        "complementaryLogLog"  = "cloglog"
-      ),
-      linewidth = 1
-    ))
-
-  if (jaspBase::isTryError(tempPlot)) {
-    surivalPlot$setError(tempPlot)
-    return()
-  }
-
-  if (options[["plotCi"]])
-    tempPlot <- tempPlot + ggsurvfit::add_confidence_interval()
-
-  if (options[["plotRiskTable"]]) {
-    riskTableStatistics <-  c(
-      if (options[["plotRiskTableNumberAtRisk"]])                               "n.risk",
-      if (options[["plotRiskTableCumulativeNumberOfObservedEvents"]])           "cum.event",
-      if (options[["plotRiskTableCumulativeNumberOfCensoredObservations"]])     "cum.censor",
-      if (options[["plotRiskTableNumberOfEventsInTimeInterval"]])               "n.event",
-      if (options[["plotRiskTableNumberOfCensoredObservationsInTimeInterval"]]) "n.censor"
-    )
-
-    if (length(riskTableStatistics) > 0) {
-      if (options[["plotRiskTableAsASingleLine"]])
-        riskTableStatistics <- paste0("{", riskTableStatistics, "}", collapse = ", ")
-
-      tempPlot <- tempPlot + ggsurvfit::add_risktable(risktable_stats = riskTableStatistics)
-    }
-  }
-
-  if (options[["plotAddQuantile"]])
-    tempPlot <- tempPlot + ggsurvfit::add_quantile(y_value = options[["plotAddQuantileValue"]], color = "gray50", linewidth = 0.75)
-
-  if (options[["plotTheme"]] == "jasp")
-    tempPlot <- tempPlot +
-      jaspGraphs::geom_rangeframe(sides = "bl") +
-      jaspGraphs::themeJaspRaw(legend.position = options[["plotLegend"]])
-  else
-    tempPlot <- tempPlot + ggplot2::theme(legend.position = options[["plotLegend"]])
-
-  # scaling and formatting
-  tempPlot <- tempPlot +
-    jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]]) +
-    jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
-
-  if (options[["plotType"]] == "complementaryLogLog")
-    tempPlot <- tempPlot + ggplot2::scale_x_continuous(transform = "log") + ggplot2::xlab(gettext("log(Time)"))
-  else
-    tempPlot <- tempPlot + ggsurvfit::scale_ggsurvfit()
-
-  if (jaspBase::isTryError(tempPlot)) {
-    surivalCurvePlot$setError(tempPlot)
-    return()
-  }
-
-  surivalPlot$plotObject <- .ggsurvfit2JaspPlot(tempPlot)
-
-  return()
-}
-
 .saSafeRbind     <- function(dfs) {
 
   # this function allows combining data.frames with different columns
@@ -617,13 +494,18 @@
 
   # transform into factors to keep the order during splitting
   df[["model"]]        <- factor(df[["model"]],        levels = unique(df[["model"]]))
+  df[["components"]]   <- factor(df[["components"]],   levels = unique(df[["components"]]))
   df[["distribution"]] <- factor(df[["distribution"]], levels = unique(df[["distribution"]]))
   df[["subgroup"]]     <- factor(df[["subgroup"]],     levels = unique(df[["subgroup"]]))
 
   # simplifying output tables
   df <- do.call(rbind, lapply(split(df, df[["subgroup"]]), function(x) {
     x <- do.call(rbind, lapply(split(x, x[["distribution"]]), function(xx) {
-      xx[["model"]][duplicated(xx[["model"]])] <- NA
+      xx <- do.call(rbind, lapply(split(xx, xx[["components"]]), function(xxx) {
+        xxx[["model"]][duplicated(xxx[["model"]])] <- NA
+        return(xxx)
+      }))
+      xx[["components"]][duplicated(xx[["components"]])] <- NA
       return(xx)
     }))
     x[["distribution"]][duplicated(x[["distribution"]])] <- NA
@@ -633,6 +515,7 @@
 
   # transform back to character
   df[["model"]]        <- as.character(df[["model"]])
+  df[["components"]]   <- as.integer(as.character(df[["components"]]))
   df[["distribution"]] <- as.character(df[["distribution"]])
   df[["subgroup"]]     <- as.character(df[["subgroup"]])
 

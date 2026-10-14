@@ -13,6 +13,27 @@
 
 
 ---
+# jaspSurvival 0.97.0
+## Added
+* Added the Parametric Mixture Survival Analysis
+* Parametric: subgroup analysis with multiple factors.
+* Prediction and Probability plots offer 'Merge plots across' 'Factors' and 'Subgroups'
+* Added per-observation exports of residuals and fitted values for Cox and parametric survival models, and posterior component probabilities and classifications for mixture models.
+
+## Changed
+* Increased the default number of samples for CI calculation to 10,000 (and added the corresponding option)
+* Non-Parametric: life-table 'Quantiles' steps use empirical quantiles.
+
+## Fixed
+* Parametric survival models consistently include the intercept.
+* Stability of the prediction plots
+* Semi-Parametric: degrees of freedom of the t frailty distribution.
+* Semi-Parametric: Schoenfeld and scaled Schoenfeld residual plots use the correct observation order.
+* Semi-Parametric: exact matching of strata in model terms.
+* Non-Parametric: test degrees of freedom when groups have no expected events.
+* Censoring summary updates when predictors change.
+* Parametric: empty model-label footnotes.
+
 # jaspSurvival 0.96.7
 ## Fixed
 * Fixed confidence intervals for failure-probability predictions so lower and upper bounds are correctly swapped when transforming from survival probabilities.

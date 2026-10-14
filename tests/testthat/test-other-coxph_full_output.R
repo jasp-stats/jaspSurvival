@@ -49,6 +49,11 @@ test_that("SemiParametricSurvivalAnalysis (analysis 2) results match", {
      0.00115695361003499, 0.0497401245026422, 0.259108710018033,
      3.24928534100736))
 
+  table <- results[["results"]][["hazardRatioTable"]][["data"]]
+  jaspTools::expect_equal_tables(table,
+    list(1.17541333170913, 1.0662320711259, "H<unicode>", "jaspColumn1",
+     1.29577466085843))
+
   table <- results[["results"]][["modelFitTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
     list(0.5, 0, "H<unicode>", 0.784403669724771, 0.0826697943707723, "H<unicode>"
@@ -114,6 +119,11 @@ test_that("SemiParametricSurvivalAnalysis (analysis 3) results match", {
     list(0.123879936963637, 0.00658864744672992, "H<unicode>", "jaspColumn1",
      0.0384465599789823, 0.0598435942915716, 0.241171226480544, 2.07006177403158
     ))
+
+  table <- results[["results"]][["hazardRatioTable"]][["data"]]
+  jaspTools::expect_equal_tables(table,
+    list(1.13187996589524, 1.00661040033211, "H<unicode>", "jaspColumn1",
+     1.2727389432618))
 
   table <- results[["results"]][["modelFitTable"]][["data"]]
   jaspTools::expect_equal_tables(table,

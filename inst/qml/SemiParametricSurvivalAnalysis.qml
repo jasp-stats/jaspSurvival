@@ -93,6 +93,7 @@ Form
 
 		AssignedVariablesList
 		{
+			id:					covariates
 			name:			 	"covariates"
 			title:			 	qsTr("Covariates")
 			allowedColumns:		["scale"]
@@ -101,6 +102,7 @@ Form
 
 		AssignedVariablesList
 		{
+			id:					factors
 			name:			 	"factors"
 			title:			 	qsTr("Factors")
 			allowedColumns:		["nominal"]
@@ -445,7 +447,10 @@ Form
 	{
 		title:	qsTr("Plot")
 
-		SA.SurvivalPlot{}
+		SA.SurvivalPlot
+		{
+			hasStrata: strata.count > 0
+		}
 	}
 
 	Section
@@ -455,6 +460,7 @@ Form
 		Group
 		{
 			title:	qsTr("Proportional Hazards")
+			enabled:	selectedModelTerms.count > 0 && (covariates.count > 0 || factors.count > 0)
 
 			CheckBox
 			{
@@ -543,5 +549,10 @@ Form
 				]
 			}
 		}
+	}
+
+	SA.SurvivalExport
+	{
+		cox: true
 	}
 }

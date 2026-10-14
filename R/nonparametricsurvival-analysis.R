@@ -18,6 +18,7 @@
 NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NULL) {
 
   # non-parametric allows only for right censored data -- set the options for generic functions downstream
+  options[["analysisType"]] <- "nonparametric"
   options[["censoringType"]] <- "right"
 
   if (.saSurvivalReady(options)) {
@@ -76,7 +77,8 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     data    = dataset
   ))
   # fix scoping in ggsurvplot
-  fit$call$formula <- eval(fit$call$formula)
+  if (!jaspBase::isTryError(fit))
+    fit$call$formula <- eval(fit$call$formula)
 
 
   jaspResults[["fit"]]$object <- fit
@@ -198,6 +200,9 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     return()
   }
 
+  if (!.saSurvivalReady(options))
+    return()
+
   if (options[["testsLogRank"]]) {
     fit <- jaspResults[["testLogRank"]]$object
     if (jaspBase::isTryError(fit))
@@ -244,6 +249,7 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
 
   if (jaspBase::isTryError(fit)) {
     jaspResults[["LifeTableContainer"]][["emptyTable"]] <- .sanpEmptyLifeTable()
+    jaspResults[["LifeTableContainer"]][["emptyTable"]]$setError(fit)
     return()
   }
 
@@ -292,14 +298,14 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   fitSummary <- fitSummary[,c("records", "events", "rmean", "se.rmean.",  "median", "X0.95LCL", "X0.95UCL")]
   colnames(fitSummary) <- c("n", "events", "restrictedMean", "restrictedMeanSe", "median", "lowerCI", "upperCI")
 
-  if (nrow(fitSummary) > 1)
+  if (!is.null(fit$strata))
     fitSummary$strata <- rownames(fitSummary)
 
   return(fitSummary)
 }
-.sanpKaplanMeierFitLifeTable <- function(fit, dataset, options, plot = FALSE) {
+.sanpKaplanMeierFitLifeTable <- function(fit, dataset, options) {
 
-  if (plot || options[["lifeTableStepsType"]] == "default")
+  if (options[["lifeTableStepsType"]] == "default")
     summaryFit <- summary(fit)
   else
     summaryFit <- summary(fit, times = .saLifeTableTimes(dataset, options))
@@ -314,71 +320,11 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
     upperCI       = upper
   ))
 
-  if (plot && !is.null(summaryFit$strata)) {
-    lifeTable$strata <- summaryFit$strata
-    lifeTable <- split(lifeTable, lifeTable$strata)
-    lifeTable <- lapply(lifeTable, .sanpPlotLifeTableFun)
-    lifeTable <- do.call(rbind, lifeTable)
-  } else if (plot) {
-    lifeTable <- .sanpPlotLifeTableFun(lifeTable)
-  } else if (!is.null(summaryFit$strata)) {
+  if (!is.null(summaryFit$strata)) {
     attr(lifeTable, "strata") <- summaryFit$strata
   }
 
   return(lifeTable)
-}
-.sanpPlotLifeTableFun        <- function(lifeTable) {
-  # modifies the life table such that the resulting plot line is straight from one time to another
-  lifeTable2      <- lifeTable[-nrow(lifeTable),]
-  lifeTable2$time <- lifeTable$time[-1] - 1e-6
-
-  lifeTable0               <- lifeTable[c(1, 1),]
-  lifeTable0$time[1]       <- 0
-  lifeTable0$events        <- 0
-  lifeTable0$survival      <- 1
-  lifeTable0$standardError <- NA
-  lifeTable0$lowerCI       <- NA
-  lifeTable0$upperCI       <- NA
-
-  return(rbind(lifeTable0, lifeTable, lifeTable2))
-}
-.sanpPlotLifeTable           <- function(fitLifeTable, options) {
-
-  if (length(options[["strata"]]) == 0) {
-
-    tempPlot <- ggplot2::ggplot(fitLifeTable) +
-      jaspGraphs::geom_line(mapping = ggplot2::aes(x = time, y = survival))
-
-    if (options[["survivalCurveplotCi"]])
-      tempPlot <- tempPlot + ggplot2::geom_ribbon(mapping = ggplot2::aes(x = time, ymin = lowerCI, ymax = upperCI), alpha = 0.1, size = 1)
-
-    if (options[["survivalCurvePlotDataRug"]])
-      tempPlot <- tempPlot + ggplot2::geom_rug(ggplot2::aes(x = time, y = survival), sides = "b", alpha = 0.5)
-
-  } else {
-
-    tempPlot <- ggplot2::ggplot(fitLifeTable) +
-      jaspGraphs::geom_line(mapping = ggplot2::aes(x = time, y = survival, group = strata, color = strata))
-
-    if (options[["survivalCurveplotCi"]])
-      tempPlot <- tempPlot + ggplot2::geom_ribbon(mapping = ggplot2::aes(x = time, ymin = lowerCI, ymax = upperCI, group = strata, fill = strata), alpha = 0.1, size = 1)
-
-    if (options[["survivalCurvePlotDataRug"]])
-      tempPlot <- tempPlot + ggplot2::geom_rug(ggplot2::aes(x = time, y = survival, color = strata), sides = "b", alpha = 0.5)
-
-    tempPlot <- tempPlot + jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]]) +
-      jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]]) +
-      ggplot2::labs(fill = gettext("Strata"), color = gettext("Strata"))
-
-  }
-
-  tempPlot <- tempPlot +
-    jaspGraphs::scale_x_continuous(name = gettext("Time")) +
-    jaspGraphs::scale_y_continuous(name = gettext("Survival")) +
-    jaspGraphs::geom_rangeframe(sides = 'bl') +
-    jaspGraphs::themeJaspRaw(legend.position = if (length(options[["strata"]]) != 0) options[["survivalCurvePlotLegend"]])
-
-  return(tempPlot)
 }
 .sanpEmptyLifeTable          <- function(title = "", position = 1) {
 
@@ -397,10 +343,11 @@ NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state =
   return(tempTable)
 }
 .sanpExtractTest             <- function(fit, title) {
+  expected <- if (is.matrix(fit$exp)) rowSums(fit$exp) else fit$exp
   return(list(
     test   = title,
     chiSqr = fit$chisq,
-    df     = length(fit$n) - 1,
+    df     = sum(expected > 0) - 1,
     p      = fit$pvalue
   ))
 }
