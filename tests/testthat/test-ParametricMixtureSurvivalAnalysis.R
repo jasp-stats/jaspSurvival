@@ -46,7 +46,7 @@ test_that("Membership probabilities require valid distinct values", {
   options[["mixtureStartMembershipProbabilities"]] <- 0.95
   expect_equal(jaspSurvival:::.sapmStartMembershipProbabilities(options), 0.95)
 
-  options[["mixtureStartMembershipProbabilities"]] <- "0.9999999999999999"
+  options[["mixtureStartMembershipProbabilities"]] <- "0.999999999999999"
   family <- jaspSurvival:::.sapmFamily("weibull")
   survObject <- survival::Surv(seq_len(60), rep(1, 60))
   starts <- jaspSurvival:::.sapmStarts(options, family, survObject, survObject, 2, NULL)

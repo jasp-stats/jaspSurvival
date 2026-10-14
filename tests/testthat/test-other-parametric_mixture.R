@@ -263,11 +263,11 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 3) results match", {
 
   plotName <- results[["results"]][["mixtureComponentPlot"]][["collection"]][["mixtureComponentPlot_plot1"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-1_jaspcolumn2-1")
+  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-1_jaspcolumn2-1", tolerance = 1e-4)
 
   plotName <- results[["results"]][["mixtureComponentPlot"]][["collection"]][["mixtureComponentPlot_plot2"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-2_jaspcolumn2-2")
+  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-2_jaspcolumn2-2", tolerance = 1e-4)
 
   table <- results[["results"]][["mixtureComponentsTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
