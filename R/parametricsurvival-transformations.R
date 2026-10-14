@@ -295,8 +295,8 @@
   transformation <- specification[["transformation"]]
   label <- switch(transformation,
     scale              = gettext("Scale"),
-    power              = gettext("Natural log"),
-    customPower        = gettext("General log"),
+    power              = "log",
+    customPower        = "log",
     customExponent     = gettext("Power"),
     root               = gettext("Root"),
     naturalSpline      = gettext("Natural cubic spline"),
@@ -304,9 +304,14 @@
     eyring             = gettext("Eyring"),
     reciprocal         = gettext("Reciprocal")
   )
-  if (transformation == "customPower")
-    return(gettextf("%1$s(%2$s, multiplier %3$s, base %4$s)", label, variable,
-      specification[["logMultiplierExpression"]], specification[["logBaseExpression"]]))
+  if (transformation == "customPower") {
+    logarithm <- paste0("log(", variable, ", base = ", .sapEquationConstant(specification[["logBase"]]), ")")
+    multiplier <- specification[["logMultiplier"]]
+    if (multiplier == 1) return(logarithm)
+    number <- .sapEquationConstant(multiplier)
+    if (multiplier < 0) number <- paste0("(", number, ")")
+    return(paste(number, "*", logarithm))
+  }
   if (transformation == "customExponent")
     return(gettextf("%1$s(%2$s, %3$s)", label, variable, specification[["powerExponentExpression"]]))
   if (transformation == "root")
