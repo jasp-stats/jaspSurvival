@@ -415,7 +415,7 @@ Section
 				label: qsTr("Plot")
 				checked: true
 				childrenOnSameRow:	true
-				info: qsTr("Plot every selected measure in its own panel.")
+				info: qsTr("Plot every selected measure in its own panel. For new observations, use observation numbers on the x-axis and separate lines for times or lifetime percentiles.")
 
 				DropDown
 				{
@@ -604,7 +604,7 @@ Section
 		{
 			name: "predictionsXAxisTransformation"
 			label: qsTr("X-axis transformation")
-			visible: predictionsRoot.predictorView && predictionsRoot.timeAxis
+			visible: predictionsRoot.variableInput && predictionsRoot.predictorView && predictionsRoot.timeAxis
 			enabled: modelPlot.checked && (predictionsRoot.timeMeasuresSelected || (survivalTime.checked && lifetimePercentiles.checked))
 			startValue: "none"
 			values: [{label: qsTr("Linear"), value: "none"}, {label: qsTr("Log"), value: "log"}]

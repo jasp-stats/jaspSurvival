@@ -3,7 +3,7 @@
   .sapModelPredictionOptions, .sapLifetimeSummaryOptions, "predictionsPredictFor", "predictionsManualInput", "predictionsCsvFile",
   .sapPredictionQuantileDependencies, .sapPredictionTimeDependencies,
   .sapPredictionCiDependencies, "predictionsOutputPlot", "predictionsOutputTable", "predictionsOutputExportPredictionsToDataset", "predictionsOutputExportPredictionsToDatasetColumnPrefix",
-  "predictionsXAxisTransformation", "predictionsSurvivalTimeYAxisScale", "predictionsProbabilityYAxisScale",
+  "predictionsSurvivalTimeYAxisScale", "predictionsProbabilityYAxisScale",
   "predictionsDisplayPredictionInterval", "predictionsDisplayPredictionIntervalLevel", "predictionsMergeTablesAcrossMeasures", "plotLegend", "plotTheme", "colorPalette"
 )
 .sapCustomPredictions <- function(jaspResults, original, fitting, options) {
@@ -253,13 +253,16 @@
   at    <- if (scalar) 0 else if (measure[["type"]] == "quantile") measure[["probability"]] else measure[["times"]]
   data  <- data.frame(at = rep(at, times = length(record[["rows"]])), estimate = value[["estimate"]],
     Observation = factor(rep(record[["rows"]], each = length(at)), levels = record[["rows"]]))
+  series <- unique(at)
+  data[["Series"]] <- factor(data[["at"]], levels = series,
+    labels = if (measure[["type"]] == "quantile") paste0(100 * series, "%") else as.character(series))
   data[["estimate"]][!is.finite(data[["estimate"]])] <- NA_real_
   if (!nrow(data) || !any(is.finite(data[["estimate"]]))) {
     plot$setError(gettext("No finite predictions are available for this plot."))
     return()
   }
   if (scalar) {
-    figure <- ggplot2::ggplot(data, ggplot2::aes(x = Observation, y = estimate))
+    figure <- ggplot2::ggplot(data, ggplot2::aes(x = Observation, y = estimate, group = 1))
     if (options[["predictionsDisplayPredictionInterval"]]) {
       rangeSpec <- specification
       level     <- options[["predictionsDisplayPredictionIntervalLevel"]]
@@ -275,49 +278,34 @@
       data[["rangeUpper"]] <- ranges[, 2L]
       figure <- figure + ggplot2::geom_linerange(data = data, ggplot2::aes(ymin = rangeLower, ymax = rangeUpper), colour = "grey70", linewidth = 2, na.rm = TRUE)
     }
-  } else figure <- ggplot2::ggplot(data, ggplot2::aes(x = at, y = estimate, colour = Observation, group = Observation))
+  } else figure <- ggplot2::ggplot(data, ggplot2::aes(x = Observation, y = estimate, colour = Series, group = Series))
   for (j in seq_along(specification[["levels"]])) {
     data[["lCi"]] <- if (specification[["direction"]] == "upper") NA_real_ else value[[paste0("lower", j)]]
     data[["uCi"]] <- if (specification[["direction"]] == "lower") NA_real_ else value[[paste0("upper", j)]]
     data[["lCi"]][!is.finite(data[["lCi"]])] <- NA_real_
     data[["uCi"]][!is.finite(data[["uCi"]])] <- NA_real_
-    if (scalar || length(at) == 1L) {
-      data <- .sapPlotBoundData(data, specification[["direction"]])
-      figure <- figure + ggplot2::geom_errorbar(data = data, ggplot2::aes(ymin = boundLower, ymax = boundUpper), width = if (scalar) .18 else .02, na.rm = TRUE)
-    } else figure <- .sapAddModelBoundLayer(figure, data, specification[["levels"]][j], specification[["direction"]],
-      groups = "Observation", color = "Observation", fill = "Observation", na.rm = TRUE)
+    data <- .sapPlotBoundData(data, specification[["direction"]])
+    figure <- figure + ggplot2::geom_errorbar(data = data, ggplot2::aes(ymin = boundLower, ymax = boundUpper), width = .18, na.rm = TRUE)
   }
-  figure <- figure + if (scalar || length(at) == 1L) ggplot2::geom_point() else jaspGraphs::geom_line()
+  if (length(record[["rows"]]) > 1L) figure <- figure + jaspGraphs::geom_line(na.rm = TRUE)
+  figure <- figure + ggplot2::geom_point(na.rm = TRUE) + ggplot2::scale_x_discrete(drop = FALSE)
   if (!scalar) {
-    axis <- .sapPredictionAxisScale(list(record[["fit"]]), "", options[["predictionsXAxisTransformation"]], timeAxis = TRUE)
-    if (!is.null(axis)) figure <- figure + .sapPredictionPositionScale(axis, "x")
-    scale <- figure$scales$get_scales("x")
-    if (is.null(scale)) {
-      figure <- figure + ggplot2::scale_x_continuous()
-      scale  <- figure$scales$get_scales("x")
-    }
-    transform <- scale$get_transformation()
-    rawRange  <- at[is.finite(transform$transform(at))]
-    if (length(rawRange)) scale$limits <- sort(transform$transform(range(rawRange)))
-    if (measure[["type"]] == "quantile") scale$labels <- scales::label_number(scale = 100)
     colorScale <- jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]])
-    fillScale  <- jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
-    colorScale$palette <- .sapPlotPalette(colorScale$palette, nlevels(data[["Observation"]]))
-    fillScale$palette  <- .sapPlotPalette(fillScale$palette, nlevels(data[["Observation"]]))
-    figure <- figure + colorScale + fillScale
+    colorScale$palette <- .sapPlotPalette(colorScale$palette, nlevels(data[["Series"]]))
+    figure <- figure + colorScale
   }
   figure <- figure + .sapPredictionOutcomeScale(options, measure[["type"]])
-  figure <- figure + ggplot2::labs(x = if (scalar) gettext("Observation") else if (measure[["type"]] == "quantile") gettext("Lifetime percentile") else gettext("Time"),
-    y = measure[["label"]], colour = if (scalar) NULL else gettext("Observation"), fill = NULL, caption = NULL) + ggplot2::guides(fill = "none")
-  if (scalar || length(record[["rows"]]) == 1L) figure <- figure + ggplot2::theme(legend.position = "none")
-  axes <- try(.sapPredictionPrettyAxes(figure, quantileAxis = measure[["type"]] == "quantile", probabilityAxis = measure[["type"]] == "survival"), silent = TRUE)
+  figure <- figure + ggplot2::labs(x = gettext("Observation"),
+    y = measure[["label"]], colour = if (scalar) NULL else if (measure[["type"]] == "quantile") gettext("Lifetime percentile") else gettext("Time"),
+    fill = NULL, caption = NULL) + ggplot2::guides(fill = "none")
+  axes <- try(.sapPredictionPrettyAxes(figure, probabilityAxis = measure[["type"]] == "survival"), silent = TRUE)
   if (inherits(axes, "try-error")) {
     plot$setError(conditionMessage(attr(axes, "condition")))
     return()
   }
   figure <- axes
   figure <- .sapPredictionPlotAddTheme(figure, options)
-  if (scalar || length(record[["rows"]]) == 1L) figure <- figure + ggplot2::theme(legend.position = "none")
+  if (length(series) == 1L) figure <- figure + ggplot2::theme(legend.position = "none")
   for (layer in figure$layers) if (inherits(layer$geom, "GeomRibbon")) layer$show.legend <- FALSE
   size <- .sapPredictionPlotSize(figure, options, 550, 320)
   plot$width <- size[["width"]]

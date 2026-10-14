@@ -30,9 +30,9 @@
   if (!length(measures)) stop(gettext("Select a mean, percentile or time-evaluated measure for predictions."))
   levels <- if (options[["predictionsDisplayConfidenceIntervals"]]) options[["predictionsDisplayConfidenceIntervalsLevel"]] else numeric(0)
   return(list(measures = measures, levels = levels, direction = options[["confidenceIntervalBounds"]], times = times,
-    plotTimes = if (any(selected)) .sapModelPredictionAt(fit, options, "survival", "x", plot = TRUE) else numeric(0),
+    plotTimes = times,
     plotPercentiles = if (any(vapply(measures, function(measure) measure[["type"]] == "quantile", logical(1))))
-      .sapModelPredictionAt(fit, options, "quantile", "x", plot = TRUE) else numeric(0)))
+      .sapOptions2PredictionQuantile(options) else numeric(0)))
 }
 
 .sapCustomPredictionInput <- function(original, fitting, options, required = .sapCustomPredictionVariables(options)) {
