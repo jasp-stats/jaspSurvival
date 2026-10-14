@@ -115,7 +115,7 @@
                           "mixtureComponentPlotXAxisTransformation", "mixtureComponentPlotYAxisTransformation", "mixtureComponentPlotMergePlotsAcrossDistributions",
                           "predictionsTimeGrid", "predictionsTimeIntervals", "predictionsTimeFrom", "predictionsTimeStep",
                           "predictionsTimeTo", "predictionsTimeValues", "predictionsTimePercentages",
-                          "colorPalette", "plotLegend", "plotTheme"
+                          "colorPalette", "mixtureComponentPlotLegend", "plotTheme"
   )
 
   .sapSectionWrapper(

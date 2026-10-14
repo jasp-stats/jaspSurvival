@@ -261,6 +261,21 @@ Form
 
 					}
 
+					DropDown
+					{
+						name: "mixtureComponentPlotLegend"
+						label: qsTr("Legend")
+						startValue: "right"
+						info: qsTr("Choose the legend position for the component plot, or hide the legend.")
+						values:
+						[
+							{ label: qsTr("Bottom"), value: "bottom"},
+							{ label: qsTr("Right"), value: "right"},
+							{ label: qsTr("Left"), value: "left"},
+							{ label: qsTr("Top"), value: "top"},
+							{ label: qsTr("None"), value: "none"}
+						]
+					}
 
 				}
 			}

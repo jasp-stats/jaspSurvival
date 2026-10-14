@@ -178,6 +178,8 @@
   # the detailed theme is available only for the survival probability plots
   if (options[["plotTheme"]] == "detailed")
     options[["plotTheme"]] <- "jasp"
+  if (prefix == "mixtureComponentPlot")
+    options[["plotLegend"]] <- options[["mixtureComponentPlotLegend"]]
   plot <- .sapPredictionPlotAddTheme(plot, options)
   horizontalLegend <- options[["plotLegend"]] %in% c("bottom", "top")
   if (horizontalLegend)
@@ -186,10 +188,31 @@
 
   seriesCount <- length(colors)
   height <- 320 + if (horizontalLegend) 30 * (ceiling(seriesCount / 2) - 1) else 0
-  tempPlot <- createJaspPlot(width = 550, height = height)
+  size <- if (prefix == "mixtureComponentPlot") .sapmComponentPlotSize(plot) else c(width = 550, height = height)
+  tempPlot <- createJaspPlot(width = size[["width"]], height = size[["height"]])
   tempPlot$plotObject <- plot
 
   return(tempPlot)
+}
+.sapmComponentPlotSize          <- function(plot) {
+
+  size <- c(width = 550, height = 320)
+  if (identical(plot$theme$legend.position, "none"))
+    return(size)
+
+  grDevices::pdf(file = NULL)
+  on.exit(grDevices::dev.off())
+  withLegend    <- ggplot2::ggplotGrob(plot)
+  withoutLegend <- ggplot2::ggplotGrob(plot + ggplot2::theme(legend.position = "none"))
+
+  # Add the space used by the rendered guides and their spacing, preserving
+  # the plotting area of the original canvas even for long legend labels.
+  size <- size + c(
+    width  = max(0, grid::convertWidth(sum(withLegend$widths) - sum(withoutLegend$widths), "inches", valueOnly = TRUE) * 96),
+    height = max(0, grid::convertHeight(sum(withLegend$heights) - sum(withoutLegend$heights), "inches", valueOnly = TRUE) * 96)
+  )
+
+  return(ceiling(size))
 }
 .sapmObservedDensity            <- function(dataset, options, prefix = "mixtureComponentPlot") {
 
