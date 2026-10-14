@@ -111,7 +111,18 @@
   candidates <- list()
   fitError   <- NULL
   precisionRejected <- 0L
+  failures <- list()
+  recordFailure <- function(start, iteration, stage, error) {
+    fitError <<- jaspBase::.extractErrorMessage(error)
+    failures[[length(failures) + 1L]] <<- data.frame(
+      start = start, iteration = iteration, stage = stage, message = fitError)
+  }
   for (start in starts) {
+
+    if (jaspBase::isTryError(start[["posterior"]])) {
+      recordFailure(start[["name"]], NA_real_, "initialization", start[["posterior"]])
+      next
+    }
 
     states <- try(.sapmEm(
       emFormula   = emFormula,
@@ -132,21 +143,26 @@
     ), silent = TRUE)
 
     if (jaspBase::isTryError(states)) {
-      if (is.null(fitError))
-        fitError <- jaspBase::.extractErrorMessage(states)
+      recordFailure(start[["name"]], NA_real_, "EM", states)
       progressbarTick()
       next
     }
 
     for (state in states) {
 
-      # A restriction identifies a component; ordering by median would move its
-      # fixed baseline or regression values to a different component.
-      order  <- if (length(setdiff(names(nativeFixed), names(specification[["structuralFixed"]]))) > 0L) seq_len(components) else .sapmComponentOrder(family, state[["base"]])
-      inits  <- .sapmInits(mixture, state[["base"]][order], state[["beta"]][order], state[["probabilities"]][order], specification)
-      native <- .sapmNativeFit(formula, dataset, options, family, components, mixture, inits, caseWeights, constraint = constraint, fixed = nativeFixed, parameterNames = parameterNames, specification = specification)
-      if (jaspBase::isTryError(native[["fit"]])) {
-        fitError <- jaspBase::.extractErrorMessage(native[["fit"]])
+      # Ordering and conversion belong to this candidate's initialization.
+      inits <- try({
+        order <- if (length(setdiff(names(nativeFixed), names(specification[["structuralFixed"]]))) > 0L) seq_len(components) else .sapmComponentOrder(family, state[["base"]])
+        .sapmInits(mixture, state[["base"]][order], state[["beta"]][order], state[["probabilities"]][order], specification)
+      }, silent = TRUE)
+      if (jaspBase::isTryError(inits)) {
+        recordFailure(start[["name"]], state[["iteration"]], "initialization", inits)
+        next
+      }
+      native <- try(.sapmNativeFit(formula, dataset, options, family, components, mixture, inits, caseWeights, constraint = constraint, fixed = nativeFixed, parameterNames = parameterNames, specification = specification), silent = TRUE)
+      error <- if (inherits(native, "try-error")) native else native[["fit"]]
+      if (jaspBase::isTryError(error)) {
+        recordFailure(start[["name"]], state[["iteration"]], "optimization", error)
         next
       }
 
@@ -154,12 +170,18 @@
       precision <- try(.sapmCheckPrecision(fit, family, components, survObject), silent = TRUE)
       if (jaspBase::isTryError(precision)) {
         precisionRejected <- precisionRejected + 1L
-        fitError <- jaspBase::.extractErrorMessage(precision)
+        recordFailure(start[["name"]], state[["iteration"]], "precision", precision)
         next
       }
       diagnostics <- try(.sapmCandidateDiagnostics(fit, family, components, survObject, caseWeights), silent = TRUE)
       if (jaspBase::isTryError(diagnostics)) {
-        fitError <- jaspBase::.extractErrorMessage(diagnostics)
+        recordFailure(start[["name"]], state[["iteration"]], "diagnostics", diagnostics)
+        next
+      }
+
+      orderedInits <- try(.sapmOrderedInits(fit, family, components), silent = TRUE)
+      if (jaspBase::isTryError(orderedInits)) {
+        recordFailure(start[["name"]], state[["iteration"]], "ordering", orderedInits)
         next
       }
 
@@ -169,7 +191,7 @@
           iteration = state[["iteration"]],
           logLik    = fit[["loglik"]],
           converged = fit[["opt"]][["convergence"]] == 0,
-          inits     = .sapmOrderedInits(fit, family, components),
+          inits     = orderedInits,
           warnings  = native[["warnings"]],
           searchProvenance = attr(fit, "searchProvenance")
         ),
@@ -179,8 +201,13 @@
     progressbarTick()
   }
 
-  if (length(candidates) == 0)
-    stop(gettextf("The mixture model could not be estimated from any starting value: %1$s", if (is.null(fitError)) gettext("the optimizer failed.") else fitError))
+  failureData <- if (length(failures) > 0L) do.call(rbind, failures) else
+    data.frame(start = character(0), iteration = numeric(0), stage = character(0), message = character(0))
+  if (length(candidates) == 0) {
+    error <- simpleError(gettextf("The mixture model could not be estimated from any starting value: %1$s", if (is.null(fitError)) gettext("the optimizer failed.") else fitError))
+    error[["mixture"]] <- list(starts = length(starts), failedStarts = length(starts), failures = failureData)
+    stop(error)
+  }
 
   selection <- .sapmSelectCandidate(candidates, constrained = !is.null(constraint))
   best      <- candidates[[selection[["selected"]]]]
@@ -211,7 +238,9 @@
     components      = components,
     truncated       = truncated,
     candidates      = selection[["candidates"]],
-    starts          = selection[["starts"]],
+    starts          = length(starts),
+    failedStarts    = length(setdiff(vapply(starts, function(start) start[["name"]], character(1)), selection[["candidates"]][["start"]])),
+    failures        = failureData,
     replication     = selection[["replication"]],
     nextBest        = selection[["nextBest"]],
     degenerate      = selection[["degenerate"]],
@@ -802,6 +831,9 @@
   fitCall <- .sapFixedFitCall(fitCall, fixed, parameterNames)
   if (!is.null(schema))
     fitCall <- .sapEyringControls(fitCall, schema)
+  covarianceError <- NULL
+  covarianceHessian <- NULL
+  covarianceFunction <- get(".hess_to_cov", envir = asNamespace("flexsurv"), inherits = FALSE)
   fit <- try(withCallingHandlers(
     suppressMessages(.sapmCompressedFit(fitCall, function(...) {
       .sapEyringNativeFit(list(...), schema, options[["censoringType"]], searchProvenance)
@@ -813,8 +845,36 @@
       else
         warnings <<- unique(c(warnings, message))
       invokeRestart("muffleWarning")
+    },
+    error = function(error) {
+      if (!hessian) return()
+      frames <- which(vapply(seq_len(sys.nframe()), function(frame)
+        identical(sys.function(frame), covarianceFunction), logical(1)))
+      if (length(frames) > 0L) {
+        covarianceError <<- conditionMessage(error)
+        covarianceHessian <<- get("hessian", envir = sys.frame(frames[length(frames)]), inherits = FALSE)
+      }
     }
   ), silent = TRUE)
+  if (jaspBase::isTryError(fit) && !is.null(covarianceError)) {
+    # A singular covariance does not invalidate the selected point estimates.
+    # Re-evaluate the same point with maxit=0, without requesting its covariance.
+    fitCall[["hessian"]] <- FALSE
+    fit <- try(suppressWarnings(suppressMessages(.sapmCompressedFit(fitCall, function(...) {
+      .sapEyringNativeFit(list(...), schema, options[["censoringType"]], searchProvenance)
+    }))), silent = TRUE)
+    if (!jaspBase::isTryError(fit)) {
+      fit <- .sapEyringUnavailableInference(fit,
+        gettextf("Native covariance finalization failed: %1$s. Confidence intervals are unavailable.", covarianceError))
+      fit[["opt"]][["hessian"]] <- covarianceHessian
+      provenance <- attr(fit, "informationProvenance", exact = TRUE)
+      provenance[["nativeH"]] <- covarianceHessian
+      provenance[["nativeAttempt"]] <- TRUE
+      provenance[["nativeCondition"]] <- covarianceError
+      attr(fit, "informationProvenance") <- provenance
+      hessianWarning <- TRUE
+    }
+  }
   fit <- .sapCompleteFixedFit(fit, fixed, options[["coefficientsConfidenceIntervalsLevel"]],
     if (is.null(specification)) numeric(0) else specification[["structuralFixed"]])
   if (!jaspBase::isTryError(fit)) {

@@ -314,6 +314,7 @@
   diagnosticsTable$addColumnInfo(name = "model",          title = gettext("Model"),        type = "mixed")
   diagnosticsTable$addColumnInfo(name = "components",     title = gettext("Components"),   type = "integer")
   diagnosticsTable$addColumnInfo(name = "starts",         title = gettext("Starts"),       type = "integer")
+  diagnosticsTable$addColumnInfo(name = "failedStarts",   title = gettext("Failed Starts"), type = "integer")
   diagnosticsTable$addColumnInfo(name = "replication",    title = gettext("Replications"), type = "integer")
   diagnosticsTable$addColumnInfo(name = "logLik",         title = gettext("Log Lik."),     type = "number")
   diagnosticsTable$addColumnInfo(name = "nextBest",       title = gettext("Next Best Log Lik."), type = "number")
@@ -337,14 +338,22 @@
 }
 .sapmRowDiagnosticsTable        <- function(fit) {
 
-  if (jaspBase::isTryError(fit))
-    return(.sapRowModelInformation(fit))
+  if (jaspBase::isTryError(fit)) {
+    mixture <- attr(fit, "condition")[["mixture"]]
+    data <- .sapRowModelInformation(fit)
+    if (!is.null(mixture)) {
+      data[["starts"]] <- mixture[["starts"]]
+      data[["failedStarts"]] <- mixture[["failedStarts"]]
+    }
+    return(data)
+  }
 
   mixture <- attr(fit, "mixture")
 
   return(data.frame(
     .sapRowModelInformation(fit),
     starts          = mixture[["starts"]],
+    failedStarts    = mixture[["failedStarts"]],
     replication     = mixture[["replication"]],
     logLik          = fit[["loglik"]],
     nextBest        = mixture[["nextBest"]],
@@ -369,6 +378,12 @@
       "%1$i candidate fit was omitted because its likelihood could not be evaluated reliably at the available numerical precision.",
       "%1$i candidate fits were omitted because their likelihoods could not be evaluated reliably at the available numerical precision."
     ), mixture[["precisionRejected"]]))
+  if (nrow(mixture[["failures"]]) > 0L)
+    messages <- c(messages, sprintf(ngettext(
+      nrow(mixture[["failures"]]),
+      "%1$i starting-value or candidate attempt failed and was omitted; %2$i of %3$i starts produced no usable candidate.",
+      "%1$i starting-value or candidate attempts failed and were omitted; %2$i of %3$i starts produced no usable candidate."
+    ), nrow(mixture[["failures"]]), mixture[["failedStarts"]], mixture[["starts"]]))
   for (message in mixture[["warnings"]])
     messages <- c(messages, gettextf("Estimation warning: %1$s", message))
 

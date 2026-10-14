@@ -26,7 +26,7 @@
   add <- function(name, posterior, probabilityIndex) {
     if (probabilityIndex > 1)
       name <- paste0(name, "Probability", probabilityIndex)
-    starts[[length(starts) + 1]] <<- list(name = name, posterior = posterior)
+    starts[[length(starts) + 1]] <<- list(name = name, posterior = try(posterior, silent = TRUE))
   }
   addPartition <- function(name, membership) {
     for (i in seq_along(probabilities))
