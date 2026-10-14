@@ -673,7 +673,7 @@ Section
 					defaultValue: 5
 					min: 1
 					visible: contourLevels.value === "number"
-					info: qsTr("Set the number of automatically selected contour levels.")
+					info: qsTr("Set the approximate number of rounded contour levels.")
 				}
 			}
 

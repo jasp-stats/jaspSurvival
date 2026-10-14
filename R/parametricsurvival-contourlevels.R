@@ -17,7 +17,10 @@
 .sapPredictionContourNumberLevels <- function(values, number) {
   values <- values[is.finite(values)]
   if (!length(values) || diff(range(values)) == 0) return(numeric(0))
-  return(seq(min(values), max(values), length.out = number + 2L)[-c(1L, number + 2L)])
+  limits <- range(values)
+  # Pretty spacing makes the requested count approximate; endpoints do not form contours.
+  levels <- jaspGraphs::getPrettyAxisBreaks(limits, n = number + 1L)
+  return(levels[is.finite(levels) & levels > limits[1L] & levels < limits[2L]])
 }
 .sapPredictionContourLevels <- function(data, options, measure, common = NULL) {
   panels <- unique(as.character(data[["Panel"]]))
