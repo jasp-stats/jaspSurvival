@@ -68,19 +68,18 @@
         model$position <- i
         outputs[[kind]][[key]] <- model
       }
-      if (kind == "plots")
-        .sapCustomPredictionPlots(model, record, specification, options)
-      else
+      if (kind == "plots") {
+        messages <- .sapCustomPredictionPlots(model, record, specification, options)
+        if (!options[["predictionsOutputTable"]])
+          messages <- c(.sapCustomPredictionMessages(record, specification, indices = integer(0)), messages)
+        .sapCustomPredictionNotes(model, messages)
+      } else
         .sapCustomPredictionTables(model, record, specification, options)
     }
-    if (!options[["predictionsOutputTable"]]) {
+    if (!options[["predictionsOutputTable"]] && !options[["predictionsOutputPlot"]]) {
       messages <- .sapCustomPredictionMessages(record, specification)
-      if (length(messages)) {
-        table <- createJaspTable(title = gettext("Prediction Notes"))
-        table$position <- 3
-        container[[paste0("messages", i)]] <- table
-        .saFillMessageTable(table, unique(messages))
-      }
+      if (nzchar(labels[i])) messages <- gettextf("%1$s: %2$s", labels[i], messages)
+      .sapCustomPredictionNotes(container, messages, key = paste0("messages", i))
     }
   }
   if (!export) return(NULL)
@@ -89,6 +88,18 @@
   container[["exportPlan"]] <- state
   state$object <- plan
   return(plan)
+}
+
+.sapCustomPredictionNotes <- function(container, messages, key = "notes") {
+
+  messages <- unique(messages)
+  if (!length(messages)) return()
+  for (pair in list(c("&", "&amp;"), c("<", "&lt;"), c(">", "&gt;")))
+    messages <- gsub(pair[1L], pair[2L], messages, fixed = TRUE)
+  note <- createJaspHtml(text = paste0("<p><em>", gettext("Note."), "</em> ", paste(messages, collapse = "<br>"), "</p>"),
+    elementType = "div", title = "")
+  note$position <- 99
+  container[[key]] <- note
 }
 
 .sapCustomPredictionError <- function(container, key, title, error) {
@@ -103,7 +114,10 @@
   if (inherits(fit, "try-error")) stop(attr(fit, "condition"))
   rows       <- .sapCustomPredictionRows(input, fit, options, original)
   prepared   <- .sapCustomPredictionData(input, rows, fit, options)
-  prediction <- .sapCustomPredictionValues(fit, prepared[["data"]], specification, options)
+  prediction <- if (options[["predictionsOutputTable"]] ||
+    (options[["predictionsPredictFor"]] == "dataset" && options[["predictionsOutputExportPredictionsToDataset"]]))
+    .sapCustomPredictionValues(fit, prepared[["data"]], specification, options)
+  else list(values = list(), warnings = character(0))
   return(c(list(fit = fit), prepared, prediction))
 }
 
@@ -136,7 +150,10 @@
     for (i in seq_len(max(1L, length(levels)))) {
       arguments[["cl"]] <- if (length(levels)) levels[i] else .95
       result   <- do.call(.sapSummaryPredictions, arguments)
-      warnings <- c(warnings, attr(result, "predictionWarnings"))
+      # Report infinities from the displayed values, with their locations.
+      warnings <- c(warnings, setdiff(attr(result, "predictionWarnings"), c(
+        gettext("Some confidence bounds are infinite or exceed numerical range."),
+        gettext("Some requested quantities are infinite or exceed numerical range."))))
       if (i == 1L) record[["estimate"]] <- .sapCustomPredictionVector(result, "est", fit, nrow(data), evaluations)
       if (length(levels)) for (side in .sapBoundFields(direction, "lower", "upper")) record[[paste0(side, i)]] <- .sapCustomPredictionVector(result, if (side == "lower") "lcl" else "ucl", fit, nrow(data), evaluations)
     }
@@ -209,16 +226,57 @@
   }
   table$setData(data)
   table$showSpecifiedColumnsOnly <- TRUE
-  for (message in .sapCustomPredictionMessages(record, specification)) table$addFootnote(message)
+  for (message in .sapCustomPredictionMessages(record, specification, indices)) table$addFootnote(message)
   return(table)
 }
 
-.sapCustomPredictionMessages <- function(record, specification) {
+.sapCustomPredictionMessages <- function(record, specification, indices = seq_along(specification[["measures"]])) {
 
-  messages <- c(record[["warnings"]], record[["referenceNotes"]])
+  messages <- c(if (length(indices)) record[["warnings"]], record[["referenceNotes"]])
+  for (i in indices) messages <- c(messages, .sapCustomPredictionValueMessages(record[["values"]][[i]],
+    specification[["measures"]][[i]], specification, record[["rows"]]))
   if (record[["omitted"]] > 0L) messages <- c(messages, gettextf("%1$i observations have missing or unsupported predictor values and were not predicted.", record[["omitted"]]))
   if (.sapConstraintActive(record[["fit"]]) && length(specification[["levels"]])) messages <- c(messages, gettext("Confidence intervals are unavailable because the fitted model is on the minimum-spread boundary."))
   return(unique(messages))
+}
+
+.sapCustomPredictionValueMessages <- function(value, measure, specification, rows, plot = FALSE) {
+
+  evaluations <- .sapCustomPredictionEvaluations(measure)
+  at <- if (measure[["type"]] == "quantile") measure[["probability"]] else measure[["times"]]
+  # The 100th percentile is the support endpoint, not an overflow diagnostic.
+  relevant <- if (measure[["type"]] == "quantile") rep(at != 1, times = length(rows)) else rep(TRUE, nrow(value))
+  label <- function(selected) {
+    compact <- function(values) {
+      values <- unique(as.character(values))
+      if (length(values) <= 6L) return(paste(values, collapse = ", "))
+      return(gettextf("%1$s, ..., %2$s (%3$i total)", paste(head(values, 3L), collapse = ", "), tail(values, 1L), length(values)))
+    }
+    context <- c(measure[["label"]], gettextf("observations: %1$s", compact(rows[(selected - 1L) %/% evaluations + 1L])))
+    if (length(at)) {
+      points <- at[(selected - 1L) %% evaluations + 1L]
+      context <- c(context, if (measure[["type"]] == "quantile") gettextf("lifetime percentiles: %1$s", compact(100 * points)) else
+        gettextf("times: %1$s", compact(points)))
+    }
+    return(paste(context, collapse = "; "))
+  }
+  messages <- character(0)
+  selected <- which(is.infinite(value[["estimate"]]) & relevant)
+  if (length(selected)) messages <- if (plot)
+    gettextf("Some predictions are infinite or exceed numerical range and are omitted from the figure (%1$s).", label(selected)) else
+    gettextf("Some predictions are infinite or exceed numerical range (%1$s).", label(selected))
+  for (j in seq_along(specification[["levels"]])) {
+    fields <- paste0(.sapBoundFields(specification[["direction"]], "lower", "upper"), j)
+    # Bounds add no useful warning where the prediction itself is not drawn.
+    selected <- which(Reduce(`|`, lapply(value[fields], is.infinite)) & relevant & is.finite(value[["estimate"]]))
+    if (length(selected)) {
+      bound <- .sapBoundTitle(specification[["levels"]][j], specification[["direction"]])
+      messages <- c(messages, if (plot)
+        gettextf("Some confidence bounds are infinite or exceed numerical range and are omitted from the figure (%1$s; %2$s).", label(selected), bound) else
+        gettextf("Some confidence bounds are infinite or exceed numerical range (%1$s; %2$s).", label(selected), bound))
+    }
+  }
+  return(messages)
 }
 
 .sapCustomPredictionPlots <- function(container, record, specification, options) {
@@ -228,14 +286,15 @@
   plots      <- measures[vapply(measures, function(measure) measure[["type"]] != "quantile", logical(1))]
   if (length(percentile)) plots <- c(list(list(type = "quantile", probability = specification[["plotPercentiles"]],
     label = gettext("Survival Time"), kind = "lifetime", id = "quantile")), plots)
+  messages <- character(0)
   for (i in seq_along(plots)) {
     plot <- createJaspPlot(title = plots[[i]][["label"]], width = 550, height = 320)
     plot$position <- i
     container[[paste0("plot", i)]] <- plot
-    .sapFillCustomPredictionPlot(plot, record, specification, options, plots[[i]])
+    messages <- c(messages, .sapFillCustomPredictionPlot(plot, record, specification, options, plots[[i]]))
   }
 
-  return()
+  return(unique(messages))
 }
 
 .sapFillCustomPredictionPlot <- function(plot, record, specification, options, measure) {
@@ -250,6 +309,7 @@
     return()
   }
   value <- prediction[["values"]][[1L]]
+  messages <- c(prediction[["warnings"]], .sapCustomPredictionValueMessages(value, measure, specification, record[["rows"]], plot = TRUE))
   at    <- if (scalar) 0 else if (measure[["type"]] == "quantile") measure[["probability"]] else measure[["times"]]
   data  <- data.frame(at = rep(at, times = length(record[["rows"]])), estimate = value[["estimate"]],
     Observation = factor(rep(record[["rows"]], each = length(at)), levels = record[["rows"]]))
@@ -259,7 +319,7 @@
   data[["estimate"]][!is.finite(data[["estimate"]])] <- NA_real_
   if (!nrow(data) || !any(is.finite(data[["estimate"]]))) {
     plot$setError(gettext("No finite predictions are available for this plot."))
-    return()
+    return(messages)
   }
   if (scalar) {
     figure <- ggplot2::ggplot(data, ggplot2::aes(x = Observation, y = estimate, group = 1))
@@ -274,8 +334,13 @@
         return()
       }
       ranges <- matrix(predictionRange[["values"]][[1L]][["estimate"]], ncol = 2L, byrow = TRUE)
+      rangeSpec[["measures"]][[1L]][["label"]] <- gettext("Prediction range")
+      messages <- c(messages, predictionRange[["warnings"]], .sapCustomPredictionValueMessages(
+        predictionRange[["values"]][[1L]], rangeSpec[["measures"]][[1L]], rangeSpec, record[["rows"]], plot = TRUE))
       data[["rangeLower"]] <- ranges[, 1L]
       data[["rangeUpper"]] <- ranges[, 2L]
+      data[["rangeLower"]][!is.finite(data[["rangeLower"]])] <- NA_real_
+      data[["rangeUpper"]][!is.finite(data[["rangeUpper"]])] <- NA_real_
       figure <- figure + ggplot2::geom_linerange(data = data, ggplot2::aes(ymin = rangeLower, ymax = rangeUpper), colour = "grey70", linewidth = 2, na.rm = TRUE)
     }
   } else figure <- ggplot2::ggplot(data, ggplot2::aes(x = Observation, y = estimate, colour = Series, group = Series))
@@ -312,7 +377,7 @@
   plot$height <- size[["height"]]
   plot$plotObject <- figure
 
-  return()
+  return(unique(messages))
 }
 
 .sapCustomPredictionColumns <- function(records, specification, original, options) {

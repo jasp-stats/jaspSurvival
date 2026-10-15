@@ -448,3 +448,73 @@ test_that("ParametricSurvivalAnalysis (analysis 2) results match", {
 
 })
 
+test_that("ParametricSurvivalAnalysis (analysis 3) results match", {
+
+  # Load from JASP example file
+  jaspFile <- testthat::test_path("jaspfiles", "other", "flexsurv_flexsurvreg_full_output.jasp")
+  opts <- jaspTools::analysisOptions(jaspFile)[[3]]
+  dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
+
+  # Encode and run analysis
+  encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
+  set.seed(1)
+  results <- jaspTools::runAnalysis("ParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+
+  table <- results[["results"]][["coefficientsTable"]][["data"]]
+  jaspTools::expect_equal_tables(table,
+    list("shape", 1.37916689528558, 0.0757834140473651, "", 2.04159535890968,
+     25.0991770291957, "", "scale", 181451988337.308, 1140162.54409444,
+     "", 1108874914836.45, 28877307224394588, "", "[scale] log(jaspColumn1)",
+     -4.73623582837764, -7.62890470433388, 0.00133153101519305, 1.47587858693998,
+     -1.84356695242141, -3.20909583639772, "[scale] jaspColumn2 contrast 1 (Helmert)",
+     0.313570899602954, -0.0558036269093661, 0.0961403181492486,
+     0.188459854071758, 0.682945426115274, 1.66386046061332, "[shape] jaspColumn1",
+     0.00424184579329544, -0.0417901520428175, 0.856673265230155,
+     0.0234861447451114, 0.0502738436294084, 0.180610561645218))
+
+  plotName <- results[["results"]][["densityPlot"]][["collection"]][["densityPlot_plot1"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-1_jaspcolumn2-1")
+
+  plotName <- results[["results"]][["densityPlot"]][["collection"]][["densityPlot_plot2"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-2_jaspcolumn2-2")
+
+  plotName <- results[["results"]][["medianSurvivalTimePlot"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-3_median-survival-time")
+
+  table <- results[["results"]][["medianSurvivalTimeTable"]][["data"]]
+  jaspTools::expect_equal_tables(table,
+    list(3123.93847933495, 685.825904015532, 12145.5867873315, 38.8932,
+     1, 5848.79898276464, 1652.84773876359, 18042.9357288223, 38.8932,
+     2, 1981.73487822786, 562.418330641604, 6281.5400234732, 42.8499666666667,
+     1, 3710.30640217853, 1341.17051389932, 9292.00076210423, 42.8499666666667,
+     2, 1309.10786073392, 466.835143266484, 3399.28369441505, 46.8067333333333,
+     1, 2450.97935661644, 1098.90342516375, 5094.05150601569, 46.8067333333333,
+     2, 894.602730795014, 388.495049269092, 1953.21340737579, 50.7635,
+     1, 1674.92144178404, 889.698328827729, 3060.62592215531, 50.7635,
+     2, 629.207095371523, 321.708638549514, 1194.69098250631, 54.7202666666667,
+     1, 1178.03402458191, 694.908368653535, 1986.5941426952, 54.7202666666667,
+     2, 453.643020863579, 264.030666392765, 774.659456531953, 58.6770333333333,
+     1, 849.33389582308, 519.911897114627, 1381.90031552426, 58.6770333333333,
+     2, 334.182789856115, 207.994318827313, 534.173655205809, 62.6338,
+     1, 625.674280814902, 371.822734440198, 1054.5477039161, 62.6338,
+     2, 250.873187729754, 157.226812013217, 398.271942899392, 66.5905666666667,
+     1, 469.697740497463, 259.995378528725, 850.54302769568, 66.5905666666667,
+     2, 191.502759363416, 114.194753946419, 315.442644325949, 70.5473333333333,
+     1, 358.541357831035, 179.587037294291, 713.025826267989, 70.5473333333333,
+     2, 148.372156948976, 82.8983488884056, 264.01603484002, 74.5041,
+     1, 277.790016152466, 124.090803495039, 611.827490427194, 74.5041,
+     2))
+
+  plotName <- results[["results"]][["probabilityPlot"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  jaspTools::expect_equal_plots(testPlot, "analysis-3_figure-4_probability-plot")
+
+  table <- results[["results"]][["summaryTable"]][["data"]]
+  jaspTools::expect_equal_tables(table,
+    list(187.67303741196, 193.963520102067, 5, -88.8365187059798))
+
+})
+
