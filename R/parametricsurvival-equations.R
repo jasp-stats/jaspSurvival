@@ -269,6 +269,7 @@
   messages <- .sapCollectFitErrors(fit, options)
   messages <- c(messages, unique(unlist(lapply(fit, .sapFactorCodingNotes))))
   messages <- c(messages, unique(unlist(lapply(fit, .sapEquationBasisNotes))))
+  messages <- c(messages, unique(unlist(lapply(fit, .sapEquationConstantNotes))))
   for (message in messages)
     table$addFootnote(message)
   return(table)
@@ -324,31 +325,49 @@
 }
 
 # Format language objects, keeping operator precedence and fitted constants.
-.sapEquationExpression <- function(expression) {
+.sapEquationExpression <- function(expression, html = FALSE) {
 
-  if (is.numeric(expression))
+  if (is.numeric(expression)) {
+    if (!is.null(attr(expression, "boltzmannConstant")))
+      return(if (html) "k<sub>B</sub>" else "k_B")
     return(.sapEquationConstant(expression))
+  }
   if (is.logical(expression))
     return(as.character(expression))
   if (is.name(expression)) {
     label <- jaspBase::decodeColNames(as.character(expression))
     if (make.names(label) != label)
       label <- paste0("`", gsub("`", "\\`", gsub("\\", "\\\\", label, fixed = TRUE), fixed = TRUE), "`")
-    return(label)
+    return(if (html) .sapEquationEscape(label) else label)
   }
 
   operator <- as.character(expression[[1L]])
   arguments <- as.list(expression)[-1L]
   if (length(operator) == 1L && operator %in% c("I", "as.numeric", "as.character", "("))
-    return(.sapEquationExpression(arguments[[1L]]))
+    return(.sapEquationExpression(arguments[[1L]], html))
   if (length(operator) == 1L && operator == "log" && length(arguments) == 2L)
-    return(paste0("log(", .sapEquationExpression(arguments[[1L]]), ", base = ",
-      .sapEquationExpression(arguments[[2L]]), ")"))
-  values <- vapply(arguments, .sapEquationExpression, character(1))
+    return(paste0("log(", .sapEquationExpression(arguments[[1L]], html), ", base = ",
+      .sapEquationExpression(arguments[[2L]], html), ")"))
+  values <- vapply(arguments, .sapEquationExpression, character(1), html = html)
   if (length(operator) == 1L && operator %in% c("+", "-", "*", "/", "^"))
     return(paste0("(", if (length(values) == 1L) paste0(operator, values) else
       paste(values, collapse = paste0(" ", operator, " ")), ")"))
-  return(paste0(paste(deparse(expression[[1L]]), collapse = ""), "(", paste(values, collapse = ", "), ")"))
+  label <- paste(deparse(expression[[1L]]), collapse = "")
+  return(paste0(if (html) .sapEquationEscape(label) else label, "(", paste(values, collapse = ", "), ")"))
+}
+
+.sapEquationArrheniusExpression <- function(expression, variable, specification, fit) {
+
+  # Mark only the multiplier in the prepared I(1/(constant * T_K)) AST.
+  quoted <- paste(deparse(as.name(variable), backtick = TRUE), collapse = "")
+  expected <- str2lang(.sapVariableExpression(quoted, specification,
+    attr(fit, "dataset"), fit[["data"]][["m"]][["(weights)"]]))
+  if (!identical(expression, expected))
+    stop(gettext("The fitted Arrhenius expression does not match its transformation constant."))
+  # Use the actual fitted literal, including the generator's deparse precision.
+  constant <- expression[[2L]][[3L]][[2L]][[2L]]
+  attr(expression[[2L]][[3L]][[2L]][[2L]], "boltzmannConstant") <- TRUE
+  return(list(expression = expression, constant = constant))
 }
 
 .sapEquationRootExpression <- function(expression, degree) {
@@ -360,11 +379,19 @@
   return(expression)
 }
 
-.sapEquationAtoms <- function(fit, native, expression, coding, equation, index) {
+.sapEquationAtoms <- function(fit, native, expression, coding, equation, index, html = FALSE) {
 
   value <- fit[["data"]][["m"]][[expression]]
   parsed <- str2lang(expression)
-  label <- .sapEquationExpression(parsed)
+  variable <- all.vars(parsed)[1L]
+  specification <- equation[["transformations"]][[variable]]
+  constants <- numeric(0)
+  if (!is.null(specification) && specification[["transformation"]] == "arrhenius") {
+    arrhenius <- .sapEquationArrheniusExpression(parsed, variable, specification, fit)
+    constants <- arrhenius[["constant"]]
+    parsed <- arrhenius[["expression"]]
+  }
+  label <- .sapEquationExpression(parsed, html)
   definitions <- character(0)
   if (is.factor(value)) {
     if (coding == 2L)
@@ -376,12 +403,14 @@
       columns <- colnames(contrast)
       if (is.null(columns)) columns <- as.character(seq_len(ncol(contrast)))
     }
+    # Full indicator columns use their actual levels, not contrast tokens.
     tokens <- if (coding == 2L) character(0) else .sapFactorCoefficientTokens(fit, equation)
     names <- paste0(expression, columns)
     labels <- unname(tokens[match(names, names(tokens))])
     missing <- is.na(labels)
     variable <- all.vars(parsed)[1L]
     labels[missing] <- paste0(jaspBase::decodeColNames(variable), " (", columns[missing], ")")
+    if (html) labels <- .sapEquationEscape(labels)
     return(list(names = names, labels = paste0("(", labels, ")"), definitions = definitions))
   }
   if (is.matrix(value)) {
@@ -392,7 +421,7 @@
     if (is.null(columns)) columns <- as.character(seq_len(count))
     symbol <- paste0(if (specification[["transformation"]] == "polynomial") "P" else "B", "[", native, ", ", index, ", ")
     argument <- .sapEquationExpression(as.name(variable))
-    labels <- paste0(symbol, seq_len(count), "](", argument, ")")
+    labels <- paste0(symbol, seq_len(count), "](", if (html) .sapEquationEscape(argument) else argument, ")")
     vector <- function(values) paste0("c(", paste(.sapEquationConstant(values), collapse = ", "), ")")
     if (specification[["transformation"]] == "polynomial") {
       coefficients <- attr(value, "coefs")
@@ -412,23 +441,24 @@
   variable <- all.vars(parsed)[1L]
   specification <- equation[["transformations"]][[variable]]
   if (!is.null(specification) && specification[["transformation"]] == "root")
-    label <- .sapEquationExpression(.sapEquationRootExpression(parsed, specification[["rootDegree"]]))
-  return(list(names = expression, labels = label, definitions = definitions))
+    label <- .sapEquationExpression(.sapEquationRootExpression(parsed, specification[["rootDegree"]]), html)
+  return(list(names = expression, labels = label, definitions = definitions, constants = constants))
 }
 
 # Match whole native column names using fitted term membership. Colons inside
 # namespaces, escaped names or factor levels are never interaction separators.
-.sapEquationTerms <- function(fit, native, detail) {
+.sapEquationTerms <- function(fit, native, detail, html = FALSE) {
 
   equation <- detail[["equation"]]
   if (length(detail[["designColumns"]]) == 0L) return(character(0))
   factors <- attr(stats::terms(equation[["formula"]]), "factors")
   labels <- character(length(detail[["designColumns"]]))
   definitions <- character(0)
+  constants <- vector("list", length(labels))
   for (term in unique(equation[["slopeTerms"]])) {
     selected <- which(factors[, term] > 0L)
     atoms <- lapply(selected, function(index) .sapEquationAtoms(fit, native, rownames(factors)[index],
-      factors[index, term], equation[["equation"]], index))
+      factors[index, term], equation[["equation"]], index, html))
     grid <- expand.grid(lapply(atoms, function(atom) seq_along(atom[["names"]])))
     names <- apply(grid, 1L, function(row) paste(vapply(seq_along(atoms), function(index)
       atoms[[index]][["names"]][row[index]], character(1)), collapse = ":"))
@@ -438,9 +468,11 @@
     mapping <- match(detail[["designColumns"]][columns], names)
     if (anyNA(mapping)) stop(gettext("The fitted equation terms do not match the native design columns."))
     labels[columns] <- display[mapping]
+    constants[columns] <- rep(list(unique(unlist(lapply(atoms, function(atom) atom[["constants"]]), use.names = FALSE))), length(columns))
     definitions <- c(definitions, unlist(lapply(atoms, function(atom) atom[["definitions"]]), use.names = FALSE))
   }
   attr(labels, "definitions") <- unique(definitions)
+  attr(labels, "constants") <- constants
   return(labels)
 }
 
@@ -462,13 +494,26 @@
   return(notes)
 }
 
+.sapEquationConstantNotes <- function(fit) {
+
+  if (jaspBase::isTryError(fit)) return(character(0))
+  details <- .sapEquationDetails(fit)
+  constants <- unique(unlist(lapply(names(details), function(native) {
+    detail <- details[[native]]
+    labels <- .sapEquationTerms(fit, native, detail)
+    return(unlist(attr(labels, "constants")[detail[["coefficients"]][-1L] != 0], use.names = FALSE))
+  }), use.names = FALSE))
+  return(vapply(.sapEquationConstant(constants), function(constant) gettextf(
+    "k<sub>B</sub> = %1$s eV/K is the Boltzmann constant. Temperatures are converted to kelvin.", constant), character(1)))
+}
+
 .sapFittedParameterEquation <- function(fit, native, detail, decimals) {
 
   parameter <- detail[["parameter"]]
   if (length(detail[["slopeIndices"]]) == 0L)
     return(paste(parameter, "=", .sapEquationNumber(fit[["res"]][native, "est"], decimals)))
 
-  labels <- .sapEquationEscape(.sapEquationTerms(fit, native, detail))
+  labels <- .sapEquationTerms(fit, native, detail, html = TRUE)
   coefficients <- detail[["coefficients"]]
   rhs <- .sapEquationNumber(coefficients[1L], decimals)
   for (i in seq_along(labels)) {
