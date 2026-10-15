@@ -314,6 +314,7 @@
   data  <- data.frame(at = rep(at, times = length(record[["rows"]])), estimate = value[["estimate"]],
     Observation = factor(rep(record[["rows"]], each = length(at)), levels = record[["rows"]]))
   series <- unique(at)
+  position <- ggplot2::position_dodge(width = .4)
   data[["Series"]] <- factor(data[["at"]], levels = series,
     labels = if (measure[["type"]] == "quantile") paste0(100 * series, "%") else as.character(series))
   data[["estimate"]][!is.finite(data[["estimate"]])] <- NA_real_
@@ -350,10 +351,11 @@
     data[["lCi"]][!is.finite(data[["lCi"]])] <- NA_real_
     data[["uCi"]][!is.finite(data[["uCi"]])] <- NA_real_
     data <- .sapPlotBoundData(data, specification[["direction"]])
-    figure <- figure + ggplot2::geom_errorbar(data = data, ggplot2::aes(ymin = boundLower, ymax = boundUpper), width = .18, na.rm = TRUE)
+    figure <- figure + ggplot2::geom_errorbar(data = data, ggplot2::aes(ymin = boundLower, ymax = boundUpper),
+      width = .18, position = position, na.rm = TRUE)
   }
-  if (length(record[["rows"]]) > 1L) figure <- figure + jaspGraphs::geom_line(na.rm = TRUE)
-  figure <- figure + ggplot2::geom_point(na.rm = TRUE) + ggplot2::scale_x_discrete(drop = FALSE)
+  if (length(record[["rows"]]) > 1L) figure <- figure + jaspGraphs::geom_line(position = position, na.rm = TRUE)
+  figure <- figure + ggplot2::geom_point(position = position, na.rm = TRUE) + ggplot2::scale_x_discrete(drop = FALSE)
   if (!scalar) {
     colorScale <- jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]])
     colorScale$palette <- .sapPlotPalette(colorScale$palette, nlevels(data[["Series"]]))
