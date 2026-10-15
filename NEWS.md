@@ -24,6 +24,7 @@
 * Consolidated model predictions with predictor axes and reference scenarios.
 * New-observation time measures, curves and aligned dataset exports.
 ## Fixed
+* Show custom predictions at multiple times or horizons in separate column groups, with one row per observation.
 * Show custom prediction figure notes as text, identify affected values, and suppress expected 100th-percentile infinity warnings.
 * Compress identical records during mixture fitting while preserving frequency-expanded transformation bases, starts, diagnostics, and exports.
 * Evaluate deterministic predictions for fully fixed models without requiring a nonempty covariance matrix.

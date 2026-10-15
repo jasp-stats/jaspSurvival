@@ -194,35 +194,42 @@
   return()
 }
 
-.sapCustomPredictionTableColumns <- function(table, specification, indices) {
+.sapCustomPredictionTableColumns <- function(table, specification, label, prefix) {
 
-  for (i in indices) {
-    label  <- specification[["measures"]][[i]][["label"]]
-    prefix <- paste0("measure", i, ".")
-    table$addColumnInfo(name = paste0(prefix, "estimate"), title = gettext("Estimate"), overtitle = label, type = "number")
-    for (j in seq_along(specification[["levels"]])) {
-      level <- 100 * specification[["levels"]][j]
-      if (specification[["direction"]] != "upper") table$addColumnInfo(name = paste0(prefix, "lower", j), title = gettextf("Lower %1$s%%", level), overtitle = label, type = "number")
-      if (specification[["direction"]] != "lower") table$addColumnInfo(name = paste0(prefix, "upper", j), title = gettextf("Upper %1$s%%", level), overtitle = label, type = "number")
-    }
+  table$addColumnInfo(name = paste0(prefix, "estimate"), title = gettext("Estimate"), overtitle = label, type = "number")
+  for (j in seq_along(specification[["levels"]])) {
+    level <- 100 * specification[["levels"]][j]
+    if (specification[["direction"]] != "upper") table$addColumnInfo(name = paste0(prefix, "lower", j), title = gettextf("Lower %1$s%%", level), overtitle = label, type = "number")
+    if (specification[["direction"]] != "lower") table$addColumnInfo(name = paste0(prefix, "upper", j), title = gettextf("Upper %1$s%%", level), overtitle = label, type = "number")
   }
 }
 
 .sapCustomPredictionTable <- function(record, specification, indices, timed = FALSE) {
 
+  wide  <- timed && length(specification[["times"]]) > 1L
   table <- createJaspTable(title = if (timed) gettext("At Specified Times") else gettext("Lifetime Summaries"))
   table$addColumnInfo(name = "row", title = gettext("Observation"), type = "integer")
-  if (timed) table$addColumnInfo(name = "time", title = gettext("Time or Horizon"), type = "number")
+  if (timed && !wide) table$addColumnInfo(name = "time", title = gettext("Time or Horizon"), type = "number")
   for (j in seq_along(record[["data"]])) table$addColumnInfo(name = paste0("predictor", j), title = jaspBase::decodeColNames(names(record[["data"]])[j]), type = if (is.factor(record[["data"]][[j]])) "string" else "number")
-  .sapCustomPredictionTableColumns(table, specification, indices)
-  evaluations <- if (timed) length(specification[["times"]]) else 1L
+  evaluations <- if (timed && !wide) length(specification[["times"]]) else 1L
   data        <- data.frame(row = rep(record[["rows"]], each = evaluations))
-  if (timed) data[["time"]] <- rep(specification[["times"]], times = length(record[["rows"]]))
+  if (timed && !wide) data[["time"]] <- rep(specification[["times"]], times = length(record[["rows"]]))
   for (j in seq_along(record[["data"]])) data[[paste0("predictor", j)]] <- rep(record[["data"]][[j]], each = evaluations)
   for (i in indices) {
-    value <- record[["values"]][[i]]
-    names(value) <- paste0("measure", i, ".", names(value))
-    data <- cbind(data, value)
+    measure <- specification[["measures"]][[i]]
+    for (k in seq_len(if (wide) length(specification[["times"]]) else 1L)) {
+      label  <- measure[["label"]]
+      prefix <- paste0("measure", i, if (wide) paste0(".time", k), ".")
+      value  <- record[["values"]][[i]]
+      if (wide) {
+        time  <- as.character(specification[["times"]][k])
+        label <- if (measure[["type"]] == "rmst") gettextf("%1$s (Horizon: %2$s)", label, time) else gettextf("%1$s (Time: %2$s)", label, time)
+        value <- value[(seq_along(record[["rows"]]) - 1L) * length(specification[["times"]]) + k, , drop = FALSE]
+      }
+      .sapCustomPredictionTableColumns(table, specification, label, prefix)
+      names(value) <- paste0(prefix, names(value))
+      data <- cbind(data, value)
+    }
   }
   table$setData(data)
   table$showSpecifiedColumnsOnly <- TRUE
