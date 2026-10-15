@@ -13,28 +13,16 @@
 
 
 ---
-# jaspSurvival 0.97.2
+# jaspSurvival 0.98.0
 ## Added
-* Average (design) and Average (population) predictions, including standardized survival, lifetime summaries and shared-draw confidence bounds.
-* Eyring temperature/stress interactions through the existing model-term controls.
-* Component-specific ancillary regression and independent parameter equations for parametric survival models.
-* Temperature/Eyring models with consistent units and structural coefficient restrictions.
-* Symbolic and fitted model equations, baseline parameters and parameter-specific regression tables.
-* Shared one-sided or two-sided confidence bounds from joint parameter draws.
-* Consolidated model predictions with predictor axes and reference scenarios.
-* New-observation time measures, curves and aligned dataset exports.
-## Fixed
-* Show custom predictions at multiple times or horizons in separate column groups, with one row per observation.
-* Show custom prediction figure notes as text, identify affected values, and suppress expected 100th-percentile infinity warnings.
-* Compress identical records during mixture fitting while preserving frequency-expanded transformation bases, starts, diagnostics, and exports.
-* Evaluate deterministic predictions for fully fixed models without requiring a nonempty covariance matrix.
-* Clarify independent-row assumptions for interval/counting mixture input in model summaries.
-* Retain overflowing mixture percentiles and infinite confidence draws; withhold affected bounds when simulated predictions fail instead of dropping draws.
-* Expand frequency-weighted parametric and mixture data before fitting, transformation bases and diagnostics; retain one exported value per original row.
-* Preserve saved prediction grids, factor layouts, diagnostic histograms, and export settings when upgrading earlier survival analyses.
-* Stabilized exact-event Eyring Generalized F (original) standard errors and confidence intervals while retaining fitted estimates.
-* Initialize new model-specification, parameter-restriction, and custom-prediction options when upgrading saved parametric and mixture survival analyses.
-* Custom dataset predictions target missing-outcome rows with predictor values; means and percentiles share one output row per observation.
+* Fully reworked "Predictions" tab allow much more flexible plotting and prediction control
+* Advanced "Model" creation allows specifying advanced model terms
+* Ancillary parameter regressions
+* Restrict model parameters
+* Show fitted model equations
+* Density diagnostic plots
+* Explicit stratification for Probability plot 
+* One-sided confidence intervals
 
 # jaspSurvival 0.97.0
 ## Added
