@@ -121,6 +121,7 @@
 
     if (jaspBase::isTryError(start[["posterior"]])) {
       recordFailure(start[["name"]], NA_real_, "initialization", start[["posterior"]])
+      progressbarTick()
       next
     }
 

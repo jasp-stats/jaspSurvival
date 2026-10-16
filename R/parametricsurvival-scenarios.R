@@ -68,16 +68,6 @@
   return(vapply(labels, function(value) gettextf("%1$s = %2$s", jaspBase::decodeColNames(variable), value), character(1)))
 }
 
-.sapPredictionCovariateCount <- function(options) {
-
-  text <- trimws(options[["predictionsAssignedCovariateValuesQuantiles"]])
-  if (!nzchar(text)) return(3L)
-  count <- suppressWarnings(as.numeric(text))
-  if (!.sapFiniteNumeric(count, expectedLength = 1L) || count < 1 || count != floor(count))
-    stop(gettext("The number of covariate quantile groups must be a positive integer; leave it blank to use three."))
-  return(count)
-}
-
 .sapPredictionAssignedCovariates <- function(options) {
 
   roles <- if (options[["predictionsOutputPlotType"]] == "contour")
@@ -136,7 +126,7 @@
     if (is.factor(training[[variable]])) .sapFittedFactorReference(fit, variable) else NULL)
   roles    <- unique(c(lines, panels))
   custom   <- options[["predictionsAssignedCovariateValues"]] == "custom"
-  count    <- if (custom) 1L else .sapPredictionCovariateCount(options)
+  count    <- if (custom) 1L else options[["predictionsAssignedCovariateValuesQuantiles"]]
   assigned <- if (custom) .sapPredictionAssignedValues(options) else list()
   groups   <- lapply(roles, function(variable) {
     if (custom && !is.factor(training[[variable]]))

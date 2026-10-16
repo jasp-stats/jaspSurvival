@@ -47,6 +47,8 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 2) results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "flexsurv-tantalum.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[2]]
+  opts[["mixtureStartTails"]] <- TRUE
+  opts[["mixtureStartMembershipProbabilities"]] <- "0.95"
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
   # Encode and run analysis

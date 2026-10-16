@@ -29,8 +29,15 @@
     starts[[length(starts) + 1]] <<- list(name = name, posterior = try(posterior, silent = TRUE))
   }
   addPartition <- function(name, membership) {
-    for (i in seq_along(probabilities))
-      add(name, .sapmSoftPosterior(membership, components, softness = softness[i]), i)
+    membership <- try(membership, silent = TRUE)
+    for (i in seq_along(probabilities)) {
+      add(
+        name             = name,
+        posterior        = if (jaspBase::isTryError(membership)) membership else
+          .sapmSoftPosterior(membership, components, softness = softness[i]),
+        probabilityIndex = i
+      )
+    }
   }
 
   # the random draws are seeded so that the starting values do not depend on the preceding fits
@@ -51,9 +58,7 @@
 
   if (options[["mixtureStartingValuesSplitOfThePreviousSolution"]] && !is.null(previous))
     for (j in seq_len(components - 1)) for (i in seq_along(probabilities)) {
-      posterior <- try(.sapmSplitPosterior(family, survObject, previous, j, softness[i]), silent = TRUE)
-      if (!jaspBase::isTryError(posterior))
-        add(paste0("split", j), posterior, i)
+      add(paste0("split", j), .sapmSplitPosterior(family, survObject, previous, j, softness[i]), i)
     }
 
   if (options[["mixtureStartingValuesRandom"]]) {

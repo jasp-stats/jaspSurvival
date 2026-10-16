@@ -777,11 +777,25 @@ Upgrades
 		toVersion: "0.97.2"
 		msg: qsTr("Prediction, diagnostic and starting-value settings have changed. Please review the updated options and results.")
 
+		// Older Quantiles combined equal-sized and tail partitions. Preserve
+		// that grouping only when the saved file has no separate tail setting.
 		UpgradeTools.UpgradeNewOption
 		{
-			name: "mixtureStartingValuesQuantiles"
-			condition: function(options) { return options["mixtureStartingValuesQuantiles"] === undefined && (options["mixtureStartQuantiles"] !== undefined || options["mixtureStartTails"] !== undefined); }
-			jsFunction: function(options) { return options["mixtureStartQuantiles"] === true || options["mixtureStartTails"] === true; }
+			name: "mixtureStartTails"
+			jsFunction: function(options)
+			{
+				if (options["mixtureStartQuantiles"] !== undefined)
+					return options["mixtureStartQuantiles"] === true;
+				if (options["mixtureStartingValuesQuantiles"] !== undefined)
+					return options["mixtureStartingValuesQuantiles"] === true;
+				return true;
+			}
+		}
+
+		UpgradeTools.UpgradeNewOption
+		{
+			name: "mixtureStartMembershipProbabilities"
+			jsFunction: function(options) { return "0.95"; }
 		}
 
 		// Rename before initializing defaults; saved values take precedence.
@@ -1550,8 +1564,6 @@ Upgrades
 
 		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartKmeans" }
 
-		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartMembershipProbabilities" }
-
 		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartQuantiles" }
 
 		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartRandom" }
@@ -1559,8 +1571,6 @@ Upgrades
 		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartRandomCount" }
 
 		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartSplit" }
-
-		UpgradeTools.UpgradeRemoveOption { name: "mixtureStartTails" }
 
 		UpgradeTools.UpgradeRemoveOption { name: "modelSummaryAicWeighs" }
 

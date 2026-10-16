@@ -240,12 +240,6 @@
   return()
 }
 
-.sapFittedFactors <- function(fit, options) {
-
-  variables <- .sapModelVariables(attr(fit, "modelTerms"))
-  return(intersect(variables, unlist(options[["factors"]], use.names = FALSE)))
-}
-
 .sapTransformationNames <- function(coefficients, fit, equation = attr(fit, "modelTerms")) {
 
   transformations <- equation[["transformations"]]

@@ -99,8 +99,8 @@ test_that("Default sharper starts recover the compact component in the lung exam
   options <- jaspTools::analysisOptions(jaspFile)[[1]]
   options[["mixtureStartTails"]] <- TRUE
   options[["mixtureStartMembershipProbabilities"]] <- "0.95, 0.99"
-  for (name in c("survivalProbabilityPlot", "probabilityPlot", "mixtureComponentPlot",
-                 "survivalProbabilityTable", "mixtureComponentsTable", "mixtureClassificationTable"))
+  for (name in c("predictionsOutputPlot", "probabilityPlot", "mixtureComponentPlot",
+                 "predictionsOutputTable", "mixtureMeanAndMedian", "mixtureClassification"))
     options[[name]] <- FALSE
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
   encoded <- jaspTools:::encodeOptionsAndDataset(options, dataset)

@@ -338,7 +338,7 @@ Form
 					label:		qsTr("Constrain minimum spread")
 					checked:	false
 					childrenOnSameRow:	true
-					info: qsTr("Set a minimum spread for each mixture component to avoid very narrow components. Uncertainty estimates are unavailable with this constraint.")
+					info: qsTr("Set a minimum baseline spread for each mixture component. Uncertainty estimates are unavailable when an estimated spread reaches the bound.")
 
 					DropDown
 					{

@@ -268,7 +268,7 @@
   free <- target[["free"]]
   size <- length(free)
   rows <- length(target[["weights"]])
-  information <- array(0, c(rows, size, size))
+  H <- correction <- matrix(0, size, size)
   for (row in seq_len(rows)) {
     eta <- numeric(4L)
     J <- matrix(0, 4L, size)
@@ -282,11 +282,17 @@
     }
     value <- .sapGenfOrigDensityDerivatives(target[["logTimes"]][row], eta)
     # Map the four distribution parameters back to the free regression coefficients.
+    information <- matrix(0, size, size)
     for (i in seq_len(size)) for (j in seq_len(size))
-      information[row, i, j] <- -target[["weights"]][row] * sum(outer(J[, i], J[, j]) * value[["HessianLogDensity"]])
+      information[i, j] <- -target[["weights"]][row] * sum(outer(J[, i], J[, j]) * value[["HessianLogDensity"]])
+    # Compensated accumulation retains small contributions without storing an
+    # observations-by-coefficients-by-coefficients array.
+    updated <- H + information
+    correction <- correction + ifelse(abs(H) >= abs(information),
+      (H - updated) + information, (information - updated) + H)
+    H <- updated
   }
-  H <- matrix(0, size, size)
-  for (i in seq_len(size)) for (j in seq_len(size)) H[i, j] <- sum(information[, i, j])
+  H <- H + correction
   dimnames(H) <- list(target[["names"]][free], target[["names"]][free])
   return(H)
 }

@@ -183,20 +183,22 @@
 .sapResidualValues <- function(fit, type) {
 
   equations <- c(list(attr(fit, "modelTerms")), attr(fit, "modelTerms")[["ancillaryEquations"]])
-  if (all(lengths(.sapModelTransformations(attr(fit, "modelTerms"))) == 0L) &&
+  survival <- stats::model.frame(fit, orig = TRUE)[[1L]]
+  counting <- "start" %in% colnames(survival)
+  # Native response residuals use the first column, which is entry time for counting data.
+  if (!counting && all(lengths(.sapModelTransformations(attr(fit, "modelTerms"))) == 0L) &&
       all(vapply(equations, function(equation) length(equation[["factorContrasts"]]) == 0L, logical(1))))
     return(stats::residuals(fit, type = type))
 
   dataset <- attr(fit, "dataset")
   if (type == "response") {
     mean <- stats::predict(fit, newdata = dataset, type = "response")[[".pred_time"]]
-    return(unname(fit[["data"]][["Y"]][, 1]) - mean)
+    time <- survival[, if (counting) "stop" else 1L]
+    return(unname(time) - mean)
   }
 
   # Supply raw stresses explicitly: the native model frame contains the
   # transformed columns, which cannot reconstruct their original inputs.
-  survival <- stats::model.frame(fit, orig = TRUE)[[1]]
-  counting <- "start" %in% colnames(survival)
   time     <- survival[, if (counting) "stop" else "time"]
   start    <- if (counting) survival[, "start"] else 0
   return(summary(fit, type = "cumhaz", t = time, start = start, newdata = dataset,

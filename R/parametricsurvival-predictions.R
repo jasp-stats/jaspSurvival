@@ -388,7 +388,7 @@
 
   }
 
-  return(setQuantiles / 100)
+  return(sort(unique(setQuantiles)) / 100)
 }
 
 .sapPredictionSequenceSettings <- function(options, prefix, maximum, probability = FALSE) {
@@ -476,14 +476,14 @@
 
   percentages <- .sapCleanCustomOptions(options[["predictionsTimePercentages"]], gettext("Follow-up percentages must be finite values separated by commas, such as '25, 50, 75'."))
   if (any(percentages < 0 | percentages > 100)) .quitAnalysis(gettext("Follow-up percentages must be between 0 and 100."))
-  return(sort(percentages) / 100)
+  return(sort(unique(percentages)) / 100)
 }
 
 .sapPredictionAbsoluteTimes <- function(options) {
 
   values <- .sapCleanCustomOptions(options[["predictionsTimeValues"]], gettext("Times or horizons must be finite values separated by commas."))
   if (any(values < 0)) .quitAnalysis(gettext("Times or horizons must be greater than or equal to 0."))
-  return(sort(values))
+  return(sort(unique(values)))
 }
 
 .sapCleanCustomOptions          <- function(x, message) {
