@@ -18,10 +18,11 @@
   groups <- lapply(variables, function(variable) {
     value <- dataset[[variable]]
     if (is.factor(value))
-      return(paste0(variable, "=", as.character(value)))
+      return(factor(paste0(variable, "=", as.character(value)), levels = paste0(variable, "=", levels(value))))
     uniqueValues <- sort(unique(value))
     if (options[[paste0(prefix, "StratifyByGroupUniqueLevels")]] && length(uniqueValues) <= as.numeric(options[[paste0(prefix, "StratifyByGroupUniqueLevelsLimit")]]))
-      return(.sapPredictionCovariateLabels(uniqueValues, variable)[match(value, uniqueValues)])
+      return(factor(.sapPredictionCovariateLabels(uniqueValues, variable)[match(value, uniqueValues)],
+        levels = .sapPredictionCovariateLabels(uniqueValues, variable)))
     bins <- .sapPredictionGroups(value, as.numeric(options[[paste0(prefix, "StratifyByQuantiles")]]), variable, weights)
     binLabels <- function(digits) vapply(bins[["rows"]], function(rows) {
       limits <- range(value[rows])
@@ -32,19 +33,22 @@
     if (anyDuplicated(names)) names <- binLabels(17L)
     labels <- character(length(value))
     for (i in seq_along(bins[["rows"]])) labels[bins[["rows"]][[i]]] <- names[i]
-    return(labels)
+    return(factor(labels, levels = names))
   })
   labels <- rep("", nrow(dataset))
+  strataLevels <- ""
   if (length(groups)) {
     keys <- .sapPredictorGroups(as.data.frame(groups, stringsAsFactors = FALSE))
     joined <- do.call(paste, c(groups, sep = ", "))
-    uniqueKeys <- unique(keys)
+    # Keep numeric bins ascending and factors in level order, independent of row order.
+    uniqueKeys <- unique(keys[do.call(order, groups)])
     names <- joined[match(uniqueKeys, keys)]
     if (anyDuplicated(names))
       names <- vapply(seq_along(names), function(i) gettextf("%1$s (stratum %2$d)", names[i], i), character(1))
     labels <- names[match(keys, uniqueKeys)]
+    strataLevels <- names
   }
-  return(stats::setNames(labels, rownames(dataset)))
+  return(stats::setNames(factor(labels, levels = strataLevels), rownames(dataset)))
 }
 
 .sapProbabilityPlotPrepareFits <- function(fit, options) {
@@ -68,9 +72,9 @@
     for (index in indices) {
       model <- fit[[index]]
       observed <- .sapPlotObservedDataset(model)
-      membership <- unname(strata[rownames(observed)])
+      membership <- as.character(strata[rownames(observed)])
       stopifnot(!anyNA(membership))
-      rows <- split(seq_len(nrow(observed)), factor(membership, levels = unique(membership)))
+      rows <- split(seq_len(nrow(observed)), factor(membership, levels = levels(strata)), drop = TRUE)
       if (meanDesign) {
         design <- stats::model.matrix(model)
         designRows <- match(rownames(observed), rownames(design))
