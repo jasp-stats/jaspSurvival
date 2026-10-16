@@ -433,7 +433,9 @@
     plot <- plot + jaspGraphs::geom_line(mapping = if (typed) ggplot2::aes(linetype = Type), na.rm = TRUE)
   }
   if (typed) plot <- plot + .sapPredictionTypeScale(encoding, points = categorical)
-  if (length(unique(data[["Panel"]])) > 1L || any(nzchar(as.character(data[["Panel"]])))) plot <- plot + ggplot2::facet_wrap(~Panel, ncol = 2, labeller = ggplot2::label_wrap_gen(20))
+  if (length(unique(data[["Panel"]])) > 1L || any(nzchar(as.character(data[["Panel"]]))))
+    plot <- plot + ggplot2::facet_wrap(~Panel, ncol = 2,
+      labeller = if (type == "quantile" && timeRole == "panels") ggplot2::label_value else ggplot2::label_wrap_gen(20))
   kaplanMeierColours <- character(0)
   if (timeAxis && type == "survival" && options[["censoringType"]] == "right") {
     if (options[["predictionsDisplayKaplanMeier"]]) {
