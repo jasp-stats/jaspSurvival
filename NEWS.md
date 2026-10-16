@@ -25,11 +25,7 @@
 * One-sided confidence intervals
 
 ## Fixed
-* Saved mixture analyses retain their initialization methods and membership probabilities.
 * Counting-process response residuals use the exit time consistently in plots and exports.
-* Repeated prediction times and percentiles no longer produce duplicate export columns.
-* Failed mixture partitions no longer produce repeated initialization warnings.
-* Reduced memory use for Generalized F (original) Eyring confidence intervals.
 
 # jaspSurvival 0.97.0
 ## Added
