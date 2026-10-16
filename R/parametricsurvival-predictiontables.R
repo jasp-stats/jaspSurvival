@@ -27,34 +27,32 @@
   for (variable in variables) table$addColumnInfo(name = columns[[variable]], title = jaspBase::decodeColNames(variable),
     type = if (variable %in% options[["covariates"]]) "number" else "string", overtitle = gettext("Variables"))
   type <- measures[[1L]]
-  if (!type %in% c("mean", "median")) table$addColumnInfo(name = "at",
+  wide <- options[["predictionsOutputTableFormat"]] == "wide" && !type %in% c("mean", "median")
+  if (!wide && !type %in% c("mean", "median")) table$addColumnInfo(name = "at",
     title = if (type == "quantile") gettext("Percentile") else gettext("Time"), type = "number")
-  for (measure in names(measures)) {
-    prefix <- if (merged) paste0(measure, ".") else ""
-    title  <- .sapPredictionTitle(measures[[measure]], options, measure)
-    table$addColumnInfo(name = paste0(prefix, "estimate"), title = title, type = "number")
-    if (options[["predictionsDisplayConfidenceIntervals"]]) .sapAddBoundColumns(table, options[["predictionsDisplayConfidenceIntervalsLevel"]],
-      options[["confidenceIntervalBounds"]], paste0(prefix, "lCi"), paste0(prefix, "uCi"), if (merged) paste(title, .sapBoundTitle(options[["predictionsDisplayConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]])))
-  }
   interval <- type %in% c("quantile", "mean", "median") && !merged && names(measures)[1L] != "relativeSurvivalTime" &&
     options[["predictionsDisplayPredictionInterval"]] && options[["predictionsOutputPlotType"]] == "standard" &&
     !options[["predictionsLifetimeTimeId"]] %in% .sapModelPredictionAxes(options)
-  if (interval) .sapAddBoundColumns(table, options[["predictionsDisplayPredictionIntervalLevel"]], "twoSided", "predictionLower", "predictionUpper",
-    gettextf("%1$s%% Prediction range", 100 * options[["predictionsDisplayPredictionIntervalLevel"]]))
-  if (!.saSurvivalReady(options) || jaspBase::isTryError(fit)) return(table)
   contour <- options[["predictionsOutputPlotType"]] == "contour"
-  if (contour && !.sapPredictionContourReady(options)) return(table)
   axes <- .sapModelPredictionAxes(options)
-  if (!length(axes)) return(table)
+  if (!.saSurvivalReady(options) || jaspBase::isTryError(fit) || !length(axes) ||
+      (contour && !.sapPredictionContourReady(options))) {
+    .sapPredictionVariablesTableColumns(table, options, measures, merged, interval)
+    return(table)
+  }
   if (contour) axes <- axes[1L]
   records <- try(lapply(axes, function(axis)
     .sapPredictionVariablesTableRows(fit, options, measures, merged, interval, columns, axis)), silent = TRUE)
   if (jaspBase::isTryError(records)) {
+    .sapPredictionVariablesTableColumns(table, options, measures, merged, interval)
     table$setError(conditionMessage(attr(records, "condition")))
     return(table)
   }
 
-  table$setData(.saSafeRbind(lapply(records, `[[`, "data")))
+  at <- if (wide) unique(unlist(lapply(records, function(record) record[["data"]][["at"]]), use.names = FALSE))
+  .sapPredictionVariablesTableColumns(table, options, measures, merged, interval, at)
+  data <- if (wide) lapply(records, .sapPredictionVariablesTableWideData, measures = measures, merged = merged, at = at) else lapply(records, `[[`, "data")
+  table$setData(.saSafeRbind(data))
   table$showSpecifiedColumnsOnly <- TRUE
   notes <- unique(unlist(lapply(records, `[[`, "notes"), use.names = FALSE))
   for (note in notes)
@@ -62,6 +60,62 @@
   for (note in .sapPredictionConditionNotes(fit, options)) table$addFootnote(note)
   if (interval) table$addFootnote(gettext("Prediction ranges include fitted event-time variability and exclude parameter-estimation uncertainty."))
   return(table)
+}
+
+.sapPredictionTableColumns <- function(table, specification, label, prefix) {
+
+  table$addColumnInfo(name = paste0(prefix, "estimate"), title = gettext("Estimate"), overtitle = label, type = "number")
+  for (j in seq_along(specification[["levels"]])) {
+    level <- 100 * specification[["levels"]][j]
+    if (specification[["direction"]] != "upper") table$addColumnInfo(name = paste0(prefix, "lower", j), title = gettextf("Lower %1$s%%", level), overtitle = label, type = "number")
+    if (specification[["direction"]] != "lower") table$addColumnInfo(name = paste0(prefix, "upper", j), title = gettextf("Upper %1$s%%", level), overtitle = label, type = "number")
+  }
+}
+
+.sapPredictionTableEvaluationTitle <- function(title, type, at) {
+
+  at <- as.character(at)
+  return(if (type == "quantile") gettextf("%1$s (Percentile: %2$s)", title, at) else if (type == "rmst")
+    gettextf("%1$s (Horizon: %2$s)", title, at) else gettextf("%1$s (Time: %2$s)", title, at))
+}
+
+.sapPredictionVariablesTableColumns <- function(table, options, measures, merged, interval, at = NULL) {
+
+  for (measure in names(measures)) for (k in seq_len(if (is.null(at)) 1L else length(at))) {
+    prefix <- if (merged) paste0(measure, ".") else ""
+    if (!is.null(at)) prefix <- paste0(prefix, "at", k, ".")
+    title  <- .sapPredictionTitle(measures[[measure]], options, measure)
+    if (!is.null(at)) {
+      title <- .sapPredictionTableEvaluationTitle(title, measures[[measure]], at[k])
+      specification <- list(levels = if (options[["predictionsDisplayConfidenceIntervals"]]) options[["predictionsDisplayConfidenceIntervalsLevel"]] else numeric(0),
+        direction = options[["confidenceIntervalBounds"]])
+      .sapPredictionTableColumns(table, specification, title, prefix)
+    } else {
+      table$addColumnInfo(name = paste0(prefix, "estimate"), title = title, type = "number")
+      if (options[["predictionsDisplayConfidenceIntervals"]]) .sapAddBoundColumns(table, options[["predictionsDisplayConfidenceIntervalsLevel"]],
+        options[["confidenceIntervalBounds"]], paste0(prefix, "lCi"), paste0(prefix, "uCi"), if (merged) paste(title, .sapBoundTitle(options[["predictionsDisplayConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]])))
+    }
+  }
+  if (interval) .sapAddBoundColumns(table, options[["predictionsDisplayPredictionIntervalLevel"]], "twoSided", "predictionLower", "predictionUpper",
+    gettextf("%1$s%% Prediction range", 100 * options[["predictionsDisplayPredictionIntervalLevel"]]))
+}
+
+.sapPredictionVariablesTableWideData <- function(record, measures, merged, at) {
+
+  data      <- record[["data"]]
+  scenarios <- record[["scenarios"]]
+  prefixes  <- if (merged) paste0(names(measures), ".") else ""
+  fields    <- unlist(lapply(prefixes, function(prefix) paste0(prefix, c("estimate", "lCi", "uCi"))), use.names = FALSE)
+  rows      <- which(!duplicated(scenarios))
+  wide      <- data[rows, setdiff(names(data), c("at", fields)), drop = FALSE]
+  for (prefix in prefixes) for (k in seq_along(at)) {
+    selected <- which(data[["at"]] == at[k])
+    selected <- selected[match(scenarios[rows], scenarios[selected])]
+    wide[[paste0(prefix, "at", k, ".estimate")]] <- data[[paste0(prefix, "estimate")]][selected]
+    for (side in c("lower", "upper"))
+      wide[[paste0(prefix, "at", k, ".", side, "1")]] <- data[[paste0(prefix, if (side == "lower") "lCi" else "uCi")]][selected]
+  }
+  return(wide)
 }
 
 .sapPredictionVariablesTableRows <- function(fit, options, measures, merged, interval, columns, axis) {
@@ -105,7 +159,7 @@
     data[["predictionUpper"]] <- range[["estimate"]][range[["at"]] == probabilities[2L]][first[["Scenario"]]]
   }
 
-  return(list(data = .sapAddRowModelInformation(data, fit), notes = notes))
+  return(list(data = .sapAddRowModelInformation(data, fit), scenarios = first[["Scenario"]], notes = notes))
 }
 
 .sapPredictionConditionNotes <- function(fit, options, used = .sapPredictionTableVariables(options)) {

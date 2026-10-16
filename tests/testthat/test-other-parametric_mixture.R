@@ -9,6 +9,7 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 1) results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "parametric_mixture.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[1]]
+  opts[["predictionsOutputTableFormat"]] <- "long"
   opts[["mixtureStartTails"]] <- TRUE
   opts[["mixtureStartMembershipProbabilities"]] <- "c(0.95)"
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
@@ -73,6 +74,7 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 2) results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "parametric_mixture.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[2]]
+  opts[["predictionsOutputTableFormat"]] <- "long"
   opts[["mixtureStartTails"]] <- TRUE
   opts[["mixtureStartMembershipProbabilities"]] <- "c(0.95)"
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
@@ -246,6 +248,7 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 3) results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "parametric_mixture.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[3]]
+  opts[["predictionsOutputTableFormat"]] <- "long"
   opts[["mixtureStartTails"]] <- TRUE
   opts[["mixtureStartMembershipProbabilities"]] <- "c(0.95)"
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)

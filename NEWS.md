@@ -16,6 +16,7 @@
 # jaspSurvival 0.98.0
 ## Added
 * Reworked Predictions controls for flexible plots and predictions
+* Prediction tables offer Long and Wide layouts, defaulting to Wide.
 * Advanced model terms
 * Ancillary parameter regressions
 * Restrict model parameters

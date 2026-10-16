@@ -127,6 +127,8 @@
   )
   if (!survivalTime)
     dependencies <- c(dependencies, "predictionsMergeTablesAcrossMeasures", if (!plot) "predictionsRoundTimeTableValues")
+  if (!plot)
+    dependencies <- c(dependencies, "predictionsOutputTableFormat")
   if (plot) {
     dependencies <- c(dependencies, "predictionsDisplayCensoringEvents", "predictionsDisplayObservedData",
       "predictionsDisplayCombinePredictorPlots", "predictionsDisplayConnectXAxisLevels", "predictionsSurvivalTimeYAxisScale", .sapPredictionAxisSettingOptions,
@@ -155,7 +157,7 @@
 
   outputDependencies <- c(.sapGetDependencies(options), .sapSelectedOutputDependencies, .sapPredictionCiDependencies,
                           "predictionsPredictFor",
-                          .sapModelPredictionOptions, "predictionsOutputTable", .sapModelPredictionDisplayDependencies, .sapModelPredictionRoleDependencies, .sapModelPredictionEvaluationDependencies, "predictionsMergeTablesAcrossMeasures",
+                          .sapModelPredictionOptions, "predictionsOutputTable", "predictionsOutputTableFormat", .sapModelPredictionDisplayDependencies, .sapModelPredictionRoleDependencies, .sapModelPredictionEvaluationDependencies, "predictionsMergeTablesAcrossMeasures",
                           .sapPredictionTimeDependencies
   )
 

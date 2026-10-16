@@ -434,7 +434,17 @@ Section
 				name: "predictionsOutputTable"
 				label: qsTr("Table")
 				checked: false
+				childrenOnSameRow: true
 				info: qsTr("Show a table of the selected predictions.")
+
+				DropDown
+				{
+					name: "predictionsOutputTableFormat"
+					label: ""
+					startValue: "wide"
+					values: [{label: qsTr("Long"), value: "long"}, {label: qsTr("Wide"), value: "wide"}]
+					info: qsTr("Show times, horizons and lifetime percentiles in rows (Long) or separate column groups (Wide).")
+				}
 			}
 
 			CheckBox

@@ -2,7 +2,7 @@
 .sapCustomPredictionDependencies <- c(
   .sapModelPredictionOptions, .sapLifetimeSummaryOptions, "predictionsPredictFor", "predictionsManualInput", "predictionsCsvFile",
   .sapPredictionQuantileDependencies, .sapPredictionTimeDependencies,
-  .sapPredictionCiDependencies, "predictionsOutputPlot", "predictionsOutputTable", "predictionsOutputExportPredictionsToDataset", "predictionsOutputExportPredictionsToDatasetColumnPrefix",
+  .sapPredictionCiDependencies, "predictionsOutputPlot", "predictionsOutputTable", "predictionsOutputTableFormat", "predictionsOutputExportPredictionsToDataset", "predictionsOutputExportPredictionsToDatasetColumnPrefix",
   "predictionsSurvivalTimeYAxisScale", "predictionsProbabilityYAxisScale",
   "predictionsDisplayPredictionInterval", "predictionsDisplayPredictionIntervalLevel", "predictionsMergeTablesAcrossMeasures", "plotLegend", "plotTheme", "colorPalette"
 )
@@ -177,7 +177,7 @@
   lifetime <- which(vapply(specification[["measures"]], function(measure) measure[["kind"]] == "lifetime", logical(1)))
   for (type in unique(vapply(specification[["measures"]][lifetime], `[[`, character(1), "type"))) {
     indices <- lifetime[vapply(specification[["measures"]][lifetime], function(measure) measure[["type"]] == type, logical(1))]
-    table   <- .sapCustomPredictionTable(record, specification, indices)
+    table   <- .sapCustomPredictionTable(record, specification, indices, options)
     table$title <- .sapPredictionTitle(type, options)
     table$position <- min(indices)
     container[[paste0(type, "Table")]] <- table
@@ -185,7 +185,7 @@
   timed  <- which(vapply(specification[["measures"]], function(measure) measure[["kind"]] == "time", logical(1)))
   groups <- if (options[["predictionsMergeTablesAcrossMeasures"]] && length(timed)) list(timed) else as.list(timed)
   for (indices in groups) {
-    table <- .sapCustomPredictionTable(record, specification, indices, timed = TRUE)
+    table <- .sapCustomPredictionTable(record, specification, indices, options, timed = TRUE)
     table$title <- if (length(indices) == 1L) specification[["measures"]][[indices]][["label"]] else gettext("At Specified Times")
     table$position <- min(indices)
     container[[paste0("timeTable", min(indices))]] <- table
@@ -194,39 +194,37 @@
   return()
 }
 
-.sapCustomPredictionTableColumns <- function(table, specification, label, prefix) {
+.sapCustomPredictionTable <- function(record, specification, indices, options, timed = FALSE) {
 
-  table$addColumnInfo(name = paste0(prefix, "estimate"), title = gettext("Estimate"), overtitle = label, type = "number")
-  for (j in seq_along(specification[["levels"]])) {
-    level <- 100 * specification[["levels"]][j]
-    if (specification[["direction"]] != "upper") table$addColumnInfo(name = paste0(prefix, "lower", j), title = gettextf("Lower %1$s%%", level), overtitle = label, type = "number")
-    if (specification[["direction"]] != "lower") table$addColumnInfo(name = paste0(prefix, "upper", j), title = gettextf("Upper %1$s%%", level), overtitle = label, type = "number")
-  }
-}
-
-.sapCustomPredictionTable <- function(record, specification, indices, timed = FALSE) {
-
-  wide  <- timed && length(specification[["times"]]) > 1L
+  wide       <- options[["predictionsOutputTableFormat"]] == "wide"
+  percentile <- !timed && specification[["measures"]][[indices[1L]]][["type"]] == "quantile"
+  at         <- if (timed) specification[["times"]] else if (percentile)
+    100 * vapply(specification[["measures"]][indices], `[[`, numeric(1), "probability")
   table <- createJaspTable(title = if (timed) gettext("At Specified Times") else gettext("Lifetime Summaries"))
   table$addColumnInfo(name = "row", title = gettext("Observation"), type = "integer")
   if (timed && !wide) table$addColumnInfo(name = "time", title = gettext("Time or Horizon"), type = "number")
+  if (percentile && !wide) table$addColumnInfo(name = "percentile", title = gettext("Percentile"), type = "number")
   for (j in seq_along(record[["data"]])) table$addColumnInfo(name = paste0("predictor", j), title = jaspBase::decodeColNames(names(record[["data"]])[j]), type = if (is.factor(record[["data"]][[j]])) "string" else "number")
-  evaluations <- if (timed && !wide) length(specification[["times"]]) else 1L
+  evaluations <- if ((timed || percentile) && !wide) length(at) else 1L
   data        <- data.frame(row = rep(record[["rows"]], each = evaluations))
-  if (timed && !wide) data[["time"]] <- rep(specification[["times"]], times = length(record[["rows"]]))
+  if ((timed || percentile) && !wide) data[[if (timed) "time" else "percentile"]] <- rep(at, times = length(record[["rows"]]))
   for (j in seq_along(record[["data"]])) data[[paste0("predictor", j)]] <- rep(record[["data"]][[j]], each = evaluations)
-  for (i in indices) {
+  groups <- if (percentile && !wide) list(indices) else as.list(indices)
+  for (group in groups) {
+    i       <- group[1L]
     measure <- specification[["measures"]][[i]]
-    for (k in seq_len(if (wide) length(specification[["times"]]) else 1L)) {
-      label  <- measure[["label"]]
-      prefix <- paste0("measure", i, if (wide) paste0(".time", k), ".")
+    for (k in seq_len(if (timed && wide) length(at) else 1L)) {
+      label  <- if (percentile && !wide) .sapPredictionTitle("quantile", options) else measure[["label"]]
+      prefix <- paste0("measure", i, if (timed && wide) paste0(".time", k), ".")
       value  <- record[["values"]][[i]]
-      if (wide) {
-        time  <- as.character(specification[["times"]][k])
-        label <- if (measure[["type"]] == "rmst") gettextf("%1$s (Horizon: %2$s)", label, time) else gettextf("%1$s (Time: %2$s)", label, time)
-        value <- value[(seq_along(record[["rows"]]) - 1L) * length(specification[["times"]]) + k, , drop = FALSE]
+      if (timed && wide) {
+        label <- .sapPredictionTableEvaluationTitle(label, measure[["type"]], at[k])
+        value <- value[(seq_along(record[["rows"]]) - 1L) * length(at) + k, , drop = FALSE]
+      } else if (percentile && !wide) {
+        value <- do.call(rbind, record[["values"]][group])
+        value <- value[order(rep(seq_along(record[["rows"]]), times = length(group))), , drop = FALSE]
       }
-      .sapCustomPredictionTableColumns(table, specification, label, prefix)
+      .sapPredictionTableColumns(table, specification, label, prefix)
       names(value) <- paste0(prefix, names(value))
       data <- cbind(data, value)
     }
