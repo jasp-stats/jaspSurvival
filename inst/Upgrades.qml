@@ -5,7 +5,7 @@ Upgrades
 {
 	id: upgrades
 
-	// Shared saved-option conversions; all migration rules stay in this file.
+	// Migrate changed saved settings. New hidden controls use their QML defaults.
 	function selected(options, measure)
 	{
 		return options[measure + "Plot"] === true || options[measure + "Table"] === true;
@@ -69,29 +69,6 @@ Upgrades
 		return {value: factors, types: factors.map(function() { return "nominal"; })};
 	}
 
-	function hasOldModifierNames(value)
-	{
-		if (!value || typeof value !== "object") return false;
-		return Object.keys(value).some(function(key) {
-			return key === "factorReferenceLevel" || key === "predictorTransformationTemperatureUnit" || hasOldModifierNames(value[key]);
-		});
-	}
-
-	function modifierNames(value)
-	{
-		if (!value || typeof value !== "object") return value;
-		if (Array.isArray(value)) return value.map(modifierNames);
-		let renamed = {};
-		for (let key of Object.keys(value))
-		{
-			let target = key === "factorReferenceLevel" ? "factorReference" :
-				key === "predictorTransformationTemperatureUnit" ? "predictorTransformationFrom" : key;
-			if (target !== key && value[target] !== undefined) continue;
-			renamed[target] = modifierNames(value[key]);
-		}
-		return renamed;
-	}
-
 	function percentileGrid(options)
 	{
 		// The old equal grid excluded the 100th percentile; retain its finite endpoint.
@@ -132,12 +109,6 @@ Upgrades
 	function timeGrid(options)
 	{
 		return options["predictionsLifeTimeStepsType"] === "custom" ? "customAbsolute" : options["predictionsLifeTimeStepsType"];
-	}
-
-	function factorStrata(options)
-	{
-		if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
-		return modelFactors(options).map(function(variable) { return {variable: {value: variable, types: "nominal"}, stratify: true}; });
 	}
 
 	function observedDensity(options)
@@ -271,27 +242,6 @@ Upgrades
 		{
 			from: "modelSummaryBicWeighs"
 			to: "modelSummaryBicWeights"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "advancedSpecification"
-			to: "modelAdvancedSpecification"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "advancedSpecificationTerms"
-			to: "modelAdvancedSpecificationTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameterRegression"
-			to: "modelAncillaryParameterRegression"
 			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
 		}
 
@@ -432,90 +382,6 @@ Upgrades
 		{
 			from: "probabilityPlotGroupUniqueLevelsLimit"
 			to: "probabilityPlotStratifyByGroupUniqueLevelsLimit"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter1ModelTerms"
-			to: "modelAncillaryParameter1ModelTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter1AdvancedSpecification"
-			to: "modelAncillaryParameter1AdvancedSpecification"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter1AdvancedSpecificationTerms"
-			to: "modelAncillaryParameter1AdvancedSpecificationTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter1AvailableTerms"
-			to: "modelAncillaryParameter1AvailableTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter2ModelTerms"
-			to: "modelAncillaryParameter2ModelTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter2AdvancedSpecification"
-			to: "modelAncillaryParameter2AdvancedSpecification"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter2AdvancedSpecificationTerms"
-			to: "modelAncillaryParameter2AdvancedSpecificationTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter2AvailableTerms"
-			to: "modelAncillaryParameter2AvailableTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter3ModelTerms"
-			to: "modelAncillaryParameter3ModelTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter3AdvancedSpecification"
-			to: "modelAncillaryParameter3AdvancedSpecification"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter3AdvancedSpecificationTerms"
-			to: "modelAncillaryParameter3AdvancedSpecificationTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter3AvailableTerms"
-			to: "modelAncillaryParameter3AvailableTerms"
 			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
 		}
 
@@ -696,38 +562,6 @@ Upgrades
 
 		ChangeJS
 		{
-			name: "modelAdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return upgrades.hasOldModifierNames(options["modelAdvancedSpecificationTerms"]); }
-			jsFunction: function(options) { return upgrades.modifierNames(options["modelAdvancedSpecificationTerms"]); }
-		}
-
-		ChangeJS
-		{
-			name: "modelAncillaryParameter1AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return upgrades.hasOldModifierNames(options["modelAncillaryParameter1AdvancedSpecificationTerms"]); }
-			jsFunction: function(options) { return upgrades.modifierNames(options["modelAncillaryParameter1AdvancedSpecificationTerms"]); }
-		}
-
-		ChangeJS
-		{
-			name: "modelAncillaryParameter2AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return upgrades.hasOldModifierNames(options["modelAncillaryParameter2AdvancedSpecificationTerms"]); }
-			jsFunction: function(options) { return upgrades.modifierNames(options["modelAncillaryParameter2AdvancedSpecificationTerms"]); }
-		}
-
-		ChangeJS
-		{
-			name: "modelAncillaryParameter3AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return upgrades.hasOldModifierNames(options["modelAncillaryParameter3AdvancedSpecificationTerms"]); }
-			jsFunction: function(options) { return upgrades.modifierNames(options["modelAncillaryParameter3AdvancedSpecificationTerms"]); }
-		}
-
-		ChangeJS
-		{
 			name: "predictionsOutcomeSurvivalTime"
 			isNewOption: true
 			condition: function(options) { return options[name] === undefined; }
@@ -792,30 +626,6 @@ Upgrades
 
 		ChangeJS
 		{
-			name: "predictionsPredictFor"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return "variables"; }
-		}
-
-		ChangeJS
-		{
-			name: "predictionsOutputPlotType"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return "standard"; }
-		}
-
-		ChangeJS
-		{
-			name: "predictionsLifetimePercentiles"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return options["predictionsOutcomeSurvivalTime"] === true; }
-		}
-
-		ChangeJS
-		{
 			name: "predictionsMergeSeriesAcrossDistributions"
 			isNewOption: true
 			condition: function(options) { return options[name] === undefined; }
@@ -860,14 +670,6 @@ Upgrades
 			isNewOption: true
 			condition: function(options) { return options[name] === undefined; }
 			jsFunction: function(options) { return upgrades.factorAssignments(options, true); }
-		}
-
-		ChangeJS
-		{
-			name: "predictionsAssignedCovariateValuesQuantiles"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return 3; }
 		}
 
 		ChangeJS
@@ -984,40 +786,11 @@ Upgrades
 			jsFunction: function(options) { return String(options["predictionsLifeTimeCustom"]); }
 		}
 
-		ChangeJS
-		{
-			name: "probabilityPlotStratifyBy"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return true; }
-		}
-
-		ChangeJS
-		{
-			name: "probabilityPlotStratifyByVariables"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return upgrades.factorStrata(options); }
-		}
-
-		ChangeSetValue
-		{
-			name: "confidenceIntervalBounds"
-			condition: function(options) { return options["confidenceIntervalBounds"] === undefined; }
-			jsonValue: "twoSided"
-		}
-
 		ChangeSetValue
 		{
 			name: "fittedModelEquation"
 			condition: function(options) { return options["fittedModelEquation"] === undefined; }
 			jsonValue: false
-		}
-		ChangeSetValue
-		{
-			name: "fittedModelEquationDecimals"
-			condition: function(options) { return options["fittedModelEquationDecimals"] === undefined; }
-			jsonValue: 3
 		}
 
 		ChangeSetValue
@@ -1025,99 +798,6 @@ Upgrades
 			name: "modelAncillaryParameterRegression"
 			condition: function(options) { return options["modelAncillaryParameterRegression"] === undefined; }
 			jsonValue: false
-		}
-
-		ChangeJS
-		{
-			name: "modelAncillaryParameter1ModelTerms"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
-				return options["modelTerms"].map(function(model) {
-					return {name: "ancillary1" + model.name, title: model.title, components: {value: [], types: []}};
-				});
-			}
-		}
-		ChangeSetValue
-		{
-			name: "modelAncillaryParameter1AdvancedSpecification"
-			condition: function(options) { return options["modelAncillaryParameter1AdvancedSpecification"] === undefined; }
-			jsonValue: false
-		}
-		ChangeJS
-		{
-			name: "modelAncillaryParameter1AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {predictors: {shouldEncode: true}};
-				return options["modelTerms"].map(function(model) { return {model: "ancillary1" + model.name, predictors: []}; });
-			}
-		}
-
-		ChangeJS
-		{
-			name: "modelAncillaryParameter2ModelTerms"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
-				return options["modelTerms"].map(function(model) {
-					return {name: "ancillary2" + model.name, title: model.title, components: {value: [], types: []}};
-				});
-			}
-		}
-		ChangeSetValue
-		{
-			name: "modelAncillaryParameter2AdvancedSpecification"
-			condition: function(options) { return options["modelAncillaryParameter2AdvancedSpecification"] === undefined; }
-			jsonValue: false
-		}
-		ChangeJS
-		{
-			name: "modelAncillaryParameter2AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {predictors: {shouldEncode: true}};
-				return options["modelTerms"].map(function(model) { return {model: "ancillary2" + model.name, predictors: []}; });
-			}
-		}
-
-		ChangeJS
-		{
-			name: "modelAncillaryParameter3ModelTerms"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
-				return options["modelTerms"].map(function(model) {
-					return {name: "ancillary3" + model.name, title: model.title, components: {value: [], types: []}};
-				});
-			}
-		}
-		ChangeSetValue
-		{
-			name: "modelAncillaryParameter3AdvancedSpecification"
-			condition: function(options) { return options["modelAncillaryParameter3AdvancedSpecification"] === undefined; }
-			jsonValue: false
-		}
-		ChangeJS
-		{
-			name: "modelAncillaryParameter3AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {predictors: {shouldEncode: true}};
-				return options["modelTerms"].map(function(model) { return {model: "ancillary3" + model.name, predictors: []}; });
-			}
 		}
 
 		ChangeSetValue
@@ -1132,127 +812,8 @@ Upgrades
 			condition: function(options) { return options["restrictParameters"] === undefined; }
 			jsonValue: false
 		}
-		ChangeSetValue
-		{
-			name: "restrictParametersValues"
-			condition: function(options) { return options["restrictParametersValues"] === undefined; }
-			jsonValue: []
-		}
-		// Consume old options only after every dependent setting has been converted.
 
-		ChangeRemove
-		{
-			name: "advancedSpecification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "advancedSpecificationTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "alwaysDisplayModelInformation"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter1AdvancedSpecification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter1AdvancedSpecificationTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter1AvailableTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter1ModelTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter2AdvancedSpecification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter2AdvancedSpecificationTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter2AvailableTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter2ModelTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter3AdvancedSpecification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter3AdvancedSpecificationTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter3AvailableTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter3ModelTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameterRegression"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "coefficientsConfidenceInterval"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "coefficientsConfidenceIntervalLevel"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "compareModelsAcrossDistributions"
-			condition: function(options) { return options[name] !== undefined; }
-		}
+		// Remove obsolete settings that have no current equivalent.
 
 		ChangeRemove
 		{
@@ -1268,102 +829,6 @@ Upgrades
 
 		ChangeRemove
 		{
-			name: "densityPlotConfidenceInterval"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotConfidenceIntervalLevel"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotGroupUniqueLevels"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotGroupUniqueLevelsLimit"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotHistogramBinWidthType"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotHistogramManualNumberOfBins"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotQuantileGroups"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotStratification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotStratify"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotTransformXAxis"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportFittedLinearPredictor"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportFittedMean"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportFittedMedian"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportFittedRisk"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportMixtureClassification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportMixtureProbabilities"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
 			name: "hazardPlot"
 			condition: function(options) { return options[name] !== undefined; }
 		}
@@ -1371,12 +836,6 @@ Upgrades
 		ChangeRemove
 		{
 			name: "hazardTable"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "includeFullDatasetInSubgroupAnalysis"
 			condition: function(options) { return options[name] !== undefined; }
 		}
 
@@ -1400,85 +859,7 @@ Upgrades
 
 		ChangeRemove
 		{
-			name: "lifeTimeMergeTablesAcrossMeasures"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "modelSummaryAicWeighs"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "modelSummaryBicWeighs"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsConfidenceInterval"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsConfidenceIntervalLevel"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettings"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettingsXAxisFrom"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettingsXAxisTo"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettingsXAxisTransformation"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettingsYAxisFrom"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettingsYAxisTo"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettingsYAxisTransformation"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
 			name: "predictionsLifeTimeCustom"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsLifeTimeRoundSteps"
 			condition: function(options) { return options[name] !== undefined; }
 		}
 
@@ -1550,66 +931,6 @@ Upgrades
 
 		ChangeRemove
 		{
-			name: "probabilityPlotConfidenceInterval"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotConfidenceIntervalLevel"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotGroupUniqueLevels"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotGroupUniqueLevelsLimit"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotMergePlotsAcrossFactors"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotPointCoordinates"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotQuantileGroups"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotStratification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotStratify"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotTiesHandler"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
 			name: "restrictedMeanSurvivalTimePlot"
 			condition: function(options) { return options[name] !== undefined; }
 		}
@@ -1622,66 +943,6 @@ Upgrades
 
 		ChangeRemove
 		{
-			name: "selectedParametricDistributionExponential"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionGamma"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionGeneralizedF"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionGeneralizedFOriginal"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionGeneralizedGamma"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionGeneralizedGammaOriginal"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionGompertz"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionLogLogistic"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionLogNormal"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionWeibull"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
 			name: "survivalProbabilityAsFailureProbability"
 			condition: function(options) { return options[name] !== undefined; }
 		}
@@ -1689,30 +950,6 @@ Upgrades
 		ChangeRemove
 		{
 			name: "survivalProbabilityPlot"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "survivalProbabilityPlotCensoringEvents"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "survivalProbabilityPlotKaplanMeier"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "survivalProbabilityPlotTransformXAxis"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "survivalProbabilityPlotTransformYAxis"
 			condition: function(options) { return options[name] !== undefined; }
 		}
 
@@ -1951,27 +1188,6 @@ Upgrades
 
 		ChangeRename
 		{
-			from: "advancedSpecification"
-			to: "modelAdvancedSpecification"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "advancedSpecificationTerms"
-			to: "modelAdvancedSpecificationTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameterRegression"
-			to: "modelAncillaryParameterRegression"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
 			from: "predictionsCovariateAxisSettings"
 			to: "predictionsCovariateXAxisSettings"
 			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
@@ -2154,90 +1370,6 @@ Upgrades
 
 		ChangeRename
 		{
-			from: "ancillaryParameter1ModelTerms"
-			to: "modelAncillaryParameter1ModelTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter1AdvancedSpecification"
-			to: "modelAncillaryParameter1AdvancedSpecification"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter1AdvancedSpecificationTerms"
-			to: "modelAncillaryParameter1AdvancedSpecificationTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter1AvailableTerms"
-			to: "modelAncillaryParameter1AvailableTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter2ModelTerms"
-			to: "modelAncillaryParameter2ModelTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter2AdvancedSpecification"
-			to: "modelAncillaryParameter2AdvancedSpecification"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter2AdvancedSpecificationTerms"
-			to: "modelAncillaryParameter2AdvancedSpecificationTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter2AvailableTerms"
-			to: "modelAncillaryParameter2AvailableTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter3ModelTerms"
-			to: "modelAncillaryParameter3ModelTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter3AdvancedSpecification"
-			to: "modelAncillaryParameter3AdvancedSpecification"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter3AdvancedSpecificationTerms"
-			to: "modelAncillaryParameter3AdvancedSpecificationTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
-			from: "ancillaryParameter3AvailableTerms"
-			to: "modelAncillaryParameter3AvailableTerms"
-			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
-		}
-
-		ChangeRename
-		{
 			from: "predictionsCovariateAxisSettingsXAxisTransformation"
 			to: "predictionsCovariateXAxisSettingsXAxisTransformation"
 			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
@@ -2413,38 +1545,6 @@ Upgrades
 
 		ChangeJS
 		{
-			name: "modelAdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return upgrades.hasOldModifierNames(options["modelAdvancedSpecificationTerms"]); }
-			jsFunction: function(options) { return upgrades.modifierNames(options["modelAdvancedSpecificationTerms"]); }
-		}
-
-		ChangeJS
-		{
-			name: "modelAncillaryParameter1AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return upgrades.hasOldModifierNames(options["modelAncillaryParameter1AdvancedSpecificationTerms"]); }
-			jsFunction: function(options) { return upgrades.modifierNames(options["modelAncillaryParameter1AdvancedSpecificationTerms"]); }
-		}
-
-		ChangeJS
-		{
-			name: "modelAncillaryParameter2AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return upgrades.hasOldModifierNames(options["modelAncillaryParameter2AdvancedSpecificationTerms"]); }
-			jsFunction: function(options) { return upgrades.modifierNames(options["modelAncillaryParameter2AdvancedSpecificationTerms"]); }
-		}
-
-		ChangeJS
-		{
-			name: "modelAncillaryParameter3AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return upgrades.hasOldModifierNames(options["modelAncillaryParameter3AdvancedSpecificationTerms"]); }
-			jsFunction: function(options) { return upgrades.modifierNames(options["modelAncillaryParameter3AdvancedSpecificationTerms"]); }
-		}
-
-		ChangeJS
-		{
 			name: "predictionsOutcomeSurvivalTime"
 			isNewOption: true
 			condition: function(options) { return options[name] === undefined; }
@@ -2509,30 +1609,6 @@ Upgrades
 
 		ChangeJS
 		{
-			name: "predictionsPredictFor"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return "variables"; }
-		}
-
-		ChangeJS
-		{
-			name: "predictionsOutputPlotType"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return "standard"; }
-		}
-
-		ChangeJS
-		{
-			name: "predictionsLifetimePercentiles"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return options["predictionsOutcomeSurvivalTime"] === true; }
-		}
-
-		ChangeJS
-		{
 			name: "predictionsMergeSeriesAcrossDistributions"
 			isNewOption: true
 			condition: function(options) { return options[name] === undefined; }
@@ -2585,14 +1661,6 @@ Upgrades
 			isNewOption: true
 			condition: function(options) { return options[name] === undefined; }
 			jsFunction: function(options) { return upgrades.factorAssignments(options, true); }
-		}
-
-		ChangeJS
-		{
-			name: "predictionsAssignedCovariateValuesQuantiles"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return 3; }
 		}
 
 		ChangeJS
@@ -2709,22 +1777,6 @@ Upgrades
 			jsFunction: function(options) { return String(options["predictionsLifeTimeCustom"]); }
 		}
 
-		ChangeJS
-		{
-			name: "probabilityPlotStratifyBy"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return true; }
-		}
-
-		ChangeJS
-		{
-			name: "probabilityPlotStratifyByVariables"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return upgrades.factorStrata(options); }
-		}
-
 		// Observed histograms now belong to the separate density diagnostic.
 
 		ChangeJS
@@ -2791,56 +1843,11 @@ Upgrades
 			jsFunction: function(options) { return options["mixtureComponentPlotHistogramManualNumberOfBins"]; }
 		}
 
-		ChangeJS
-		{
-			name: "densityPlotStratifyBy"
-			isNewOption: true
-			condition: function(options) { return options["densityPlotStratifyBy"] === undefined && options["mixtureComponentPlotObservedData"] !== undefined; }
-			jsFunction: function(options) { return true; }
-		}
-
-		ChangeJS
-		{
-			name: "densityPlotStratifyByVariables"
-			isNewOption: true
-			condition: function(options) { return options["densityPlotStratifyByVariables"] === undefined && options["mixtureComponentPlotObservedData"] !== undefined; }
-			jsFunction: function(options) { return upgrades.factorStrata(options); }
-		}
-
-		ChangeJS
-		{
-			name: "mixtureComponentPlotStratifyBy"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return true; }
-		}
-
-		ChangeJS
-		{
-			name: "mixtureComponentPlotStratifyByVariables"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options) { return upgrades.factorStrata(options); }
-		}
-
-		ChangeSetValue
-		{
-			name: "confidenceIntervalBounds"
-			condition: function(options) { return options["confidenceIntervalBounds"] === undefined; }
-			jsonValue: "twoSided"
-		}
-
 		ChangeSetValue
 		{
 			name: "fittedModelEquation"
 			condition: function(options) { return options["fittedModelEquation"] === undefined; }
 			jsonValue: false
-		}
-		ChangeSetValue
-		{
-			name: "fittedModelEquationDecimals"
-			condition: function(options) { return options["fittedModelEquationDecimals"] === undefined; }
-			jsonValue: 3
 		}
 
 		ChangeSetValue
@@ -2848,99 +1855,6 @@ Upgrades
 			name: "modelAncillaryParameterRegression"
 			condition: function(options) { return options["modelAncillaryParameterRegression"] === undefined; }
 			jsonValue: false
-		}
-
-		ChangeJS
-		{
-			name: "modelAncillaryParameter1ModelTerms"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
-				return options["modelTerms"].map(function(model) {
-					return {name: "ancillary1" + model.name, title: model.title, components: {value: [], types: []}};
-				});
-			}
-		}
-		ChangeSetValue
-		{
-			name: "modelAncillaryParameter1AdvancedSpecification"
-			condition: function(options) { return options["modelAncillaryParameter1AdvancedSpecification"] === undefined; }
-			jsonValue: false
-		}
-		ChangeJS
-		{
-			name: "modelAncillaryParameter1AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {predictors: {shouldEncode: true}};
-				return options["modelTerms"].map(function(model) { return {model: "ancillary1" + model.name, predictors: []}; });
-			}
-		}
-
-		ChangeJS
-		{
-			name: "modelAncillaryParameter2ModelTerms"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
-				return options["modelTerms"].map(function(model) {
-					return {name: "ancillary2" + model.name, title: model.title, components: {value: [], types: []}};
-				});
-			}
-		}
-		ChangeSetValue
-		{
-			name: "modelAncillaryParameter2AdvancedSpecification"
-			condition: function(options) { return options["modelAncillaryParameter2AdvancedSpecification"] === undefined; }
-			jsonValue: false
-		}
-		ChangeJS
-		{
-			name: "modelAncillaryParameter2AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {predictors: {shouldEncode: true}};
-				return options["modelTerms"].map(function(model) { return {model: "ancillary2" + model.name, predictors: []}; });
-			}
-		}
-
-		ChangeJS
-		{
-			name: "modelAncillaryParameter3ModelTerms"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {shouldEncode: true};
-				return options["modelTerms"].map(function(model) {
-					return {name: "ancillary3" + model.name, title: model.title, components: {value: [], types: []}};
-				});
-			}
-		}
-		ChangeSetValue
-		{
-			name: "modelAncillaryParameter3AdvancedSpecification"
-			condition: function(options) { return options["modelAncillaryParameter3AdvancedSpecification"] === undefined; }
-			jsonValue: false
-		}
-		ChangeJS
-		{
-			name: "modelAncillaryParameter3AdvancedSpecificationTerms"
-			isNewOption: true
-			condition: function(options) { return options[name] === undefined; }
-			jsFunction: function(options)
-			{
-				if (!Array.isArray(options["modelTerms"])) return {predictors: {shouldEncode: true}};
-				return options["modelTerms"].map(function(model) { return {model: "ancillary3" + model.name, predictors: []}; });
-			}
 		}
 
 		ChangeSetValue
@@ -2955,133 +1869,8 @@ Upgrades
 			condition: function(options) { return options["restrictParameters"] === undefined; }
 			jsonValue: false
 		}
-		ChangeSetValue
-		{
-			name: "restrictParametersValues"
-			condition: function(options) { return options["restrictParametersValues"] === undefined; }
-			jsonValue: []
-		}
-		// Consume old options only after every dependent setting has been converted.
 
-		ChangeRemove
-		{
-			name: "advancedSpecification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "advancedSpecificationTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "alwaysDisplayModelInformation"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter1AdvancedSpecification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter1AdvancedSpecificationTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter1AvailableTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter1ModelTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter2AdvancedSpecification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter2AdvancedSpecificationTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter2AvailableTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter2ModelTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter3AdvancedSpecification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter3AdvancedSpecificationTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter3AvailableTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameter3ModelTerms"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "ancillaryParameterRegression"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "coefficientsConfidenceInterval"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "coefficientsConfidenceIntervalLevel"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "compareModelsAcrossComponents"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "compareModelsAcrossDistributions"
-			condition: function(options) { return options[name] !== undefined; }
-		}
+		// Remove obsolete settings that have no current equivalent.
 
 		ChangeRemove
 		{
@@ -3097,102 +1886,6 @@ Upgrades
 
 		ChangeRemove
 		{
-			name: "densityPlotConfidenceInterval"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotConfidenceIntervalLevel"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotGroupUniqueLevels"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotGroupUniqueLevelsLimit"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotHistogramBinWidthType"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotHistogramManualNumberOfBins"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotQuantileGroups"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotStratification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotStratify"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "densityPlotTransformXAxis"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportFittedLinearPredictor"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportFittedMean"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportFittedMedian"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportFittedRisk"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportMixtureClassification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportMixtureProbabilities"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
 			name: "hazardPlot"
 			condition: function(options) { return options[name] !== undefined; }
 		}
@@ -3200,12 +1893,6 @@ Upgrades
 		ChangeRemove
 		{
 			name: "hazardTable"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "includeFullDatasetInSubgroupAnalysis"
 			condition: function(options) { return options[name] !== undefined; }
 		}
 
@@ -3235,30 +1922,6 @@ Upgrades
 
 		ChangeRemove
 		{
-			name: "lifeTimeMergeTablesAcrossMeasures"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureClassificationTable"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureComponentPlotGroupUniqueLevels"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureComponentPlotGroupUniqueLevelsLimit"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
 			name: "mixtureComponentPlotHistogramBinWidthType"
 			condition: function(options) { return options[name] !== undefined; }
 		}
@@ -3283,151 +1946,7 @@ Upgrades
 
 		ChangeRemove
 		{
-			name: "mixtureComponentPlotQuantileGroups"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureComponentPlotStratification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureComponentPlotStratify"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureComponentPlotTransformXAxis"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureComponentPlotTransformYAxis"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureComponentsTable"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureDiagnosticsTable"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureStartKmeans"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureStartQuantiles"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureStartRandom"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureStartRandomCount"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "mixtureStartSplit"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "modelSummaryAicWeighs"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "modelSummaryBicWeighs"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsConfidenceInterval"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsConfidenceIntervalLevel"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettings"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettingsXAxisFrom"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettingsXAxisTo"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettingsXAxisTransformation"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettingsYAxisFrom"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettingsYAxisTo"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsCovariateAxisSettingsYAxisTransformation"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
 			name: "predictionsLifeTimeCustom"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "predictionsLifeTimeRoundSteps"
 			condition: function(options) { return options[name] !== undefined; }
 		}
 
@@ -3499,66 +2018,6 @@ Upgrades
 
 		ChangeRemove
 		{
-			name: "probabilityPlotConfidenceInterval"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotConfidenceIntervalLevel"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotGroupUniqueLevels"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotGroupUniqueLevelsLimit"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotMergePlotsAcrossFactors"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotPointCoordinates"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotQuantileGroups"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotStratification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotStratify"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "probabilityPlotTiesHandler"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
 			name: "restrictedMeanSurvivalTimePlot"
 			condition: function(options) { return options[name] !== undefined; }
 		}
@@ -3571,66 +2030,6 @@ Upgrades
 
 		ChangeRemove
 		{
-			name: "selectedParametricDistributionExponential"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionGamma"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionGeneralizedF"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionGeneralizedFOriginal"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionGeneralizedGamma"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionGeneralizedGammaOriginal"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionGompertz"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionLogLogistic"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionLogNormal"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "selectedParametricDistributionWeibull"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
 			name: "survivalProbabilityAsFailureProbability"
 			condition: function(options) { return options[name] !== undefined; }
 		}
@@ -3638,30 +2037,6 @@ Upgrades
 		ChangeRemove
 		{
 			name: "survivalProbabilityPlot"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "survivalProbabilityPlotCensoringEvents"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "survivalProbabilityPlotKaplanMeier"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "survivalProbabilityPlotTransformXAxis"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "survivalProbabilityPlotTransformYAxis"
 			condition: function(options) { return options[name] !== undefined; }
 		}
 
@@ -3773,55 +2148,7 @@ Upgrades
 			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
 		}
 
-		// Consume old options only after every dependent setting has been converted.
-
-		ChangeRemove
-		{
-			name: "coefficientsConfidenceInterval"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "coefficientsConfidenceIntervalLevel"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportFittedLinearPredictor"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportFittedMean"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportFittedMedian"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportFittedRisk"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportMixtureClassification"
-			condition: function(options) { return options[name] !== undefined; }
-		}
-
-		ChangeRemove
-		{
-			name: "exportMixtureProbabilities"
-			condition: function(options) { return options[name] !== undefined; }
-		}
+		// Remove obsolete settings that have no current equivalent.
 
 	}
 }
