@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jaspSurvival 0.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
-"POT-Creation-Date: 2026-10-03 11:23\n"
+"POT-Creation-Date: 2026-10-17 05:53\n"
 "PO-Revision-Date: 2026-09-21 08:51+0000\n"
 "Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspsurvival-"
@@ -40,11 +40,6 @@ msgstr "Die Gewichtungsvariable muss positiv sein."
 msgid "%1$i observations omitted due to missing values."
 msgstr "%1$i Beobachtungen wurden aufgrund fehlender Werte ausgeschlossen."
 
-msgid "We need at least one predictor, or an intercept to make a formula"
-msgstr ""
-"Wir benötigen mindestens einen Prädiktor oder einen Intercept, um eine "
-"Formel zu erstellen"
-
 msgid "Events"
 msgstr "Ereignisse"
 
@@ -69,28 +64,10 @@ msgstr "Untergruppe"
 msgid "Count"
 msgstr "Anzahl"
 
-msgid "Survival Plot"
-msgstr "Überlebensdiagramm"
-
-msgid "Risk Plot"
-msgstr "Risikodiagramm"
-
-msgid "Cumulative Hazard Plot"
-msgstr "Diagramm der kumulativen Hazard-Rate"
-
-msgid "Complementary Log-Log Plot"
-msgstr "Komplementär-Log-Log-Diagramm"
-
-msgid "log(Time)"
-msgstr "log(Zeit)"
-
 msgid "%1$s: non-finite values were exported as missing."
 msgstr ""
 
 msgid "The column '%1$s' already exists. Specify a different export prefix."
-msgstr ""
-
-msgid "Component index"
 msgstr ""
 
 msgid "Export"
@@ -117,6 +94,9 @@ msgstr ""
 msgid "Component %1$i probability"
 msgstr ""
 
+msgid "Component index"
+msgstr ""
+
 msgid "Martingale residual"
 msgstr ""
 
@@ -131,6 +111,42 @@ msgstr ""
 
 msgid "Full dataset"
 msgstr "Gesamter Datensatz"
+
+msgid "Response"
+msgstr "Response"
+
+msgid "Cox-Snell"
+msgstr "Cox-Snell"
+
+msgid "Martingale Residuals"
+msgstr "Martingale-Residuen"
+
+msgid "Deviance Residuals"
+msgstr "Devianz-Residuen"
+
+msgid "Score Residuals"
+msgstr "Score-Residuen"
+
+msgid "Schoenfeld Residuals"
+msgstr "Schoenfeld-Residuen"
+
+msgid "Scaled Schoenfeld Residuals"
+msgstr "Skalierte Schoenfeld-Residuen"
+
+msgid "Survival Plot"
+msgstr "Überlebensdiagramm"
+
+msgid "Risk Plot"
+msgstr "Risikodiagramm"
+
+msgid "Cumulative Hazard Plot"
+msgstr "Diagramm der kumulativen Hazard-Rate"
+
+msgid "Complementary Log-Log Plot"
+msgstr "Komplementär-Log-Log-Diagramm"
+
+msgid "log(Time)"
+msgstr "log(Zeit)"
 
 msgid "Kaplan-Meier Summary Table"
 msgstr "Kaplan-Meier-Zusammenfassungstabelle"
@@ -207,6 +223,9 @@ msgstr ""
 msgid "No starting values could be constructed for the mixture model."
 msgstr ""
 
+msgid "Fitting %1$s mixture (%2$i components)"
+msgstr ""
+
 msgid "The mixture model could not be estimated from any starting value: %1$s"
 msgstr ""
 
@@ -262,11 +281,6 @@ msgid ""
 msgstr ""
 
 msgid ""
-"Some mixture quantiles could not be evaluated accurately and are shown as "
-"missing."
-msgstr ""
-
-msgid ""
 "A minimum log-time standard deviation is not available for %1$s. Select log-"
 "normal, Weibull, log-logistic, or gamma."
 msgstr ""
@@ -287,12 +301,14 @@ msgid ""
 "deviation. Results cannot be reported reliably."
 msgstr ""
 
-msgid "fit"
-msgstr ""
-
 msgid ""
 "The constrained optimizer did not converge. Try a different distribution or "
 "a simpler model."
+msgstr ""
+
+msgid ""
+"Some mixture quantiles could not be evaluated accurately and are shown as "
+"missing."
 msgstr ""
 
 msgid "Component Mean and Median"
@@ -313,9 +329,6 @@ msgstr ""
 msgid "Estimate"
 msgstr "Schätzung"
 
-msgid "Component %1$i"
-msgstr ""
-
 msgid ""
 "Some component means or medians are infinite or could not be evaluated "
 "numerically and are shown as missing."
@@ -334,9 +347,6 @@ msgid ""
 "and zero value of covariates."
 msgstr ""
 
-msgid "Warning:"
-msgstr ""
-
 msgid "Mixing probability"
 msgstr ""
 
@@ -344,6 +354,9 @@ msgid "Mean"
 msgstr ""
 
 msgid "Median"
+msgstr ""
+
+msgid "Component %1$i"
 msgstr ""
 
 msgid "Classified"
@@ -397,37 +410,10 @@ msgstr ""
 msgid "Hessian Positive Definite"
 msgstr ""
 
-msgid "Error:"
-msgstr "Fehler:"
-
 msgid "yes"
 msgstr ""
 
 msgid "no"
-msgstr ""
-
-msgid "Survival Probability"
-msgstr "Überlebenswahrscheinlichkeit"
-
-msgid "Failure Probability"
-msgstr "Ausfallwahrscheinlichkeit"
-
-msgid "Density"
-msgstr ""
-
-msgid "Hazard"
-msgstr "Hazard-Rate"
-
-msgid ""
-"The model failed to produce predictions. Consider simplifying the model."
-msgstr ""
-"Das Modell konnte keine Vorhersagen erzeugen. Erwägen Sie, das Modell zu "
-"vereinfachen."
-
-msgid "No finite predictions are available for this plot."
-msgstr ""
-
-msgid "Mixture"
 msgstr ""
 
 msgid "Estimation warning: %1$s"
@@ -484,6 +470,50 @@ msgstr ""
 msgid "mixing probability"
 msgstr ""
 
+msgid "Survival Probability"
+msgstr "Überlebenswahrscheinlichkeit"
+
+msgid "Failure Probability"
+msgstr "Ausfallwahrscheinlichkeit"
+
+msgid "Density"
+msgstr ""
+
+msgid "Hazard"
+msgstr "Hazard-Rate"
+
+msgid ""
+"The model failed to produce predictions. Consider simplifying the model."
+msgstr ""
+"Das Modell konnte keine Vorhersagen erzeugen. Erwägen Sie, das Modell zu "
+"vereinfachen."
+
+msgid "No finite predictions are available for this plot."
+msgstr ""
+
+msgid "%1$s (log scale)"
+msgstr "%1$s (log-Skala)"
+
+msgid "Component 1"
+msgstr ""
+
+msgid "Mixture"
+msgstr ""
+
+#, fuzzy
+msgid ""
+"Membership probabilities were specified in an incorrect format. Try '0.95, "
+"0.99'."
+msgstr ""
+"Benutzerdefinierte Schritte für die vorhergesagte Überlebenszeit wurden in "
+"einem falschen Format angegeben. Versuchen Sie '0.25, 0.50, 0.75'."
+
+msgid "Membership probabilities must be greater than 0.5 and less than 1."
+msgstr ""
+
+msgid "Membership probabilities must be distinct."
+msgstr ""
+
 msgid "Residuals vs. Time"
 msgstr "Residuen vs. Zeit"
 
@@ -496,12 +526,6 @@ msgstr "Residuen vs. Vorhergesagtes"
 msgid "Residual Histogram"
 msgstr "Residualhistogramm"
 
-msgid "Response"
-msgstr "Response"
-
-msgid "Cox-Snell"
-msgstr "Cox-Snell"
-
 msgid "Residuals vs. %1$s"
 msgstr "Residuen vs. %1$s"
 
@@ -509,9 +533,6 @@ msgid "Predicted Time"
 msgstr "Vorhergesagte Zeit"
 
 msgid "Cox-Snell residuals are not available for interval-censored data."
-msgstr ""
-
-msgid "Fitting mixture models"
 msgstr ""
 
 msgid "Subgroup: %1$s"
@@ -525,8 +546,13 @@ msgid ""
 "distribution."
 msgstr ""
 
-msgid "Invalid plot transformation"
+#, fuzzy
+msgid ""
+"The model failed to produce a probability plot. Consider simplifying the "
+"model."
 msgstr ""
+"Das Modell konnte kein Wahrscheinlichkeitsdiagramm erzeugen. Erwägen Sie, "
+"das Modell zu vereinfachen."
 
 msgid "Predicted Survival Time"
 msgstr "Vorhergesagte Überlebenszeit"
@@ -559,9 +585,6 @@ msgid ""
 "Some confidence intervals could not be evaluated and are shown as missing."
 msgstr ""
 
-msgid "Quantile"
-msgstr "Quantil"
-
 msgid "Survival Time"
 msgstr "Überlebenszeit"
 
@@ -570,6 +593,9 @@ msgstr "Kumulative Hazard-Rate"
 
 msgid "Restricted Mean Survival Time"
 msgstr "Restriktive mittlere Überlebenszeit"
+
+msgid "Quantile"
+msgstr "Quantil"
 
 msgid ""
 "Life time tables cannot be merged when a model produces multiple "
@@ -607,9 +633,6 @@ msgid ""
 msgstr ""
 "Das Modell konnte keine Vorhersagen der restriktiven mittleren "
 "Überlebenszeit erzeugen. Erwägen Sie, das Modell zu vereinfachen."
-
-msgid "%1$s (log scale)"
-msgstr "%1$s (log-Skala)"
 
 msgid "%1$s (log(-log(1-p)) scale)"
 msgstr "%1$s (log(-log(1-p))-Skala)"
@@ -650,14 +673,6 @@ msgstr ""
 msgid "Probability Plot"
 msgstr "Wahrscheinlichkeitsdiagramm"
 
-#, fuzzy
-msgid ""
-"The model failed to produce a probability plot. Consider simplifying the "
-"model."
-msgstr ""
-"Das Modell konnte kein Wahrscheinlichkeitsdiagramm erzeugen. Erwägen Sie, "
-"das Modell zu vereinfachen."
-
 msgid "The probability plot requires at least one fitted model."
 msgstr ""
 "Das Wahrscheinlichkeitsdiagramm erfordert mindestens ein angepasstes Modell."
@@ -695,6 +710,9 @@ msgstr "Weibull"
 msgid "The probability plot requires positive time values."
 msgstr "Das Wahrscheinlichkeitsdiagramm erfordert positive Zeitwerte."
 
+msgid "Model fitting"
+msgstr ""
+
 msgid "Model Summary"
 msgstr "Modellzusammenfassung"
 
@@ -721,6 +739,12 @@ msgstr "BIC-Gewicht"
 
 msgid "Rank"
 msgstr "Rang"
+
+msgid "Error:"
+msgstr "Fehler:"
+
+msgid "Warning:"
+msgstr ""
 
 msgid ""
 "Comparisons involving an active spread bound have no likelihood-ratio "
@@ -1012,21 +1036,6 @@ msgstr "Vorhergesagtes Überleben"
 msgid "Residuals Histogram"
 msgstr "Residualhistogramm"
 
-msgid "Martingale Residuals"
-msgstr "Martingale-Residuen"
-
-msgid "Deviance Residuals"
-msgstr "Devianz-Residuen"
-
-msgid "Score Residuals"
-msgstr "Score-Residuen"
-
-msgid "Schoenfeld Residuals"
-msgstr "Schoenfeld-Residuen"
-
-msgid "Scaled Schoenfeld Residuals"
-msgstr "Skalierte Schoenfeld-Residuen"
-
 msgid ""
 "%1$i candidate fit was omitted because its likelihood could not be evaluated "
 "reliably at the available numerical precision."
@@ -1049,6 +1058,11 @@ msgid "%1$i component"
 msgid_plural "%1$i components"
 msgstr[0] ""
 msgstr[1] ""
+
+#~ msgid "We need at least one predictor, or an intercept to make a formula"
+#~ msgstr ""
+#~ "Wir benötigen mindestens einen Prädiktor oder einen Intercept, um eine "
+#~ "Formel zu erstellen"
 
 #~ msgid "At least one predictor, or an intercept, is needed to fit the model."
 #~ msgstr ""
