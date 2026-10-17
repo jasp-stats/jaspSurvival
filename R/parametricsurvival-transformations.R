@@ -11,23 +11,21 @@
   locationKeys <- vapply(options[["modelTerms"]], function(model) model[["name"]], character(1))
   if (!identical(locationKeys, paste0("model", seq_along(locationKeys))))
     stop("Location equation model keys differ from the native model order.")
+  ancillaryModels <- list()
   if (ancillary) for (slot in seq_len(slots)) {
     prefix <- paste0("modelAncillaryParameter", slot)
-    keys <- vapply(options[[paste0(prefix, "ModelTerms")]], function(model) model[["name"]], character(1))
+    rows <- options[[paste0(prefix, "ModelTerms")]]
+    keys <- vapply(rows, function(model) model[["name"]], character(1))
     if (!identical(keys, paste0("ancillary", slot, locationKeys)))
       stop("Ancillary equation model keys do not match the location model order.")
+    ancillaryModels[[slot]] <- rows
   }
   for (i in seq_along(options[["modelTerms"]])) {
     model <- options[["modelTerms"]][[i]]
     model[["ancillaryEquations"]] <- list()
     if (ancillary) for (slot in seq_len(slots)) {
       prefix <- paste0("modelAncillaryParameter", slot)
-      rows   <- options[[paste0(prefix, "ModelTerms")]]
-      keys   <- vapply(rows, function(row) row[["name"]], character(1))
-      expected <- paste0("ancillary", slot, model[["name"]])
-      if (anyDuplicated(keys) || sum(keys == expected) != 1L)
-        stop("Ancillary equation model keys do not match the location models.")
-      equation <- .sapPrepareEquation(rows[[match(expected, keys)]], options[[paste0(prefix, "AdvancedSpecification")]],
+      equation <- .sapPrepareEquation(ancillaryModels[[slot]][[i]], options[[paste0(prefix, "AdvancedSpecification")]],
         options[[paste0(prefix, "AdvancedSpecificationTerms")]], components, mixture, options[["factors"]])
       equation[["name"]] <- model[["name"]]
       model[["ancillaryEquations"]][[as.character(slot)]] <- equation

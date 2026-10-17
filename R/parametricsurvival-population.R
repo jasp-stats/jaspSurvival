@@ -21,18 +21,6 @@
     return(list(X = X[unique, , drop = FALSE][positive, , drop = FALSE], weights = mass[positive] / sum(mass)))
   }))
 }
-.sapPopulationParameters <- function(fit, X, rawsim) {
-  parameters <- fit[["dlist"]][["pars"]]
-  values <- matrix(NA_real_, nrow(rawsim) * nrow(X), length(parameters), dimnames = list(NULL, parameters))
-  for (i in seq_along(parameters)) {
-    parameter <- parameters[i]
-    linear <- matrix(rawsim[, parameter], nrow(rawsim), nrow(X))
-    columns <- fit[["mx"]][[parameter]]
-    if (length(columns)) linear <- linear + tcrossprod(rawsim[, fit[["covpars"]][columns], drop = FALSE], X[, columns, drop = FALSE])
-    values[, i] <- fit[["dlist"]][["inv.transforms"]][[i]](as.vector(linear))
-  }
-  return(values)
-}
 .sapPopulationLogProbability <- function(fit, parameters, time, lowerTail) {
   if (!identical(attr(fit, "family"), "weibull"))
     return(do.call(fit[["dfns"]][["p"]], c(list(time), as.list(as.data.frame(parameters)), fit[["aux"]], list(lower.tail = lowerTail, log.p = TRUE))))
@@ -184,7 +172,7 @@
     block <- max(1L, floor(250000 / (nrow(population$X) * length(fit[["dlist"]][["pars"]]))))
     for (first in seq.int(1L, draws, by = block)) {
       selected <- seq.int(first, min(draws, first + block - 1L))
-      parameters <- .sapPopulationParameters(fit, population$X, rawsim[selected, , drop = FALSE])
+      parameters <- .sapPredictionParameters(fit, population$X, rawsim[selected, , drop = FALSE])
       values[selected, column + seq_along(times[[i]])] <- transform(.sapPopulationValues(fit, parameters, population$weights, type, times[[i]]))
     }
     column <- column + length(times[[i]])

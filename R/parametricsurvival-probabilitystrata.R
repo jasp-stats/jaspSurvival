@@ -1,8 +1,5 @@
 # Original predictor values define groups; every model uses the same memberships
 # for its cohort before mapping observation times to its own reference design.
-.sapProbabilityPlotSelectedVariables <- function(options) {
-  return(.sapObservedStrataSelectedVariables(options, "probabilityPlot"))
-}
 .sapObservedStrataSelectedVariables <- function(options, prefix) {
   if (!options[[paste0(prefix, "StratifyBy")]])
     return(character(0))
@@ -10,9 +7,6 @@
   return(unique(vapply(Filter(function(row) row[["stratify"]], specification), `[[`, character(1), "variable")))
 }
 
-.sapProbabilityPlotStrata <- function(dataset, variables, options) {
-  return(.sapObservedStrata(dataset, variables, options, "probabilityPlot"))
-}
 .sapObservedStrata <- function(dataset, variables, options, prefix) {
   weights <- .sapCaseWeights(dataset, options)
   groups <- lapply(variables, function(variable) {

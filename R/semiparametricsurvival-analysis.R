@@ -615,7 +615,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     tempPlot <- tempPlot + jaspGraphs::geom_rangeframe(sides = "bl") + jaspGraphs::themeJaspRaw()
 
     tempJaspPlot <- createJaspPlot(
-      plot   = .sapPlotCanvasPadding(tempPlot),
+      plot   = .saPlotCanvasPadding(tempPlot),
       title  = .saTermNames(tempVariable, c(options[["covariates"]], options[["factors"]])),
       width  = 450,
       height = 320

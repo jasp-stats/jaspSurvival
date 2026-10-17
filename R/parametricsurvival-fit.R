@@ -314,9 +314,7 @@
 
   # extract the fits corresponding to the (grouped) index
   fit <- lapply(seq_len(nrow(index)), function(i) {
-    model <- out[[index[["subgroup"]][i]]][[index[["family"]][i]]][[as.character(index[["components"]][i])]][[index[["model"]][i]]]
-    attr(model, "subgroupKey") <- index[["subgroup"]][i]
-    return(model)
+    out[[index[["subgroup"]][i]]][[index[["family"]][i]]][[as.character(index[["components"]][i])]][[index[["model"]][i]]]
   })
 
   if (nrow(index) > 0 && !anyNA(index[["fitName"]]))

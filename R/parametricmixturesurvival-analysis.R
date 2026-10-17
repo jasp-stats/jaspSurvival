@@ -289,12 +289,6 @@
     posterior  = .sapmPosterior(previous, family, components - 1, survObject)
   ))
 }
-.sapmComponentParameters        <- function(family, parts, covariates) {
-
-  # natural parameters of every component for every observation (covariates act on the location)
-  return(lapply(seq_along(parts[["base"]]), function(k) .sapmParameters(family, parts[["base"]][[k]], parts[["beta"]][[k]],
-    covariates, parts[["linkBaseline"]][[k]])))
-}
 .sapmLogLikelihoodMatrix        <- function(family, survObject, parameters) {
   # Rows have separate component memberships. A longitudinal extension needs a
   # subject ID, class-specific interval histories combined once per subject,

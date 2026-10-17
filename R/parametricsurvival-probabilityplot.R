@@ -782,7 +782,7 @@
     )
   }
 
-  return(.sapPlotCanvasPadding(plot))
+  return(.saPlotCanvasPadding(plot))
 }
 
 .sapProbabilityPlotLegendTheme <- function(legendPosition) {

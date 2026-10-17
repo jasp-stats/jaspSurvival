@@ -353,7 +353,7 @@
       )
   }
 
-  return(.sapPlotCanvasPadding(plot))
+  return(.saPlotCanvasPadding(plot))
 }
 # Detailed probability axes use the same displayed probability as ordinary plots.
 .sapDetailedPredictionProbabilityScale <- function(options) {

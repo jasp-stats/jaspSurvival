@@ -1,23 +1,6 @@
 # Probability diagnostics map failures and censoring bounds to each stratum's
 # frequency-weighted reference model design.
 
-.sapProbabilityPlotPointParameters <- function(fit, design) {
-  # Evaluate native link predictors at the fitted coefficients. Point evaluation
-  # needs no covariance, including for fully fixed or unavailable-inference fits.
-  parameters <- fit[["dlist"]][["pars"]]
-  values <- matrix(NA_real_, nrow(design), length(parameters), dimnames = list(NULL, parameters))
-  stopifnot(ncol(design) == fit[["ncoveffs"]])
-  for (i in seq_along(parameters)) {
-    parameter <- parameters[i]
-    linear <- rep(fit[["res.t"]][parameter, "est"], nrow(design))
-    columns <- fit[["mx"]][[parameter]]
-    if (length(columns) > 0L)
-      linear <- linear + as.vector(design[, columns, drop = FALSE] %*% fit[["res.t"]][fit[["covpars"]][columns], "est"])
-    values[, i] <- fit[["dlist"]][["inv.transforms"]][[i]](linear)
-  }
-  return(values)
-}
-
 .sapProbabilityPlotReferenceTimes <- function(fit, logSurvival, reference, time) {
   # Lower-tail log probabilities avoid native wrappers that mishandle upper-tail
   # log quantiles. Keep both tails accurate when converting the probability.
@@ -80,8 +63,8 @@
   rows <- match(rownames(dataset), rownames(design))
   stopifnot(!anyNA(rows), ncol(design) == fit[["ncoveffs"]])
   design <- design[rows, , drop = FALSE]
-  individual <- .sapProbabilityPlotPointParameters(fit, design)
-  reference <- .sapProbabilityPlotPointParameters(fit, attr(fit, "predictionX"))
+  individual <- .sapPredictionParameters(fit, design, .sapPredictionPointCoefficients(fit))
+  reference <- .sapPredictionParameters(fit, attr(fit, "predictionX"), .sapPredictionPointCoefficients(fit))
   parameters <- fit[["dlist"]][["pars"]]
   time <- .saExtractSurvTimes(dataset, options)
   groupIndex <- match(attr(fit, "probabilityPlotMembership"), names(attr(fit, "probabilityPlotStrata")))

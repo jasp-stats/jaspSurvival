@@ -62,7 +62,7 @@
   if (is.null(jaspResults[["simulationState"]])) {
     state <- createJaspState()
     state$dependOn(c("setSeed", "seed"))
-    state$object <- list(seed = if (options[["setSeed"]]) options[["seed"]] else NULL, fits = list())
+    state$object <- list(seed = if (options[["setSeed"]]) options[["seed"]] else NULL)
     jaspResults[["simulationState"]] <- state
   }
   context <- new.env(parent = emptyenv())
@@ -85,7 +85,6 @@
     if (!is.null(current) && identical(current$signature, signature) && identical(current$B, B)) return(current$rawsim)
     if (is.null(context$records$seed)) context$records$seed <- sample.int(.Machine$integer.max, 1L)
     seed <- context$records$seed
-    context$records$fits[[key]] <- list(seed = seed, B = B, signature = signature)
     context$state$object <- context$records
   }
   if (!is.null(seed)) jaspBase::.setSeedJASP(list(setSeed = TRUE, seed = seed))

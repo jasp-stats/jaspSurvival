@@ -249,7 +249,7 @@
     return()
   }
 
-  surivalPlot$plotObject <- .sapPlotCanvasPadding(tempPlot)
+  surivalPlot$plotObject <- .saPlotCanvasPadding(tempPlot)
 
   return()
 }
@@ -258,7 +258,25 @@
   if (jaspBase::isTryError(object))
     plot$setError(object)
   else
-    plot$plotObject <- .sapPlotCanvasPadding(object)
+    plot$plotObject <- .saPlotCanvasPadding(object)
 
   return()
+}
+
+# Reserve canvas room for endpoint tick labels in all survival analyses.
+.saPlotCanvasPadding <- function(plot) {
+  if (inherits(plot, "patchwork"))
+    plot$patches$plots <- lapply(plot$patches$plots, .saPlotCanvasPadding)
+  margin <- ggplot2::calc_element("plot.margin", ggplot2::theme_get() + plot$theme)
+  if (all(grid::unitType(margin) == "points")) {
+    margin <- as.numeric(margin)
+  } else {
+    if (grDevices::dev.cur() == 1L) {
+      grDevices::pdf(file = NULL)
+      on.exit(grDevices::dev.off(), add = TRUE)
+    }
+    margin <- grid::convertUnit(margin, "pt", valueOnly = TRUE)
+  }
+  return(plot + ggplot2::theme(plot.margin = ggplot2::margin(
+    t = max(margin[1L], 0) + 8, r = max(margin[2L], 0) + 10, b = margin[3L], l = margin[4L], unit = "pt")))
 }

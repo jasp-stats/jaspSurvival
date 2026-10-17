@@ -25,18 +25,11 @@
   jaspResults[["exportColumns"]] <- container
 
   prepared <- .saExportRecords(list(jaspResults[["fit"]]$object), options, .saspExportValues)
-  columns  <- list()
-  for (record in prepared[["columns"]])
-    columns[[record[["name"]]]] <- .saExportValue(record[["value"]], record[["type"]])
-
-  # Check all names before writing any columns, including names owned by other analyses.
-  for (name in names(columns)) {
-    if (jaspBase:::columnExists(name) && !jaspBase:::columnIsMine(name))
-      .quitAnalysis(gettextf("The column '%1$s' already exists. Specify a different export prefix.", name))
-  }
-  for (name in names(columns)) {
+  .saExportPreflight(prepared[["columns"]])
+  for (record in prepared[["columns"]]) {
+    name <- record[["name"]]
     container[[name]] <- createJaspColumn(columnName = name, dependencies = dependencies)
-    .saSetExportColumn(container[[name]], columns[[name]])
+    .saSetExportColumn(container[[name]], record)
   }
 
   .saExportMessages(container, prepared[["messages"]])
@@ -44,10 +37,7 @@
   return()
 }
 
-.saExportFitIdentity <- function(fit) {
-  return(list(family = attr(fit, "family"), model = attr(fit, "modelId"), components = attr(fit, "components"), subgroup = attr(fit, "subgroupKey")))
-}
-.saExportRecords <- function(fits, options, valueFunction, semantic = FALSE) {
+.saExportRecords <- function(fits, options, valueFunction) {
 
   columns  <- list()
   messages <- character(0)
@@ -71,8 +61,6 @@
         value[!is.finite(value)] <- NA_real_
       }
       column <- list(name = columnName, value = .saExportAlign(fit, value), type = record[["type"]])
-      if (semantic)
-        column[["semantic"]] <- list(producer = "normal", identity = .saExportFitIdentity(fit), measure = name, type = record[["type"]])
       columns[[length(columns) + 1L]] <- column
     }
   }
@@ -116,7 +104,7 @@
   messages <- character(0)
   if (normal) {
     fits <- .sapFlattenFit(.sapExtractFit(jaspResults, options, type = "selected"), options)
-    prepared <- .saExportRecords(fits, options, .sapExportValues, semantic = TRUE)
+    prepared <- .saExportRecords(fits, options, .sapExportValues)
     columns  <- prepared[["columns"]]
     messages <- prepared[["messages"]]
   }

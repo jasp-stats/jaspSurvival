@@ -144,10 +144,14 @@
     collapsed     = .sapmConditionalMagnitude(fit, family, components)
   ))
 }
-.sapmObservationParameters      <- function(fit, family, components) {
+.sapmObservationParameters <- function(fit, family, components) {
 
-  # natural parameters of each component for each observation of the fitted mixture
-  return(.sapmObservationParametersWithoutDiagnostics(fit, family, components))
+  base <- .sapmBaseParameters(fit[["res.t"]][, "est"], family, components)[["base"]]
+  return(lapply(seq_len(components), function(k) {
+    baseline <- stats::setNames(fit[["res.t"]][paste0(family[["pars"]], k), "est"], family[["pars"]])
+    return(.sapmParameters(family, base[[k]], .sapEquationBetas(fit, family, k, components),
+      .sapEquationMatrices(fit, family, k, components), baseline))
+  }))
 }
 .sapmPosterior                  <- function(fit, family, components, survObject) {
   return(.sapmPosteriorProbabilities(
@@ -414,4 +418,28 @@
     # Families with a survreg equivalent use the faster weighted survreg M-step.
     survreg        = switch(distribution, "exp" = "exponential", "lnorm" = "lognormal", "llogis" = "loglogistic", "weibull" = "weibull", NULL)
   ), functions))
+}
+
+.sapmConditionalMagnitude <- function(fit, family, components) {
+
+  parameters <- .sapmObservationParameters(fit, family, components)
+  selected <- family[["pars"]][vapply(family[["transforms"]], function(link) identical(link, log), logical(1)) &
+    family[["pars"]] != family[["location"]]]
+  return(vapply(parameters, function(parameter) any(vapply(parameter[selected], function(value)
+    any(!is.finite(log(value)) | abs(log(value)) > 15), logical(1))), logical(1)))
+}
+
+.sapmDivergingEffects <- function(fit, family, components) {
+
+  selected <- family[["pars"]][family[["pars"]] == family[["location"]] |
+    vapply(family[["transforms"]], function(link) identical(link, log), logical(1))]
+  return(vapply(seq_len(components), function(k) {
+    beta <- .sapEquationBetas(fit, family, k, components)
+    matrices <- .sapEquationMatrices(fit, family, k, components)
+    any(vapply(selected, function(parameter) {
+      if (length(beta[[parameter]]) == 0L) return(FALSE)
+      value <- as.vector(matrices[[parameter]] %*% beta[[parameter]])
+      return(any(!is.finite(value)) || max(abs(value - mean(value))) > 15)
+    }, logical(1)))
+  }, logical(1)))
 }

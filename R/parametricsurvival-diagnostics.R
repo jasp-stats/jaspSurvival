@@ -68,7 +68,7 @@
     return(tempPlot)
   }
 
-  tempPlot$plotObject <- try(.sapPlotCanvasPadding(.saResidualsPlot(time, res, gettext("Time"), .saResidualsPlotName(options))))
+  tempPlot$plotObject <- try(.saPlotCanvasPadding(.saResidualsPlot(time, res, gettext("Time"), .saResidualsPlotName(options))))
 
   return(tempPlot)
 }
@@ -112,7 +112,7 @@
     if (tempPredictorName == colnames(predictorsFit)[i])
       tempPredictorName <- .saTermNames(tempPredictorName, variables = c(options[["covariates"]], options[["factors"]]))
     residualPlotResidualVsPredictors[[paste0("residualPlotResidualVsPredictors", i)]] <- createJaspPlot(
-      plot         = .sapPlotCanvasPadding(.saResidualsPlot(x = predictorsFit[,i], y = res, xlab = tempPredictorName, ylab = .saResidualsPlotName(options))),
+      plot         = .saPlotCanvasPadding(.saResidualsPlot(x = predictorsFit[,i], y = res, xlab = tempPredictorName, ylab = .saResidualsPlotName(options))),
       title        = gettextf("Residuals vs. %1$s", tempPredictorName),
       position     = i,
       width        = 450,
@@ -142,7 +142,7 @@
     return(tempPlot)
   }
 
-  tempPlot$plotObject <- try(.sapPlotCanvasPadding(.saResidualsPlot(pred, res, gettext("Predicted Time"), .saResidualsPlotName(options))))
+  tempPlot$plotObject <- try(.saPlotCanvasPadding(.saResidualsPlot(pred, res, gettext("Predicted Time"), .saResidualsPlotName(options))))
 
   return(tempPlot)
 }
@@ -160,7 +160,7 @@
     return(tempPlot)
   }
 
-  tempPlot$plotObject <- try(.sapPlotCanvasPadding(jaspGraphs::jaspHistogram(res, xName =.saResidualsPlotName(options))))
+  tempPlot$plotObject <- try(.saPlotCanvasPadding(jaspGraphs::jaspHistogram(res, xName =.saResidualsPlotName(options))))
 
   return(tempPlot)
 }

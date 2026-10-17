@@ -160,15 +160,7 @@
     seed <- pilot
     seed[["formula"]][[3L]] <- 1L
     seed[["anc"]] <- NULL
-    seedFit <- suppressWarnings(suppressMessages(do.call(flexsurv::flexsurvreg, seed)))
-    slopes <- unlist(lapply(specification[["equations"]], function(equation) equation[["slopeNames"]]), use.names = FALSE)
-    baselines <- setdiff(specification[["parameterNames"]], slopes)
-    if (!identical(rownames(seedFit[["res"]]), baselines) || anyDuplicated(baselines) ||
-        any(!is.finite(seedFit[["res"]][, "est"])))
-      stop(gettext("The native seed does not match the prepared baseline parameters."))
-    inits <- stats::setNames(rep(0, length(specification[["parameterNames"]])), specification[["parameterNames"]])
-    inits[baselines] <- seedFit[["res"]][baselines, "est"]
-    pilot[["inits"]] <- unname(inits)
+    pilot[["inits"]] <- .sapBaselineInitials(seed, specification)
   }
   fit <- suppressWarnings(suppressMessages(do.call(flexsurv::flexsurvreg, pilot)))
   return(list(fit = fit, specification = .sapVerifyNativeSchema(fit, specification),
@@ -362,9 +354,8 @@
   if (!identical(expression, expected))
     stop(gettext("The fitted Arrhenius expression does not match its transformation constant."))
   # Use the actual fitted literal, including the generator's deparse precision.
-  constant <- expression[[2L]][[3L]][[2L]][[2L]]
   attr(expression[[2L]][[3L]][[2L]][[2L]], "boltzmannConstant") <- TRUE
-  return(list(expression = expression, constant = constant))
+  return(expression)
 }
 
 .sapEquationRootExpression <- function(expression, degree) {
@@ -382,14 +373,9 @@
   parsed <- str2lang(expression)
   variable <- all.vars(parsed)[1L]
   specification <- equation[["transformations"]][[variable]]
-  constants <- numeric(0)
-  if (!is.null(specification) && specification[["transformation"]] == "arrhenius") {
-    arrhenius <- .sapEquationArrheniusExpression(parsed, variable, specification, fit)
-    constants <- arrhenius[["constant"]]
-    parsed <- arrhenius[["expression"]]
-  }
+  if (!is.null(specification) && specification[["transformation"]] == "arrhenius")
+    parsed <- .sapEquationArrheniusExpression(parsed, variable, specification, fit)
   label <- .sapEquationExpression(parsed, html)
-  definitions <- character(0)
   if (is.factor(value)) {
     if (coding == 2L)
       columns <- levels(value)
@@ -405,41 +391,22 @@
     names <- paste0(expression, columns)
     labels <- unname(tokens[match(names, names(tokens))])
     missing <- is.na(labels)
-    variable <- all.vars(parsed)[1L]
     labels[missing] <- paste0(jaspBase::decodeColNames(variable), " (", columns[missing], ")")
     if (html) labels <- .sapEquationEscape(labels)
-    return(list(names = names, labels = paste0("(", labels, ")"), definitions = definitions))
+    return(list(names = names, labels = paste0("(", labels, ")")))
   }
   if (is.matrix(value)) {
-    variable <- all.vars(parsed)[1L]
-    specification <- equation[["transformations"]][[variable]]
     count <- ncol(value)
     columns <- colnames(value)
     if (is.null(columns)) columns <- as.character(seq_len(count))
     symbol <- paste0(if (specification[["transformation"]] == "polynomial") "P" else "B", "[", native, ", ", index, ", ")
     argument <- .sapEquationExpression(as.name(variable))
     labels <- paste0(symbol, seq_len(count), "](", if (html) .sapEquationEscape(argument) else argument, ")")
-    vector <- function(values) paste0("c(", paste(.sapEquationConstant(values), collapse = ", "), ")")
-    if (specification[["transformation"]] == "polynomial") {
-      coefficients <- attr(value, "coefs")
-      if (is.null(coefficients)) stop(gettext("The fitted orthogonal polynomial coefficients are unavailable."))
-      basis <- paste0("stats::poly(", argument, ", degree = ", count, ", raw = FALSE, coefs = list(alpha = ",
-        vector(coefficients[["alpha"]]), ", norm2 = ", vector(coefficients[["norm2"]]), "))")
-    } else {
-      knots <- attr(value, "knots")
-      boundary <- attr(value, "Boundary.knots")
-      if (is.null(knots) || is.null(boundary)) stop(gettext("The fitted natural spline knots are unavailable."))
-      basis <- paste0("splines::ns(", argument, ", knots = ", vector(knots), ", Boundary.knots = ", vector(boundary),
-        ", intercept = ", attr(value, "intercept"), ")")
-    }
-    definitions <- paste0(symbol, "j](", argument, ") = ", basis, "[, j], j = 1, ..., ", count)
-    return(list(names = paste0(expression, if (count == 1L) "" else columns), labels = labels, definitions = definitions))
+    return(list(names = paste0(expression, if (count == 1L) "" else columns), labels = labels))
   }
-  variable <- all.vars(parsed)[1L]
-  specification <- equation[["transformations"]][[variable]]
   if (!is.null(specification) && specification[["transformation"]] == "root")
     label <- .sapEquationExpression(.sapEquationRootExpression(parsed, specification[["rootDegree"]]), html)
-  return(list(names = expression, labels = label, definitions = definitions, constants = constants))
+  return(list(names = expression, labels = label))
 }
 
 # Match whole native column names using fitted term membership. Colons inside
@@ -450,8 +417,6 @@
   if (length(detail[["designColumns"]]) == 0L) return(character(0))
   factors <- attr(stats::terms(equation[["formula"]]), "factors")
   labels <- character(length(detail[["designColumns"]]))
-  definitions <- character(0)
-  constants <- vector("list", length(labels))
   for (term in unique(equation[["slopeTerms"]])) {
     selected <- which(factors[, term] > 0L)
     atoms <- lapply(selected, function(index) .sapEquationAtoms(fit, native, rownames(factors)[index],
@@ -465,43 +430,8 @@
     mapping <- match(detail[["designColumns"]][columns], names)
     if (anyNA(mapping)) stop(gettext("The fitted equation terms do not match the native design columns."))
     labels[columns] <- display[mapping]
-    constants[columns] <- rep(list(unique(unlist(lapply(atoms, function(atom) atom[["constants"]]), use.names = FALSE))), length(columns))
-    definitions <- c(definitions, unlist(lapply(atoms, function(atom) atom[["definitions"]]), use.names = FALSE))
   }
-  attr(labels, "definitions") <- unique(definitions)
-  attr(labels, "constants") <- constants
   return(labels)
-}
-
-.sapEquationBasisNotes <- function(fit) {
-
-  if (jaspBase::isTryError(fit)) return(character(0))
-  details <- .sapEquationDetails(fit)
-  context <- attr(fit, "modelTitle")
-  subgroup <- attr(fit, "subgroupLabel")
-  if (!is.null(subgroup) && nzchar(subgroup))
-    context <- paste(context, subgroup, sep = " | ")
-  notes <- unlist(lapply(names(details), function(native) {
-    detail <- details[[native]]
-    definitions <- attr(.sapEquationTerms(fit, native, detail), "definitions")
-    vapply(definitions, function(definition) .sapEquationEscape(gettextf(
-      "Fitted basis in %1$s, parameter %2$s, component %3$i: %4$s.",
-      context, detail[["parameter"]], detail[["component"]], definition)), character(1))
-  }), use.names = FALSE)
-  return(notes)
-}
-
-.sapEquationConstantNotes <- function(fit) {
-
-  if (jaspBase::isTryError(fit)) return(character(0))
-  details <- .sapEquationDetails(fit)
-  constants <- unique(unlist(lapply(names(details), function(native) {
-    detail <- details[[native]]
-    labels <- .sapEquationTerms(fit, native, detail)
-    return(unlist(attr(labels, "constants")[detail[["coefficients"]][-1L] != 0], use.names = FALSE))
-  }), use.names = FALSE))
-  return(vapply(.sapEquationConstant(constants), function(constant) gettextf(
-    "k<sub>B</sub> = %1$s eV/K is the Boltzmann constant. Temperatures are converted to kelvin.", constant), character(1)))
 }
 
 .sapFittedParameterEquation <- function(fit, native, detail, decimals) {
@@ -560,15 +490,7 @@
     seed[["weights"]] <- pmax(weights[informative], 1e-10)
     seed[["method"]] <- "BFGS"
     seed[["control"]] <- list(maxit = 0)
-    seedFit <- suppressWarnings(suppressMessages(do.call(flexsurv::flexsurvreg, seed)))
-    slopes <- unlist(lapply(current[["equations"]], function(equation) equation[["slopeNames"]]), use.names = FALSE)
-    baselines <- setdiff(current[["parameterNames"]], slopes)
-    if (!identical(rownames(seedFit[["res"]]), baselines) || anyDuplicated(baselines) ||
-        any(!is.finite(seedFit[["res"]][, "est"])))
-      stop(gettext("The native seed does not match the prepared baseline parameters."))
-    inits <- stats::setNames(rep(0, length(current[["parameterNames"]])), current[["parameterNames"]])
-    inits[baselines] <- seedFit[["res"]][baselines, "est"]
-    fitCall[["inits"]] <- unname(inits)
+    fitCall[["inits"]] <- .sapBaselineInitials(seed, current)
   }
   schema <- .sapNativeSchema(fitCall, current, fixed)
   if (!fullPolynomial && (is.null(fitCall[["inits"]]) || length(current[["structuralFixed"]]) == 0L))
@@ -602,34 +524,15 @@
     structuralInitialAdjustment = attr(fitCall, "structuralInitialAdjustment"), fullParameterScales = attr(fitCall, "fullParameterScales"),
     parameters = .sapmParameters(family, base, beta, matrices, linkBaseline)))
 }
-.sapmConditionalMagnitude <- function(fit, family, components) {
-
-  parameters <- .sapmObservationParametersWithoutDiagnostics(fit, family, components)
-  selected <- family[["pars"]][vapply(family[["transforms"]], function(link) identical(link, log), logical(1)) &
-    family[["pars"]] != family[["location"]]]
-  return(vapply(parameters, function(parameter) any(vapply(parameter[selected], function(value)
-    any(!is.finite(log(value)) | abs(log(value)) > 15), logical(1))), logical(1)))
-}
-.sapmObservationParametersWithoutDiagnostics <- function(fit, family, components) {
-
-  base <- .sapmBaseParameters(fit[["res.t"]][, "est"], family, components)[["base"]]
-  return(lapply(seq_len(components), function(k) {
-    baseline <- stats::setNames(fit[["res.t"]][paste0(family[["pars"]], k), "est"], family[["pars"]])
-    return(.sapmParameters(family, base[[k]], .sapEquationBetas(fit, family, k, components),
-      .sapEquationMatrices(fit, family, k, components), baseline))
-  }))
-}
-.sapmDivergingEffects <- function(fit, family, components) {
-
-  selected <- family[["pars"]][family[["pars"]] == family[["location"]] |
-    vapply(family[["transforms"]], function(link) identical(link, log), logical(1))]
-  return(vapply(seq_len(components), function(k) {
-    beta <- .sapEquationBetas(fit, family, k, components)
-    matrices <- .sapEquationMatrices(fit, family, k, components)
-    any(vapply(selected, function(parameter) {
-      if (length(beta[[parameter]]) == 0L) return(FALSE)
-      value <- as.vector(matrices[[parameter]] %*% beta[[parameter]])
-      return(any(!is.finite(value)) || max(abs(value - mean(value))) > 15)
-    }, logical(1)))
-  }, logical(1)))
+# Map a baseline-only native seed to the complete equation coefficient order.
+.sapBaselineInitials <- function(seed, specification) {
+  seedFit <- suppressWarnings(suppressMessages(do.call(flexsurv::flexsurvreg, seed)))
+  slopes <- unlist(lapply(specification[["equations"]], function(equation) equation[["slopeNames"]]), use.names = FALSE)
+  baselines <- setdiff(specification[["parameterNames"]], slopes)
+  if (!identical(rownames(seedFit[["res"]]), baselines) || anyDuplicated(baselines) ||
+      any(!is.finite(seedFit[["res"]][, "est"])))
+    stop(gettext("The native seed does not match the prepared baseline parameters."))
+  inits <- stats::setNames(rep(0, length(specification[["parameterNames"]])), specification[["parameterNames"]])
+  inits[baselines] <- seedFit[["res"]][baselines, "est"]
+  return(unname(inits))
 }

@@ -89,30 +89,6 @@
   selected <- which(equation[["slopeTerms"]] %in% match(terms, labels))
   return(intersect(columns, colnames(equation[["matrix"]])[-1L][selected]))
 }
-.sapFactorCodingNotes <- function(fit) {
-  if (jaspBase::isTryError(fit)) return(character(0))
-  notes <- character(0)
-  variables <- character(0)
-  for (detail in attr(fit, "equations")[["equations"]]) {
-    for (variable in names(detail[["equation"]][["factorContrasts"]])) {
-      specification <- detail[["equation"]][["factorContrasts"]][[variable]]
-      coding <- specification[["contrast"]]
-      label <- switch(coding, treatment = gettext("Treatment"), SAS = gettext("SAS"), sum = gettext("Sum"),
-        helmert = gettext("Helmert"), poly = gettext("Orthogonal polynomial"))
-      notes <- c(notes, if (coding %in% c("treatment", "SAS"))
-        gettextf("Factor %1$s in %2$s, parameter %3$s: %4$s contrasts with reference level %5$s.",
-          jaspBase::decodeColNames(variable), attr(fit, "modelTitle"), detail[["parameter"]], label,
-          .sapFactorReference(attr(fit, "dataset")[[variable]], specification)) else
-        gettextf("Factor %1$s in %2$s, parameter %3$s: %4$s contrasts in the observed category order.",
-          jaspBase::decodeColNames(variable), attr(fit, "modelTitle"), detail[["parameter"]], label))
-      variables <- union(variables, variable)
-    }
-  }
-  for (variable in variables)
-    notes <- c(notes, gettextf("Default prediction profile for %1$s in %2$s: %3$s.",
-      jaspBase::decodeColNames(variable), attr(fit, "modelTitle"), .sapFittedFactorReference(fit, variable)))
-  return(unique(notes))
-}
 .sapRetainedFactorContrastWarning <- function(warning, fit) {
   # model.frame drops C() attributes when applying xlev; native flexsurv then
   # rebuilds every equation with these exact stored contrasts. Keep all other

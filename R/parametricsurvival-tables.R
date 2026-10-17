@@ -371,10 +371,11 @@
     return(covarianceMatrixTable)
 
   # add columns for each parameter
+  labels <- .sapCoefficientLabels(fit, covariance = TRUE)
   for (i in 1:nrow(data)) {
-    covarianceMatrixTable$addColumnInfo(name = data[["coefficient"]][i], title = .sapCoefficientLabels(fit, covariance = TRUE)[i], type = "number")
+    covarianceMatrixTable$addColumnInfo(name = data[["coefficient"]][i], title = labels[i], type = "number")
   }
-  data[["coefficient"]] <- .sapCoefficientLabels(fit, covariance = TRUE)
+  data[["coefficient"]] <- labels
 
   # add footnotes
   if (!is.null(attr(fit, "label")) && attr(fit, "label") != "")

@@ -96,78 +96,17 @@
   attr(result, "X") <- attr(fit, "predictionX")
   return(result)
 }
-.sapPredictionPlotSize <- function(plot, options, width, height) {
-  position <- options[["plotLegend"]]
-  if (position == "none" || identical(plot$theme$legend.position, "none")) return(c(width = round(.8 * width), height = height))
-  keys <- unlist(lapply(c("colour", "fill", "linetype", "shape"), function(aesthetic) {
-    scale <- plot$scales$get_scales(aesthetic)
-    if (is.null(scale)) return(character(0))
-    limits <- scale$limits
-    if (is.character(limits)) return(limits)
-    return(character(0))
-  }), use.names = FALSE)
-  text <- unique(c(keys, unlist(plot$labels[c("colour", "fill", "linetype", "shape")], use.names = FALSE)))
-  text <- text[nzchar(text)]
-  if (!length(text) && length(plot$layers)) {
-    for (layer in plot$layers) if (is.data.frame(layer$data)) for (field in c("Line", "Range"))
-      if (field %in% names(layer$data)) text <- unique(c(text, as.character(layer$data[[field]])))
+# Native link coefficients map to the same parameters for points and draws.
+.sapPredictionParameters <- function(fit, X, rawsim) {
+  stopifnot(ncol(X) == fit[["ncoveffs"]])
+  parameters <- fit[["dlist"]][["pars"]]
+  values <- matrix(NA_real_, nrow(rawsim) * nrow(X), length(parameters), dimnames = list(NULL, parameters))
+  for (i in seq_along(parameters)) {
+    parameter <- parameters[i]
+    linear <- matrix(rawsim[, parameter], nrow(rawsim), nrow(X))
+    columns <- fit[["mx"]][[parameter]]
+    if (length(columns)) linear <- linear + tcrossprod(rawsim[, fit[["covpars"]][columns], drop = FALSE], X[, columns, drop = FALSE])
+    values[, i] <- fit[["dlist"]][["inv.transforms"]][[i]](as.vector(linear))
   }
-  lines <- unlist(strsplit(text, "\n", fixed = TRUE), use.names = FALSE)
-  longest <- if (length(lines)) max(nchar(lines)) else 12L
-  if (position %in% c("left", "right")) width <- width + min(260, max(140, 60 + 7 * longest))
-  else height <- height + min(180, max(60, 30 + 18 * ceiling(max(1L, length(lines)) / 3L)))
-  return(c(width = round(.8 * width), height = height))
-}
-.sapPredictionContourColourbarWidth <- function(plot, options) {
-  if (!options[["plotLegend"]] %in% c("top", "bottom")) return(NULL)
-  scale <- plot$scales$get_scales("fill")
-  if (is.null(scale)) return(NULL)
-  theme <- ggplot2::theme_get() + plot$theme
-  text <- ggplot2::calc_element("legend.text", theme)
-  font <- if (inherits(text, "element_blank")) 0 else text$size
-  labels <- scale$get_labels()
-  if (!length(labels)) return(NULL)
-  labelWidth <- max(nchar(labels)) * font * .6
-  return(max(160, (length(labels) - 1L) * (labelWidth + 8)))
-}
-.sapPredictionContourPlotSize <- function(plot, options, panelCount) {
-  columns <- min(2L, panelCount)
-  rows    <- ceiling(panelCount / columns)
-  # Base canvas fits square panels, axis labels and one caption per row.
-  width  <- 260 * columns + 100
-  height <- 300 * rows + 50
-  if (options[["plotLegend"]] != "none") {
-    grDevices::pdf(file = NULL)
-    on.exit(grDevices::dev.off())
-    grob <- ggplot2::ggplotGrob(plot)
-    indices <- which(grepl("^guide-box", grob$layout$name) &
-      !vapply(grob$grobs, function(value) inherits(value, "zeroGrob"), logical(1)))
-    if (length(indices)) {
-      # Measure the rendered guide, including its title and every legend key.
-      dimensions <- vapply(grob$grobs[indices], function(guide) c(
-        width = grid::convertWidth(sum(guide$widths), "inches", valueOnly = TRUE) * 96,
-        height = grid::convertHeight(sum(guide$heights), "inches", valueOnly = TRUE) * 96), numeric(2))
-      legendWidth  <- max(dimensions["width", ]) + 32
-      legendHeight <- max(dimensions["height", ]) + 32
-      if (options[["plotLegend"]] %in% c("left", "right")) {
-        width  <- width + legendWidth
-        height <- max(height, legendHeight)
-      } else {
-        fill <- plot$scales$get_scales("fill")
-        text <- ggplot2::calc_element("legend.text", ggplot2::theme_get() + plot$theme)
-        if (!is.null(fill) && !inherits(text, "element_blank")) {
-          # Colourbar endpoint labels extend beyond the guide's own width.
-          labelWidths <- vapply(fill$get_labels(), function(label) {
-            grob <- grid::textGrob(label, gp = grid::gpar(fontsize = text$size,
-              fontfamily = text$family, fontface = text$face))
-            grid::convertWidth(grid::grobWidth(grob), "inches", valueOnly = TRUE) * 96
-          }, numeric(1))
-          if (length(labelWidths)) legendWidth <- legendWidth + max(labelWidths)
-        }
-        width  <- max(width, legendWidth)
-        height <- height + legendHeight
-      }
-    }
-  }
-  return(c(width = ceiling(width), height = ceiling(height)))
+  return(values)
 }

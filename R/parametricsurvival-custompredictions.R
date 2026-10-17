@@ -396,7 +396,6 @@
     if (inherits(record, "try-error")) next
     fit      <- record[["fit"]]
     prefix   <- .saExportModelPrefix(fit, prefixOptions, length(records) > 1L)
-    identity <- .saExportFitIdentity(fit)
     for (i in seq_along(record[["values"]])) {
       measure     <- specification[["measures"]][[i]]
       evaluations <- .sapCustomPredictionEvaluations(measure)
@@ -410,11 +409,7 @@
         values  <- record[["values"]][[i]][[field]][seq.int(at, length.out = length(record[["rows"]]), by = evaluations)]
         aligned <- rep(NA_real_, nrow(original))
         aligned[record[["rows"]]] <- ifelse(is.finite(values), values, NA_real_)
-        semantic <- list(producer = "custom", identity = identity, measure = measure[["id"]],
-          percentile = if (measure[["type"]] == "quantile") measure[["probability"]][at], time = if (measure[["kind"]] == "time") measure[["times"]][at],
-          field = sub("[0-9]+$", "", field), level = if (field != "estimate") specification[["levels"]][as.integer(sub("lower|upper", "", field))],
-          direction = if (field != "estimate") specification[["direction"]])
-        columns[[length(columns) + 1L]] <- list(name = paste0(prefix, suffix), value = aligned, type = "scale", semantic = semantic)
+        columns[[length(columns) + 1L]] <- list(name = paste0(prefix, suffix), value = aligned, type = "scale")
       }
     }
   }
