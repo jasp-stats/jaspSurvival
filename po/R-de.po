@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: jaspSurvival 0.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
 "POT-Creation-Date: 2026-10-03 05:57\n"
-"PO-Revision-Date: 2026-10-14 19:51+0000\n"
+"PO-Revision-Date: 2026-10-17 10:21+0000\n"
 "Last-Translator: Johannes Keyser <jokeyser@users.noreply.hosted.weblate.org>"
 "\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspsurvival-"
@@ -21,13 +21,13 @@ msgid ""
 msgstr ""
 
 msgid "No observations remain after excluding missing values."
-msgstr ""
+msgstr "Nach Ausschließen fehlender Werte verbleiben keine Beobachtungen mehr."
 
 msgid "The end time must be larger than the start time."
 msgstr "Die Endzeit muss größer als die Startzeit sein."
 
 msgid "The interval end must be greater than or equal to the interval start."
-msgstr ""
+msgstr "Das Intervallende muss größer oder gleich dem Intervallanfang sein."
 
 msgid "The weights variable must be an integer."
 msgstr "Die Gewichtungsvariable muss eine Ganzzahl sein."
@@ -66,31 +66,34 @@ msgid "Count"
 msgstr "Anzahl"
 
 msgid "%1$s: non-finite values were exported as missing."
-msgstr ""
+msgstr "%1$s: Nicht-endliche Werte wurden als fehlend exportiert."
 
 msgid "The column '%1$s' already exists. Specify a different export prefix."
 msgstr ""
+"Die Spalte '%1$s' existiert bereits. Geben Sie ein anderes Exportpräfix an."
 
 msgid "Export"
-msgstr ""
+msgstr "Exportieren"
 
 msgid "Message"
-msgstr ""
+msgstr "Nachricht"
 
 msgid "Exported values could not be matched to the original observations."
 msgstr ""
+"Die exportierten Werte konnten nicht den ursprünglichen Beobachtungen "
+"zugeordnet werden."
 
 msgid "Fitted mean survival time"
-msgstr ""
+msgstr "Geschätzte mittlere Überlebenszeit"
 
 msgid "Response residual"
 msgstr ""
 
 msgid "Fitted median survival time"
-msgstr ""
+msgstr "Geschätzter Median der Überlebenszeit"
 
 msgid "Cox-Snell residual"
-msgstr ""
+msgstr "Cox-Snell-Residuum"
 
 msgid "Component %1$i probability"
 msgstr ""
@@ -114,7 +117,7 @@ msgid "Full dataset"
 msgstr "Gesamter Datensatz"
 
 msgid "Response"
-msgstr "Response"
+msgstr "Antwort"
 
 msgid "Cox-Snell"
 msgstr "Cox-Snell"
@@ -391,7 +394,7 @@ msgid "Replications"
 msgstr ""
 
 msgid "Log Lik."
-msgstr "Log-Likelihood"
+msgstr "Log-Lik."
 
 msgid "Next Best Log Lik."
 msgstr ""
@@ -833,23 +836,21 @@ msgstr ""
 "Die gesamte folgende Ausgabe basiert auf der am besten angepassten %1$s-"
 "Verteilung."
 
-#, fuzzy
 msgid ""
 "Results are based on %1$s distribution which was the best fitting "
 "distribution."
 msgstr ""
-"Die Ergebnisse basieren auf der %1$s-Verteilung, die die am besten "
-"angepasste Verteilung war."
+"Ergebnisse basieren auf der %1$s-Verteilung, die die am besten angepasste "
+"Verteilung war."
 
 msgid "Results are based on %1$s."
 msgstr "Die Ergebnisse basieren auf %1$s."
 
-#, fuzzy
 msgid ""
 "Results are based on %1$s with distribution %2$s which is the best fitting "
 "distribution across models."
 msgstr ""
-"Die Ergebnisse basieren auf %1$s mit der Verteilung %2$s, die die am besten "
+"Ergebnisse basieren auf %1$s mit der %2$s-Verteilung, die die am besten "
 "angepasste Verteilung über alle Modelle hinweg ist."
 
 msgid "Results are based on best fitting models."
@@ -860,12 +861,11 @@ msgstr ""
 "Die Ergebnisse basieren auf den am besten angepassten Modellen innerhalb "
 "jeder Verteilung."
 
-#, fuzzy
 msgid ""
 "Results are based on %1$s with %2$s distribution which was the best fitting "
 "model across all models and distributions."
 msgstr ""
-"Die Ergebnisse basieren auf %1$s mit der Verteilung %2$s, das das am besten "
+"Die Ergebnisse basieren auf %1$s mit %2$s-Verteilung, was das am besten "
 "angepasste Modell über alle Modelle und Verteilungen hinweg war."
 
 msgid ""
@@ -984,17 +984,17 @@ msgstr "%.0f%% KI"
 msgid "VS-MPR%s"
 msgstr "VS-MPR%s"
 
-#, fuzzy
 msgid ""
 "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value,\n"
 "  the maximum possible odds in favor of H%1$s over H%2$s equals\n"
 "  1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37\n"
 "  (Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
-"Vovk-Sellke Maximum <em>p</em>-Ratio: Auf Grundlage des <em>p</em>-Werts "
-"beträgt die maximal mögliche Odds zugunsten von H%1$s gegenüber H%2$s   1/(-"
-"e <em>p</em> log(<em>p</em>)) für <em>p</em> %3$s .37   (Sellke, Bayarri, & "
-"Berger, 2001)."
+"Vovk-Sellke-Maximum-<em>p</em>-Quotient: Basierend auf dem <em>p</em>-Wert\n"
+"  ist der maximalen Quotient zugungsten der H%1$s relativ zur H%2$s gegeben "
+"durch \n"
+"  1/(-e <em>p</em> log(<em>p</em>)) für <em>p</em> %3$s .37\n"
+"  (Sellke, Bayarri, & Berger, 2001)."
 
 msgid "Results are stratified via: %1$s."
 msgstr "Die Ergebnisse sind geschichtet über: %1$s."
