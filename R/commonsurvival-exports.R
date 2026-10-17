@@ -19,7 +19,7 @@
     return()
 
   dependencies <- c(.saspDependencies, "exportColumnPrefix", exportOptions)
-  container <- createJaspContainer()
+  container    <- createJaspContainer()
   container$dependOn(dependencies)
   container$position <- 10
   jaspResults[["exportColumns"]] <- container
@@ -37,6 +37,7 @@
   return()
 }
 
+# Prepare row-aligned column records before modifying the dataset.
 .saExportRecords <- function(fits, options, valueFunction) {
 
   columns  <- list()
@@ -66,6 +67,7 @@
   }
   return(list(columns = columns, messages = messages))
 }
+
 .saSetExportColumn <- function(column, record) {
 
   if (record[["type"]] == "nominal")
@@ -73,6 +75,7 @@
   else
     column$setScale(record[["value"]])
 }
+
 .saExportMessages <- function(container, messages) {
 
   if (!length(messages))
@@ -81,34 +84,46 @@
   container[["messages"]] <- table
   .saFillMessageTable(table, unique(messages))
 }
+
 .saExportPreflight <- function(columns, columnExists = jaspBase:::columnExists, columnIsMine = jaspBase:::columnIsMine) {
+
   names <- vapply(columns, `[[`, character(1), "name")
   if (anyDuplicated(names))
-    .quitAnalysis(gettextf("More than one export requests the column '%1$s'. Specify distinct export prefixes.", names[which(duplicated(names))[1L]]))
+    .quitAnalysis(gettextf(
+      "More than one export requests the column '%1$s'. Specify distinct export prefixes.",
+      names[which(duplicated(names))[1L]]
+    ))
   for (i in seq_along(columns)) {
     name <- names[i]
-    if (!columnExists(name)) next
+    if (!columnExists(name))
+      next
     if (!columnIsMine(name))
       .quitAnalysis(gettextf("The column '%1$s' already exists. Specify a different export prefix.", name))
   }
   return(invisible(TRUE))
 }
+
+# Merge fitted-observation exports and custom predictions under one ownership check.
 .sapExportColumnPlan <- function(jaspResults, options, additional, informationChanged = FALSE) {
+
   exportOptions <- .saExportOptions(options)
-  normal <- any(vapply(exportOptions, function(name) options[[name]], logical(1)))
+  normal        <- any(vapply(exportOptions, function(name) options[[name]], logical(1)))
   if (!.saSurvivalReady(options) || (!normal && is.null(additional)) ||
-      (!informationChanged && !is.null(jaspResults[["exportColumns"]]))) return()
+    (!informationChanged && !is.null(jaspResults[["exportColumns"]])))
+    return()
   dependencies <- unique(c(.sapGetDependencies(options), "interpretModel", "exportColumnPrefix", exportOptions,
     .sapCustomPredictionDependencies, .sapSelectedOutputDependencies, .sapSimulationDependencies, additional[["dependencies"]]))
   columns  <- list()
   messages <- character(0)
   if (normal) {
-    fits <- .sapFlattenFit(.sapExtractFit(jaspResults, options, type = "selected"), options)
+    fits     <- .sapFlattenFit(.sapExtractFit(jaspResults, options, type = "selected"), options)
     prepared <- .saExportRecords(fits, options, .sapExportValues)
     columns  <- prepared[["columns"]]
     messages <- prepared[["messages"]]
   }
-  columns <- c(columns, additional[["columns"]])
+
+  # Check the complete plan before creating or refreshing any columns.
+  columns   <- c(columns, additional[["columns"]])
   container <- jaspResults[["exportColumns"]]
   # Desktop ownership permits refreshing this analysis's columns after settings change.
   .saExportPreflight(columns)
@@ -119,9 +134,10 @@
     jaspResults[["exportColumns"]] <- container
   }
   for (record in columns) {
-    name <- record[["name"]]
+    name     <- record[["name"]]
     existing <- !is.null(container[[name]])
-    if (!existing) container[[name]] <- createJaspColumn(columnName = name, dependencies = dependencies)
+    if (!existing)
+      container[[name]] <- createJaspColumn(columnName = name, dependencies = dependencies)
     .saSetExportColumn(container[[name]], record)
   }
   .saExportMessages(container, messages)
@@ -136,6 +152,7 @@
   return()
 }
 
+# Restore dataset order after fitting-row filtering and frequency expansion.
 .saExportAlign <- function(fit, values) {
 
   dataset      <- attr(fit, "dataset")
@@ -155,13 +172,14 @@
 }
 
 .saExportValue <- function(value, type = "scale") {
+
   return(list(value = value, type = type))
 }
 
 .sapExportValues <- function(fit, options) {
 
-  dataset <- attr(fit, "dataset")
-  values  <- list()
+  dataset            <- attr(fit, "dataset")
+  values             <- list()
   residualsAvailable <- options[["censoringType"]] != "interval"
   if (options[["exportFittedValuesMeanSurvivalTime"]] || (options[["exportResidualsResponse"]] && residualsAvailable)) {
     mean <- try(.sapCustomPredictionVector(.sapSummaryPredictions(fit, newdata = dataset, type = "mean", t = 0, ci = FALSE),
@@ -219,11 +237,11 @@
       "genf" = "GF", "genf.orig" = "GFO", "gompertz" = "GO", "llogis" = "LL",
       "lnorm" = "LN", "weibull" = "WB"
     )
-    model <- match(attr(fit, "modelId"), vapply(options[["modelTerms"]], function(x) x[["name"]], character(1)))
+    model       <- match(attr(fit, "modelId"), vapply(options[["modelTerms"]], function(x) x[["name"]], character(1)))
     modelPrefix <- paste0(family, "-M", model,
       if (options[["analysisType"]] == "mixture") paste0("-Mix", attr(fit, "components")))
     if (.sapHasSubgroups(options)) {
-      subgroup <- if (attr(fit, "subgroupLabel") == gettext("Full dataset")) "All" else paste0("G-", attr(fit, "subgroup"))
+      subgroup    <- if (attr(fit, "subgroupLabel") == gettext("Full dataset")) "All" else paste0("G-", attr(fit, "subgroup"))
       modelPrefix <- paste0(modelPrefix, "-", subgroup)
     }
     parts <- c(parts, modelPrefix)

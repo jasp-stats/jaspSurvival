@@ -4,6 +4,7 @@
   selected <- vapply(.sapLifetimeSummaryOptions, function(name) options[[name]], logical(1))
   return(c("quantile", "median", "mean")[selected])
 }
+
 .sapModelPredictionRoleDependencies <- c("predictionsXAxisVariables", "predictionsUnassignedReferenceValues", "predictionsUnassignedReferenceValuesCustomValues", "predictionsLifetimeTimeId", "predictionsSeparateLines", "predictionsSeparatePlots", "predictionsAssignedCovariateValues", "predictionsAssignedCovariateValuesQuantiles", "predictionsAssignedCovariateValuesCustomValues", "predictionsAssignedCovariateValuesGroupUniqueLevels", "predictionsAssignedCovariateValuesGroupUniqueLevelsLimit",
   "predictionsContourXAxis", "predictionsContourYAxis", "predictionsContourSeparateLines", "predictionsContourSeparatePlots")
 .sapModelPredictionEvaluationDependencies <- c("predictionsTimePercentages", "predictionsPredictorValuesInTable")
@@ -11,24 +12,30 @@
 .sapModelPredictionTimeRole <- function(options) {
 
   time <- options[["predictionsLifetimeTimeId"]]
-  if (options[["predictionsXAxisVariables"]] == time) return("x")
-  if (time %in% options[["predictionsSeparateLines"]]) return("lines")
-  if (time %in% options[["predictionsSeparatePlots"]]) return("panels")
+  if (options[["predictionsXAxisVariables"]] == time)
+    return("x")
+  if (time %in% options[["predictionsSeparateLines"]])
+    return("lines")
+  if (time %in% options[["predictionsSeparatePlots"]])
+    return("panels")
 }
 
 .sapModelPredictionAt <- function(fit, options, type, timeRole, plot = FALSE) {
 
-  if (type %in% c("mean", "median")) return(0)
+  if (type %in% c("mean", "median"))
+    return(0)
   if (type == "quantile") {
     values <- .sapOptions2PredictionQuantile(options)
     if (plot && timeRole == "x") {
       plotRange <- if (options[["predictionsLifetimePercentilesGrid"]] == "sequence")
         .sapPredictionSequenceSettings(options, "predictionsLifetimePercentiles", 100, probability = TRUE)[c("From", "To")] / 100 else range(values)
-      if (diff(plotRange) > 0) values <- sort(unique(c(values, seq(plotRange[1L], plotRange[2L], length.out = 101L))))
+      if (diff(plotRange) > 0)
+        values <- sort(unique(c(values, seq(plotRange[1L], plotRange[2L], length.out = 101L))))
     }
     return(values)
   }
-  if (plot) options[["predictionsRoundTimeTableValues"]] <- FALSE
+  if (plot)
+    options[["predictionsRoundTimeTableValues"]] <- FALSE
   smooth <- plot && timeRole == "x"
   return(.sapOptions2PredictionTime(options, fit, if (smooth) type else "time", smooth))
 }
@@ -36,12 +43,16 @@
 .sapValidateModelPredictionEvaluations <- function(options) {
 
   axes <- .sapModelPredictionAxes(options)
-  if (!.sapModelPredictionActive(options) || identical(axes, options[["predictionsLifetimeTimeId"]])) return()
+  if (!.sapModelPredictionActive(options) || identical(axes, options[["predictionsLifetimeTimeId"]]))
+    return()
   if (options[["predictionsLifetimePercentiles"]] &&
-      (options[["predictionsOutcomeSurvivalTime"]] || (options[["predictionsOutcomeRelativeSurvivalTime"]] && .sapRelativeLifeAvailable(options)))) .sapOptions2PredictionQuantile(options)
+    (options[["predictionsOutcomeSurvivalTime"]] || (options[["predictionsOutcomeRelativeSurvivalTime"]] && .sapRelativeLifeAvailable(options))))
+    .sapOptions2PredictionQuantile(options)
   if (any(vapply(.sapModelPredictionTimeOptions, function(name) options[[name]], logical(1)))) {
-    if (options[["predictionsTimeGrid"]] == "customRelative") .sapPredictionRelativeTimes(options)
-    if (options[["predictionsTimeGrid"]] == "customAbsolute" && nzchar(trimws(options[["predictionsTimeValues"]]))) .sapPredictionAbsoluteTimes(options)
+    if (options[["predictionsTimeGrid"]] == "customRelative")
+      .sapPredictionRelativeTimes(options)
+    if (options[["predictionsTimeGrid"]] == "customAbsolute" && nzchar(trimws(options[["predictionsTimeValues"]])))
+      .sapPredictionAbsoluteTimes(options)
   }
   return()
 }
@@ -58,13 +69,19 @@
   representatives <- unname(vapply(groupRows, function(rows) .sapWeightedMean(value[rows], weights[rows]), numeric(1)))
   count           <- length(representatives)
   rows            <- lapply(sort(unique(bins)), function(bin) which(bins == bin))
-  return(list(values = representatives, labels = .sapPredictionCovariateLabels(representatives, variable), rows = rows, collapsed = count < groups))
+  return(list(
+    values    = representatives,
+    labels    = .sapPredictionCovariateLabels(representatives, variable),
+    rows      = rows,
+    collapsed = count < groups
+  ))
 }
 
 .sapPredictionCovariateLabels <- function(values, variable) {
 
   labels <- format(signif(values, 4L), trim = TRUE)
-  if (anyDuplicated(labels)) labels <- format(values, digits = 17L, trim = TRUE)
+  if (anyDuplicated(labels))
+    labels <- format(values, digits = 17L, trim = TRUE)
   return(vapply(labels, function(value) gettextf("%1$s = %2$s", jaspBase::decodeColNames(variable), value), character(1)))
 }
 
@@ -79,7 +96,9 @@
 .sapPredictionAssignedValues <- function(options) {
 
   variables <- .sapPredictionAssignedCovariates(options)
-  if (!length(variables)) return(list())
+  if (!length(variables))
+    return(list())
+
   data <- .sapCustomPredictionManual(options[["predictionsAssignedCovariateValuesCustomValues"]], variables)
   return(lapply(stats::setNames(variables, variables), function(variable) {
     text   <- trimws(data[[variable]])
@@ -87,7 +106,10 @@
     values <- vapply(text, function(value) {
       number <- .sapNumericExpression(value)
       if (!.sapFiniteNumeric(number, expectedLength = 1L))
-        stop(gettextf("Custom assigned values for %1$s must be finite numbers or numeric expressions.", jaspBase::decodeColNames(variable)))
+        stop(gettextf(
+          "Custom assigned values for %1$s must be finite numbers or numeric expressions.",
+          jaspBase::decodeColNames(variable)
+        ))
       as.numeric(number)
     }, numeric(1))
     return(unique(unname(values)))
@@ -97,7 +119,8 @@
 .sapPredictionCustomCovariateGroup <- function(value, values, variable, weights) {
 
   averaged <- !length(values)
-  if (averaged) values <- .sapWeightedMean(value, weights)
+  if (averaged)
+    values <- .sapWeightedMean(value, weights)
   rows <- if (averaged) list(seq_along(value)) else lapply(values, function(number) which(value == number))
   return(list(values = values, labels = .sapPredictionCovariateLabels(values, variable), rows = rows, collapsed = FALSE))
 }
@@ -109,6 +132,7 @@
     rows = lapply(levels, function(level) which(value == level)), collapsed = FALSE))
 }
 
+# Build reference profiles and the grid assigned to axes, lines and panels.
 .sapModelPredictionScenarios <- function(fit, options, plot = FALSE, timeRole = .sapModelPredictionTimeRole(options)) {
 
   training  <- attr(fit, "dataset")
@@ -120,10 +144,16 @@
   variables <- unique(c(.sapOptionsVariables(options), lines, panels))
   xVariable <- options[["predictionsXAxisVariables"]]
   timeAxis  <- timeRole == "x"
-  if (!timeAxis) variables <- unique(c(variables, xVariable))
+  if (!timeAxis)
+    variables <- unique(c(variables, xVariable))
+
+  # Start with reference values for predictors that have no display role.
   reference <- training[1L, variables, drop = FALSE]
-  for (variable in variables) reference[[variable]] <- .sapPredictionReferenceValue(training[[variable]], variable, options, weights,
-    if (is.factor(training[[variable]])) .sapFittedFactorReference(fit, variable) else NULL)
+  for (variable in variables)
+    reference[[variable]] <- .sapPredictionReferenceValue(training[[variable]], variable, options, weights,
+      if (is.factor(training[[variable]])) .sapFittedFactorReference(fit, variable) else NULL)
+
+  # Choose representative values for line and panel groups.
   roles    <- unique(c(lines, panels))
   custom   <- options[["predictionsAssignedCovariateValues"]] == "custom"
   count    <- if (custom) 1L else options[["predictionsAssignedCovariateValuesQuantiles"]]
@@ -134,7 +164,8 @@
     else if (!is.factor(training[[variable]]) && options[["predictionsAssignedCovariateValuesGroupUniqueLevels"]] &&
       length(unique(training[[variable]])) <= options[["predictionsAssignedCovariateValuesGroupUniqueLevelsLimit"]])
       .sapPredictionUniqueCovariateGroup(training[[variable]], variable)
-    else .sapPredictionGroups(training[[variable]], count, variable, weights)
+    else
+      .sapPredictionGroups(training[[variable]], count, variable, weights)
   })
   names(groups) <- roles
   if (!timeAxis) {
@@ -144,24 +175,36 @@
         seq(min(value), max(value), length.out = options[["predictionsPredictorValuesInTable"]])
     groups[[xVariable]] <- list(values = axis, labels = as.character(axis), collapsed = FALSE)
   }
+
+  # Cross the assigned values while retaining the observation groups for overlays.
   indices <- if (length(groups)) expand.grid(lapply(groups, function(group) seq_along(group[["values"]])), KEEP.OUT.ATTRS = FALSE) else data.frame(.scenario = 1L)
   data    <- reference[rep(1L, nrow(indices)), , drop = FALSE]
-  for (variable in names(groups)) data[[variable]] <- groups[[variable]][["values"]][indices[[variable]]]
+  for (variable in names(groups))
+    data[[variable]] <- groups[[variable]][["values"]][indices[[variable]]]
   label <- function(role) {
-    if (!length(role)) return(rep("", nrow(indices)))
+    if (!length(role))
+      return(rep("", nrow(indices)))
     values <- lapply(role, function(variable) {
       labels <- groups[[variable]][["labels"]][indices[[variable]]]
-      if (is.factor(training[[variable]])) paste0(jaspBase::decodeColNames(variable), " = ", labels) else labels
+      if (is.factor(training[[variable]]))
+        paste0(jaspBase::decodeColNames(variable), " = ", labels) else
+        labels
     })
     do.call(paste, c(values, sep = " | "))
   }
   notes <- vapply(roles[vapply(groups[roles], `[[`, logical(1), "collapsed")], function(variable)
-    gettextf("%1$s has %2$i nonempty groups instead of the requested %3$i; tied values remain together.", jaspBase::decodeColNames(variable), length(groups[[variable]][["values"]]), count), character(1))
+    gettextf(
+      "%1$s has %2$i nonempty groups instead of the requested %3$i; tied values remain together.",
+      jaspBase::decodeColNames(variable),
+      length(groups[[variable]][["values"]]),
+      count
+    ), character(1))
   roleKeys       <- if (length(roles)) do.call(paste, c(indices[roles], sep = "|")) else rep("", nrow(indices))
   uniqueRoles    <- which(!duplicated(roleKeys))
   observedGroups <- lapply(uniqueRoles, function(i) {
     rows <- seq_len(nrow(training))
-    for (variable in roles) rows <- intersect(rows, groups[[variable]][["rows"]][[indices[[variable]][i]]])
+    for (variable in roles)
+      rows <- intersect(rows, groups[[variable]][["rows"]][[indices[[variable]][i]]])
     rows
   })
   observedRows <- observedGroups[match(roleKeys, roleKeys[uniqueRoles])]
@@ -171,20 +214,24 @@
 
 .sapModelPredictionPercentileLabels <- function(at) {
 
-  at <- 100 * at
+  at     <- 100 * at
   labels <- as.character(at)
-  if (anyDuplicated(labels[!duplicated(at)])) labels <- format(at, digits = 17L, trim = TRUE)
+  if (anyDuplicated(labels[!duplicated(at)]))
+    labels <- format(at, digits = 17L, trim = TRUE)
   return(labels)
 }
 
 .sapModelPredictionEvaluationLabels <- function(at, type) {
 
-  if (type == "quantile") at <- 100 * at
+  if (type == "quantile")
+    at <- 100 * at
   labels <- as.character(at)
-  if (anyDuplicated(labels[!duplicated(at)])) labels <- format(at, digits = 17L, trim = TRUE)
+  if (anyDuplicated(labels[!duplicated(at)]))
+    labels <- format(at, digits = 17L, trim = TRUE)
   return(paste0(if (type == "quantile") gettext("Lifetime percentile") else gettext("Time"), " = ", labels))
 }
 
+# Evaluate scenarios, then attach the grouping columns used by tables and plots.
 .sapModelPredictionValues <- function(fit, scenarios, options, type, at, measure = type, fast = FALSE) {
 
   fit       <- .sapPredictionConditionedFit(fit, scenarios[["data"]], options, .sapPredictionUsedVariables(options))
@@ -198,8 +245,11 @@
   } else {
     result <- do.call(.sapSummaryPredictions, arguments)
   }
+
+  # Normalize the summary layout before adding scenario labels and plot coordinates.
   warnings <- attr(result, "predictionWarnings")
-  if (fit[["ncovs"]] == 0L && length(result) == 1L) result <- rep(result, nrow(scenarios[["data"]]))
+  if (fit[["ncovs"]] == 0L && length(result) == 1L)
+    result <- rep(result, nrow(scenarios[["data"]]))
   stopifnot(length(result) == nrow(scenarios[["data"]]))
   rows <- lapply(seq_along(result), function(i) {
     prediction <- result[[i]]
@@ -207,7 +257,8 @@
       estimate = prediction[["est"]], lCi = prediction[["lcl"]], uCi = prediction[["ucl"]])
     value[["x"]] <- if (scenarios[["timeAxis"]]) if (type %in% c("mean", "median"))
       factor(rep(" ", nrow(value))) else value[["at"]] else rep(scenarios[["x"]][i], nrow(value))
-    if (!is.null(scenarios[["y"]])) value[["y"]] <- rep(scenarios[["y"]][i], nrow(value))
+    if (!is.null(scenarios[["y"]]))
+      value[["y"]] <- rep(scenarios[["y"]][i], nrow(value))
     value[["Line"]] <- scenarios[["lines"]][i]
     value[["ConditionLine"]] <- value[["Line"]]
     value[["Panel"]] <- scenarios[["panels"]][i]
@@ -232,6 +283,7 @@
   return(paste(parts[!is.na(parts) & nzchar(parts)], collapse = " | "))
 }
 
+# Match observed rows to the same line and panel groups as fitted predictions.
 .sapModelPredictionObserved <- function(fit, options, kaplanMeier = FALSE, measure = "survivalProbability") {
 
   effectiveVariables <- unique(unlist(lapply(fit, function(model) .sapModelVariables(attr(model, "modelTerms"))), use.names = FALSE))
@@ -241,16 +293,21 @@
     roles     <- data.frame(Line = scenarios[["lines"]], Panel = scenarios[["panels"]])
     records   <- lapply(which(!duplicated(roles)), function(i) {
       rows <- scenarios[["observedRows"]][[i]]
-      if (kaplanMeier) for (variable in effectiveVariables)
-        rows <- rows[as.character(dataset[[variable]][rows]) == as.character(scenarios[["data"]][[variable]][i])]
-      if (!length(rows)) return(NULL)
+      if (kaplanMeier)
+        for (variable in effectiveVariables)
+          rows <- rows[as.character(dataset[[variable]][rows]) == as.character(scenarios[["data"]][[variable]][i])]
+      if (!length(rows))
+        return(NULL)
       observed <- dataset[rows, , drop = FALSE]
       value    <- if (kaplanMeier) .sapKaplanMeierStepData(observed, options, measure == "failureProbability") else
         data.frame(x = observed[[options[["timeToEvent"]]]], Event = observed[[options[["eventStatus"]]]])
       if (!kaplanMeier && !scenarios[["timeAxis"]]) {
         value[["estimate"]] <- value[["x"]]
         value[["x"]] <- observed[[scenarios[["xVariable"]]]]
-        value[["Status"]] <- factor(ifelse(value[["Event"]], gettext("Event"), gettext("Censored")), levels = c(gettext("Event"), gettext("Censored")))
+        value[["Status"]] <- factor(
+          ifelse(value[["Event"]], gettext("Event"), gettext("Censored")),
+          levels = c(gettext("Event"), gettext("Censored"))
+        )
       }
       value[["Panel"]] <- scenarios[["panels"]][i]
       value[["Line"]] <- scenarios[["lines"]][i]
@@ -275,12 +332,13 @@
 
 .sapKaplanMeierAvailability <- function(jaspResults, options) {
 
-  if (!is.null(jaspResults[["kaplanMeierAvailability"]])) return()
+  if (!is.null(jaspResults[["kaplanMeierAvailability"]]))
+    return()
   available <- FALSE
   if (options[["predictionsPredictFor"]] == "variables" && .saSurvivalReady(options) && options[["predictionsOutputPlot"]] &&
-      options[["predictionsOutputPlotType"]] == "standard" && options[["censoringType"]] == "right" &&
-      identical(.sapModelPredictionAxes(options), options[["predictionsLifetimeTimeId"]]) &&
-      (options[["predictionsOutcomeSurvivalProbability"]] || options[["predictionsOutcomeFailureProbability"]])) {
+    options[["predictionsOutputPlotType"]] == "standard" && options[["censoringType"]] == "right" &&
+    identical(.sapModelPredictionAxes(options), options[["predictionsLifetimeTimeId"]]) &&
+    (options[["predictionsOutcomeSurvivalProbability"]] || options[["predictionsOutcomeFailureProbability"]])) {
     groups <- if (.sapMergePlots(options, "modelPrediction"))
       .sapExtractFit(jaspResults, options, type = "byModel", output = "modelPrediction") else
       .sapNestFit(.sapFlattenFit(.sapExtractFit(jaspResults, options, type = "selected"), options))
@@ -300,12 +358,18 @@
 .sapKaplanMeierGroupAvailable <- function(models, options) {
 
   models <- models[!vapply(models, jaspBase::isTryError, logical(1))]
-  if (!length(models) || !.sapModelPredictionKaplanMeierEligible(models, options)) return(FALSE)
+  if (!length(models) || !.sapModelPredictionKaplanMeierEligible(models, options))
+    return(FALSE)
+
   observed <- try(.sapModelPredictionObserved(models, options, kaplanMeier = TRUE), silent = TRUE)
-  if (inherits(observed, "try-error") || is.null(observed)) return(FALSE)
+  if (inherits(observed, "try-error") || is.null(observed))
+    return(FALSE)
+
   times <- try(unlist(lapply(models, function(model)
     .sapModelPredictionAt(model, options, "survival", "x", plot = TRUE)), use.names = FALSE), silent = TRUE)
-  if (inherits(times, "try-error") || !length(times)) return(FALSE)
+  if (inherits(times, "try-error") || !length(times))
+    return(FALSE)
+
   clipped <- .sapPredictionClipKaplanMeier(observed, range(times))
   return(!is.null(clipped))
 }
@@ -317,7 +381,8 @@
     curve <- data[rows, , drop = FALSE]
     lower <- max(bounds[1L], min(curve[["at"]]))
     upper <- min(bounds[2L], max(curve[["at"]]))
-    if (upper <= lower) return(NULL)
+    if (upper <= lower)
+      return(NULL)
     first <- curve[tail(which(curve[["at"]] <= lower), 1L), , drop = FALSE]
     last  <- curve[tail(which(curve[["at"]] <= upper), 1L), , drop = FALSE]
     first[["at"]] <- lower
@@ -325,29 +390,43 @@
     rbind(first, curve[curve[["at"]] >= lower & curve[["at"]] <= upper, , drop = FALSE], last)
   })
   parts <- Filter(Negate(is.null), parts)
-  if (!length(parts)) return(NULL)
+  if (!length(parts))
+    return(NULL)
   return(.saSafeRbind(parts))
 }
 
+# Collect model predictions and series labels before constructing plot layers.
 .sapModelPredictionPlotRecords <- function(fit, options, type, measure, timeRole) {
 
   evaluationFit <- if (timeRole != "x") .sapPlotTimeFit(fit)
-  records <- lapply(fit, function(model) {
+  records       <- lapply(fit, function(model) {
     scenarios <- .sapModelPredictionScenarios(model, options, plot = TRUE, timeRole = timeRole)
-    at        <- .sapModelPredictionAt(if (timeRole == "x") model else evaluationFit, options, type, scenarios[["timeRole"]], plot = TRUE)
+    at        <- .sapModelPredictionAt(
+      if (timeRole == "x") model else evaluationFit,
+      options,
+      type,
+      scenarios[["timeRole"]],
+      plot = TRUE
+    )
     if (scenarios[["timeAxis"]] && !type %in% c("quantile", "mean", "median")) {
       # Refine the plotting grid without computing confidence bounds at scout points.
       scoutOptions <- options
       scoutOptions[["predictionsDisplayConfidenceIntervals"]] <- FALSE
-      evaluate   <- function(times) matrix(.sapModelPredictionValues(model, scenarios, scoutOptions, type, times, measure)[["estimate"]], nrow = length(times))
+      evaluate   <- function(times) matrix(
+        .sapModelPredictionValues(model, scenarios, scoutOptions, type, times, measure)[["estimate"]],
+        nrow = length(times)
+      )
       logTime    <- options[["predictionsXAxisTransformation"]] == "log"
       yTransform <- if (type == "survival") switch(options[["predictionsProbabilityYAxisScale"]],
         none = identity, log = log, logmlogmp = function(p) log(-log1p(-p))) else identity
-      anchors <- try(.sapModelPredictionValues(model, scenarios, scoutOptions, "quantile", c(.001, .01, .1, .5, .9, .99, .999))[["estimate"]], silent = TRUE)
+      anchors <- try(
+        .sapModelPredictionValues(model, scenarios, scoutOptions, "quantile", c(.001, .01, .1, .5, .9, .99, .999))[["estimate"]],
+        silent = TRUE
+      )
       at      <- .sapAdaptivePlotTimes(at, evaluate, xTransform = if (logTime) log else identity,
         xInverse = if (logTime) exp else identity, yTransform = yTransform, minimum = if (options[["predictionsDisplayConfidenceIntervals"]]) 65L else 17L,
-        maximum = if (options[["predictionsDisplayConfidenceIntervals"]]) 129L else 201L,
-        anchors = if (inherits(anchors, "try-error")) numeric(0) else anchors[is.finite(anchors)])
+        maximum  = if (options[["predictionsDisplayConfidenceIntervals"]]) 129L else 201L,
+        anchors  = if (inherits(anchors, "try-error")) numeric(0) else anchors[is.finite(anchors)])
     }
     .sapModelPredictionValues(model, scenarios, options, type, at, measure)
   })
@@ -357,7 +436,9 @@
 .sapModelPredictionPlotForAxis <- function(fit, options, type, measure = type) {
 
   fit <- fit[!vapply(fit, jaspBase::isTryError, logical(1))]
-  if (!.saSurvivalReady(options) || !nzchar(options[["predictionsXAxisVariables"]]) || !length(fit)) return(createJaspPlot())
+  if (!.saSurvivalReady(options) || !nzchar(options[["predictionsXAxisVariables"]]) || !length(fit))
+    return(createJaspPlot())
+
   timeRole <- .sapModelPredictionTimeRole(options)
   records  <- try(.sapModelPredictionPlotRecords(fit, options, type, measure, timeRole), silent = TRUE)
   if (jaspBase::isTryError(records)) {
@@ -377,7 +458,8 @@
     plot$setError(gettext("No finite predictions are available for this plot."))
     return(plot)
   }
-  for (field in c("estimate", "lCi", "uCi")) data[[field]][!is.finite(data[[field]])] <- NA_real_
+  for (field in c("estimate", "lCi", "uCi"))
+    data[[field]][!is.finite(data[[field]])] <- NA_real_
   timeAxis    <- options[["predictionsXAxisVariables"]] == options[["predictionsLifetimeTimeId"]]
   categorical <- is.factor(data[["x"]])
   xValues     <- data[["x"]]
@@ -393,9 +475,9 @@
   }
   encoding <- .sapPredictionPlotEncoding(fit, data, options, modelIndex,
     percentileLines = type == "quantile" && timeRole == "lines")
-  data <- encoding[["data"]]
+  data  <- encoding[["data"]]
   typed <- !is.null(encoding[["field"]])
-  plot <- ggplot2::ggplot(data, ggplot2::aes(x = x, y = estimate, color = Colour, group = Series))
+  plot  <- ggplot2::ggplot(data, ggplot2::aes(x = x, y = estimate, color = Colour, group = Series))
   if (type %in% c("quantile", "mean", "median") && !timeAxis && options[["predictionsDisplayPredictionInterval"]] && measure != "relativeSurvivalTime") {
     prediction <- .sapModelPredictionRange(fit, options, type)
     if (!is.null(prediction)) {
@@ -410,8 +492,19 @@
         plot <- plot + ggplot2::geom_linerange(data = prediction, ggplot2::aes(x = x, ymin = lower, ymax = upper, group = Series),
           inherit.aes = FALSE, colour = "grey70", linewidth = 3, alpha = .35, position = ggplot2::position_dodge(width = .3))
       }
-      else plot <- plot + ggplot2::geom_ribbon(data = prediction, ggplot2::aes(x = x, ymin = lower, ymax = upper, group = Group), inherit.aes = FALSE, fill = "grey75", alpha = .25, colour = NA)
-      notes <- c(notes, gettextf("%1$s%% prediction range: fitted event-time variability; parameter uncertainty excluded.", 100 * options[["predictionsDisplayPredictionIntervalLevel"]]))
+      else
+        plot <- plot + ggplot2::geom_ribbon(
+          data = prediction,
+          ggplot2::aes(x = x, ymin = lower, ymax = upper, group = Group),
+          inherit.aes = FALSE,
+          fill        = "grey75",
+          alpha       = .25,
+          colour      = NA
+        )
+      notes <- c(notes, gettextf(
+        "%1$s%% prediction range: fitted event-time variability; parameter uncertainty excluded.",
+        100 * options[["predictionsDisplayPredictionIntervalLevel"]]
+      ))
     }
   }
   showObserved <- type %in% c("quantile", "mean", "median") && !timeAxis && measure != "relativeSurvivalTime" && options[["predictionsDisplayObservedData"]]
@@ -429,10 +522,22 @@
         position = dodge, na.rm = TRUE, show.legend = FALSE)
     plot <- plot + ggplot2::geom_point(mapping = if (typed) ggplot2::aes(shape = Type), position = dodge)
   } else {
-    if (options[["predictionsDisplayConfidenceIntervals"]]) plot <- .sapAddModelBoundLayer(plot, data, options[["predictionsDisplayConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]], x = "x", groups = "Series", color = "Colour", fill = "Colour", na.rm = TRUE)
+    if (options[["predictionsDisplayConfidenceIntervals"]])
+      plot <- .sapAddModelBoundLayer(
+        plot,
+        data,
+        options[["predictionsDisplayConfidenceIntervalsLevel"]],
+        options[["confidenceIntervalBounds"]],
+        x      = "x",
+        groups = "Series",
+        color  = "Colour",
+        fill   = "Colour",
+        na.rm  = TRUE
+      )
     plot <- plot + jaspGraphs::geom_line(mapping = if (typed) ggplot2::aes(linetype = Type), na.rm = TRUE)
   }
-  if (typed) plot <- plot + .sapPredictionTypeScale(encoding, points = categorical)
+  if (typed)
+    plot <- plot + .sapPredictionTypeScale(encoding, points = categorical)
   if (length(unique(data[["Panel"]])) > 1L || any(nzchar(as.character(data[["Panel"]]))))
     plot <- plot + ggplot2::facet_wrap(~Panel, ncol = 2,
       labeller = if (type == "quantile" && timeRole == "panels") ggplot2::label_value else ggplot2::label_wrap_gen(20))
@@ -441,23 +546,44 @@
     if (options[["predictionsDisplayKaplanMeier"]]) {
       eligible <- .sapModelPredictionKaplanMeierEligible(fit, options)
       km       <- if (eligible) .sapModelPredictionObserved(fit, options, kaplanMeier = TRUE, measure = measure)
-      if (!is.null(km)) km <- .sapPredictionClipKaplanMeier(km, range(xValues))
-      if (!eligible) notes <- c(notes, gettext("Kaplan-Meier overlays require fixed factor profiles; continuous predictors or averaged factor levels have no matching empirical curve."))
+      if (!is.null(km))
+        km <- .sapPredictionClipKaplanMeier(km, range(xValues))
+      if (!eligible)
+        notes <- c(notes, gettext("Kaplan-Meier overlays require fixed factor profiles; continuous predictors or averaged factor levels have no matching empirical curve."))
       if (!is.null(km)) {
         km[["Colour"]] <- vapply(km[["Line"]], function(line) .sapPredictionSeriesLabel(gettext("Kaplan-Meier"), line), character(1))
         kaplanMeierColours <- unique(km[["Colour"]])
-        if (identical(encoding[["field"]], "subgroup")) km[["Type"]] <- factor(km[["Subgroup"]], levels = levels(data[["Type"]]))
-        # Match the step curves and confidence bands in .saSurvivalPlot().
-        if (options[["predictionsDisplayConfidenceIntervals"]]) plot <- plot + ggplot2::geom_ribbon(data = km, ggplot2::aes(x = at, ymin = lCi, ymax = uCi, fill = Colour, group = Series), inherit.aes = FALSE, alpha = .2, colour = NA)
         if (identical(encoding[["field"]], "subgroup"))
-          plot <- plot + ggplot2::geom_step(data = km, ggplot2::aes(x = at, y = estimate, color = Colour, group = Series, linetype = Type), inherit.aes = FALSE, linewidth = 1)
-        else plot <- plot + ggplot2::geom_step(data = km, ggplot2::aes(x = at, y = estimate, color = Colour, group = Series), inherit.aes = FALSE, linewidth = 1)
+          km[["Type"]] <- factor(km[["Subgroup"]], levels = levels(data[["Type"]]))
+        # Match the step curves and confidence bands in .saSurvivalPlot().
+        if (options[["predictionsDisplayConfidenceIntervals"]])
+          plot <- plot + ggplot2::geom_ribbon(
+            data = km,
+            ggplot2::aes(x = at, ymin = lCi, ymax = uCi, fill = Colour, group = Series),
+            inherit.aes = FALSE,
+            alpha       = .2,
+            colour      = NA
+          )
+        if (identical(encoding[["field"]], "subgroup"))
+          plot <- plot + ggplot2::geom_step(
+            data = km,
+            ggplot2::aes(x = at, y = estimate, color = Colour, group = Series, linetype = Type),
+            inherit.aes = FALSE,
+            linewidth   = 1
+          )
+        else
+          plot <- plot + ggplot2::geom_step(
+            data = km,
+            ggplot2::aes(x = at, y = estimate, color = Colour, group = Series),
+            inherit.aes = FALSE,
+            linewidth   = 1
+          )
       }
     }
   }
   if (measure != "relativeSurvivalTime" && options[["censoringType"]] == "right" &&
-      options[["predictionsDisplayCensoringEvents"]] &&
-      ((timeAxis && !type %in% c("mean", "median")) || (!timeAxis && type %in% c("quantile", "mean", "median")))) {
+    options[["predictionsDisplayCensoringEvents"]] &&
+    ((timeAxis && !type %in% c("mean", "median")) || (!timeAxis && type %in% c("quantile", "mean", "median")))) {
     observed <- .sapPredictionRugData(fit, options, data, type, timeRole)
     if (!is.null(observed)) {
       observed <- .sapPredictionLayerEncoding(observed, data)
@@ -474,11 +600,14 @@
     }
   }
   colours <- levels(data[["Colour"]])
-  for (layer in plot$layers) if (is.data.frame(layer$data)) for (field in c("Colour", "ObservedSeries"))
-    if (field %in% names(layer$data)) colours <- unique(c(colours, as.character(layer$data[[field]])))
-  colours <- unique(c(kaplanMeierColours, colours))
-  colorScale <- jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]])
-  fillScale  <- jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
+  for (layer in plot$layers)
+    if (is.data.frame(layer$data))
+      for (field in c("Colour", "ObservedSeries"))
+        if (field %in% names(layer$data))
+          colours <- unique(c(colours, as.character(layer$data[[field]])))
+  colours     <- unique(c(kaplanMeierColours, colours))
+  colorScale  <- jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]])
+  fillScale   <- jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
   singleTrace <- length(setdiff(colours, kaplanMeierColours)) == 1L && length(kaplanMeierColours) <= 1L
   if (length(kaplanMeierColours)) {
     colorScale$palette <- .sapKaplanMeierPalette(colorScale$palette, colours, kaplanMeierColours, "black")
@@ -486,9 +615,10 @@
   }
   if (singleTrace) {
     # Censoring marks keep their original colours; only curves and bands turn gray.
-    for (layer in plot$layers) if (inherits(layer$geom, "GeomRug"))
-      layer$aes_params$colour <- unname(colorScale$palette(length(colours))[
-        match(unique(layer$data[["Colour"]]), colours)])
+    for (layer in plot$layers)
+      if (inherits(layer$geom, "GeomRug"))
+        layer$aes_params$colour <- unname(colorScale$palette(length(colours))[
+          match(unique(layer$data[["Colour"]]), colours)])
     colorScale$palette <- .sapPlotPalette(colorScale$palette, 1L)
     fillScale$palette  <- .sapPlotPalette(fillScale$palette, 1L)
   }
@@ -497,7 +627,16 @@
     if (type == "quantile") gettext("Lifetime percentile") else gettext("Time") else jaspBase::decodeColNames(options[["predictionsXAxisVariables"]])) +
     ggplot2::ylab(.sapPredictionTitle(type, options, measure)) + colorScale + fillScale
   if (!categorical) {
-    axis <- try(.sapPredictionAxisScale(fit, options[["predictionsXAxisVariables"]], .sapPredictionAxisSettings(options, options[["predictionsXAxisVariables"]])[["scale"]], timeAxis, options), silent = TRUE)
+    axis <- try(
+      .sapPredictionAxisScale(
+        fit,
+        options[["predictionsXAxisVariables"]],
+        .sapPredictionAxisSettings(options, options[["predictionsXAxisVariables"]])[["scale"]],
+        timeAxis,
+        options
+      ),
+      silent = TRUE
+    )
     if (jaspBase::isTryError(axis)) {
       result <- createJaspPlot()
       result$setError(conditionMessage(attr(axis, "condition")))
@@ -508,7 +647,8 @@
       if (length(unique(data[["Panel"]])) > 1L && length(xBreaks) > 4L)
         xBreaks <- xBreaks[unique(c(seq.int(1L, length(xBreaks), by = 2L), length(xBreaks)))]
       plot <- plot + jaspGraphs::scale_x_continuous(breaks = xBreaks, limits = range(xBreaks), oob = scales::oob_keep)
-    } else plot <- plot + .sapPredictionPositionScale(axis, "x")
+    } else
+      plot <- plot + .sapPredictionPositionScale(axis, "x")
   }
   if (timeAxis && type == "quantile") {
     percentileScale <- plot$scales$get_scales("x")
@@ -516,27 +656,37 @@
   }
   plot <- plot + .sapPredictionOutcomeScale(options, type)
   plot <- .sapPredictionPlotAddTheme(plot, options)
-  if (measure == "relativeSurvivalTime") plot <- plot + ggplot2::geom_hline(yintercept = 1, linetype = 3, colour = "grey50")
+  if (measure == "relativeSurvivalTime")
+    plot <- plot + ggplot2::geom_hline(yintercept = 1, linetype = 3, colour = "grey50")
   plot <- plot + ggplot2::labs(colour = encoding[["colourTitle"]], fill = NULL) + ggplot2::guides(fill = "none")
   if (!is.null(encoding[["colourTitle"]]) || identical(encoding[["field"]], "percentile"))
     plot <- plot + ggplot2::theme(legend.title.position = "top")
-  if (typed) plot <- plot + ggplot2::guides(
-    colour = ggplot2::guide_legend(order = 1, override.aes = list(linetype = 1, shape = 16)),
-    linetype = ggplot2::guide_legend(order = 2, override.aes = list(colour = "grey40")),
-    shape = ggplot2::guide_legend(order = 2, override.aes = list(colour = "grey40")))
-  if (length(colours) == 1L) plot <- plot + ggplot2::guides(colour = "none")
-  if (length(colours) == 1L && !typed) plot <- plot + ggplot2::theme(legend.position = "none")
-  for (layer in plot$layers) if (inherits(layer$geom, "GeomRibbon")) layer$show.legend <- FALSE
+  if (typed)
+    plot <- plot + ggplot2::guides(
+      colour   = ggplot2::guide_legend(order = 1, override.aes = list(linetype = 1, shape = 16)),
+      linetype = ggplot2::guide_legend(order = 2, override.aes = list(colour = "grey40")),
+      shape    = ggplot2::guide_legend(order = 2, override.aes = list(colour = "grey40")))
+  if (length(colours) == 1L)
+    plot <- plot + ggplot2::guides(colour = "none")
+  if (length(colours) == 1L && !typed)
+    plot <- plot + ggplot2::theme(legend.position = "none")
+  for (layer in plot$layers)
+    if (inherits(layer$geom, "GeomRibbon"))
+      layer$show.legend <- FALSE
   plot <- plot + ggplot2::labs(caption = NULL)
-  axes <- try(.sapPredictionPrettyAxes(plot, quantileAxis = timeAxis && type == "quantile", probabilityAxis = type == "survival"), silent = TRUE)
+  axes <- try(
+    .sapPredictionPrettyAxes(plot, quantileAxis = timeAxis && type == "quantile", probabilityAxis = type == "survival"),
+    silent = TRUE
+  )
   if (jaspBase::isTryError(axes)) {
     result <- createJaspPlot()
     result$setError(conditionMessage(attr(axes, "condition")))
     return(result)
   }
   plot <- axes
-  if (timeAxis && type %in% c("mean", "median")) plot <- plot + ggplot2::theme(
-    axis.text.x = ggplot2::element_blank(), axis.ticks.x = ggplot2::element_blank(), axis.line.x = ggplot2::element_blank())
+  if (timeAxis && type %in% c("mean", "median"))
+    plot <- plot + ggplot2::theme(
+      axis.text.x = ggplot2::element_blank(), axis.ticks.x = ggplot2::element_blank(), axis.line.x = ggplot2::element_blank())
   panelCount <- length(unique(data[["Panel"]]))
   size       <- .sapPredictionPlotSize(plot, options, if (panelCount > 1L) 650 else 550,
     if (panelCount > 1L) 220 * ceiling(panelCount / 2) + 130 else 320)

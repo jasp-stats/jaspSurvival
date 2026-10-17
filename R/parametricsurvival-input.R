@@ -14,13 +14,16 @@
       "sin", "cos", "tan", "asin", "acos", "atan", "sinh", "cosh", "tanh", "min", "max", "sum", "prod", "mean", "median",
       "qnorm", "pnorm", "qchisq", "pchisq", "qt", "pt", "qf", "pf", "qgamma", "pgamma", "qbeta", "pbeta", "qweibull", "pweibull")
     valid <- function(node) {
-      if (is.numeric(node) || is.logical(node) || is.null(node)) return(TRUE)
-      if (is.name(node)) return(as.character(node) %in% c("pi", "Inf", "NaN", "NA"))
-      if (!is.call(node)) return(FALSE)
-      head <- node[[1L]]
+      if (is.numeric(node) || is.logical(node) || is.null(node))
+        return(TRUE)
+      if (is.name(node))
+        return(as.character(node) %in% c("pi", "Inf", "NaN", "NA"))
+      if (!is.call(node))
+        return(FALSE)
+      head    <- node[[1L]]
       allowed <- if (is.name(head)) as.character(head) %in% functions else
         is.call(head) && identical(head[[1L]], as.name("::")) && is.name(head[[2L]]) && is.name(head[[3L]]) &&
-        as.character(head[[2L]]) %in% c("base", "stats") && as.character(head[[3L]]) %in% functions
+          as.character(head[[2L]]) %in% c("base", "stats") && as.character(head[[3L]]) %in% functions
       return(allowed && all(vapply(as.list(node)[-1L], valid, logical(1))))
     }
     parsed <- parse(text = text)
@@ -29,7 +32,8 @@
     # Resolve only the allowed numeric functions; global/user functions cannot
     # shadow them, and common stats expressions need no namespace prefix.
     numericFunctions <- stats::setNames(lapply(functions, function(name) {
-      if (exists(name, envir = baseenv(), inherits = FALSE)) get(name, envir = baseenv()) else
+      if (exists(name, envir = baseenv(), inherits = FALSE))
+        get(name, envir = baseenv()) else
         getExportedValue("stats", name)
     }), functions)
     return(eval(parsed, envir = list2env(numericFunctions, parent = baseenv())))

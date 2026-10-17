@@ -15,7 +15,8 @@
         percentiles <- .sapOptions2PredictionQuantile(options)
         measures    <- c(measures, lapply(percentiles, function(percentile) list(type = "quantile", probability = percentile,
           label = gettextf("Percentile %1$s", 100 * percentile), kind = "lifetime", id = "quantile")))
-      } else measures[[length(measures) + 1L]] <- list(type = summary, label = .sapPredictionTitle(summary, options), kind = "lifetime", id = summary)
+      } else
+        measures[[length(measures) + 1L]] <- list(type = summary, label = .sapPredictionTitle(summary, options), kind = "lifetime", id = summary)
     }
   }
   selected <- vapply(.sapModelPredictionTimeOptions, function(name) options[[name]], logical(1))
@@ -27,10 +28,11 @@
       type = type, times = times, label = .sapPredictionTitle(type, options, id), kind = "time", id = id
     )
   }
-  if (!length(measures)) stop(gettext("Select a mean, percentile or time-evaluated measure for predictions."))
+  if (!length(measures))
+    stop(gettext("Select a mean, percentile or time-evaluated measure for predictions."))
   levels <- if (options[["predictionsDisplayConfidenceIntervals"]]) options[["predictionsDisplayConfidenceIntervalsLevel"]] else numeric(0)
   return(list(measures = measures, levels = levels, direction = options[["confidenceIntervalBounds"]], times = times,
-    plotTimes = times,
+    plotTimes       = times,
     plotPercentiles = if (any(vapply(measures, function(measure) measure[["type"]] == "quantile", logical(1))))
       .sapOptions2PredictionQuantile(options) else numeric(0)))
 }
@@ -115,7 +117,7 @@
     invalid <- is.na(data[[variable]]) | !data[[variable]] %in% levels(fitting[[variable]])
     if (any(invalid))
       stop(gettextf("Prediction row %1$i: '%2$s' must be one of these subgroup levels: %3$s.", which(invalid)[1L],
-                    jaspBase::decodeColNames(variable), paste(levels(fitting[[variable]]), collapse = ", ")))
+        jaspBase::decodeColNames(variable), paste(levels(fitting[[variable]]), collapse = ", ")))
   }
   combinations <- unique(fitting[subgroups])
   supported    <- vapply(seq_len(nrow(data)), function(row)
@@ -157,17 +159,18 @@
   return(rows)
 }
 
+# Validate predictor support and retain positions of omitted input rows.
 .sapCustomPredictionData <- function(input, rows, fit, options) {
 
-  variables <- .sapModelVariables(attr(fit, "modelTerms"))
-  training  <- attr(fit, "dataset")
-  source    <- options[["predictionsPredictFor"]]
-  data      <- input[rows, variables, drop = FALSE]
-  valid     <- rep(TRUE, length(rows))
+  variables      <- .sapModelVariables(attr(fit, "modelTerms"))
+  training       <- attr(fit, "dataset")
+  source         <- options[["predictionsPredictFor"]]
+  data           <- input[rows, variables, drop = FALSE]
+  valid          <- rep(TRUE, length(rows))
   referenceNotes <- character(0)
   for (variable in variables) {
     if (is.factor(training[[variable]]) && source %in% c("manual", "dataset") &&
-        any(is.na(data[[variable]]) | !nzchar(trimws(as.character(data[[variable]])))))
+      any(is.na(data[[variable]]) | !nzchar(trimws(as.character(data[[variable]])))))
       referenceNotes <- c(referenceNotes, gettextf("Blank values for %1$s in %2$s use the default profile level %3$s.",
         jaspBase::decodeColNames(variable), attr(fit, "modelTitle"), .sapFittedFactorReference(fit, variable)))
     predictor <- .sapCustomPredictionPredictor(data[[variable]], training[[variable]], source, variable, rows, .sapCaseWeights(training, options),
@@ -178,14 +181,15 @@
 
   # Check domains while retaining the fitted scaling constants and polynomial
   # basis for the actual prediction; sample-level fitting checks do not apply.
-  for (transformations in .sapModelTransformations(attr(fit, "modelTerms"))) for (variable in names(transformations)) {
-    value   <- suppressWarnings(as.numeric(as.character(data[[variable]])))
-    invalid <- .sapTransformationInvalid(value, transformations[[variable]])
-    if (source != "dataset" && any(invalid))
-      stop(gettextf("Prediction row %1$i: the value of '%2$s' is outside the domain of its model transformation.",
-                    rows[which(invalid)[1L]], jaspBase::decodeColNames(variable)))
-    valid <- valid & !invalid
-  }
+  for (transformations in .sapModelTransformations(attr(fit, "modelTerms")))
+    for (variable in names(transformations)) {
+      value   <- suppressWarnings(as.numeric(as.character(data[[variable]])))
+      invalid <- .sapTransformationInvalid(value, transformations[[variable]])
+      if (source != "dataset" && any(invalid))
+        stop(gettextf("Prediction row %1$i: the value of '%2$s' is outside the domain of its model transformation.",
+          rows[which(invalid)[1L]], jaspBase::decodeColNames(variable)))
+      valid <- valid & !invalid
+    }
 
   return(list(data = data[valid, , drop = FALSE], rows = rows[valid], omitted = sum(!valid), referenceNotes = referenceNotes))
 }
@@ -201,14 +205,14 @@
     invalid <- is.na(value) | !value %in% levels
     if (source != "dataset" && any(invalid))
       stop(gettextf("Prediction row %1$i: '%2$s' must be one of these levels: %3$s.", rows[which(invalid)[1L]],
-                    jaspBase::decodeColNames(variable), paste(levels, collapse = ", ")))
+        jaspBase::decodeColNames(variable), paste(levels, collapse = ", ")))
     value <- factor(value, levels = levels, ordered = is.ordered(training))
   } else {
     value   <- .sapCustomPredictionNumeric(value, blank, training, source, weights)
     invalid <- !is.finite(value)
     if (source != "dataset" && any(invalid))
       stop(gettextf("Prediction row %1$i: '%2$s' requires one finite numeric value%3$s.", rows[which(invalid)[1L]],
-                    jaspBase::decodeColNames(variable), if (source == "manual") gettext(" or expression") else ""))
+        jaspBase::decodeColNames(variable), if (source == "manual") gettext(" or expression") else ""))
   }
 
   return(list(value = value, valid = !invalid))

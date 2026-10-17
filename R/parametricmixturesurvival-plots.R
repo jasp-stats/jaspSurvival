@@ -20,7 +20,15 @@
 
   return(.sapDistributionPlotFun(fit, options, prefix, type))
 }
-.sapmComponentPlotForData       <- function(fit, options, dataset = attr(fit, "dataset"), prefix = "mixtureComponentPlot", type = options[["mixtureComponentPlotType"]], plotData = NULL) {
+
+.sapmComponentPlotForData       <- function(
+  fit,
+  options,
+  dataset  = attr(fit, "dataset"),
+  prefix   = "mixtureComponentPlot",
+  type     = options[["mixtureComponentPlotType"]],
+  plotData = NULL
+) {
 
   estimateTitle <- switch(
     type,
@@ -51,7 +59,7 @@
     return(tempPlot)
   }
 
-  hasLevel <- length(unique(plotData[["Level"]])) > 1
+  hasLevel        <- length(unique(plotData[["Level"]])) > 1
   hasDistribution <- length(unique(plotData[["Distribution"]])) > 1
   options[["predictionsDisplayConfidenceIntervals"]] <- options[["predictionsDisplayConfidenceIntervals"]] &&
     any(is.finite(unlist(plotData[.sapBoundFields(options[["confidenceIntervalBounds"]], "lCi", "uCi")])))
@@ -76,7 +84,7 @@
     as.character(plotData[plotData[[".fullCurve"]], "Distribution"]))
   fullColors <- fullColors[!duplicated(names(fullColors))]
 
-  logTime <- options[[paste0(prefix, "XAxisTransformation")]] == "log"
+  logTime  <- options[[paste0(prefix, "XAxisTransformation")]] == "log"
   logYAxis <- prefix == "mixtureComponentPlot" && options[["mixtureComponentPlotYAxisTransformation"]] == "log"
   if (logYAxis)
     plotData[[".displayEstimate"]] <- ifelse(plotData[["estimate"]] > 0, plotData[["estimate"]], NA_real_)
@@ -94,7 +102,7 @@
     xBreaks <- .sapProbabilityPlotTimeBreaks(xRange, canvas)
     xScale  <- jaspGraphs::scale_x_continuous(breaks = xBreaks, limits = xRange,
       minor_breaks = .sapProbabilityPlotTimeMinorBreaks(xRange, canvas), labels = .sapProbabilityPlotTimeLabel,
-      trans = "log", transform = "log", oob = scales::oob_keep)
+      trans        = "log", transform = "log", oob = scales::oob_keep)
   } else {
     xBreaks <- jaspGraphs::getPrettyAxisBreaks(xRange)
     xScale  <- jaspGraphs::scale_x_continuous(breaks = xBreaks, limits = range(xBreaks), oob = scales::oob_keep)
@@ -105,17 +113,17 @@
     if (logTime)
       observedDensity[["lower"]] <- pmax(observedDensity[["lower"]], xRange[1])
     plot <- plot + ggplot2::geom_rect(
-      data = observedDensity,
-      mapping = ggplot2::aes(xmin = lower, xmax = upper, ymin = 0, ymax = density),
+      data        = observedDensity,
+      mapping     = ggplot2::aes(xmin = lower, xmax = upper, ymin = 0, ymax = density),
       inherit.aes = FALSE, fill = "grey80", color = "white", alpha = 0.6
     )
   }
 
   if (options[["predictionsDisplayConfidenceIntervals"]]) {
     bandData <- plotData[plotData[["Component"]] == levels(plotData[["Component"]])[1], , drop = FALSE]
-    plot <- .sapAddModelBoundLayer(plot, bandData, options[["predictionsDisplayConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]],
-      groups = c(if (hasDistribution) "Distribution", "Level"),
-      color = if (hasDistribution) colorField, fill = if (hasDistribution) "Distribution", defaultFill = "grey60", na.rm = TRUE,
+    plot     <- .sapAddModelBoundLayer(plot, bandData, options[["predictionsDisplayConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]],
+      groups          = c(if (hasDistribution) "Distribution", "Level"),
+      color           = if (hasDistribution) colorField, fill = if (hasDistribution) "Distribution", defaultFill = "grey60", na.rm = TRUE,
       twoSidedMapping = list(x = as.name("at"), ymin = as.name("lCi"), ymax = as.name("uCi"),
         fill = if (hasDistribution) as.name("Distribution"), group = as.name(".curveGroup")))
   }
@@ -167,11 +175,11 @@
     breaks <- breaks[is.finite(breaks) & breaks > 0]
     yScale <- jaspGraphs::scale_y_continuous(breaks = breaks, limits = range(c(positive, breaks)),
       labels = scales::label_scientific(digits = 2),
-      trans = "log10", transform = "log10", oob = scales::oob_keep)
+      trans  = "log10", transform = "log10", oob = scales::oob_keep)
   }
 
   axisTitle <- if (type == "restrictedMeanSurvivalTime") gettext("RMST") else estimateTitle
-  plot <- plot + xScale + yScale +
+  plot      <- plot + xScale + yScale +
     ggplot2::ylab(if (logYAxis) gettextf("%1$s (log scale)", axisTitle) else axisTitle) +
     ggplot2::xlab(if (logTime) gettextf("%1$s (log scale)", gettext("Time")) else gettext("Time"))
 
@@ -180,20 +188,21 @@
     options[["plotTheme"]] <- "jasp"
   if (prefix == "mixtureComponentPlot")
     options[["plotLegend"]] <- options[["mixtureComponentPlotLegend"]]
-  plot <- .sapPredictionPlotAddTheme(plot, options)
+  plot             <- .sapPredictionPlotAddTheme(plot, options)
   horizontalLegend <- options[["plotLegend"]] %in% c("bottom", "top")
   if (horizontalLegend)
     plot <- plot + ggplot2::guides(color = ggplot2::guide_legend(ncol = 2, byrow = TRUE, title.position = "top",
       override.aes = list(linetype = unname(legendTypes))))
 
   seriesCount <- length(colors)
-  height <- 320 + if (horizontalLegend) 30 * (ceiling(seriesCount / 2) - 1) else 0
-  size <- if (prefix == "mixtureComponentPlot") .sapmComponentPlotSize(plot) else c(width = 550, height = height)
-  tempPlot <- createJaspPlot(width = size[["width"]], height = size[["height"]])
+  height      <- 320 + if (horizontalLegend) 30 * (ceiling(seriesCount / 2) - 1) else 0
+  size        <- if (prefix == "mixtureComponentPlot") .sapmComponentPlotSize(plot) else c(width = 550, height = height)
+  tempPlot    <- createJaspPlot(width = size[["width"]], height = size[["height"]])
   tempPlot$plotObject <- plot
 
   return(tempPlot)
 }
+
 .sapmComponentPlotSize          <- function(plot) {
 
   size <- c(width = 550, height = 320)
@@ -214,9 +223,10 @@
 
   return(ceiling(size))
 }
+
 .sapmObservedDensity            <- function(dataset, options, prefix = "mixtureComponentPlot") {
 
-  time <- dataset[[options[["timeToEvent"]]]]
+  time    <- dataset[[options[["timeToEvent"]]]]
   logTime <- options[[paste0(prefix, "XAxisTransformation")]] == "log"
   if (logTime) {
     time <- log(time[time > 0])
@@ -227,12 +237,12 @@
   if (binWidthType == "manual") {
     binWidthType <- options[[paste0(prefix, "ObservedDataNumberOfBins")]]
   } else if (binWidthType == "doane") {
-    n <- length(time)
+    n        <- length(time)
     centered <- time - mean(time)
     variance <- mean(centered^2)
     if (n > 2 && variance > 0) {
-      skewness <- mean(centered^3) / variance^1.5
-      skewnessSe <- sqrt(6 * (n - 2) / ((n + 1) * (n + 3)))
+      skewness     <- mean(centered^3) / variance^1.5
+      skewnessSe   <- sqrt(6 * (n - 2) / ((n + 1) * (n + 3)))
       binWidthType <- 1 + log2(n) + log2(1 + abs(skewness) / skewnessSe)
     } else {
       binWidthType <- "sturges"
@@ -241,15 +251,15 @@
     binWidthType <- 10000
   }
   histogram <- graphics::hist(time, breaks = binWidthType, plot = FALSE)
-  breaks <- if (logTime) histogram[["breaks"]] else pmax(0, histogram[["breaks"]])
-  breaks <- unique(breaks)
+  breaks    <- if (logTime) histogram[["breaks"]] else pmax(0, histogram[["breaks"]])
+  breaks    <- unique(breaks)
 
   # Survival drops supply probability masses. Do not normalize an unidentified tail away.
-  outcome <- .saGetSurvObject(options, dataset)
-  km <- survival::survfit(outcome ~ 1, weights = .sapCaseWeights(dataset, options))
-  mass <- -diff(c(1, km[["surv"]]))
-  kmTime <- if (logTime) log(km[["time"]]) else km[["time"]]
-  bin <- as.integer(cut(kmTime, breaks = breaks, include.lowest = TRUE))
+  outcome     <- .saGetSurvObject(options, dataset)
+  km          <- survival::survfit(outcome ~ 1, weights = .sapCaseWeights(dataset, options))
+  mass        <- -diff(c(1, km[["surv"]]))
+  kmTime      <- if (logTime) log(km[["time"]]) else km[["time"]]
+  bin         <- as.integer(cut(kmTime, breaks = breaks, include.lowest = TRUE))
   probability <- vapply(seq_len(length(breaks) - 1), function(i) sum(mass[!is.na(bin) & bin == i]), numeric(1))
 
   return(data.frame(
@@ -258,33 +268,46 @@
     density = probability / diff(breaks)
   ))
 }
-.sapmComponentPlotData          <- function(fit, options, dataset = attr(fit, "dataset"), prefix = "mixtureComponentPlot", type = options[["mixtureComponentPlotType"]], times = NULL) {
 
-  mixture    <- attr(fit, "mixture")
-  family     <- if (!is.null(mixture)) .sapmFamily(mixture[["family"]])
-  components <- attr(fit, "components")
+.sapmComponentPlotData          <- function(
+  fit,
+  options,
+  dataset = attr(fit, "dataset"),
+  prefix  = "mixtureComponentPlot",
+  type    = options[["mixtureComponentPlotType"]],
+  times   = NULL
+) {
+
+  mixture          <- attr(fit, "mixture")
+  family           <- if (!is.null(mixture)) .sapmFamily(mixture[["family"]])
+  components       <- attr(fit, "components")
   componentIndices <- if (prefix == "mixtureComponentPlot" && components > 1) seq_len(components) else integer(0)
-  logDensity <- type == "density" && options[[paste0(prefix, "XAxisTransformation")]] == "log"
-  marginal <- prefix == "densityPlot"
-  predictionData <- NULL
+  logDensity       <- type == "density" && options[[paste0(prefix, "XAxisTransformation")]] == "log"
+  marginal         <- prefix == "densityPlot"
+  predictionData   <- NULL
   if (marginal) {
-    predictors <- .sapModelVariables(attr(fit, "modelTerms"))
-    groups <- .sapPredictorGroups(dataset[predictors])
+    predictors     <- .sapModelVariables(attr(fit, "modelTerms"))
+    groups         <- .sapPredictorGroups(dataset[predictors])
     predictionData <- dataset[!duplicated(groups), predictors, drop = FALSE]
     # Combine identical predictor rows, retaining their observed proportions.
-    rowIndex <- match(groups, groups[!duplicated(groups)])
-    weights <- .sapCaseWeights(dataset, options)
+    rowIndex          <- match(groups, groups[!duplicated(groups)])
+    weights           <- .sapCaseWeights(dataset, options)
     predictionWeights <- vapply(seq_len(nrow(predictionData)), function(i) sum(weights[rowIndex == i]), numeric(1))
     predictionWeights <- predictionWeights / sum(predictionWeights)
   }
   # the components might change rapidly, the time steps are not rounded for a smooth display
   options[["predictionsRoundTimeTableValues"]] <- FALSE
   if (is.null(times))
-    times <- .sapOptions2PredictionTime(options, fit, type = if (prefix == "densityPlot") "density" else "mixtureComponents", plot = TRUE)
+    times <- .sapOptions2PredictionTime(
+      options,
+      fit,
+      type = if (prefix == "densityPlot") "density" else "mixtureComponents",
+      plot = TRUE
+    )
   if (components > 1)
     times <- .sapmComponentPlotTimes(fit, family, components, times, newdata = predictionData)
-  ci         <- options[["predictionsDisplayConfidenceIntervals"]]
-  level      <- options[["predictionsDisplayConfidenceIntervalsLevel"]]
+  ci    <- options[["predictionsDisplayConfidenceIntervals"]]
+  level <- options[["predictionsDisplayConfidenceIntervalsLevel"]]
 
   # the functions are evaluated with the covariate dependent parameters supplied by flexsurv
   # Average inside the prediction function so native CI draws average the
@@ -309,7 +332,7 @@
   }
   if (marginal) {
     conditionalComponent <- componentFunction
-    componentFunction <- function(k) marginalDensity(conditionalComponent(k))
+    componentFunction    <- function(k) marginalDensity(conditionalComponent(k))
   }
   predict <- function(...) {
     predictions <- .sapSummaryPredictions(fit, ..., newdata = predictionData, B = options[["confidenceIntervalSimulationDraws"]], seed = if (options[["setSeed"]]) options[["seed"]],
@@ -331,8 +354,8 @@
 
   evaluate <- function(times) {
     summary <- predictMixture(times, ci = FALSE)
-    values <- .sapPlotPredictionMatrix(summary)
-    values <- do.call(cbind, c(list(values), lapply(componentIndices, function(k)
+    values  <- .sapPlotPredictionMatrix(summary)
+    values  <- do.call(cbind, c(list(values), lapply(componentIndices, function(k)
       .sapPlotPredictionMatrix(predict(fn = componentFunction(k), t = times, ci = FALSE)))))
     return(if (logDensity) values * times else values)
   }
@@ -340,9 +363,9 @@
   logTime <- options[[paste0(prefix, "XAxisTransformation")]] == "log"
   times   <- .sapAdaptivePlotTimes(times, evaluate, minimum = if (ci) 65L else 17L, maximum = 401L,
     xTransform = if (logTime) log else identity, xInverse = if (logTime) exp else identity,
-    anchors = if (inherits(anchors, "try-error")) numeric(0) else anchors)
+    anchors    = if (inherits(anchors, "try-error")) numeric(0) else anchors)
 
-  mixtureSummary <- predictMixture(times, ci = ci, cl = level)
+  mixtureSummary     <- predictMixture(times, ci = ci, cl = level)
   componentSummaries <- lapply(componentIndices, function(k) predict(fn = componentFunction(k), t = times, ci = FALSE))
   predictionWarnings <- unique(c(attr(mixtureSummary, "predictionWarnings"), unlist(lapply(componentSummaries, attr, "predictionWarnings"))))
 
@@ -391,40 +414,42 @@
 
   return(out)
 }
+
 .sapmComponentContribution <- function(t, arguments, k, family, fit, type) {
 
-  n <- max(length(t), lengths(arguments))
-  t <- rep_len(t, n)
-  parameters <- lapply(stats::setNames(arguments[paste0(family[["pars"]], k)], family[["pars"]]), rep_len, length.out = n)
-  components <- attr(fit, "components")
+  n           <- max(length(t), lengths(arguments))
+  t           <- rep_len(t, n)
+  parameters  <- lapply(stats::setNames(arguments[paste0(family[["pars"]], k)], family[["pars"]]), rep_len, length.out = n)
+  components  <- attr(fit, "components")
   probability <- .sapmStickBreaking(do.call(cbind, lapply(arguments[paste0("v", seq_len(components - 1L))], rep_len, length.out = n)), n)[, k]
 
   if (type == "cumulativeHazard")
     return(.sapmComponentCumulativeHazard(t, arguments, k, family, fit))
   if (type == "hazard") {
-    logDensity <- do.call(family[["d"]], c(list(t), parameters, list(log = TRUE)))
+    logDensity  <- do.call(family[["d"]], c(list(t), parameters, list(log = TRUE)))
     logSurvival <- do.call(fit[["dfns"]][["p"]], c(list(t), arguments, list(lower.tail = FALSE, log.p = TRUE)))
-    out <- numeric(n)
-    positive <- probability > 0
+    out         <- numeric(n)
+    positive    <- probability > 0
     out[positive] <- exp(log(probability[positive]) + logDensity[positive] - logSurvival[positive])
     return(out)
   }
 
   value <- switch(type,
-    survival = do.call(family[["p"]], c(list(t), parameters, list(lower.tail = FALSE))),
-    failureProbability = do.call(family[["p"]], c(list(t), parameters)),
-    density = do.call(family[["d"]], c(list(t), parameters)),
+    survival                   = do.call(family[["p"]], c(list(t), parameters, list(lower.tail = FALSE))),
+    failureProbability         = do.call(family[["p"]], c(list(t), parameters)),
+    density                    = do.call(family[["d"]], c(list(t), parameters)),
     restrictedMeanSurvivalTime = do.call(family[["rmst"]], c(list(t), parameters)))
   out <- probability * value
   out[probability == 0] <- 0
   return(out)
 }
+
 .sapmComponentCumulativeHazard <- function(t, arguments, k, family, fit) {
 
-  n <- length(t)
+  n                <- length(t)
   numericArguments <- lapply(arguments[vapply(arguments, is.numeric, logical(1))], rep_len, length.out = n)
-  groups <- split(seq_len(n), .sapPredictorGroups(as.data.frame(numericArguments)))
-  out <- rep(NA_real_, n)
+  groups           <- split(seq_len(n), .sapPredictorGroups(as.data.frame(numericArguments)))
+  out              <- rep(NA_real_, n)
   for (rows in groups) {
     rows <- rows[is.finite(t[rows]) & t[rows] >= 0]
     if (length(rows) == 0L)
@@ -432,7 +457,7 @@
     parameters <- arguments
     for (name in names(numericArguments))
       parameters[[name]] <- numericArguments[[name]][rows[1]]
-    times <- sort(unique(c(0, t[rows])))
+    times      <- sort(unique(c(0, t[rows])))
     increments <- vapply(seq_len(length(times) - 1L), function(i)
       stats::integrate(function(time) .sapmComponentContribution(time, parameters, k, family, fit, "hazard"),
         lower = times[i], upper = times[i + 1L], rel.tol = 1e-7, abs.tol = 1e-9, subdivisions = 200L)[["value"]], numeric(1))
@@ -440,7 +465,15 @@
   }
   return(out)
 }
-.sapmComponentPlotTimes         <- function(fit, family, components, times, probabilities = seq(0.001, 0.999, length.out = 101L), newdata = NULL) {
+
+.sapmComponentPlotTimes         <- function(
+  fit,
+  family,
+  components,
+  times,
+  probabilities = seq(0.001, 0.999, length.out = 101L),
+  newdata       = NULL
+) {
 
   # Add points within every component at each displayed covariate level: a
   # uniform time grid can miss narrow peaks almost entirely.

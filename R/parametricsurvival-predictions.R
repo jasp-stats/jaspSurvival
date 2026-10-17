@@ -52,20 +52,20 @@
 
   specification <- switch(measure,
     "survivalTime" = list(type = "quantile", table = "survivalTimeTable", plot = "survivalTimePlot",
-                          title = gettext("Predicted Survival Time"), position = c(3.11, 3.01)),
+      title = gettext("Predicted Survival Time"), position = c(3.11, 3.01)),
     "relativeSurvivalTime" = list(type = "quantile", table = "relativeSurvivalTimeTable", plot = "relativeSurvivalTimePlot",
       title = gettext("Relative Survival Time"), position = c(3.12, 3.02)),
     "survivalProbability" = list(type = "survival", table = "survivalProbabilityTable", plot = "survivalProbabilityPlot",
-                                 title = gettext("Predicted Survival Probability"),
-                                 position = c(3.13, 3.03)),
+      title    = gettext("Predicted Survival Probability"),
+      position = c(3.13, 3.03)),
     "failureProbability" = list(type = "survival", table = "failureProbabilityTable", plot = "failureProbabilityPlot",
-                                title = gettext("Predicted Failure Probability"), position = c(3.14, 3.04)),
+      title = gettext("Predicted Failure Probability"), position = c(3.14, 3.04)),
     "hazard" = list(type = "hazard", table = "hazardTable", plot = "hazardPlot",
-                    title = gettext("Predicted Hazard"), position = c(3.15, 3.05)),
+      title = gettext("Predicted Hazard"), position = c(3.15, 3.05)),
     "cumulativeHazard" = list(type = "cumhaz", table = "cumHazardTable", plot = "cumulativeHazardPlot",
-                              title = gettext("Predicted Cumulative Hazard"), position = c(3.16, 3.06)),
+      title = gettext("Predicted Cumulative Hazard"), position = c(3.16, 3.06)),
     "restrictedMeanSurvivalTime" = list(type = "rmst", table = "rmstTable", plot = "restrictedMeanSurvivalTimePlot",
-                                        title = gettext("Predicted Restricted Mean Survival Time"), position = c(3.17, 3.07))
+      title = gettext("Predicted Restricted Mean Survival Time"), position = c(3.17, 3.07))
   )
   if (measure %in% c("survivalTime", "relativeSurvivalTime") && summary != "quantile") {
     specification[["type"]] <- summary
@@ -91,11 +91,17 @@
   }
   commonContourLevels <- NULL
   if (plot && options[["predictionsOutputPlotType"]] == "contour" && .sapPredictionContourReady(options) &&
-      options[["predictionsContoursLevels"]] == "number" && options[["predictionsContoursCommonAcrossFigures"]]) {
+    options[["predictionsContoursLevels"]] == "number" && options[["predictionsContoursCommonAcrossFigures"]]) {
     commonContourLevels <- try(.sapPredictionCommonContourLevels(fit, options, specification[["type"]], measure), silent = TRUE)
   }
   builder <- if (plot)
-    function(fit, options) .sapModelPredictionPlot(fit, options, type = specification[["type"]], measure = measure, contourLevels = commonContourLevels)
+    function(fit, options) .sapModelPredictionPlot(
+      fit,
+      options,
+      type          = specification[["type"]],
+      measure       = measure,
+      contourLevels = commonContourLevels
+    )
   else
     function(fit, options) .sapModelPredictionTable(fit, options, type = specification[["type"]], measure = measure)
 
@@ -138,7 +144,7 @@
       dependencies <- c(dependencies, "predictionsMergeSeriesAcrossComponents")
     if (measure %in% c("survivalProbability", "failureProbability"))
       dependencies <- c(dependencies, "predictionsDisplayKaplanMeier", "predictionsDisplayCensoringEvents",
-                         "predictionsProbabilityYAxisScale")
+        "predictionsProbabilityYAxisScale")
   }
 
   return(unique(dependencies))
@@ -156,9 +162,9 @@
   fit <- .sapFlattenFit(fit, options)
 
   outputDependencies <- c(.sapGetDependencies(options), .sapSelectedOutputDependencies, .sapPredictionCiDependencies,
-                          "predictionsPredictFor",
-                          .sapModelPredictionOptions, "predictionsOutputTable", "predictionsOutputTableFormat", .sapModelPredictionDisplayDependencies, .sapModelPredictionRoleDependencies, .sapModelPredictionEvaluationDependencies, "predictionsMergeTablesAcrossMeasures",
-                          .sapPredictionTimeDependencies
+    "predictionsPredictFor",
+    .sapModelPredictionOptions, "predictionsOutputTable", "predictionsOutputTableFormat", .sapModelPredictionDisplayDependencies, .sapModelPredictionRoleDependencies, .sapModelPredictionEvaluationDependencies, "predictionsMergeTablesAcrossMeasures",
+    .sapPredictionTimeDependencies
   )
 
   .sapSectionWrapper(
@@ -175,24 +181,31 @@
   return()
 }
 
+# Combine native point estimates, shared simulation bounds and output warnings.
 .sapSummaryPredictions <- function(fit, ..., ci, seed = NULL, cl = .95, B = 1000L,
   direction = "twoSided", context = NULL, transform = identity, type = "survival", fn = NULL, start = 0) {
 
-  if (type %in% c("survival", "hazard", "mean") && is.null(fn)) fn <- .sapNativePredictionFunction(fit, type)
-  activeBound <- .sapConstraintActive(fit)
-  includeCI   <- ci && .sapUsableCovariance(fit)
-  messages    <- character(0)
-  predictionX <- attr(fit, "predictionX", exact = TRUE)
+  if (type %in% c("survival", "hazard", "mean") && is.null(fn))
+    fn <- .sapNativePredictionFunction(fit, type)
+  activeBound    <- .sapConstraintActive(fit)
+  includeCI      <- ci && .sapUsableCovariance(fit)
+  messages       <- character(0)
+  predictionX    <- attr(fit, "predictionX", exact = TRUE)
   captureWarning <- function(w) {
-    if (!.sapRetainedFactorContrastWarning(w, fit)) messages <<- c(messages, conditionMessage(w))
+    if (!.sapRetainedFactorContrastWarning(w, fit))
+      messages <<- c(messages, conditionMessage(w))
     invokeRestart("muffleWarning")
   }
+
+  # Compute point estimates independently of whether covariance is available.
   data        <- withCallingHandlers({
     if (is.null(predictionX))
       summary(fit, ..., type = type, fn = fn, start = start, ci = FALSE)
     else
       summary(fit, ..., X = predictionX, type = type, fn = fn, start = start, ci = FALSE)
   }, warning = captureWarning)
+
+  # Calculate requested bounds once, then distribute them over scenario summaries.
   bounds <- NULL
   if (includeCI) {
     bounds <- withCallingHandlers({
@@ -237,8 +250,10 @@
       return(if (type == "mean") gettext("Relative Mean Survival Time") else gettext("Relative Median Survival Time"))
     return(if (type == "mean") gettext("Mean Survival Time") else gettext("Median Survival Time"))
   }
-  if (measure == "relativeSurvivalTime") return(gettext("Relative Survival Time"))
-  if (measure == "failureProbability") return(gettext("Failure Probability"))
+  if (measure == "relativeSurvivalTime")
+    return(gettext("Relative Survival Time"))
+  if (measure == "failureProbability")
+    return(gettext("Failure Probability"))
   return(switch(type,
     "quantile" = gettext("Survival Time"),
     "survival" = gettext("Survival Probability"),
@@ -280,8 +295,8 @@
     return(.sapDetailedPredictionProbabilityScale(options))
 
   return(switch(options[["predictionsProbabilityYAxisScale"]],
-    none = NULL,
-    log = ggplot2::scale_y_log10(),
+    none      = NULL,
+    log       = ggplot2::scale_y_log10(),
     logmlogmp = ggplot2::scale_y_continuous(
       transform = scales::new_transform("logmlogmp", function(p) log(-log1p(-p)), function(x) -expm1(-exp(x)))
     )
@@ -291,10 +306,10 @@
 .sapKaplanMeierStepData          <- function(dataset, options, failureProbability) {
 
   kmFit <- survival::survfit(
-    formula = .saGetFormula(options, type = "KM"),
-    type    = "kaplan-meier",
-    data    = dataset,
-    weights = .sapCaseWeights(dataset, options),
+    formula  = .saGetFormula(options, type = "KM"),
+    type     = "kaplan-meier",
+    data     = dataset,
+    weights  = .sapCaseWeights(dataset, options),
     conf.int = options[["predictionsDisplayConfidenceIntervalsLevel"]]
   )
   kmTable <- summary(kmFit) # , times = optionsSequence
@@ -355,15 +370,18 @@
 
   return(.saPlotCanvasPadding(plot))
 }
+
 # Detailed probability axes use the same displayed probability as ordinary plots.
 .sapDetailedPredictionProbabilityScale <- function(options) {
 
   transformation <- options[["predictionsProbabilityYAxisScale"]]
-  if (transformation == "none") return(ggplot2::scale_y_continuous(breaks = seq(0, 1, .1),
-    limits = c(0, 1), minor_breaks = seq(0, 1, .05), oob = scales::oob_keep))
+  if (transformation == "none")
+    return(ggplot2::scale_y_continuous(breaks = seq(0, 1, .1),
+      limits = c(0, 1), minor_breaks = seq(0, 1, .05), oob = scales::oob_keep))
   breaks <- c(.001, .005, .01, .02, .05, .1, .5, .8, .9)
-  if (transformation == "log") return(ggplot2::scale_y_log10(breaks = breaks,
-    limits = c(.001, 1), oob = scales::oob_keep))
+  if (transformation == "log")
+    return(ggplot2::scale_y_log10(breaks = breaks,
+      limits = c(.001, 1), oob = scales::oob_keep))
   probabilityTransform <- scales::new_transform("logmlogmp", function(p) log(-log1p(-p)), function(x) -expm1(-exp(x)))
   return(ggplot2::scale_y_continuous(breaks = c(breaks, .95, .98, .99, .999), limits = c(.001, .999),
     transform = probabilityTransform, oob = scales::oob_keep))
@@ -383,7 +401,10 @@
   } else if (options[["predictionsLifetimePercentilesGrid"]] == "custom") {
 
     setQuantiles <- options[["predictionsLifetimePercentilesValues"]]
-    setQuantiles <- .sapCleanCustomOptions(setQuantiles, gettext("Lifetime percentiles must be finite values separated by commas, such as '25, 50, 75'."))
+    setQuantiles <- .sapCleanCustomOptions(
+      setQuantiles,
+      gettext("Lifetime percentiles must be finite values separated by commas, such as '25, 50, 75'.")
+    )
     setQuantiles <- sort(setQuantiles)
     if (any(setQuantiles < 0 | setQuantiles > 100))
       .quitAnalysis(gettext("Lifetime percentiles must be between 0 and 100."))
@@ -404,7 +425,7 @@
     as.numeric(value)
   }, numeric(1))
   if (values[["From"]] < 0 || values[["To"]] <= values[["From"]] || values[["Step"]] <= 0 ||
-      (probability && any(values[c("From", "To")] > 100)))
+    (probability && any(values[c("From", "To")] > 100)))
     .quitAnalysis(if (probability) gettext("Percentile sequences require 0 <= From < To <= 100 and a positive Step.") else
       gettext("Time sequences require 0 <= From < To and a positive Step."))
   return(values)
@@ -447,7 +468,7 @@
     if (plot) {
       setTime <- if (logTime)
         exp(seq(log(stepFrom), log(stepTo), length.out = number))
-        else seq(stepFrom, stepTo, length.out = number)
+      else seq(stepFrom, stepTo, length.out = number)
     } else {
       setTime <- seq(stepFrom, stepTo, by = steps[["Step"]])
       if (!logTime && options[["predictionsRoundTimeTableValues"]])
@@ -476,15 +497,23 @@
 
 .sapPredictionRelativeTimes <- function(options) {
 
-  percentages <- .sapCleanCustomOptions(options[["predictionsTimePercentages"]], gettext("Follow-up percentages must be finite values separated by commas, such as '25, 50, 75'."))
-  if (any(percentages < 0 | percentages > 100)) .quitAnalysis(gettext("Follow-up percentages must be between 0 and 100."))
+  percentages <- .sapCleanCustomOptions(
+    options[["predictionsTimePercentages"]],
+    gettext("Follow-up percentages must be finite values separated by commas, such as '25, 50, 75'.")
+  )
+  if (any(percentages < 0 | percentages > 100))
+    .quitAnalysis(gettext("Follow-up percentages must be between 0 and 100."))
   return(sort(unique(percentages)) / 100)
 }
 
 .sapPredictionAbsoluteTimes <- function(options) {
 
-  values <- .sapCleanCustomOptions(options[["predictionsTimeValues"]], gettext("Times or horizons must be finite values separated by commas."))
-  if (any(values < 0)) .quitAnalysis(gettext("Times or horizons must be greater than or equal to 0."))
+  values <- .sapCleanCustomOptions(
+    options[["predictionsTimeValues"]],
+    gettext("Times or horizons must be finite values separated by commas.")
+  )
+  if (any(values < 0))
+    .quitAnalysis(gettext("Times or horizons must be greater than or equal to 0."))
   return(sort(unique(values)))
 }
 

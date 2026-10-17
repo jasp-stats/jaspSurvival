@@ -1,59 +1,73 @@
 # Standardize responses over observed profiles, retaining their joint distribution.
 .sapPopulationDesigns <- function(fit, data, options, used) {
-  training <- attr(fit, "dataset")
+
+  training  <- attr(fit, "dataset")
   variables <- .sapModelVariables(attr(fit, "modelTerms"))
-  assigned <- intersect(variables, used)
-  weights <- .sapCaseWeights(training, options)
+  assigned  <- intersect(variables, used)
+  weights   <- .sapCaseWeights(training, options)
   return(lapply(seq_len(nrow(data)), function(i) {
-    if (fit[["ncovs"]] == 0L) return(list(X = matrix(numeric(0), 1L, 0L), weights = 1))
+    if (fit[["ncovs"]] == 0L)
+      return(list(X = matrix(numeric(0), 1L, 0L), weights = 1))
     profiles <- training[, variables, drop = FALSE]
-    for (variable in assigned) profiles[[variable]] <- rep(data[[variable]][i], nrow(profiles))
-    for (transformations in .sapModelTransformations(attr(fit, "modelTerms"))) for (variable in names(transformations))
-      if (any(.sapTransformationInvalid(as.numeric(as.character(profiles[[variable]])), transformations[[variable]])))
-        stop(gettextf("The prediction value of %1$s is outside its transformation domain.", jaspBase::decodeColNames(variable)))
+    for (variable in assigned)
+      profiles[[variable]] <- rep(data[[variable]][i], nrow(profiles))
+    for (transformations in .sapModelTransformations(attr(fit, "modelTerms")))
+      for (variable in names(transformations))
+        if (any(.sapTransformationInvalid(as.numeric(as.character(profiles[[variable]])), transformations[[variable]])))
+          stop(gettextf("The prediction value of %1$s is outside its transformation domain.", jaspBase::decodeColNames(variable)))
     X <- attr(.sapPredictionPointParameters(fit, newdata = profiles), "X")
     # Hexadecimal doubles distinguish exact design rows without rounding profiles.
-    keys <- apply(X, 1L, function(row) paste(sprintf("%a", row), collapse = "\r"))
-    unique <- !duplicated(keys)
-    group <- match(keys, keys[unique])
-    mass <- as.numeric(rowsum(weights, group, reorder = FALSE))
+    keys     <- apply(X, 1L, function(row) paste(sprintf("%a", row), collapse = "\r"))
+    unique   <- !duplicated(keys)
+    group    <- match(keys, keys[unique])
+    mass     <- as.numeric(rowsum(weights, group, reorder = FALSE))
     positive <- mass > 0
     return(list(X = X[unique, , drop = FALSE][positive, , drop = FALSE], weights = mass[positive] / sum(mass)))
   }))
 }
+
 .sapPopulationLogProbability <- function(fit, parameters, time, lowerTail) {
+
   if (!identical(attr(fit, "family"), "weibull"))
-    return(do.call(fit[["dfns"]][["p"]], c(list(time), as.list(as.data.frame(parameters)), fit[["aux"]], list(lower.tail = lowerTail, log.p = TRUE))))
-  components <- if ("shape" %in% colnames(parameters)) 1L else sum(grepl("^shape[0-9]+$", colnames(parameters)))
-  probabilities <- .sapmStickBreaking(if (components > 1L) parameters[, paste0("v", seq_len(components - 1L)), drop = FALSE], nrow(parameters))
-  logs <- matrix(NA_real_, nrow(parameters), components)
+    return(do.call(
+      fit[["dfns"]][["p"]],
+      c(list(time), as.list(as.data.frame(parameters)), fit[["aux"]], list(lower.tail = lowerTail, log.p = TRUE))
+    ))
+  components    <- if ("shape" %in% colnames(parameters)) 1L else sum(grepl("^shape[0-9]+$", colnames(parameters)))
+  probabilities <- .sapmStickBreaking(
+    if (components > 1L) parameters[, paste0("v", seq_len(components - 1L)), drop = FALSE],
+    nrow(parameters)
+  )
+  logs          <- matrix(NA_real_, nrow(parameters), components)
   componentLogs <- logs
   for (k in seq_len(components)) {
     suffix <- if ("shape" %in% colnames(parameters)) "" else k
-    shape <- parameters[, paste0("shape", suffix)]
-    scale <- parameters[, paste0("scale", suffix)]
+    shape  <- parameters[, paste0("shape", suffix)]
+    scale  <- parameters[, paste0("scale", suffix)]
     values <- stats::pweibull(time, shape, scale, lower.tail = lowerTail, log.p = TRUE)
-    ratio <- time / scale
-    tail <- which(is.finite(time) & time > 0 & is.finite(shape) & shape > 0 & is.finite(scale) & scale > 0 & (ratio == 0 | is.infinite(ratio)))
+    ratio  <- time / scale
+    tail   <- which(is.finite(time) & time > 0 & is.finite(shape) & shape > 0 & is.finite(scale) & scale > 0 & (ratio == 0 | is.infinite(ratio)))
     # Native pweibull divides before taking powers; extreme ratios lose valid tails.
     logPower <- shape[tail] * (log(time[tail]) - log(scale[tail]))
-    power <- exp(logPower)
+    power    <- exp(logPower)
     values[tail] <- if (lowerTail) ifelse(power == 0, logPower, log(-expm1(-power))) else -power
     componentLogs[, k] <- values
     componentLogs[probabilities[, k] == 0, k] <- 0
     logs[, k] <- log(probabilities[, k]) + values
     logs[probabilities[, k] == 0, k] <- -Inf
   }
-  result <- .sapmLogSumExp(logs)
+  result  <- .sapmLogSumExp(logs)
   nearOne <- which(!is.na(result) & result > -log(2))
   result[nearOne] <- log1p(rowSums(probabilities[nearOne, , drop = FALSE] * expm1(componentLogs[nearOne, , drop = FALSE])) /
     rowSums(probabilities[nearOne, , drop = FALSE]))
   return(pmin(result, 0))
 }
+
 .sapPopulationTotals <- function(fit, parameters, weights, time, density = FALSE, lowerTail = FALSE) {
-  draws <- nrow(parameters) / length(weights)
-  arguments <- c(list(rep(rep_len(time, draws), length(weights))), as.list(as.data.frame(parameters)), fit[["aux"]])
-  probabilities <- matrix(.sapPopulationLogProbability(fit, parameters, arguments[[1L]], lowerTail), draws)
+
+  draws          <- nrow(parameters) / length(weights)
+  arguments      <- c(list(rep(rep_len(time, draws), length(weights))), as.list(as.data.frame(parameters)), fit[["aux"]])
+  probabilities  <- matrix(.sapPopulationLogProbability(fit, parameters, arguments[[1L]], lowerTail), draws)
   logProbability <- .sapmLogSumExp(sweep(probabilities, 2L, log(weights), "+"))
   # log1p/expm1 retain small departures from one when profiles nearly all survive.
   nearOne <- which(!is.na(logProbability) & logProbability > -log(2))
@@ -66,18 +80,26 @@
   } else NULL
   return(list(logProbability = logProbability, logDensity = logDensity))
 }
+
+# Invert the weighted population distribution separately for each coefficient draw.
 .sapPopulationQuantile <- function(fit, parameters, weights, probability) {
+
   draws <- nrow(parameters) / length(weights)
-  if (probability == 0) return(rep(0, draws))
-  if (probability == 1) return(rep(Inf, draws))
+  if (probability == 0)
+    return(rep(0, draws))
+  if (probability == 1)
+    return(rep(Inf, draws))
+
   lowerTail <- probability < .5
-  target <- if (lowerTail) log(probability) else log1p(-probability)
-  lower <- rep(log(.Machine$double.xmin * .Machine$double.eps), draws)
-  upper <- rep(log(.Machine$double.xmax), draws)
-  cure <- .sapPopulationTotals(fit, parameters, weights, Inf)$logProbability
+  target    <- if (lowerTail) log(probability) else log1p(-probability)
+  lower     <- rep(log(.Machine$double.xmin * .Machine$double.eps), draws)
+  upper     <- rep(log(.Machine$double.xmax), draws)
+
+  # Resolve endpoints and unreachable tail probabilities before starting the root search.
+  cure     <- .sapPopulationTotals(fit, parameters, weights, Inf)$logProbability
   smallest <- .sapPopulationTotals(fit, parameters, weights, exp(lower), lowerTail = lowerTail)$logProbability
-  largest <- .sapPopulationTotals(fit, parameters, weights, exp(upper), lowerTail = lowerTail)$logProbability
-  result <- rep(NA_real_, draws)
+  largest  <- .sapPopulationTotals(fit, parameters, weights, exp(upper), lowerTail = lowerTail)$logProbability
+  result   <- rep(NA_real_, draws)
   result[which(probability >= -expm1(cure))] <- Inf
   if (lowerTail) {
     result[which(target >= log(-expm1(cure)) | largest < target)] <- Inf
@@ -86,48 +108,55 @@
     result[which(target <= cure | largest > target)] <- Inf
     result[which(smallest < target)] <- 0
   }
-  active <- is.na(result) & !is.na(smallest) & !is.na(largest)
-  anchor <- attr(fit, "populationAnchor")
+  active  <- is.na(result) & !is.na(smallest) & !is.na(largest)
+  anchor  <- attr(fit, "populationAnchor")
   current <- rep(min(max(anchor, lower[1L]), upper[1L]), draws)
   # Safeguard Newton steps on log time; a small marginal hazard needs bisection.
   for (iteration in seq_len(100L)) {
-    if (!any(active)) break
-    totals <- .sapPopulationTotals(fit, parameters, weights, exp(current), density = TRUE, lowerTail = lowerTail)
+    if (!any(active))
+      break
+    totals     <- .sapPopulationTotals(fit, parameters, weights, exp(current), density = TRUE, lowerTail = lowerTail)
     difference <- totals$logProbability - target
     correction <- difference * exp(totals$logProbability - totals$logDensity - current)
-    accurate <- active & !is.na(difference) & abs(difference) <= 1e-9 &
+    accurate   <- active & !is.na(difference) & abs(difference) <= 1e-9 &
       ((is.finite(correction) & abs(correction) <= 1e-10) | upper - lower <= 1e-10)
     result[which(accurate)] <- exp(current[which(accurate)])
     active <- active & !accurate & !is.na(difference)
-    if (!any(active)) break
+    if (!any(active))
+      break
     below <- which(active & if (lowerTail) difference < 0 else difference > 0)
     above <- which(active & if (lowerTail) difference >= 0 else difference <= 0)
     lower[below] <- current[below]
     upper[above] <- current[above]
-    step <- current + (if (lowerTail) -1 else 1) * correction
-    valid <- is.finite(step) & step > lower & step < upper
+    step     <- current + (if (lowerTail) -1 else 1) * correction
+    valid    <- is.finite(step) & step > lower & step < upper
     nextTime <- ifelse(valid, step, (lower + upper) / 2)
-    active <- active & nextTime != current
-    current <- nextTime
+    active   <- active & nextTime != current
+    current  <- nextTime
   }
   return(result)
 }
+
 .sapPopulationMeans <- function(fit, parameters) {
-  name <- attr(fit, "family")
+
+  name     <- attr(fit, "family")
   infinite <- rep(FALSE, nrow(parameters))
   if (length(name) && name %in% c("llogis", "gengamma", "genf", "genf.orig")) {
-    family <- .sapmFamily(name)
-    components <- attr(fit, "components")
-    probabilities <- .sapmStickBreaking(if (components > 1L) parameters[, paste0("v", seq_len(components - 1L)), drop = FALSE], nrow(parameters))
+    family        <- .sapmFamily(name)
+    components    <- attr(fit, "components")
+    probabilities <- .sapmStickBreaking(
+      if (components > 1L) parameters[, paste0("v", seq_len(components - 1L)), drop = FALSE],
+      nrow(parameters)
+    )
     for (k in seq_len(components)) {
-      suffix <- if (family[["pars"]][1L] %in% colnames(parameters)) "" else k
-      part <- stats::setNames(as.list(as.data.frame(parameters[, paste0(family[["pars"]], suffix), drop = FALSE])), family[["pars"]])
+      suffix    <- if (family[["pars"]][1L] %in% colnames(parameters)) "" else k
+      part      <- stats::setNames(as.list(as.data.frame(parameters[, paste0(family[["pars"]], suffix), drop = FALSE])), family[["pars"]])
       divergent <- switch(name,
-        llogis = part$shape > 0 & part$shape <= 1,
-        gengamma = 1 + part$sigma * part$Q <= 0,
+        llogis    = part$shape > 0 & part$shape <= 1,
+        gengamma  = 1 + part$sigma * part$Q <= 0,
         genf.orig = part$s2 <= part$sigma,
-        genf = {
-          delta <- sqrt(part$Q^2 + 2 * part$P)
+        genf      = {
+          delta     <- sqrt(part$Q^2 + 2 * part$P)
           threshold <- ifelse(part$Q >= 0, (delta + part$Q) / part$P, 2 / (delta - part$Q))
           threshold[which(part$P == 0 & part$Q >= 0)] <- Inf
           part$sigma >= threshold
@@ -138,11 +167,15 @@
   # Positive lifetime mixtures have infinite mean if any contributing mean diverges.
   values <- rep(Inf, nrow(parameters))
   finite <- which(!infinite)
-  if (length(finite)) values[finite] <- do.call(.sapNativePredictionFunction(fit, "mean"),
-    c(list(t = 0, start = 0), as.list(as.data.frame(parameters[finite, , drop = FALSE])), fit[["aux"]]))
+  if (length(finite))
+    values[finite] <- do.call(.sapNativePredictionFunction(fit, "mean"),
+      c(list(t = 0, start = 0), as.list(as.data.frame(parameters[finite, , drop = FALSE])), fit[["aux"]]))
   return(values)
 }
+
+# Aggregate response quantities over observed profiles using their case weights.
 .sapPopulationValues <- function(fit, parameters, weights, type, at) {
+
   draws <- nrow(parameters) / length(weights)
   if (type == "mean") {
     values <- .sapPopulationMeans(fit, parameters)
@@ -152,7 +185,10 @@
     if (type %in% c("quantile", "median"))
       return(.sapPopulationQuantile(fit, parameters, weights, if (type == "median") .5 else time))
     if (type == "rmst") {
-      values <- do.call(fit[["dfns"]][["rmst"]], c(list(t = rep(time, nrow(parameters)), start = 0), as.list(as.data.frame(parameters)), fit[["aux"]]))
+      values <- do.call(
+        fit[["dfns"]][["rmst"]],
+        c(list(t = rep(time, nrow(parameters)), start = 0), as.list(as.data.frame(parameters)), fit[["aux"]])
+      )
       return(as.vector(matrix(values, draws) %*% weights))
     }
     totals <- .sapPopulationTotals(fit, parameters, weights, time, density = type == "hazard", lowerTail = type == "failure")
@@ -160,18 +196,20 @@
       cumhaz = -totals$logProbability, hazard = exp(totals$logDensity - totals$logProbability)))
   }, numeric(draws)))
 }
+
 .sapPopulationDrawValues <- function(fit, point, type, rawsim, transform = identity) {
+
   populations <- attr(point, "population")
-  draws <- nrow(rawsim)
-  times <- lapply(point, function(row) if (type %in% c("mean", "median")) rep(0, nrow(row)) else row[[1L]])
-  values <- matrix(NA_real_, draws, sum(lengths(times)))
-  column <- 0L
+  draws       <- nrow(rawsim)
+  times       <- lapply(point, function(row) if (type %in% c("mean", "median")) rep(0, nrow(row)) else row[[1L]])
+  values      <- matrix(NA_real_, draws, sum(lengths(times)))
+  column      <- 0L
   for (i in seq_along(populations)) {
     population <- populations[[i]]
     # Bound temporary profile-by-draw parameter storage; never subsample units.
     block <- max(1L, floor(250000 / (nrow(population$X) * length(fit[["dlist"]][["pars"]]))))
     for (first in seq.int(1L, draws, by = block)) {
-      selected <- seq.int(first, min(draws, first + block - 1L))
+      selected   <- seq.int(first, min(draws, first + block - 1L))
       parameters <- .sapPredictionParameters(fit, population$X, rawsim[selected, , drop = FALSE])
       values[selected, column + seq_along(times[[i]])] <- transform(.sapPopulationValues(fit, parameters, population$weights, type, times[[i]]))
     }
@@ -179,21 +217,35 @@
   }
   return(values)
 }
+
 .sapPopulationPointSummary <- function(fit, type, at) {
-  point <- lapply(attr(fit, "predictionPopulation"), function(population) data.frame(time = at, est = NA_real_, lcl = NA_real_, ucl = NA_real_))
+
+  point <- lapply(
+    attr(fit, "predictionPopulation"),
+    function(population) data.frame(time = at, est = NA_real_, lcl = NA_real_, ucl = NA_real_)
+  )
   attr(point, "population") <- attr(fit, "predictionPopulation")
   values <- .sapPopulationDrawValues(fit, point, type, .sapPredictionPointCoefficients(fit))
-  for (i in seq_along(point)) point[[i]][["est"]] <- values[1L, (i - 1L) * length(at) + seq_along(at)]
+  for (i in seq_along(point))
+    point[[i]][["est"]] <- values[1L, (i - 1L) * length(at) + seq_along(at)]
   return(point)
 }
+
+# Assemble population point estimates and bounds in the ordinary summary layout.
 .sapPopulationSummary <- function(fit, options, type, at, fast = FALSE) {
-  messages <- character(0)
-  captureWarning <- function(warning) { messages <<- c(messages, conditionMessage(warning)); invokeRestart("muffleWarning") }
+
+  messages       <- character(0)
+  captureWarning <- function(warning) {
+    messages <<- c(messages, conditionMessage(warning))
+    invokeRestart("muffleWarning")
+  }
   point <- withCallingHandlers(.sapPopulationPointSummary(fit, type, at), warning = captureWarning)
-  ci <- options[["predictionsDisplayConfidenceIntervals"]] && !fast
+
+  # Point estimates and uncertainty both average over the same weighted population.
+  ci    <- options[["predictionsDisplayConfidenceIntervals"]] && !fast
   if (ci && .sapUsableCovariance(fit)) {
-    B <- options[["confidenceIntervalSimulationDraws"]]
-    draws <- .sapJointDraws(fit, B, if (options[["setSeed"]]) options[["seed"]], options[["simulationContext"]])
+    B      <- options[["confidenceIntervalSimulationDraws"]]
+    draws  <- .sapJointDraws(fit, B, if (options[["setSeed"]]) options[["seed"]], options[["simulationContext"]])
     bounds <- withCallingHandlers(.sapPredictionBounds(fit, point, type, NULL, 0, B, draws, identity, options[["simulationContext"]],
       options[["predictionsDisplayConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]]), warning = captureWarning)
     messages <- c(messages, attr(bounds, "predictionWarnings"))
@@ -203,12 +255,16 @@
       point[[i]][["ucl"]] <- bounds["upper", columns]
     }
   } else if (ci && fit[["npars"]] == 0L && !.sapConstraintActive(fit)) {
-    for (i in seq_along(point)) for (field in .sapBoundFields(options[["confidenceIntervalBounds"]])) point[[i]][[field]] <- point[[i]][["est"]]
+    for (i in seq_along(point))
+      for (field in .sapBoundFields(options[["confidenceIntervalBounds"]]))
+        point[[i]][[field]] <- point[[i]][["est"]]
   }
   if (ci && !.sapConstraintActive(fit) && anyNA(unlist(lapply(point, function(row) row[.sapBoundFields(options[["confidenceIntervalBounds"]])]))))
     messages <- c(messages, gettext("Some confidence intervals could not be evaluated and are shown as missing."))
-  if (anyNA(unlist(lapply(point, `[[`, "est")))) messages <- c(messages, gettext("Some population predictions could not be evaluated and are shown as missing."))
-  if (any(is.infinite(unlist(lapply(point, `[[`, "est"))))) messages <- c(messages, gettext("Some requested quantities are infinite or exceed numerical range."))
+  if (anyNA(unlist(lapply(point, `[[`, "est"))))
+    messages <- c(messages, gettext("Some population predictions could not be evaluated and are shown as missing."))
+  if (any(is.infinite(unlist(lapply(point, `[[`, "est")))))
+    messages <- c(messages, gettext("Some requested quantities are infinite or exceed numerical range."))
   attr(point, "predictionWarnings") <- unique(messages)
   return(point)
 }

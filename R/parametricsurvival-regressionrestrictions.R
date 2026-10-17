@@ -7,7 +7,7 @@
   value <- .sapNumericExpression(expression, multiple = TRUE, allowSpaces = TRUE)
   if (!.sapFiniteNumeric(value))
     .quitAnalysis(gettextf("The parameter restriction for '%1$s' in '%2$s' must contain finite numeric values or expressions, separated by commas or semicolons.",
-                          jaspBase::decodeColNames(variable), modelTitle))
+      jaspBase::decodeColNames(variable), modelTitle))
 
   return(unname(value))
 }
@@ -71,14 +71,18 @@
     value          <- restrictions[[variable]]
     label          <- jaspBase::decodeColNames(variable)
     if (length(index) == 0L)
-      .quitAnalysis(gettextf("No main-effect regression coefficient for '%1$s' is present in '%2$s'. Add its main effect or leave its parameter restriction empty.", label, modelTitle))
+      .quitAnalysis(gettextf(
+        "No main-effect regression coefficient for '%1$s' is present in '%2$s'. Add its main effect or leave its parameter restriction empty.",
+        label,
+        modelTitle
+      ))
     if (length(value) != 1L && length(value) != length(index)) {
       if (is.factor(dataset[[variable]]) && is.null(transformation))
         .quitAnalysis(gettextf("Factor '%1$s' in '%2$s' has %3$i regression coefficients (%4$i levels). Supply one value or %3$i values; %5$i were supplied.",
-                              label, modelTitle, length(index), nlevels(dataset[[variable]]), length(value)))
+          label, modelTitle, length(index), nlevels(dataset[[variable]]), length(value)))
       else
         .quitAnalysis(gettextf("Term '%1$s' in '%2$s' has %3$i regression coefficients. Supply one value or %3$i values; %4$i were supplied.",
-                              label, modelTitle, length(index), length(value)))
+          label, modelTitle, length(index), length(value)))
     }
     fixed[colnames(design)[index]] <- rep(value, length.out = length(index))
   }
@@ -118,12 +122,13 @@
     }
     baselineFixed <- baseline %in% fit[["fixedpars"]]
     baselineValue <- fit[["res.t"]][baseline, "est"]
-    if (baselineFixed) interval[] <- baselineValue
+    if (baselineFixed)
+      interval[] <- baselineValue
     slopeFixed  <- setdiff(fixed, 1L)
     slopeOffset <- if (length(slopeFixed) > 0L) as.vector(design[, slopeFixed, drop = FALSE] %*%
       fit[["res.t"]][parameters[slopeFixed], "est"]) else rep(0, nrow(design))
     return(list(design = design[, free, drop = FALSE], offset = offset,
-      slopeDesign = design[, setdiff(free, 1L), drop = FALSE], slopeOffset = slopeOffset,
+      slopeDesign   = design[, setdiff(free, 1L), drop = FALSE], slopeOffset = slopeOffset,
       baselineFixed = baselineFixed, baselineValue = baselineValue, bounded = bounded, interval = interval))
   }), parameters))
 }

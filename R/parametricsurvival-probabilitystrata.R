@@ -1,15 +1,18 @@
 # Original predictor values define groups; every model uses the same memberships
 # for its cohort before mapping observation times to its own reference design.
 .sapObservedStrataSelectedVariables <- function(options, prefix) {
+
   if (!options[[paste0(prefix, "StratifyBy")]])
     return(character(0))
+
   specification <- options[[paste0(prefix, "StratifyByVariables")]]
   return(unique(vapply(Filter(function(row) row[["stratify"]], specification), `[[`, character(1), "variable")))
 }
 
 .sapObservedStrata <- function(dataset, variables, options, prefix) {
+
   weights <- .sapCaseWeights(dataset, options)
-  groups <- lapply(variables, function(variable) {
+  groups  <- lapply(variables, function(variable) {
     value <- dataset[[variable]]
     if (is.factor(value))
       return(factor(paste0(variable, "=", as.character(value)), levels = paste0(variable, "=", levels(value))))
@@ -17,42 +20,49 @@
     if (options[[paste0(prefix, "StratifyByGroupUniqueLevels")]] && length(uniqueValues) <= as.numeric(options[[paste0(prefix, "StratifyByGroupUniqueLevelsLimit")]]))
       return(factor(.sapPredictionCovariateLabels(uniqueValues, variable)[match(value, uniqueValues)],
         levels = .sapPredictionCovariateLabels(uniqueValues, variable)))
-    bins <- .sapPredictionGroups(value, as.numeric(options[[paste0(prefix, "StratifyByQuantiles")]]), variable, weights)
+    bins      <- .sapPredictionGroups(value, as.numeric(options[[paste0(prefix, "StratifyByQuantiles")]]), variable, weights)
     binLabels <- function(digits) vapply(bins[["rows"]], function(rows) {
       limits <- range(value[rows])
       gettextf("%1$s: %2$s to %3$s", variable,
         format(limits[1L], digits = digits, trim = TRUE), format(limits[2L], digits = digits, trim = TRUE))
     }, character(1))
     names <- binLabels(8L)
-    if (anyDuplicated(names)) names <- binLabels(17L)
+    if (anyDuplicated(names))
+      names <- binLabels(17L)
     labels <- character(length(value))
-    for (i in seq_along(bins[["rows"]])) labels[bins[["rows"]][[i]]] <- names[i]
+    for (i in seq_along(bins[["rows"]]))
+      labels[bins[["rows"]][[i]]] <- names[i]
     return(factor(labels, levels = names))
   })
-  labels <- rep("", nrow(dataset))
+  labels       <- rep("", nrow(dataset))
   strataLevels <- ""
   if (length(groups)) {
-    keys <- .sapPredictorGroups(as.data.frame(groups, stringsAsFactors = FALSE))
+    keys   <- .sapPredictorGroups(as.data.frame(groups, stringsAsFactors = FALSE))
     joined <- do.call(paste, c(groups, sep = ", "))
     # Keep numeric bins ascending and factors in level order, independent of row order.
     uniqueKeys <- unique(keys[do.call(order, groups)])
-    names <- joined[match(uniqueKeys, keys)]
+    names      <- joined[match(uniqueKeys, keys)]
     if (anyDuplicated(names))
       names <- vapply(seq_along(names), function(i) gettextf("%1$s (stratum %2$d)", names[i], i), character(1))
-    labels <- names[match(keys, uniqueKeys)]
+    labels       <- names[match(keys, uniqueKeys)]
     strataLevels <- names
   }
   return(stats::setNames(factor(labels, levels = strataLevels), rownames(dataset)))
 }
 
 .sapProbabilityPlotPrepareFits <- function(fit, options) {
+
   fit <- .sapProbabilityPlotValidFits(fit)
   return(.sapObservedStrataFits(fit, options, "probabilityPlot", meanDesign = TRUE))
 }
+
 .sapObservedStrataDependencies <- function(prefix) {
+
   return(paste0(prefix, c("StratifyBy", "StratifyByVariables", "StratifyByQuantiles", "StratifyByGroupUniqueLevels", "StratifyByGroupUniqueLevelsLimit")))
 }
+
 .sapObservedStrataFits <- function(fit, options, prefix, meanDesign) {
+
   variables <- intersect(.sapObservedStrataSelectedVariables(options, prefix),
     unique(unlist(lapply(fit, function(model) .sapModelVariables(attr(model, "modelTerms"))), use.names = FALSE)))
   subgroups <- if (.sapHasSubgroups(options)) vapply(fit, function(model) attr(model, "subgroup"), character(1)) else rep("", length(fit))
@@ -60,20 +70,20 @@
     dataset <- .saSafeRbind(lapply(fit[indices], .sapPlotObservedDataset))
     # The same units may occur in multiple displayed distributions/models.
     identities <- unlist(lapply(fit[indices], function(model) rownames(.sapPlotObservedDataset(model))), use.names = FALSE)
-    dataset <- dataset[!duplicated(identities), , drop = FALSE]
+    dataset    <- dataset[!duplicated(identities), , drop = FALSE]
     rownames(dataset) <- unique(identities)
     strata <- .sapObservedStrata(dataset, variables, options, prefix)
     for (index in indices) {
-      model <- fit[[index]]
-      observed <- .sapPlotObservedDataset(model)
+      model      <- fit[[index]]
+      observed   <- .sapPlotObservedDataset(model)
       membership <- as.character(strata[rownames(observed)])
       stopifnot(!anyNA(membership))
       rows <- split(seq_len(nrow(observed)), factor(membership, levels = levels(strata)), drop = TRUE)
       if (meanDesign) {
-        design <- stats::model.matrix(model)
+        design     <- stats::model.matrix(model)
         designRows <- match(rownames(observed), rownames(design))
         stopifnot(!anyNA(designRows), ncol(design) == model[["ncoveffs"]])
-        weights <- .sapCaseWeights(observed, options)
+        weights   <- .sapCaseWeights(observed, options)
         reference <- do.call(rbind, lapply(rows, function(selected)
           .sapWeightedColumnMeans(design[designRows[selected], , drop = FALSE], weights[selected])))
         attr(model, "predictionX") <- reference
@@ -89,8 +99,9 @@
 }
 
 .sapProbabilityPlotLabels <- function(fit, options) {
+
   labels <- names(attr(fit, "probabilityPlotStrata"))
-  show <- options[["probabilityPlotMergePlotsAcrossStrata"]] && length(attr(fit, "probabilityPlotVariables")) > 0L
+  show   <- options[["probabilityPlotMergePlotsAcrossStrata"]] && length(attr(fit, "probabilityPlotVariables")) > 0L
   if (!show || (length(labels) == 1L && !nzchar(labels)))
     labels <- rep(NA_character_, length(labels))
   else
@@ -99,22 +110,26 @@
 }
 
 .sapProbabilityPlotAcrossStrata <- function(fit, options) {
-  fit <- .sapProbabilityPlotPrepareFits(fit, options)
+
+  fit    <- .sapProbabilityPlotPrepareFits(fit, options)
   labels <- unique(unlist(lapply(fit, function(model) names(attr(model, "probabilityPlotStrata"))), use.names = FALSE))
   if (options[["probabilityPlotMergePlotsAcrossStrata"]] || length(labels) < 2L)
     return(.sapProbabilityPlotForData(fit, options))
+
   axisOptions <- options
   axisOptions[["probabilityPlotConfidenceIntervals"]] <- FALSE
   axisSetup <- try(.sapProbabilityPlotAxisSetup(.sapProbabilityPlotData(fit, axisOptions), options))
   if (jaspBase::isTryError(axisSetup))
     return(.sapProbabilityPlotForData(fit, options))
+
   container <- createJaspContainer()
   for (i in seq_along(labels)) {
     selected <- list()
     for (model in fit) {
       groups <- attr(model, "probabilityPlotStrata")
-      index <- match(labels[i], names(groups))
-      if (is.na(index)) next
+      index  <- match(labels[i], names(groups))
+      if (is.na(index))
+        next
       rows <- groups[[index]]
       attr(model, "plotDataset") <- .sapPlotObservedDataset(model)[rows, , drop = FALSE]
       attr(model, "predictionX") <- attr(model, "predictionX")[index, , drop = FALSE]

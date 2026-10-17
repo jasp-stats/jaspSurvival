@@ -70,11 +70,13 @@
 }
 
 .sapProbabilityPlotFun <- function(fit, options) {
+
   fit <- .sapProbabilityPlotAsFitList(fit)
   if (!length(.sapProbabilityPlotValidFits(fit)))
     return(.sapProbabilityPlotForData(fit, options))
   return(.sapProbabilityPlotAcrossStrata(fit, options))
 }
+
 .sapProbabilityPlotForData <- function(fit, options, axisSetup = NULL) {
 
   fitList  <- .sapProbabilityPlotAsFitList(fit)
@@ -164,13 +166,13 @@
 
   if (any(vapply(fitList, function(model) is.null(attr(model, "probabilityPlotStrata")), logical(1))))
     fitList <- .sapProbabilityPlotPrepareFits(fitList, options)
-  displayDatasets <- lapply(fitList, function(model) .sapProbabilityPlotDisplayDataset(.sapPlotObservedDataset(model), model, options))
+  displayDatasets   <- lapply(fitList, function(model) .sapProbabilityPlotDisplayDataset(.sapPlotObservedDataset(model), model, options))
   observedTimeRange <- .sapProbabilityPlotTimeRange(unlist(lapply(displayDatasets, .saExtractSurvTimes, options = options), use.names = FALSE))
-  timeSequence <- if (is.null(axisSetup)) .sapProbabilityPlotTimeSequence(observedTimeRange, options) else
+  timeSequence      <- if (is.null(axisSetup)) .sapProbabilityPlotTimeSequence(observedTimeRange, options) else
     .sapProbabilityPlotTimeSequence(axisSetup[["timeRange"]], options, expand = FALSE)
-  adjusted <- any(vapply(displayDatasets, function(dataset) identical(attr(dataset, "probabilityPlotAdjusted"), TRUE), logical(1)))
+  adjusted        <- any(vapply(displayDatasets, function(dataset) identical(attr(dataset, "probabilityPlotAdjusted"), TRUE), logical(1)))
   observedIndices <- seq_along(fitList)
-  observedData <- function(index, dataFunction) {
+  observedData    <- function(index, dataFunction) {
     data <- .sapProbabilityPlotObservedData(displayDatasets[[index]], fitList[[index]], options, dataFunction)
     data[["Distribution"]] <- .sapProbabilityPlotDistributionLabel(fitList[[index]], options)
     return(data)
@@ -186,22 +188,22 @@
 
   curveData <- .sapProbabilityPlotEmptyCurveData()
   if (options[["probabilityPlotFittedCurve"]]) {
-    canvas <- .sapProbabilityPlotCanvasTransform(options[["probabilityPlotCanvas"]])
+    canvas           <- .sapProbabilityPlotCanvasTransform(options[["probabilityPlotCanvas"]])
     probabilityRange <- if (!is.null(axisSetup)) axisSetup[["probabilityRange"]] else if (.sapProbabilityPlotIsDetailed(options))
       .sapProbabilityPlotDetailedProbabilityRange(empiricalData[["probability"]]) else .sapProbabilityPlotProbabilityRange()
     limits <- if (is.null(axisSetup) && .sapProbabilityPlotIsDetailed(options) && nrow(empiricalData) == 0)
       function(values) canvas[["transform"]](.sapProbabilityPlotDetailedProbabilityRange(.sapProbabilityPlotCurveProbability(values)))
-      else canvas[["transform"]](probabilityRange)
+    else canvas[["transform"]](probabilityRange)
     evaluate <- function(times) do.call(cbind, lapply(fitList, function(model)
       .sapPlotPredictionMatrix(.sapProbabilityPlotPredictions(model, options, times, ci = FALSE))))
-    anchors <- try(.sapPlotFeatureTimes(fitList, timeSequence), silent = TRUE)
+    anchors      <- try(.sapPlotFeatureTimes(fitList, timeSequence), silent = TRUE)
     timeSequence <- .sapAdaptivePlotTimes(timeSequence[timeSequence > 0], evaluate,
       xTransform = if (.sapProbabilityPlotUsesLogTime(canvas)) log else identity,
-      xInverse = if (.sapProbabilityPlotUsesLogTime(canvas)) exp else identity,
+      xInverse   = if (.sapProbabilityPlotUsesLogTime(canvas)) exp else identity,
       yTransform = function(values) canvas[["transform"]](.sapProbabilityPlotCurveProbability(values)),
-      limits = limits, minimum = if (options[["probabilityPlotConfidenceIntervals"]]) 65L else 17L,
-      maximum = if (options[["probabilityPlotConfidenceIntervals"]]) 129L else 201L,
-      anchors = if (inherits(anchors, "try-error")) numeric(0) else anchors)
+      limits     = limits, minimum = if (options[["probabilityPlotConfidenceIntervals"]]) 65L else 17L,
+      maximum    = if (options[["probabilityPlotConfidenceIntervals"]]) 129L else 201L,
+      anchors    = if (inherits(anchors, "try-error")) numeric(0) else anchors)
     curveData <- .sapProbabilityPlotCurveData(fitList, options, timeSequence)
   }
 
@@ -214,17 +216,17 @@
 
 .sapCreateProbabilityPlot <- function(fit, options, axisSetup = NULL) {
 
-  data <- .sapProbabilityPlotData(fit, options, axisSetup)
+  data          <- .sapProbabilityPlotData(fit, options, axisSetup)
   empiricalData <- data[["empiricalData"]]
   curveData     <- data[["curveData"]]
   censoringData <- data[["censoringData"]]
 
-  hasDistribution <- length(unique(stats::na.omit(c(curveData[["Distribution"]], empiricalData[["Distribution"]], censoringData[["Distribution"]])))) > 1
+  hasDistribution        <- length(unique(stats::na.omit(c(curveData[["Distribution"]], empiricalData[["Distribution"]], censoringData[["Distribution"]])))) > 1
   empiricalDistributions <- hasDistribution
-  levelLabels     <- sort(unique(stats::na.omit(c(curveData[["Level"]], empiricalData[["Level"]], censoringData[["Level"]]))))
-  hasLevel        <- length(levelLabels) > 1
-  hasGroup        <- nrow(curveData) > 0 && length(unique(stats::na.omit(curveData[["Group"]]))) > 1
-  hasSeries       <- hasDistribution || hasLevel
+  levelLabels            <- sort(unique(stats::na.omit(c(curveData[["Level"]], empiricalData[["Level"]], censoringData[["Level"]]))))
+  hasLevel               <- length(levelLabels) > 1
+  hasGroup               <- nrow(curveData) > 0 && length(unique(stats::na.omit(curveData[["Group"]]))) > 1
+  hasSeries              <- hasDistribution || hasLevel
 
   if (!hasSeries) {
     options[["probabilityPlotLegend"]]       <- "none"
@@ -235,8 +237,8 @@
 
   if (nrow(curveData) > 0 && options[["probabilityPlotConfidenceIntervals"]])
     plot <- .sapAddModelBoundLayer(plot, curveData, options[["probabilityPlotConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]],
-      x = "time", groups = "Group", color = if (hasLevel) "Level" else if (hasDistribution) "Distribution",
-      fill = if (hasLevel) "Level" else if (hasDistribution) "Distribution", defaultFill = "grey60", alpha = .22,
+      x               = "time", groups = "Group", color = if (hasLevel) "Level" else if (hasDistribution) "Distribution",
+      fill            = if (hasLevel) "Level" else if (hasDistribution) "Distribution", defaultFill = "grey60", alpha = .22,
       twoSidedMapping = list(x = as.name("time"), ymin = as.name("lCi"), ymax = as.name("uCi"),
         fill = if (hasLevel) as.name("Level") else if (hasDistribution) as.name("Distribution"), group = if (hasGroup) as.name("Group")))
 
@@ -322,7 +324,7 @@
 
   groups <- attr(fit, "probabilityPlotStrata")
   labels <- .sapProbabilityPlotLabels(fit, options)
-  out <- lapply(seq_along(groups), function(index) {
+  out    <- lapply(seq_along(groups), function(index) {
     data <- dataFunction(dataset[groups[[index]], , drop = FALSE], options)
     data[["Level"]] <- rep(labels[index], nrow(data))
     return(data)
@@ -341,14 +343,14 @@
   keep <- is.finite(time) & time > 0 & !is.na(event) & is.finite(weights) & weights > 0
   if (censored)
     keep <- keep & !event
-  time <- time[keep]
-  event <- as.logical(event[keep])
+  time    <- time[keep]
+  event   <- as.logical(event[keep])
   weights <- as.integer(weights[keep])
 
   if (any(weights > 1L)) {
     observationIndex <- rep.int(seq_along(time), weights)
-    time <- time[observationIndex]
-    event <- event[observationIndex]
+    time             <- time[observationIndex]
+    event            <- event[observationIndex]
   }
 
   return(data.frame(time = time, event = event))
@@ -366,7 +368,11 @@
     return(out)
 
   out[["probability"]] <- .sapProbabilityPlotClampProbability(out[["probability"]])
-  out[["label"]]       <- sprintf("%s, %s", .sapProbabilityPlotTimeLabel(out[["time"]]), .sapProbabilityPlotProbabilityLabel(out[["probability"]]))
+  out[["label"]]       <- sprintf(
+    "%s, %s",
+    .sapProbabilityPlotTimeLabel(out[["time"]]),
+    .sapProbabilityPlotProbabilityLabel(out[["probability"]])
+  )
   rownames(out)        <- NULL
 
   return(out)
@@ -375,12 +381,13 @@
 .sapProbabilityPlotCensoringData <- function(dataset, options) {
 
   observations <- .sapProbabilityPlotObservations(dataset, options, censored = TRUE)
-  out <- observations[, "time", drop = FALSE]
-  out <- out[order(out[["time"]]), , drop = FALSE]
+  out          <- observations[, "time", drop = FALSE]
+  out          <- out[order(out[["time"]]), , drop = FALSE]
   rownames(out) <- NULL
 
   return(out)
 }
+
 .sapProbabilityPlotRankData <- function(time, event, options) {
 
   orderedData <- data.frame(time = time, event = event)
@@ -417,7 +424,7 @@
 
 .sapProbabilityPlotJohnsonAdjustedRanks <- function(orderedData) {
 
-  n <- nrow(orderedData)
+  n            <- nrow(orderedData)
   adjustedRank <- numeric(0)
   failureTime  <- numeric(0)
   previousRank <- 0
@@ -426,7 +433,7 @@
     if (!orderedData[["event"]][i])
       next
 
-    reverseRank <- n - i + 1
+    reverseRank  <- n - i + 1
     previousRank <- previousRank + (n + 1 - previousRank) / (reverseRank + 1)
 
     adjustedRank <- c(adjustedRank, previousRank)
@@ -438,7 +445,7 @@
 
 .sapProbabilityPlotKaplanMeierAdjustedRanks <- function(orderedData) {
 
-  n <- nrow(orderedData)
+  n            <- nrow(orderedData)
   adjustedRank <- numeric(0)
   previousRank <- 0
 
@@ -475,7 +482,7 @@
 
   tiedRanks <- stats::aggregate(
     data[["adjustedRank"]],
-    by = list(time = data[["time"]]),
+    by  = list(time = data[["time"]]),
     FUN = function(x) c(lowest = min(x), highest = max(x))
   )
   lowest  <- tiedRanks[["x"]][, "lowest"]
@@ -512,13 +519,18 @@
   if (length(fitList) == 0)
     return(.sapProbabilityPlotEmptyCurveData())
 
-  out <- list()
+  out                <- list()
   predictionWarnings <- character(0)
   for (i in seq_along(fitList)) {
 
-    data <- .sapProbabilityPlotPredictions(fitList[[i]], options, timeSequence, ci = options[["probabilityPlotConfidenceIntervals"]])
+    data <- .sapProbabilityPlotPredictions(
+      fitList[[i]],
+      options,
+      timeSequence,
+      ci = options[["probabilityPlotConfidenceIntervals"]]
+    )
     predictionWarnings <- c(predictionWarnings, attr(data, "predictionWarnings"))
-    levelLabels <- .sapProbabilityPlotLabels(fitList[[i]], options)
+    levelLabels        <- .sapProbabilityPlotLabels(fitList[[i]], options)
 
     for (j in seq_along(data)) {
       colnames(data[[j]]) <- c("time", "survival", "survivalLCI", "survivalUCI")
@@ -562,6 +574,7 @@
 }
 
 .sapProbabilityPlotEmptyCurveData <- function() {
+
   return(data.frame(
     time         = numeric(0),
     probability  = numeric(0),
@@ -582,7 +595,17 @@
   return(.sapProbabilityPlotDefaultAxisSetup(data[["empiricalData"]], data[["curveData"]], data[["censoringData"]], canvas))
 }
 
-.sapProbabilityPlotAddAxes <- function(plot, empiricalData, curveData, censoringData, options, observedTimeRange = NULL, hasLevel = FALSE, hasDistribution = FALSE, axisSetup = NULL) {
+.sapProbabilityPlotAddAxes <- function(
+  plot,
+  empiricalData,
+  curveData,
+  censoringData,
+  options,
+  observedTimeRange = NULL,
+  hasLevel          = FALSE,
+  hasDistribution   = FALSE,
+  axisSetup         = NULL
+) {
 
   canvas   <- .sapProbabilityPlotCanvasTransform(options[["probabilityPlotCanvas"]])
   detailed <- .sapProbabilityPlotIsDetailed(options)
@@ -634,10 +657,10 @@
 
 .sapProbabilityPlotDefaultAxisSetup <- function(empiricalData, curveData, censoringData, canvas) {
 
-  timeValues <- c(empiricalData[["time"]], curveData[["time"]], censoringData[["time"]])
-  timeRange  <- .sapProbabilityPlotTimeRange(timeValues)
+  timeValues       <- c(empiricalData[["time"]], curveData[["time"]], censoringData[["time"]])
+  timeRange        <- .sapProbabilityPlotTimeRange(timeValues)
   probabilityRange <- .sapProbabilityPlotProbabilityRange()
-  yAxisSetup <- .sapProbabilityPlotAxisBreaks(probabilityRange, canvas)
+  yAxisSetup       <- .sapProbabilityPlotAxisBreaks(probabilityRange, canvas)
 
   return(list(
     timeRange        = timeRange,
@@ -652,7 +675,7 @@
 .sapProbabilityPlotDetailedAxisSetup <- function(empiricalData, curveData, censoringData, observedTimeRange = NULL, canvas) {
 
   if (is.null(observedTimeRange)) {
-    timeValues <- c(empiricalData[["time"]], curveData[["time"]], censoringData[["time"]])
+    timeValues        <- c(empiricalData[["time"]], curveData[["time"]], censoringData[["time"]])
     observedTimeRange <- .sapProbabilityPlotTimeRange(timeValues)
   }
   timeRange <- .sapProbabilityPlotDetailedTimeRange(observedTimeRange, canvas)
@@ -662,7 +685,7 @@
     probabilityValues <- curveData[["probability"]]
 
   probabilityRange <- .sapProbabilityPlotDetailedProbabilityRange(probabilityValues)
-  yAxisSetup <- .sapProbabilityPlotAxisBreaks(probabilityRange, canvas, detailed = TRUE)
+  yAxisSetup       <- .sapProbabilityPlotAxisBreaks(probabilityRange, canvas, detailed = TRUE)
 
   return(list(
     timeRange        = timeRange,
@@ -679,7 +702,7 @@
   if (is.null(censoringData) || nrow(censoringData) == 0)
     return(plot)
 
-  aesCall <- list(x = as.name("time"), color = if (hasLevel) as.name("Level") else if (hasDistribution) as.name("Distribution"))
+  aesCall  <- list(x = as.name("time"), color = if (hasLevel) as.name("Level") else if (hasDistribution) as.name("Distribution"))
   geomCall <- list(
     data    = censoringData,
     mapping = do.call(ggplot2::aes, aesCall[!vapply(aesCall, is.null, logical(1))]),
@@ -761,7 +784,7 @@
   }
 
   legendTheme <- .sapProbabilityPlotLegendTheme(options[["probabilityPlotLegend"]])
-  plot <- plot + legendTheme
+  plot        <- plot + legendTheme
 
   if (options[["probabilityPlotGrid"]]) {
     if (.sapProbabilityPlotIsDetailed(options)) {
@@ -799,10 +822,12 @@
 }
 
 .sapProbabilityPlotIsDetailed <- function(options) {
+
   return(identical(options[["probabilityPlotTheme"]], "detailed"))
 }
 
 .sapProbabilityPlotProbabilityRange <- function() {
+
   return(c(0.001, 0.999))
 }
 
@@ -876,8 +901,8 @@
   }
 
   exponentRange <- seq(floor(log10(timeRange[1])), ceiling(log10(timeRange[2])))
-  breaks <- as.vector(outer(c(1, 2, 5), 10^exponentRange, "*"))
-  breaks <- sort(unique(breaks[breaks >= timeRange[1] & breaks <= timeRange[2]]))
+  breaks        <- as.vector(outer(c(1, 2, 5), 10^exponentRange, "*"))
+  breaks        <- sort(unique(breaks[breaks >= timeRange[1] & breaks <= timeRange[2]]))
 
   if (length(breaks) < 2) {
     breaks <- jaspGraphs::getPrettyAxisBreaks(timeRange)
@@ -893,8 +918,8 @@
     return(numeric(0))
 
   exponentRange <- seq(floor(log10(from)), floor(log10(to)))
-  breaks <- as.vector(outer(base, 10^exponentRange, "*"))
-  breaks <- sort(unique(breaks[breaks >= from & breaks <= to & breaks > 0]))
+  breaks        <- as.vector(outer(base, 10^exponentRange, "*"))
+  breaks        <- sort(unique(breaks[breaks >= from & breaks <= to & breaks > 0]))
 
   return(breaks)
 }
@@ -918,17 +943,19 @@
     return(numeric(0))
 
   exponentRange <- seq(floor(log10(timeRange[1])), ceiling(log10(timeRange[2])))
-  breaks <- as.vector(outer(1:9, 10^exponentRange, "*"))
-  breaks <- sort(unique(breaks[breaks >= timeRange[1] & breaks <= timeRange[2]]))
+  breaks        <- as.vector(outer(1:9, 10^exponentRange, "*"))
+  breaks        <- sort(unique(breaks[breaks >= timeRange[1] & breaks <= timeRange[2]]))
 
   return(breaks)
 }
 
 .sapProbabilityPlotUsesLogTime <- function(canvas) {
+
   return(identical(canvas[["xTransform"]], "log"))
 }
 
 .sapProbabilityPlotIsExponential <- function(canvas) {
+
   return(identical(canvas[["name"]], "exponentialProbability"))
 }
 

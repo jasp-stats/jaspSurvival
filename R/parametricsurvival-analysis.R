@@ -31,8 +31,10 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
   return()
 }
 
+# Shared entry point: validate, update retained fits, then build requested outputs.
 .sapRun <- function(jaspResults, dataset, options) {
 
+  # Prepare the option contract before validation and dependency comparisons.
   options <- .sapPrepareModelTerms(options)
   .sapValidateModelPredictionEvaluations(options)
   # Preserve rows omitted from fitting for missing-outcome predictions and exports.
@@ -48,6 +50,8 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
   }
 
   # Fit the models
+
+  # Changes to retained inference require rebuilding outputs that depend on its bounds.
   informationChanged <- .sapFit(jaspResults, dataset, options)
   if (informationChanged) {
     for (key in c("fitErrors", "censoringSummaryTable", "summaryTable", "sequentialModelComparisonTable", "coefficientsTable", "coefficientsCovarianceMatrixTable", "modelEquations",
@@ -65,6 +69,7 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
   if (options[["censoringSummary"]])
     .saCensoringSummaryTable(jaspResults, dataset, options, weighted = TRUE)
 
+  # Share draws across all outputs, then release transient storage on exit.
   options[["simulationContext"]] <- .sapSimulationContext(jaspResults, options)
   on.exit(.sapReleaseSimulationContext(options[["simulationContext"]]), add = TRUE)
   .sapFitErrorsTable(jaspResults, options)
@@ -112,8 +117,8 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
 }
 
 .sapDistributions <- c(
-  exponential = "exp", gamma = "gamma", generalizedF = "genf", generalizedGamma = "gengamma",
-  gompertz = "gompertz", logLogistic = "llogis", logNormal = "lnorm", weibull = "weibull",
+  exponential              = "exp", gamma = "gamma", generalizedF = "genf", generalizedGamma = "gengamma",
+  gompertz                 = "gompertz", logLogistic = "llogis", logNormal = "lnorm", weibull = "weibull",
   generalizedGammaOriginal = "gengamma.orig", generalizedFOriginal = "genf.orig"
 )
 .sapDistributionOptions <- paste0("selectedParametricDistributions",
@@ -136,7 +141,7 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
 .sapSimulationDependencies     <- c("confidenceIntervalSimulationDraws", "setSeed", "seed")
 .sapPredictionCiDependencies   <- c("predictionsDisplayConfidenceIntervals", "predictionsDisplayConfidenceIntervalsLevel", "confidenceIntervalBounds", .sapSimulationDependencies)
 .sapPredictionTypes <- c(
-  survivalTime = "quantile", relativeSurvivalTime = "quantile", survivalProbability = "survival",
+  survivalTime       = "quantile", relativeSurvivalTime = "quantile", survivalProbability = "survival",
   failureProbability = "survival", hazard = "hazard", cumulativeHazard = "cumhaz", restrictedMeanSurvivalTime = "rmst"
 )
 .sapModelPredictionOptions <- paste0("predictionsOutcome",

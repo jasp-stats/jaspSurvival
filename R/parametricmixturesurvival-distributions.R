@@ -30,21 +30,23 @@
     return(unname(inits))
 
   original <- inits
-  for (k in seq_len(components)) for (parameter in family[["pars"]]) {
-    native <- paste0(parameter, k)
-    source <- paste0(parameter, order[k])
-    inits[native] <- original[source]
-    targetIndex <- fit[["covpars"]][fit[["mx"]][[native]]]
-    sourceIndex <- fit[["covpars"]][fit[["mx"]][[source]]]
-    if (length(targetIndex) != length(sourceIndex))
-      stop("Component equation designs differ during component reordering.")
-    inits[targetIndex] <- original[sourceIndex]
-  }
+  for (k in seq_len(components))
+    for (parameter in family[["pars"]]) {
+      native <- paste0(parameter, k)
+      source <- paste0(parameter, order[k])
+      inits[native] <- original[source]
+      targetIndex <- fit[["covpars"]][fit[["mx"]][[native]]]
+      sourceIndex <- fit[["covpars"]][fit[["mx"]][[source]]]
+      if (length(targetIndex) != length(sourceIndex))
+        stop("Component equation designs differ during component reordering.")
+      inits[targetIndex] <- original[sourceIndex]
+    }
   weightIndex <- match(.sapmParameterNames(family, components)[["weightPars"]], names(inits))
   inits[weightIndex] <- stats::plogis(.sapmReorderedWeights(fit[["res.t"]][weightIndex, "est"], order))
 
   return(unname(inits))
 }
+
 .sapmFixedNativeParameters      <- function(fixed) {
 
   return(unlist(lapply(seq_along(fixed), function(k) {
@@ -53,6 +55,7 @@
     return(stats::setNames(fixed[[k]], paste0(names(fixed[[k]]), k)))
   }), use.names = TRUE))
 }
+
 .sapmReorderedWeights           <- function(estimates, order) {
 
   # retain small remaining probabilities when re-expressing the fitted component order
@@ -63,6 +66,7 @@
     probabilities[k] - .sapmLogSumExp(matrix(probabilities[seq.int(k + 1, length(probabilities))], nrow = 1))
   }, numeric(1)))
 }
+
 .sapmInits                      <- function(mixture, base, beta, probabilities, specification = NULL) {
 
   # flexsurvreg order: component parameters, stick-breaking weights, location effects of the first component, location effects of the remaining components
@@ -83,9 +87,11 @@
     slopes <- numeric(0)
     for (native in names(specification[["equations"]])) {
       equation <- specification[["equations"]][[native]]
-      values <- beta[[equation[["component"]]]]
-      if (length(equation[["slopeNames"]]) == 0L) values <- numeric(0)
-      else if (is.list(values)) values <- values[[equation[["parameter"]]]]
+      values   <- beta[[equation[["component"]]]]
+      if (length(equation[["slopeNames"]]) == 0L)
+        values <- numeric(0)
+      else if (is.list(values))
+        values <- values[[equation[["parameter"]]]]
       if (length(values) != length(equation[["slopeNames"]]))
         stop("Component starting coefficients differ from the native equation design.")
       slopes <- c(slopes, stats::setNames(as.numeric(values), equation[["slopeNames"]]))
@@ -95,6 +101,7 @@
   }
   return(inits)
 }
+
 .sapmComponentOrder             <- function(family, base) {
 
   # ascending baseline median lifetime, ties are broken by the remaining parameters
@@ -103,15 +110,20 @@
 
   return(do.call(order, c(list(medians), ties)))
 }
+
 .sapmComponentMedian            <- function(family, base) {
+
   return(do.call(family[["q"]], c(list(0.5), as.list(base))))
 }
+
 .sapmParameterNames             <- function(family, components) {
+
   return(list(
     componentPars = as.vector(outer(family[["pars"]], seq_len(components), paste0)),
     weightPars    = if (components > 1) paste0("v", seq_len(components - 1)) else character(0)
   ))
 }
+
 .sapmBaseParameters             <- function(estimates, family, components) {
 
   # natural baseline parameters (covariates at zero) and mixing probabilities of the transformed estimates
@@ -121,11 +133,12 @@
       family[["inv.transforms"]][[i]](estimates[[paste0(family[["pars"]][i], k)]])
     }, numeric(1)), family[["pars"]])
   })
-  weights <- .sapmParameterNames(family, components)[["weightPars"]]
+  weights       <- .sapmParameterNames(family, components)[["weightPars"]]
   probabilities <- as.vector(.sapmStickBreaking(if (length(weights) > 0) matrix(stats::plogis(estimates[weights]), nrow = 1), 1))
 
   return(list(base = base, probabilities = probabilities))
 }
+
 .sapmComponentEstimates         <- function(fit, family, components) {
 
   estimates  <- fit[["res.t"]][, "est"]
@@ -144,6 +157,7 @@
     collapsed     = .sapmConditionalMagnitude(fit, family, components)
   ))
 }
+
 .sapmObservationParameters <- function(fit, family, components) {
 
   base <- .sapmBaseParameters(fit[["res.t"]][, "est"], family, components)[["base"]]
@@ -153,13 +167,16 @@
       .sapEquationMatrices(fit, family, k, components), baseline))
   }))
 }
+
 .sapmPosterior                  <- function(fit, family, components, survObject) {
+
   return(.sapmPosteriorProbabilities(
     family, survObject,
     .sapmObservationParameters(fit, family, components),
     .sapmComponentEstimates(fit, family, components)[["probabilities"]]
   ))
 }
+
 .sapmDuplicatedComponents       <- function(fit, family, components, survObject) {
 
   # components coincide if their distribution functions differ by less than one percentage point at every observed time,
@@ -181,6 +198,7 @@
 
   return(pairs[keep, , drop = FALSE])
 }
+
 .sapmStickBreaking              <- function(weights, nObs) {
 
   # stick-breaking weights v1, ..., v(K-1) to mixing probabilities p1, ..., pK
@@ -200,6 +218,7 @@
 
   return(probabilities)
 }
+
 .sapmMixtureDistribution        <- function(family, components) {
 
   names         <- .sapmParameterNames(family, components)
@@ -241,9 +260,10 @@
     return(.sapmLogSumExp(matrix(logs, nrow = arguments[["n"]])))
   }
   qMixture <- function(p, ..., lower.tail = TRUE, log.p = FALSE) {
-    if (!length(p)) return(numeric(0))
-    logLower <- if (log.p) if (lower.tail) p else log(-expm1(p)) else if (lower.tail) log(p) else log1p(-p)
-    logUpper <- if (log.p) if (lower.tail) log(-expm1(p)) else p else if (lower.tail) log1p(-p) else log(p)
+    if (!length(p))
+      return(numeric(0))
+    logLower  <- if (log.p) if (lower.tail) p else log(-expm1(p)) else if (lower.tail) log(p) else log1p(-p)
+    logUpper  <- if (log.p) if (lower.tail) log(-expm1(p)) else p else if (lower.tail) log1p(-p) else log(p)
     arguments <- list(...)
     n         <- max(length(p), lengths(arguments))
     arguments <- lapply(arguments, rep_len, length.out = n)
@@ -262,15 +282,15 @@
     # A percentile beyond the largest representable time is overflow, not a
     # failed draw. Keep it infinite so confidence bounds retain the upper tail.
     logSurvival <- do.call(pMixture, c(list(q = .Machine$double.xmax, lower.tail = FALSE, log.p = TRUE), arguments))
-    overflow <- which(interior & logUpper > logCure & logSurvival > logUpper)
+    overflow    <- which(interior & logUpper > logCure & logSurvival > logUpper)
     out[overflow] <- Inf
     index <- setdiff(index, overflow)
     if (length(index) == 0)
       return(out)
 
     parameters <- lapply(arguments, function(x) x[index])
-    upperTail <- logLower[index] > log(.5)
-    target    <- ifelse(upperTail, logUpper[index], logLower[index])
+    upperTail  <- logLower[index] > log(.5)
+    target     <- ifelse(upperTail, logUpper[index], logLower[index])
     # Scale log-tail probabilities to an ordinary CDF for the native solver.
     # Its target stays away from 0/1, retaining small upper-tail probabilities.
     logTimeCdf <- function(q, targetLog, upperTail, ...) {
@@ -344,22 +364,24 @@
     weightPars    = weightPars
   ))
 }
+
 .sapmDWeibull <- function(x, shape, scale = 1, log = FALSE) {
 
   if (length(x) == 0 || length(shape) == 0 || length(scale) == 0)
     return(numeric(0))
-  n     <- max(length(x), length(shape), length(scale))
-  x     <- rep_len(x, n)
-  shape <- rep_len(shape, n)
-  scale <- rep_len(scale, n)
-  valid <- is.finite(x) & x > 0 & is.finite(shape) & shape > 0 & is.finite(scale) & scale > 0
+
+  n        <- max(length(x), length(shape), length(scale))
+  x        <- rep_len(x, n)
+  shape    <- rep_len(shape, n)
+  scale    <- rep_len(scale, n)
+  valid    <- is.finite(x) & x > 0 & is.finite(shape) & shape > 0 & is.finite(scale) & scale > 0
   logRatio <- rep(0, n)
   logRatio[valid] <- log(x[valid]) - log(scale[valid])
   logPower <- shape * logRatio
   # Native dweibull forms powers before taking logs, which can yield Inf - Inf
   # (or Inf * 0) in the tails of narrow components, including valid CI draws.
   logMaximum <- log(.Machine$double.xmax)
-  tail <- rep(FALSE, n)
+  tail       <- rep(FALSE, n)
   tail[valid] <- abs(logRatio[valid]) > logMaximum | logPower[valid] > logMaximum |
     (shape[valid] - 1) * logRatio[valid] > logMaximum |
     log(shape[valid]) - log(scale[valid]) + (shape[valid] - 1) * logRatio[valid] > logMaximum
@@ -371,42 +393,45 @@
 
   return(out)
 }
+
 .sapMeanGompertz <- function(shape, rate = 1) {
+
   # A negative shape leaves positive survival at infinity: unrestricted mean
   # lifetime is infinite even when numerical integration returns a finite value.
-  size <- max(length(shape), length(rate))
-  shape <- rep_len(shape, size)
-  rate <- rep_len(rate, size)
+  size     <- max(length(shape), length(rate))
+  shape    <- rep_len(shape, size)
+  rate     <- rep_len(rate, size)
   infinite <- !is.na(shape) & shape < 0 & !is.na(rate) & rate > 0
-  value <- rep(Inf, size)
+  value    <- rep(Inf, size)
   if (any(!infinite))
     value[!infinite] <- flexsurv::mean_gompertz(shape[!infinite], rate[!infinite])
   return(value)
 }
+
 .sapmFamily <- function(distribution) {
 
   specification <- flexsurv::flexsurv.dists[[distribution]]
-  functions <- switch(distribution,
+  functions     <- switch(distribution,
     "exp" = list(d = stats::dexp, p = stats::pexp, q = stats::qexp, h = flexsurv::hexp,
-                  rmst = flexsurv::rmst_exp, mean = flexsurv::mean_exp),
+      rmst = flexsurv::rmst_exp, mean = flexsurv::mean_exp),
     "gamma" = list(d = stats::dgamma, p = stats::pgamma, q = stats::qgamma, h = flexsurv::hgamma,
-                    rmst = flexsurv::rmst_gamma, mean = flexsurv::mean_gamma),
+      rmst = flexsurv::rmst_gamma, mean = flexsurv::mean_gamma),
     "genf" = list(d = flexsurv::dgenf, p = flexsurv::pgenf, q = flexsurv::qgenf, h = flexsurv::hgenf,
-                   rmst = flexsurv::rmst_genf, mean = flexsurv::mean_genf),
+      rmst = flexsurv::rmst_genf, mean = flexsurv::mean_genf),
     "gengamma" = list(d = flexsurv::dgengamma, p = flexsurv::pgengamma, q = flexsurv::qgengamma, h = flexsurv::hgengamma,
-                       rmst = flexsurv::rmst_gengamma, mean = flexsurv::mean_gengamma),
+      rmst = flexsurv::rmst_gengamma, mean = flexsurv::mean_gengamma),
     "gompertz" = list(d = flexsurv::dgompertz, p = flexsurv::pgompertz, q = flexsurv::qgompertz, h = flexsurv::hgompertz,
-                       rmst = flexsurv::rmst_gompertz, mean = .sapMeanGompertz),
+      rmst = flexsurv::rmst_gompertz, mean = .sapMeanGompertz),
     "llogis" = list(d = flexsurv::dllogis, p = flexsurv::pllogis, q = flexsurv::qllogis, h = flexsurv::hllogis,
-                     rmst = flexsurv::rmst_llogis, mean = flexsurv::mean_llogis),
+      rmst = flexsurv::rmst_llogis, mean = flexsurv::mean_llogis),
     "lnorm" = list(d = stats::dlnorm, p = stats::plnorm, q = stats::qlnorm, h = flexsurv::hlnorm,
-                    rmst = flexsurv::rmst_lnorm, mean = flexsurv::mean_lnorm),
+      rmst = flexsurv::rmst_lnorm, mean = flexsurv::mean_lnorm),
     "weibull" = list(d = .sapmDWeibull, p = stats::pweibull, q = stats::qweibull, h = flexsurv::hweibull,
-                      rmst = flexsurv::rmst_weibull, mean = flexsurv::mean_weibull),
+      rmst = flexsurv::rmst_weibull, mean = flexsurv::mean_weibull),
     "gengamma.orig" = list(d = flexsurv::dgengamma.orig, p = flexsurv::pgengamma.orig, q = flexsurv::qgengamma.orig,
-                            h = flexsurv::hgengamma.orig, rmst = flexsurv::rmst_gengamma.orig, mean = flexsurv::mean_gengamma.orig),
+      h = flexsurv::hgengamma.orig, rmst = flexsurv::rmst_gengamma.orig, mean = flexsurv::mean_gengamma.orig),
     "genf.orig" = list(d = flexsurv::dgenf.orig, p = flexsurv::pgenf.orig, q = flexsurv::qgenf.orig,
-                        h = flexsurv::hgenf.orig, rmst = flexsurv::rmst_genf.orig, mean = flexsurv::mean_genf.orig)
+      h = flexsurv::hgenf.orig, rmst = flexsurv::rmst_genf.orig, mean = flexsurv::mean_genf.orig)
   )
 
   return(c(list(
@@ -416,14 +441,21 @@
     transforms     = specification[["transforms"]],
     inv.transforms = specification[["inv.transforms"]],
     # Families with a survreg equivalent use the faster weighted survreg M-step.
-    survreg        = switch(distribution, "exp" = "exponential", "lnorm" = "lognormal", "llogis" = "loglogistic", "weibull" = "weibull", NULL)
+    survreg        = switch(
+      distribution,
+      "exp" = "exponential",
+      "lnorm" = "lognormal",
+      "llogis" = "loglogistic",
+      "weibull" = "weibull",
+      NULL
+    )
   ), functions))
 }
 
 .sapmConditionalMagnitude <- function(fit, family, components) {
 
   parameters <- .sapmObservationParameters(fit, family, components)
-  selected <- family[["pars"]][vapply(family[["transforms"]], function(link) identical(link, log), logical(1)) &
+  selected   <- family[["pars"]][vapply(family[["transforms"]], function(link) identical(link, log), logical(1)) &
     family[["pars"]] != family[["location"]]]
   return(vapply(parameters, function(parameter) any(vapply(parameter[selected], function(value)
     any(!is.finite(log(value)) | abs(log(value)) > 15), logical(1))), logical(1)))
@@ -434,10 +466,11 @@
   selected <- family[["pars"]][family[["pars"]] == family[["location"]] |
     vapply(family[["transforms"]], function(link) identical(link, log), logical(1))]
   return(vapply(seq_len(components), function(k) {
-    beta <- .sapEquationBetas(fit, family, k, components)
+    beta     <- .sapEquationBetas(fit, family, k, components)
     matrices <- .sapEquationMatrices(fit, family, k, components)
     any(vapply(selected, function(parameter) {
-      if (length(beta[[parameter]]) == 0L) return(FALSE)
+      if (length(beta[[parameter]]) == 0L)
+        return(FALSE)
       value <- as.vector(matrices[[parameter]] %*% beta[[parameter]])
       return(any(!is.finite(value)) || max(abs(value - mean(value))) > 15)
     }, logical(1)))

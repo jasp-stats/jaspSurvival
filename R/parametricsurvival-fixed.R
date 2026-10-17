@@ -24,13 +24,14 @@
         valid <- is.finite(suppressWarnings(family[["transforms"]][[i]](value)))
       if (!valid)
         stop(gettextf("The fixed value for %1$s in %2$s, component %3$i, must be a single finite number within the parameter's range.",
-                      parameter, .sapOption2DistributionName(distribution), k))
+          parameter, .sapOption2DistributionName(distribution), k))
       fixed[[k]][parameter] <- value
     }
   }
 
   return(fixed)
 }
+
 .sapCheckFixedConstraint <- function(fixed, constraint) {
 
   if (is.null(constraint))
@@ -42,17 +43,18 @@
     feasible <- if (constraint[["direction"]] == "lower") value >= constraint[["naturalBound"]] else value <= constraint[["naturalBound"]]
     if (!feasible)
       stop(gettextf("The fixed %1$s in component %2$i conflicts with the minimum log-time standard deviation. Change the fixed value or the minimum spread.",
-                    constraint[["parameter"]], k))
+        constraint[["parameter"]], k))
   }
 
   return()
 }
+
 .sapFixedDistribution <- function(dlist, fixed, parameterNames) {
 
   initialize <- dlist[["inits"]]
   dlist[["inits"]] <- function(t, mf, mml, aux) {
     arguments <- list(t = t, mf = mf, mml = mml, aux = aux)
-    inits <- do.call(initialize, arguments[intersect(names(arguments), names(formals(initialize)))])
+    inits     <- do.call(initialize, arguments[intersect(names(arguments), names(formals(initialize)))])
     if (length(inits) < length(parameterNames))
       inits <- c(inits, rep(0, length(parameterNames) - length(inits)))
     inits[match(names(fixed), parameterNames)] <- fixed
@@ -61,6 +63,7 @@
 
   return(dlist)
 }
+
 .sapFixedFitCall <- function(fitCall, fixed, parameterNames = NULL) {
 
   if (length(fixed) == 0L)
@@ -91,6 +94,7 @@
 
   return(fitCall)
 }
+
 .sapCompleteFixedFit <- function(fit, fixed, level, structural = numeric(0)) {
 
   if (length(fixed) == 0L || inherits(fit, "try-error"))
@@ -125,11 +129,12 @@
 
   return(fit)
 }
+
 .sapParameterCovariance <- function(fit) {
 
   parameters <- rownames(fit[["res.t"]])
   covariance <- matrix(0, length(parameters), length(parameters), dimnames = list(parameters, parameters))
-  free <- setdiff(seq_along(parameters), fit[["fixedpars"]])
+  free       <- setdiff(seq_along(parameters), fit[["fixedpars"]])
   if (length(free) > 0L) {
     native <- fit[["cov"]]
     covariance[free, free] <- if (is.matrix(native) && identical(dim(native), c(length(free), length(free)))) native else NA_real_
@@ -137,12 +142,13 @@
 
   return(covariance)
 }
+
 .sapFitSingle <- function(dataset, options, distribution, modelTerms, hessian = TRUE) {
 
-  family <- .sapmFamily(distribution)
+  family        <- .sapmFamily(distribution)
   specification <- .sapCompileEquations(dataset, options, family, modelTerms)
-  fixed <- c(.sapFixedParameters(options, distribution)[[1L]], specification[["fixed"]])
-  fitCall <- list(
+  fixed         <- c(.sapFixedParameters(options, distribution)[[1L]], specification[["fixed"]])
+  fitCall       <- list(
     formula = specification[["formula"]],
     anc     = specification[["anc"]],
     data    = dataset,
@@ -159,7 +165,7 @@
   fitCall <- .sapEyringInitials(fitCall, schema, fixed)
   fitCall <- .sapFixedFitCall(fitCall, fixed, specification[["parameterNames"]])
   fitCall <- .sapEyringControls(fitCall, schema)
-  fit <- .sapEyringNativeFit(fitCall, schema, options[["censoringType"]])
+  fit     <- .sapEyringNativeFit(fitCall, schema, options[["censoringType"]])
   attr(fit, "nativeControl") <- fitCall[["control"]]
   attr(fit, "structuralInitialAdjustment") <- attr(fitCall, "structuralInitialAdjustment")
   attr(fit, "fullParameterScales") <- attr(fitCall, "fullParameterScales")

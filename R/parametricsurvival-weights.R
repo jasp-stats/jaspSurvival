@@ -1,5 +1,6 @@
 # Case weights are frequencies: data-derived references must match repeated rows.
 .sapUnrollFrequencyDataset <- function(dataset, options) {
+
   if (options[["weights"]] == "")
     return(dataset)
 
@@ -14,6 +15,7 @@
 }
 
 .sapCaseWeights <- function(dataset, options) {
+
   if (!is.null(attr(dataset, "frequencyRowNames", exact = TRUE)))
     return(rep(1, nrow(dataset)))
   if (options[["weights"]] != "")
@@ -22,19 +24,23 @@
 }
 
 .sapWeightedMean <- function(value, weights) {
+
   if (all(weights == 1))
     return(mean(value))
   return(stats::weighted.mean(value, weights))
 }
 
 .sapWeightedSd <- function(value, weights) {
+
   if (all(weights == 1))
     return(stats::sd(value))
+
   center <- .sapWeightedMean(value, weights)
   return(sqrt(sum(weights * (value - center)^2) / (sum(weights) - 1)))
 }
 
 .sapWeightedColumnMeans <- function(design, weights) {
+
   stopifnot(nrow(design) == length(weights))
   if (all(weights == 1))
     return(unname(colMeans(design)))
@@ -42,15 +48,17 @@
 }
 
 .sapFrequencyQuantile <- function(value, weights, probabilities) {
+
   if (all(weights == 1))
     return(stats::quantile(value, probabilities, names = FALSE, type = 7L))
-  order <- order(value)
-  value <- value[order]
+
+  order      <- order(value)
+  value      <- value[order]
   cumulative <- cumsum(weights[order])
-  size <- sum(weights)
-  position <- 1 + (size - 1) * probabilities
-  lower <- floor(position)
-  fraction <- position - lower
+  size       <- sum(weights)
+  position   <- 1 + (size - 1) * probabilities
+  lower      <- floor(position)
+  fraction   <- position - lower
   # Locate order statistics in the expanded sample without allocating it.
   lowerIndex <- findInterval(lower - 1, cumulative) + 1L
   upperIndex <- findInterval(pmin(lower + 1, size) - 1, cumulative) + 1L
@@ -60,17 +68,17 @@
 # Compress only fitting rows: bases and starts still use the repeated sample.
 .sapmCompressedFit <- function(fitCall, fitFunction = flexsurv::flexsurvreg) {
 
-  dataset <- fitCall[["data"]]
-  formulas <- c(list(fitCall[["formula"]]), fitCall[["anc"]])
+  dataset   <- fitCall[["data"]]
+  formulas  <- c(list(fitCall[["formula"]]), fitCall[["anc"]])
   variables <- unique(unlist(lapply(formulas, all.vars), use.names = FALSE))
-  keys <- lapply(dataset[variables], function(value) match(value, unique(value)))
-  keys <- do.call(paste, c(keys, sep = "|"))
-  rows <- which(!duplicated(keys))
+  keys      <- lapply(dataset[variables], function(value) match(value, unique(value)))
+  keys      <- do.call(paste, c(keys, sep = "|"))
+  rows      <- which(!duplicated(keys))
   # Avoid reconstructing full model frames for negligible reductions in work.
   if (length(rows) > 0.9 * nrow(dataset))
     return(do.call(fitFunction, fitCall))
 
-  index <- match(keys, keys[rows])
+  index   <- match(keys, keys[rows])
   weights <- fitCall[["weights"]]
   if (is.null(weights))
     weights <- rep(1, nrow(dataset))
@@ -99,7 +107,8 @@
 
   # Downstream diagnostics and exports expect one entry per fitting unit.
   expandMatrix <- function(value) {
-    if (is.null(value)) return(NULL)
+    if (is.null(value))
+      return(NULL)
     out <- value[index, , drop = FALSE]
     for (attribute in setdiff(names(attributes(value)), c("dim", "dimnames")))
       attr(out, attribute) <- attr(value, attribute)
@@ -120,7 +129,8 @@
   fit[["data"]][["mml"]] <- lapply(fit[["data"]][["mml"]], expandMatrix)
   fit[["logliki"]] <- fit[["logliki"]][index]
   means <- unlist(lapply(fit[["data"]][["mml"]], function(value) {
-    if (is.null(value)) return(numeric(0))
+    if (is.null(value))
+      return(numeric(0))
     return(colMeans(value[, -1L, drop = FALSE]))
   }), use.names = FALSE)
   fit[["datameans"]] <- stats::setNames(means, names(fit[["datameans"]]))
