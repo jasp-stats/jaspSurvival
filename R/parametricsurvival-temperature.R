@@ -203,8 +203,11 @@
 
   target <- if (specification[["family"]] == "genf.orig" && specification[["components"]] == 1L)
     .sapGenfOrigTarget(fit, specification, censoringType) else NULL
+  weibullTarget <- .sapWeibullTarget(fit, specification, censoringType)
+  if (!is.null(weibullTarget))
+    target <- weibullTarget
   analytic    <- !is.null(target)
-  method      <- if (analytic) "analyticGenfOrigDensity" else "native"
+  method      <- if (!is.null(weibullTarget)) "analyticWeibull" else if (analytic) "analyticGenfOrigDensity" else "native"
   unavailable <- function(reason) {
     provenance["analyticReason"] <- list(if (analytic) reason else NULL)
     return(.sapInformationRecord(.sapEyringUnavailableInference(fit, reason), method,
@@ -212,7 +215,15 @@
   }
   H <- fit[["opt"]][["hessian"]]
   if (analytic) {
-    H <- .sapGenfOrigInformation(target)
+    if (!is.null(weibullTarget)) {
+      information <- .sapWeibullDerivatives(target)
+      if (!is.finite(information[["logLik"]]) ||
+        abs(information[["logLik"]] - fit[["loglik"]]) > 1e-8 * max(1, abs(fit[["loglik"]])))
+        return(unavailable(gettext("The analytic likelihood does not match the fitted model. Rerun the model to obtain confidence intervals.")))
+      H <- information[["H"]]
+    } else {
+      H <- .sapGenfOrigInformation(target)
+    }
     fit[["opt"]][["hessian"]] <- H
   }
   if (length(free) == 1L && is.numeric(H) && is.null(dim(H)) && length(H) == 1L)
@@ -222,14 +233,14 @@
     all(is.finite(H)) && isSymmetric(H)
   decomposition <- if (valid) try(chol(H), silent = TRUE) else NULL
   if (!valid || inherits(decomposition, "try-error"))
-    return(unavailable(if (analytic) gettext("The analytic exact-event information matrix does not support confidence intervals at this fitted point.") else
+    return(unavailable(if (analytic) gettext("The analytic information matrix does not support confidence intervals at this fitted point.") else
       gettext("The native information matrix does not support confidence intervals at this fitted point.")))
   covariance <- chol2inv(decomposition)
   dimnames(covariance) <- dimnames(H)
   se       <- sqrt(diag(covariance))
   residual <- max(abs((H %*% covariance - diag(length(free))) * outer(se, 1 / se)))
   if (any(!is.finite(covariance)) || any(!is.finite(se) | se <= 0) || !is.finite(residual) || residual > 1e-6)
-    return(unavailable(if (analytic) gettext("The analytic exact-event information matrix could not be inverted accurately. Confidence intervals are unavailable.") else
+    return(unavailable(if (analytic) gettext("The analytic information matrix could not be inverted accurately. Confidence intervals are unavailable.") else
       gettext("The native information matrix could not be inverted accurately. Confidence intervals are unavailable.")))
   fit[["cov"]] <- covariance
   fit[["opt"]][["hessian"]] <- H
@@ -276,8 +287,11 @@
   point <- do.call(flexsurv::flexsurvreg, searchCall)
   .sapVerifyNativeSchema(point, schema[["specification"]])
   if (is.null(searchProvenance))
+    point <- .sapWeibullRefine(point, searchCall, schema[["specification"]], censoringType)
+  if (is.null(searchProvenance))
     searchProvenance <- list(opt = point[["opt"]], control = searchCall[["control"]],
-      loglik = point[["loglik"]], AIC = point[["AIC"]], BIC = point[["BIC"]])
+      loglik = point[["loglik"]], AIC = point[["AIC"]], BIC = point[["BIC"]],
+      refinement = attr(point, "analyticRefinement", exact = TRUE))
   else
     .sapmCheckFinalPoint(point, fitCall[["inits"]], searchProvenance[["loglik"]])
   fit          <- point
@@ -326,6 +340,7 @@
   for (field in c("loglik", "AIC", "BIC"))
     fit[[field]] <- searchProvenance[[field]]
   attr(fit, "searchProvenance") <- searchProvenance
+  attr(fit, "analyticRefinement") <- searchProvenance[["refinement"]]
   attr(fit, "searchControl") <- searchProvenance[["control"]]
   attr(fit, "finalControl") <- finalControl
   attr(fit, "requestedHessian") <- requestedHessian

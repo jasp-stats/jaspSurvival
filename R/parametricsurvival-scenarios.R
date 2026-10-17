@@ -426,7 +426,8 @@
       at      <- .sapAdaptivePlotTimes(at, evaluate, xTransform = if (logTime) log else identity,
         xInverse = if (logTime) exp else identity, yTransform = yTransform, minimum = if (options[["predictionsDisplayConfidenceIntervals"]]) 65L else 17L,
         maximum  = if (options[["predictionsDisplayConfidenceIntervals"]]) 129L else 201L,
-        anchors  = if (inherits(anchors, "try-error")) numeric(0) else anchors[is.finite(anchors)])
+        anchors  = if (inherits(anchors, "try-error")) numeric(0) else anchors[is.finite(anchors)],
+        preserveFirstAnchor = type == "survival" && attr(model, "components") > 1L)
     }
     .sapModelPredictionValues(model, scenarios, options, type, at, measure)
   })

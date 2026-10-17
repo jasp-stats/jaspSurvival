@@ -44,7 +44,7 @@
 # and excess mandatory nodes keep the original grid, which may exceed the cap.
 .sapAdaptivePlotTimes <- function(times, evaluate, xTransform = identity, xInverse = identity,
   yTransform = identity, limits = NULL, minimum = 17L,
-  maximum    = 201L, anchors = numeric(0)) {
+  maximum    = 201L, anchors = numeric(0), preserveFirstAnchor = FALSE) {
   xRange <- try(xTransform(range(times)), silent = TRUE)
   if (inherits(xRange, "try-error") || any(!is.finite(xRange)) || diff(xRange) <= 0)
     return(times)
@@ -83,6 +83,11 @@
     actual   <- clip(y)
     span     <- diff(range(actual))
     retained <- sort(unique(match(xTransform(uniform[seq(1L, 129L, length.out = minimum)]), x)))
+    # The earliest model landmark marks the onset of the fitted tail. Keep it
+    # independently of threshold ties in the adaptive interpolation error.
+    interiorAnchors <- anchors[anchors > min(times) & anchors < max(times)]
+    if (preserveFirstAnchor && length(interiorAnchors))
+      retained <- sort(unique(c(retained, match(xTransform(min(interiorAnchors)), x))))
     # Keep visible entry/exit neighbours before clipping can hide their bends.
     crossings <- if (is.null(limits)) integer(0) else unique(unlist(lapply(limits, function(edge)
       which(rowSums((y[-nrow(y), , drop = FALSE] < edge) != (y[-1L, , drop = FALSE] < edge)) > 0L))))

@@ -1,5 +1,5 @@
 # Same-point exact-density information for canonical Eyring GenF.orig fits.
-.sapInformationPolicyVersion <- "eyring-genf-orig-density-1"
+.sapInformationPolicyVersion <- "eyring-analytic-information-2"
 .sapGenfOrigBernoulli <- c(1/12, -1/120, 1/252, -1/240, 1/132, -691/32760,
   1/12, -3617/8160, 43867/14364, -174611/6600, 854513/3036, -236364091/65520)
 
@@ -364,6 +364,9 @@
 
 .sapInformationNote <- function(fit) {
 
+  if (identical(attr(fit, "informationOutcome", exact = TRUE), "analyticAvailable") &&
+    identical(attr(fit, "informationMethod", exact = TRUE), "analyticWeibull"))
+    return(gettext("Standard errors and confidence intervals use analytic information at the fitted Weibull estimates."))
   if (identical(attr(fit, "informationOutcome", exact = TRUE), "analyticAvailable"))
     return(gettext("Standard errors and confidence intervals use analytic exact-event information at the fitted Generalized F (original) Eyring estimates."))
   return(NULL)
@@ -398,13 +401,15 @@
     return(.sapInformationRecord(fit, "native", "fullyFixed", provenance))
   }
 
-  # Only the supported single-component Eyring GenF.orig fit uses the analytic refresh.
+  # Refresh supported Eyring Weibull and exact-event GenF.orig information.
   specification <- attr(fit, "equations", exact = TRUE)
   eyring        <- length(specification[["structuralFixed"]]) > 0L
   if (is.null(specification))
     eyring <- .sapEquationHasEyring(attr(fit, "modelTerms", exact = TRUE))
-  if (!eyring || !identical(fit[["dlist"]][["name"]], "genf.orig") ||
-    (!is.null(specification) && specification[["components"]] != 1L))
+  supported <- if (is.null(specification)) identical(fit[["dlist"]][["name"]], "genf.orig") else
+    (specification[["family"]] == "weibull" && censoringType == "right") ||
+    (specification[["family"]] == "genf.orig" && specification[["components"]] == 1L)
+  if (!eyring || !supported)
     return(.sapInformationRecord(fit, "native", "nativeIneligible", provenance))
 
   requested <- attr(fit, "requestedHessian", exact = TRUE)
@@ -419,7 +424,7 @@
     provenance[["analyticReason"]] <- reason
     return(.sapInformationRecord(
       .sapEyringUnavailableInference(fit, reason),
-      "analyticGenfOrigDensity",
+      if (!is.null(specification) && specification[["family"]] == "weibull") "analyticWeibull" else "analyticGenfOrigDensity",
       "refreshMetadataUnavailable",
       provenance
     ))

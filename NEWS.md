@@ -27,6 +27,8 @@
 
 ## Fixed
 * Counting-process response residuals use the exit time consistently in plots and exports.
+* Refine right-censored Weibull Eyring fits with analytic derivatives and compute their confidence intervals from analytic information, including mixture models.
+* Retain the earliest model landmark in adaptive mixture survival prediction curves to stabilize early-tail sampling.
 
 # jaspSurvival 0.97.0
 ## Added
