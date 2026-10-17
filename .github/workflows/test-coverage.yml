@@ -2,12 +2,12 @@ on:
   push:
     branches:
       - master  # Essential for Codecov baseline
-    paths: ['**.R', 'tests/**', '**.c', '**.cpp', '**.h', '**.hpp', 'DESCRIPTION', 'NAMESPACE', 'MAKEVARS', 'MAKEVARS.win', '**.yml']
+    paths: ['**.R', '**.qml', 'tests/**', '**.c', '**.cpp', '**.h', '**.hpp', 'DESCRIPTION', 'NAMESPACE', 'MAKEVARS', 'MAKEVARS.win', '**.yml', 'renv.lock']
 
   pull_request:
     # Triggers when a PR is opened, updated, or marked ready for review
     types: [opened, synchronize, reopened, ready_for_review]
-    paths: ['**.R', 'tests/**', '**.c', '**.cpp', '**.h', '**.hpp', 'DESCRIPTION', 'NAMESPACE', 'MAKEVARS', 'MAKEVARS.win']
+    paths: ['**.R', '**.qml', 'tests/**', '**.c', '**.cpp', '**.h', '**.hpp', 'DESCRIPTION', 'NAMESPACE', 'MAKEVARS', 'MAKEVARS.win', '**.yml', 'renv.lock']
 
 jobs:
   coverage:

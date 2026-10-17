@@ -22,6 +22,7 @@ import JASP.Controls
 
 CheckBox
 {
+	required property bool hasStrata
 	name:	"plot"
 	label:	qsTr("Plot")
 	info: qsTr("This option generates a customizable survival plot to visualize the estimated survival probabilities over time from your survival analysis. You can choose different transformations of the survival probabilities to display, such as Survival, Risk, Cumulative Hazard, or Complementary Log-Log functions, depending on your analytical needs. The plot allows you to include confidence intervals to assess the precision of the estimates and add a risk table to provide detailed information about the number of subjects at risk and events over time. You can further enhance the plot by adding quantile lines to highlight specific survival times (e.g., median survival time) and adjust the legend position, color palette, and overall theme to suit your preferences.")
@@ -122,7 +123,7 @@ CheckBox
 	DropDown
 	{
 		name:		"plotLegend"
-		enabled:	strata.count > 0
+		enabled:	hasStrata
 		label:		qsTr("Legend")
 		info: qsTr("Choose the position of the legend on the plot: Bottom, Right, Left, Top, or None. Only available when Strata variables are specified.")
 		values:
@@ -137,7 +138,7 @@ CheckBox
 
 	ColorPalette
 	{
-		enabled:	strata.count > 0
+		enabled:	hasStrata
 		info: qsTr("Customize the color palette used in the plot. Only available when Strata variables are specified.")
 	}
 
