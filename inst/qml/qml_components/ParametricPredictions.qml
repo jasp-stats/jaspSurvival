@@ -80,11 +80,41 @@ Section
 	property string lifeTimeCustomInfo: qsTr("Enter non-negative prediction times, separated by commas. Leave blank to use the default times.")
 	title: qsTr("Predictions")
 
-	onFullTimeGridChanged:
+	property var previousFullTimeGrid: null
+	function queueGridDefaultsSync()
 	{
-		if (!variableInput || !analysisForm || !analysisForm.initialized() || !predictionRoles || !percentileGrid || !timeGrid || predictionRoles.applying || !percentileGrid.initialized || !timeGrid.initialized) return;
+		if (!analysisForm || !analysisForm.initialized()) previousFullTimeGrid = null;
+		Qt.callLater(synchronizeGridDefaults);
+	}
+	function synchronizeGridDefaults()
+	{
+		if (!analysisForm || !analysisForm.initialized())
+		{
+			previousFullTimeGrid = null;
+			return;
+		}
+		if (!variableInput || !predictionRoles || !predictionRoles.assignmentsReady || !percentileGrid || !timeGrid || predictionRoles.applying || !percentileGrid.initialized || !timeGrid.initialized) return;
+		let previous = previousFullTimeGrid;
+		previousFullTimeGrid = fullTimeGrid;
+		// Adopt restored grids; only subsequent role edits select new defaults.
+		if (previous === null || previous === fullTimeGrid) return;
 		percentileGrid.currentIndex = fullTimeGrid ? 0 : 2;
 		timeGrid.currentIndex = fullTimeGrid ? 0 : 2;
+	}
+	onFullTimeGridChanged: queueGridDefaultsSync()
+	onPredictorSourcesReadyChanged: queueGridDefaultsSync()
+	onVariableInputChanged: queueGridDefaultsSync()
+	onAnalysisFormChanged: { previousFullTimeGrid = null; queueGridDefaultsSync(); }
+	property Connections gridFormConnections: Connections
+	{
+		target: predictionsRoot.analysisForm
+		function onAnalysisChanged() { predictionsRoot.queueGridDefaultsSync(); }
+	}
+	property Connections gridRoleConnections: Connections
+	{
+		target: predictionRoles
+		function onApplyingChanged() { predictionsRoot.queueGridDefaultsSync(); }
+		function onAssignmentsReadyChanged() { predictionsRoot.queueGridDefaultsSync(); }
 	}
 
 	AvailableVariablesList
@@ -236,8 +266,8 @@ Section
 						id:			percentileGrid
 						label:		qsTr("Grid")
 						info: predictionsRoot.quantileStepsInfo
-						startValue: predictionsRoot.fullTimeGrid ? "quantiles" : "custom"
-						depends: ["predictionsXAxisVariables", "predictionsSeparateLines", "predictionsSeparatePlots", "predictionsLifetimeTimeId", "predictionsRolesAutomatic", "predictionsOutputPlotType"]
+						startValue: "quantiles"
+						onInitializedChanged: predictionsRoot.queueGridDefaultsSync()
 						values:
 						[
 						{ label: qsTr("Equal intervals"),	value: "quantiles"	},
@@ -318,8 +348,8 @@ Section
 					id:			timeGrid
 					label:		qsTr("Grid")
 					info: 		predictionsRoot.lifeTimeStepsInfo
-					startValue: predictionsRoot.fullTimeGrid ? "quantiles" : "customRelative"
-					depends: ["predictionsXAxisVariables", "predictionsSeparateLines", "predictionsSeparatePlots", "predictionsLifetimeTimeId", "predictionsRolesAutomatic", "predictionsOutputPlotType"]
+					startValue: "quantiles"
+					onInitializedChanged: predictionsRoot.queueGridDefaultsSync()
 					values:
 					[
 					{ label: qsTr("Equal intervals"),	value: "quantiles"	},
@@ -486,6 +516,7 @@ Section
 		predictors: predictionsRoot.modelPredictors
 		covariates: predictionsRoot.covariateNames
 		factors: predictionsRoot.factorNames
+		sourcesReady: predictionsRoot.predictorSourcesReady
 	}
 	ParametricPredictionData
 	{

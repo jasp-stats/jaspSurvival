@@ -240,6 +240,8 @@
       return(NULL)
   }
   binWidthType <- options[[paste0(prefix, "ObservedDataBinWidthType")]]
+  if (length(time) < 2L && binWidthType %in% c("fd", "scott"))
+    binWidthType <- "sturges"
   if (binWidthType == "manual") {
     binWidthType <- options[[paste0(prefix, "ObservedDataNumberOfBins")]]
   } else if (binWidthType == "doane") {

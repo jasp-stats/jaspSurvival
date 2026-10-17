@@ -11,6 +11,7 @@ Group
 	property var predictors: []
 	property var covariates: []
 	property var factors: []
+	property bool sourcesReady: false
 	readonly property bool continuousGroups: contourLines.columnsTypes.indexOf("scale") >= 0 || contourPanels.columnsTypes.indexOf("scale") >= 0
 	readonly property string xVariable: contourX.count ? contourX.columnsNames[0] : ""
 	readonly property string yVariable: contourY.count ? contourY.columnsNames[0] : ""
@@ -24,8 +25,8 @@ Group
 		return result;
 	}
 	readonly property var typedSources: [
-		{name: "covariates", discard: [{values: covariates.filter(function(v) { return predictors.indexOf(v) < 0; })}]},
-		{name: "factors", discard: [{values: factors.filter(function(v) { return predictors.indexOf(v) < 0; })}]}
+		{name: "covariates", discard: [{values: covariates.filter(function(v) { return sourcesReady && predictors.indexOf(v) < 0; })}]},
+		{name: "factors", discard: [{values: factors.filter(function(v) { return sourcesReady && predictors.indexOf(v) < 0; })}]}
 	]
 	VariablesForm
 	{

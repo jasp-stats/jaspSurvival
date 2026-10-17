@@ -80,7 +80,11 @@ Section
 	function queueRefresh() { Qt.callLater(refreshModels); }
 	function refreshModels()
 	{
-		if (!analysisForm || !analysisForm.initialized() || !modelTerms.initialized || !advancedSpecificationControl.initialized || (advancedSpecificationControl.checked && !locationModifiers.initialized)) return;
+		if (!predictorSourcesReady || !analysisForm || !analysisForm.initialized() || !modelTerms.initialized || !advancedSpecificationControl.initialized || (advancedSpecificationControl.checked && !locationModifiers.initialized))
+		{
+			if (predictorsInitialized) predictorsInitialized = false;
+			return;
+		}
 		let snapshot = analysisForm.options();
 		// Convert only current named payloads: native QVariant sequences are not JS arrays.
 		let locationModels = JSON.parse(JSON.stringify(snapshot[modelTerms.name]));
@@ -129,6 +133,8 @@ Section
 	}
 	onAnalysisFormChanged: queueRefresh()
 	onCovariateNamesChanged: queueRefresh()
+	onFactorNamesChanged: queueRefresh()
+	onPredictorSourcesReadyChanged: queueRefresh()
 	property Connections analysisConnections: Connections
 	{
 		target: modelSection.analysisForm

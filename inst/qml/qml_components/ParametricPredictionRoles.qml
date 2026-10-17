@@ -16,9 +16,10 @@ Group
 	property bool applying: false
 	property var previousAutomatic: null
 	property var projection: null
+	readonly property bool assignmentsReady: sourcesReady && axis.initialized && lines.initialized && panels.initialized && timeId.initialized && automatic.initialized && inventory.initialized && available.initialized
 	readonly property var typedSources: [
-		{name: "covariates", discard: [{values: covariates.filter(function(v) { return predictors.indexOf(v) < 0; })}]},
-		{name: "factors", discard: [{values: factors.filter(function(v) { return predictors.indexOf(v) < 0; })}]}
+		{name: "covariates", discard: [{values: covariates.filter(function(v) { return sourcesReady && predictors.indexOf(v) < 0; })}]},
+		{name: "factors", discard: [{values: factors.filter(function(v) { return sourcesReady && predictors.indexOf(v) < 0; })}]}
 	]
 	readonly property var axisVariables: names(axis.columnsNames)
 	readonly property var lineVariables: names(lines.columnsNames)
@@ -50,7 +51,7 @@ Group
 	function finishMove() { applying = false; queueSync(); }
 	function synchronize()
 	{
-		if (applying || !sourcesReady || !analysisForm || !axis.initialized || !lines.initialized || !panels.initialized || !timeId.initialized || !automatic.initialized || !inventory.initialized || !available.initialized) return;
+		if (applying || !assignmentsReady || !analysisForm || !analysisForm.initialized()) return;
 		applying = true;
 		if (!projection)
 		{
@@ -123,6 +124,12 @@ Group
 	onPredictorsChanged: queueSync()
 	onFactorsChanged: queueSync()
 	onSourcesReadyChanged: queueSync()
+	onAnalysisFormChanged: queueSync()
+	property Connections analysisConnections: Connections
+	{
+		target: roles.analysisForm
+		function onAnalysisChanged() { roles.queueSync(); }
+	}
 	AvailableVariablesList
 	{
 		id: inventory
