@@ -14,11 +14,9 @@ ComponentsListBase
 		return {value: key, label: sourceGeneration + ":" + key};
 	})}]
 
-	onCountChanged: if (count < restrictionKeys.length) restoreSlots.restart()
-	Timer
+	onCountChanged: if (count < restrictionKeys.length) Qt.callLater(restoreMissingSlots)
+	function restoreMissingSlots()
 	{
-		id: restoreSlots
-		interval: 0
-		onTriggered: if (slots.count < slots.restrictionKeys.length) slots.sourceGeneration++
+		if (count < restrictionKeys.length) sourceGeneration++;
 	}
 }

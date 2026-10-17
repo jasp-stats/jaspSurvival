@@ -31,9 +31,9 @@ FactorsFormBase
 	function synchronize()
 	{
 		if (!initialized || !locationModels || !locationModels.initialized) return;
-		// Repeater rows must be registered before the native last-row operations.
+		// factorAdded() initializes the native list after registering its model.
 		for (let i = 0; i < factorsFormRepeater.count; ++i)
-			if (!factorsFormRepeater.itemAt(i) || !factorsFormRepeater.itemAt(i).registered) return;
+			if (!factorsFormRepeater.itemAt(i) || !factorsFormRepeater.itemAt(i).factorList.initialized) return;
 		if (count < locationModels.count) { addFactor(); return; }
 		if (count > locationModels.count) { removeFactor(); queueSynchronization(); return; }
 		for (let i = 0; i < count; ++i)
@@ -74,7 +74,6 @@ FactorsFormBase
 			{
 				property alias factorList: factorList
 				property alias button: button
-				property bool registered: false
 				property bool isDynamic: true
 				spacing: 0
 				AssignButton
@@ -98,6 +97,7 @@ FactorsFormBase
 					implicitWidth: factorsForm.listWidth
 					isBound: false
 					listViewType: JASP.Interaction
+					onInitializedChanged: factorsForm.queueSynchronization()
 					onTitleIsChanged: factorsForm.titleChanged(index, editableTitle)
 				}
 			}
@@ -112,7 +112,6 @@ FactorsFormBase
 				item.factorList.activeFocusChanged.connect(item.button.setIconToLeft);
 				availableVariablesList.activeFocusChanged.connect(item.button.setIconToRight);
 				factorsForm.factorAdded(index, item.factorList);
-				item.registered = true;
 				factorsForm.queueSynchronization();
 			}
 			onItemRemoved: factorsForm.queueSynchronization()

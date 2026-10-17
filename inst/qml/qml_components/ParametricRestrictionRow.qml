@@ -1,7 +1,7 @@
 import QtQuick
 
-// C++ creates and owns each row control. Reparent it into this display delegate
-// instead of creating another control with a separate saved-option binding.
+// Follow JASP ComponentsList's delegate: C++ owns the saved row control;
+// reparent its visual item instead of creating a second option binding.
 FocusScope
 {
 	id: rowWrapper

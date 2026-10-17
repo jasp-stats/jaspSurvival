@@ -49,7 +49,7 @@ Form
 
 	Group
 	{
-		SA.ParametricDistribution
+		SA.ParametricDistributionSelector
 		{
 			id: distribution
 			mixture: true
@@ -317,7 +317,7 @@ Form
 	{
 		title: qsTr("Advanced")
 
-		SA.ParametricDistributions
+		SA.ParametricDistributionChecklist
 		{
 			id: distributions
 			selectedDistribution: distribution.value

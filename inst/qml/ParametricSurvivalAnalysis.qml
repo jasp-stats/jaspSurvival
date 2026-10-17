@@ -43,7 +43,7 @@ Form
 		id: censoring
 	}
 
-	SA.ParametricDistribution
+	SA.ParametricDistributionSelector
 	{
 		id: distribution
 		selectedFamilies: distributions.selectedFamilies
@@ -131,7 +131,7 @@ Form
 	{
 		title: qsTr("Advanced")
 
-		SA.ParametricDistributions
+		SA.ParametricDistributionChecklist
 		{
 			id: distributions
 			selectedDistribution: distribution.value

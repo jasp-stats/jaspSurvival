@@ -115,7 +115,87 @@ ParametricRestrictionSlots
 		Group
 		{
 			name: "parametersColumn"
-			ParametricFixedParameterFields { distribution: restrictionRow.distribution }
+			RowLayout
+			{
+				spacing: 8 * jaspTheme.uiScale
+
+				ParametricFixedParameter
+				{
+					name: "rate"
+					label: qsTr("rate")
+					visible: ["exponential", "gamma", "gompertz"].indexOf(restrictionRow.distribution) >= 0
+				}
+				ParametricFixedParameter
+				{
+					name: "shape"
+					label: qsTr("shape")
+					visible: ["gamma", "gompertz", "logLogistic", "weibull", "generalizedGammaOriginal"].indexOf(restrictionRow.distribution) >= 0
+					positive: restrictionRow.distribution !== "gompertz"
+				}
+				ParametricFixedParameter
+				{
+					name: "scale"
+					label: qsTr("scale")
+					visible: ["logLogistic", "weibull", "generalizedGammaOriginal"].indexOf(restrictionRow.distribution) >= 0
+				}
+				ParametricFixedParameter
+				{
+					name: "meanlog"
+					label: qsTr("meanlog")
+					visible: restrictionRow.distribution === "logNormal"
+					positive: false
+				}
+				ParametricFixedParameter
+				{
+					name: "sdlog"
+					label: qsTr("sdlog")
+					visible: restrictionRow.distribution === "logNormal"
+				}
+				ParametricFixedParameter
+				{
+					name: "mu"
+					label: "mu"
+					visible: ["generalizedF", "generalizedGamma", "generalizedFOriginal"].indexOf(restrictionRow.distribution) >= 0
+					positive: false
+				}
+				ParametricFixedParameter
+				{
+					name: "sigma"
+					label: "sigma"
+					visible: ["generalizedF", "generalizedGamma", "generalizedFOriginal"].indexOf(restrictionRow.distribution) >= 0
+				}
+				ParametricFixedParameter
+				{
+					name: "Q"
+					label: "Q"
+					visible: ["generalizedF", "generalizedGamma"].indexOf(restrictionRow.distribution) >= 0
+					positive: false
+				}
+				ParametricFixedParameter
+				{
+					name: "P"
+					label: "P"
+					visible: restrictionRow.distribution === "generalizedF"
+				}
+				ParametricFixedParameter
+				{
+					name: "k"
+					label: "k"
+					visible: restrictionRow.distribution === "generalizedGammaOriginal"
+				}
+				ParametricFixedParameter
+				{
+					name: "s1"
+					label: "s1"
+					visible: restrictionRow.distribution === "generalizedFOriginal"
+				}
+				ParametricFixedParameter
+				{
+					name: "s2"
+					label: "s2"
+					visible: restrictionRow.distribution === "generalizedFOriginal"
+				}
+			}
 		}
 	}
 }
