@@ -541,6 +541,47 @@
   return(.saSafeRbind(records))
 }
 
+# Match each observed cohort to prediction colours and categorical dodge slots.
+.sapPredictionObservedLifetimeEncoding <- function(observed, data, categorical) {
+
+  fields  <- c("Panel", "Subgroup", "ConditionLine", "Series", "Colour", if (categorical) "x")
+  anchors <- unique(data[fields])
+  anchors[["Offset"]] <- 0
+  anchors[["Slots"]]  <- 1L
+  if (categorical) {
+    series <- if (is.factor(data[["Series"]])) levels(data[["Series"]]) else sort(unique(data[["Series"]]))
+    cells  <- split(seq_len(nrow(anchors)), interaction(anchors[["Panel"]], anchors[["x"]], drop = TRUE))
+    for (rows in cells) {
+      groups <- match(as.character(anchors[["Series"]][rows]), series)
+      slots  <- sort(unique(groups))
+      anchors[["Offset"]][rows] <- .3 * ((match(groups, slots) - .5) / length(slots) - .5)
+      anchors[["Slots"]][rows] <- length(slots)
+    }
+  }
+
+  observed[["ObservedSeries"]] <- NA_character_
+  observed[["ObservedOffset"]] <- if (categorical) (observed[["ObservedRow"]] %% 13L - 6L) / 50 else 0
+  roles <- c("Panel", "Subgroup", "Line", if (categorical) "x")
+  for (i in which(!duplicated(observed[roles]))) {
+    cohort  <- rep(TRUE, nrow(observed))
+    matched <- rep(TRUE, nrow(anchors))
+    for (field in roles) {
+      cohort <- cohort & as.character(observed[[field]]) == as.character(observed[[field]][i])
+      target <- if (field == "Line") "ConditionLine" else field
+      matched <- matched & as.character(anchors[[target]]) == as.character(observed[[field]][i])
+    }
+    colours <- unique(as.character(anchors[["Colour"]][matched]))
+    if (length(colours) == 1L)
+      observed[["ObservedSeries"]][cohort] <- colours
+    if (categorical && any(matched)) {
+      offsets <- unique(anchors[["Offset"]][matched])
+      jitter  <- (observed[["ObservedRow"]][cohort] %% 13L - 6L) / 50
+      observed[["ObservedOffset"]][cohort] <- mean(offsets) + jitter * length(offsets) / anchors[["Slots"]][which(matched)[1L]]
+    }
+  }
+  return(observed)
+}
+
 .sapAddObservedLifetimeLayer <- function(plot, fit, options, data, type, timeRole, categorical) {
 
   observed <- .sapPredictionObservedLifetimes(fit, options)
@@ -554,36 +595,22 @@
     bounds   <- range(unlist(lapply(fit, function(model) .sapPredictionAxisRange(model, options, options[["predictionsXAxisVariables"]]))))
     observed <- observed[observed[["x"]] >= bounds[1L] & observed[["x"]] <= bounds[2L], , drop = FALSE]
   }
+  if (!nrow(observed))
+    return(plot)
   if (type == "quantile" && timeRole == "panels")
     observed <- .sapPredictionObservedPanels(observed, data, type)
   observed[["Panel"]] <- factor(observed[["Panel"]], levels = levels(data[["Panel"]]))
   observed[["ObservedX"]] <- observed[["x"]]
-  observed[["ObservedOffset"]] <- if (categorical) (observed[["ObservedRow"]] %% 13L - 6L) / 50 else 0
   observed[["estimate"]] <- observed[["upper"]]
-  covariates <- intersect(
-    unique(c(options[["predictionsSeparateLines"]], options[["predictionsSeparatePlots"]])),
-    options[["covariates"]]
-  )
-  uniqueGroups <- options[["predictionsAssignedCovariateValues"]] == "quantiles" && options[["predictionsAssignedCovariateValuesGroupUniqueLevels"]] &&
-    length(covariates) > 0L && any(vapply(fit, function(model) any(vapply(attr(model, "dataset")[covariates],
-      function(value) length(unique(value)) <= options[["predictionsAssignedCovariateValuesGroupUniqueLevelsLimit"]], logical(1))), logical(1)))
-  if (uniqueGroups) {
-    observed[["ObservedSeries"]] <- vapply(seq_len(nrow(observed)), function(i) {
-      candidates <- unique(as.character(data[["Colour"]][data[["ConditionLine"]] == observed[["Line"]][i] &
-        as.character(data[["Panel"]]) == as.character(observed[["Panel"]][i]) & data[["Subgroup"]] == observed[["Subgroup"]][i]]))
-      if (length(candidates) == 1L)
-        candidates else
-        NA_character_
-    }, character(1))
-    matched <- !is.na(observed[["ObservedSeries"]])
-    if (any(matched))
-      plot <- plot + ggplot2::geom_point(data = observed[matched, , drop = FALSE],
-        ggplot2::aes(x = ObservedX, y = estimate, colour = ObservedSeries), inherit.aes = FALSE, alpha = .45, size = 1.3,
-        position = ggplot2::position_nudge(x = observed[["ObservedOffset"]][matched]), show.legend = FALSE)
-    observed <- observed[!matched, , drop = FALSE]
-    if (!nrow(observed))
-      return(plot)
-  }
+  observed <- .sapPredictionObservedLifetimeEncoding(observed, data, categorical)
+  matched  <- !is.na(observed[["ObservedSeries"]])
+  if (any(matched))
+    plot <- plot + ggplot2::geom_point(data = observed[matched, , drop = FALSE],
+      ggplot2::aes(x = ObservedX, y = estimate, colour = ObservedSeries), inherit.aes = FALSE, alpha = .45, size = 1.3,
+      position = ggplot2::position_nudge(x = observed[["ObservedOffset"]][matched]), show.legend = FALSE)
+  observed <- observed[!matched, , drop = FALSE]
+  if (!nrow(observed))
+    return(plot)
   return(plot + ggplot2::geom_point(data = observed, ggplot2::aes(x = ObservedX, y = estimate),
     inherit.aes = FALSE, colour = "grey40", alpha = .45, size = 1.3,
     position    = ggplot2::position_nudge(x = observed[["ObservedOffset"]]), show.legend = FALSE))
