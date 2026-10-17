@@ -88,6 +88,11 @@
   if (length(fitValid) == 0)
     return(tempPlot)
 
+  if (all(vapply(fitValid, function(model) nrow(.sapPlotObservedDataset(model)) == 0L, logical(1)))) {
+    tempPlot$setError(gettext("No observations are available in this stratum."))
+    return(tempPlot)
+  }
+
   plot <- try(.sapCreateProbabilityPlot(fitList, options, axisSetup))
 
   if (jaspBase::isTryError(plot)) {
@@ -174,7 +179,7 @@
   observedIndices <- seq_along(fitList)
   observedData    <- function(index, dataFunction) {
     data <- .sapProbabilityPlotObservedData(displayDatasets[[index]], fitList[[index]], options, dataFunction)
-    data[["Distribution"]] <- .sapProbabilityPlotDistributionLabel(fitList[[index]], options)
+    data[["Distribution"]] <- rep(.sapProbabilityPlotDistributionLabel(fitList[[index]], options), nrow(data))
     return(data)
   }
 

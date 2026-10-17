@@ -80,7 +80,7 @@
   options[["predictionsDisplayConfidenceIntervals"]] <- prefix == "densityPlot" && options[["densityPlotConfidenceIntervals"]]
   if (prefix == "densityPlot")
     options[["predictionsDisplayConfidenceIntervalsLevel"]] <- options[["densityPlotConfidenceIntervalsLevel"]]
-  plotData <- try({
+  plotData <- if (nrow(dataset) == 0L) NULL else try({
     times  <- if (prefix == "densityPlot") .sapDensityPlotTimes(dataset, options)
     curves <- lapply(fit, function(model) {
       data <- .sapmComponentPlotData(model, options, .sapPlotObservedDataset(model), prefix = prefix, type = type, times = times)

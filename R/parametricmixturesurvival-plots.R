@@ -43,6 +43,12 @@
   if (!.saSurvivalReady(options) || jaspBase::isTryError(fit))
     return(createJaspPlot(title = estimateTitle))
 
+  if (nrow(dataset) == 0L) {
+    tempPlot <- createJaspPlot(title = estimateTitle)
+    tempPlot$setError(gettext("No observations are available in this stratum."))
+    return(tempPlot)
+  }
+
   if (is.null(plotData))
     plotData <- try(.sapmComponentPlotData(fit, options, dataset, prefix, type))
 
