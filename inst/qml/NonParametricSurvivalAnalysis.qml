@@ -137,7 +137,7 @@ Form
 				name:		"lifeTableStepsType"
 				id:			lifeTableStepsType
 				label:		qsTr("Steps type")
-				info: qsTr("Select the method to define intervals for the life table: Default, Quantiles, or Fixed size. Quantiles uses empirical quantiles of the observed times, including censored times, after frequency weights are applied; these are not quantiles of the estimated survival distribution.")
+				info: qsTr("Choose how to define the life table intervals: Default, Quantiles or Fixed size. Quantiles divides the observed times into groups.")
 				values:
 				[
 					{ label: qsTr("Default"),		value: "default"},

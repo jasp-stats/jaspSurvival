@@ -21,26 +21,33 @@
   logTime       <- .sapmLogTimes(emSurvObject)
   probabilities <- .sapmStartMembershipProbabilities(options)
   # Keep decimal complements stable across probability and softening inputs.
-  softness      <- signif(1 - probabilities, 15)
-  starts        <- list()
-  add <- function(name, posterior, probabilityIndex) {
+  softness <- signif(1 - probabilities, 15)
+  starts   <- list()
+  add      <- function(name, posterior, probabilityIndex) {
     if (probabilityIndex > 1)
       name <- paste0(name, "Probability", probabilityIndex)
-    starts[[length(starts) + 1]] <<- list(name = name, posterior = posterior)
+    starts[[length(starts) + 1]] <<- list(name = name, posterior = try(posterior, silent = TRUE))
   }
   addPartition <- function(name, membership) {
-    for (i in seq_along(probabilities))
-      add(name, .sapmSoftPosterior(membership, components, softness = softness[i]), i)
+    membership <- try(membership, silent = TRUE)
+    for (i in seq_along(probabilities)) {
+      add(
+        name      = name,
+        posterior = if (jaspBase::isTryError(membership)) membership else
+          .sapmSoftPosterior(membership, components, softness = softness[i]),
+        probabilityIndex = i
+      )
+    }
   }
 
   # the random draws are seeded so that the starting values do not depend on the preceding fits
   # (the solution with one component fewer is fitted first when it is not part of the analysis)
-  if (options[["mixtureStartKmeans"]]) {
+  if (options[["mixtureStartingValuesKMeans"]]) {
     jaspBase::.setSeedJASP(options)
     addPartition("kmeans", .sapmKmeansMembership(logTime, components))
   }
 
-  if (options[["mixtureStartQuantiles"]])
+  if (options[["mixtureStartingValuesQuantiles"]])
     addPartition("quantiles", .sapmQuantileMembership(logTime, components))
 
   if (options[["mixtureStartTails"]]) {
@@ -49,22 +56,22 @@
       addPartition(paste0("tails", i), .sapmTailMembership(logTime, shares[[i]], components))
   }
 
-  if (options[["mixtureStartSplit"]] && !is.null(previous))
-    for (j in seq_len(components - 1)) for (i in seq_along(probabilities)) {
-      posterior <- try(.sapmSplitPosterior(family, survObject, previous, j, softness[i]), silent = TRUE)
-      if (!jaspBase::isTryError(posterior))
-        add(paste0("split", j), posterior, i)
-    }
+  if (options[["mixtureStartingValuesSplitOfThePreviousSolution"]] && !is.null(previous))
+    for (j in seq_len(components - 1))
+      for (i in seq_along(probabilities)) {
+        add(paste0("split", j), .sapmSplitPosterior(family, survObject, previous, j, softness[i]), i)
+      }
 
-  if (options[["mixtureStartRandom"]]) {
+  if (options[["mixtureStartingValuesRandom"]]) {
     jaspBase::.setSeedJASP(options)
     events <- .sapmEventIndicator(emSurvObject)
-    for (i in seq_len(options[["mixtureStartRandomCount"]]))
+    for (i in seq_len(options[["mixtureStartingValuesRandomCount"]]))
       addPartition(paste0("random", i), .sapmRandomMembership(logTime, events, components))
   }
 
   return(starts)
 }
+
 .sapmStartMembershipProbabilities <- function(options) {
 
   probabilities <- .sapCleanCustomOptions(options[["mixtureStartMembershipProbabilities"]],
@@ -77,6 +84,7 @@
 
   return(probabilities)
 }
+
 .sapmSoftPosterior              <- function(membership, components, softness = 0.05) {
 
   # soft start avoids empty components
@@ -86,10 +94,13 @@
 
   return(posterior)
 }
+
 .sapmLogTimes                   <- function(survObject) {
+
   time <- .sapmObservedTimes(survObject)
   return(log(pmax(time, min(time[time > 0]))))
 }
+
 .sapmEventIndicator             <- function(survObject) {
 
   type <- attr(survObject, "type")
@@ -99,6 +110,7 @@
   # exact, left-censored and interval-censored observations all establish that the event occurred
   return(survObject[, "status"] %in% c(1, 2, 3))
 }
+
 .sapmKmeansMembership           <- function(logTime, components) {
 
   if (length(unique(logTime)) <= components)
@@ -108,10 +120,14 @@
 
   return(match(clusters[["cluster"]], order(clusters[["centers"]][, 1])))
 }
+
 .sapmQuantileMembership         <- function(logTime, components) {
+
   return(as.integer(cut(rank(logTime, ties.method = "first"), components, labels = FALSE)))
 }
+
 .sapmTailShares                 <- function(components) {
+
   return(switch(
     as.character(components),
     "2" = list(c(0.15, 0.85), c(0.85, 0.15)),
@@ -120,16 +136,18 @@
     list()
   ))
 }
+
 .sapmTailMembership             <- function(logTime, shares, components) {
 
-  nObs                   <- length(logTime)
-  breaks                 <- unique(c(0, round(cumsum(shares) * nObs)))
+  nObs   <- length(logTime)
+  breaks <- unique(c(0, round(cumsum(shares) * nObs)))
   breaks[length(breaks)] <- nObs
   membership             <- as.integer(cut(rank(logTime, ties.method = "first"), breaks = breaks, labels = FALSE))
   membership[is.na(membership)] <- 1L
 
   return(pmin(pmax(membership, 1L), components))
 }
+
 .sapmRandomMembership           <- function(logTime, events, components) {
 
   if (length(unique(logTime)) < components)
@@ -143,6 +161,7 @@
 
   return(apply(abs(outer(logTime, centers, "-")), 1, which.min))
 }
+
 .sapmSplitPosterior             <- function(family, survObject, previous, j, softness = 0.05) {
 
   # component j of the previous solution is split into a lower and an upper child at its median: events are

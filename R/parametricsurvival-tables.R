@@ -23,19 +23,26 @@
   if (is.null(jaspResults[["fit"]]) || length(jaspResults[["fit"]]$object) == 0)
     return()
 
-  fit      <- .sapFlattenFit(.sapExtractFit(jaspResults, options, type = "all"), options)
-  messages <- .sapCollectFitErrors(fit, options)
+  fit         <- .sapFlattenFit(.sapExtractFit(jaspResults, options, type = "all"), options)
+  unavailable <- unlist(lapply(fit, function(model) {
+    if (jaspBase::isTryError(model) || is.null(attr(model, "inferenceUnavailable", exact = TRUE)))
+      return(character(0))
+    label <- paste(attr(model, "distribution"), attr(model, "modelTitle"), attr(model, "subgroupLabel"), sep = " | ")
+    gettextf("%1$s: %2$s", label, paste(.sapNativeFitWarnings(model), collapse = " "))
+  }), use.names = FALSE)
+  messages <- c(.sapCollectFitErrors(fit, options), .sapEyringOmissionNote(options), unavailable)
   if (length(messages) == 0)
     return()
 
   table <- createJaspTable(title = gettext("Model fitting"))
-  table$dependOn(c(.sapGetDependencies(options), "compareModelsAcrossDistributions", "modelSummary"))
+  table$dependOn(c(.sapGetDependencies(options), "outputFormattingCompareModelsAcrossDistributions", "modelSummary"))
   table$position <- 1
   jaspResults[["fitErrors"]] <- table
   .saFillMessageTable(table, messages)
 
   return()
 }
+
 .sapSummaryTable                      <- function(jaspResults, options) {
 
   if (!is.null(jaspResults[["summaryTable"]]))
@@ -47,9 +54,9 @@
 
   # output dependencies
   outputDependencies <- c(.sapGetDependencies(options), .sapSelectedOutputDependencies,
-                          "modelSummary",
-                          "modelSummaryRankModels", "modelSummaryRankModelsBy",
-                          "modelSummaryAicWeighs", "modelSummaryBicWeighs")
+    "modelSummary",
+    "modelSummaryRankModels", "modelSummaryRankModelsBy",
+    "modelSummaryAicWeights", "modelSummaryBicWeights")
 
   .sapSectionWrapper(
     jaspResults    = jaspResults,
@@ -64,6 +71,7 @@
 
   return()
 }
+
 .sapSequentialModelComparisonTable    <- function(jaspResults, options) {
 
   if (!is.null(jaspResults[["sequentialModelComparisonTable"]]) || length(options[["modelTerms"]]) < 2)
@@ -74,7 +82,7 @@
 
   # output dependencies
   outputDependencies <- c(.sapGetDependencies(options), .sapOutputDependencies,
-                          "sequentialModelComparison")
+    "sequentialModelComparison")
 
   .sapSectionWrapper(
     jaspResults    = jaspResults,
@@ -89,6 +97,7 @@
 
   return()
 }
+
 .sapCoefficientsTable                 <- function(jaspResults, options) {
 
   if (!is.null(jaspResults[["coefficientsTable"]]))
@@ -100,7 +109,7 @@
 
   # output dependencies
   outputDependencies <- c(.sapGetDependencies(options), .sapSelectedOutputDependencies,
-                          "coefficients", "coefficientsConfidenceInterval", "coefficientsConfidenceIntervalLevel")
+    "coefficients", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel", "confidenceIntervalBounds")
 
   .sapSectionWrapper(
     jaspResults    = jaspResults,
@@ -115,6 +124,7 @@
 
   return()
 }
+
 .sapCoefficientsCovarianceMatrixTable <- function(jaspResults, options) {
 
   if (!is.null(jaspResults[["coefficientsCovarianceMatrixTable"]]))
@@ -128,7 +138,7 @@
 
   # output dependencies
   outputDependencies <- c(.sapGetDependencies(options), .sapSelectedOutputDependencies,
-                          "coefficientsCovarianceMatrix")
+    "coefficientsCovarianceMatrix")
 
   .sapSectionWrapper(
     jaspResults    = jaspResults,
@@ -153,9 +163,9 @@
   summaryTable$addColumnInfo(name = "df",            title = gettext("df"),           type = "integer")
   summaryTable$addColumnInfo(name = "aic",           title = gettext("AIC"),          type = "number", format="dp:3")
   summaryTable$addColumnInfo(name = "bic",           title = gettext("BIC"),          type = "number", format="dp:3")
-  if (options[["modelSummaryAicWeighs"]] && length(fit) > 1)
+  if (options[["modelSummaryAicWeights"]] && length(fit) > 1)
     summaryTable$addColumnInfo(name = "aicWeight",     title = gettext("AIC Weight"),   type = "number", format="dp:3")
-  if (options[["modelSummaryBicWeighs"]] && length(fit) > 1)
+  if (options[["modelSummaryBicWeights"]] && length(fit) > 1)
     summaryTable$addColumnInfo(name = "bicWeight",     title = gettext("BIC Weight"),   type = "number", format="dp:3")
   if (options[["modelSummaryRankModels"]] && length(fit) > 1)
     summaryTable$addColumnInfo(name = "rank",        title = gettext("Rank"),         type = "integer")
@@ -167,22 +177,27 @@
   data <- .saSafeRbind(lapply(fit, .sapRowSummaryTable))
 
   # add information criteria weights
-  if (options[["modelSummaryAicWeighs"]] && length(fit) > 1 && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
+  if (options[["modelSummaryAicWeights"]] && length(fit) > 1 && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
     data$aicWeight <- .sapInformationCriteria2Weights(data[["aic"]])
   }
-  if (options[["modelSummaryBicWeighs"]] && length(fit) > 1 && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
+  if (options[["modelSummaryBicWeights"]] && length(fit) > 1 && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
     data$bicWeight <- .sapInformationCriteria2Weights(data[["bic"]])
   }
 
   # add model rank
   if (options[["modelSummaryRankModels"]] && length(fit) > 1 && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
-    data <- data[order(data[[options[["modelSummaryRankModelsBy"]]]], decreasing = options[["modelSummaryRankModelsBy"]] == "logLik", na.last = TRUE), ]
+    data <- data[order(
+      data[[options[["modelSummaryRankModelsBy"]]]],
+      decreasing = options[["modelSummaryRankModelsBy"]] == "logLik",
+      na.last    = TRUE
+    ), ]
     data$rank <- seq_len(nrow(data))
     data$rank[is.na(data[[options[["modelSummaryRankModelsBy"]]]])] <- NA
   }
 
   # add footnotes
   messages <- .sapSelectionFootnote(data, options)
+  messages <- c(messages, .sapEyringOmissionNote(options))
   for (i in seq_along(messages))
     summaryTable$addFootnote(messages[[i]])
 
@@ -204,6 +219,7 @@
 
   return(summaryTable)
 }
+
 .sapSequentialModelComparisonTableFun    <- function(fit, options) {
 
   # create the table
@@ -229,15 +245,26 @@
 
   # add footnotes
   if (any(vapply(fit, .sapConstraintActive, logical(1))))
-    sequentialModelComparisonTable$addFootnote(gettextf("Comparisons involving an active spread bound have no likelihood-ratio statistic or p-value; other comparisons use the %1$s approximation.", "\U03C7\U00B2"))
+    sequentialModelComparisonTable$addFootnote(gettextf(
+      "Comparisons involving an active spread bound have no likelihood-ratio statistic or p-value; other comparisons use the %1$s approximation.",
+      "\U03C7\U00B2"
+    ))
   else
     sequentialModelComparisonTable$addFootnote(gettextf("Likelihood ratio test for nested models based on %s distribution.", "\U03C7\U00B2"))
+
+  if (any(vapply(seq_len(length(fit) - 1), function(i)
+    !jaspBase::isTryError(fit[[i]]) && !jaspBase::isTryError(fit[[i + 1]]) &&
+      attr(fit[[i]], "family") == attr(fit[[i + 1]], "family") &&
+      attr(fit[[i]], "components") == attr(fit[[i + 1]], "components") &&
+      !.sapModelsNested(fit[[i]], fit[[i + 1]]), logical(1))))
+    sequentialModelComparisonTable$addFootnote(gettext("A likelihood-ratio test is reported only when the second model extends the first model. Compare non-nested relationships using AIC or BIC."))
 
   sequentialModelComparisonTable$setData(data)
   sequentialModelComparisonTable$showSpecifiedColumnsOnly <- TRUE
 
   return(sequentialModelComparisonTable)
 }
+
 .sapCoefficientsTableFun                 <- function(fit, options) {
 
   # create the table
@@ -248,22 +275,24 @@
   estimatesTable$addColumnInfo(name = "coefficient",    title = "",                         type = "string")
   estimatesTable$addColumnInfo(name = "est",            title = gettext("Estimate"),        type = "number")
   estimatesTable$addColumnInfo(name = "se",             title = gettext("Standard Error"),  type = "number")
-  if (options[["coefficientsConfidenceInterval"]]) {
-    overtitleCi <- gettextf("%s%% CI", 100 * options[["coefficientsConfidenceIntervalLevel"]])
-    estimatesTable$addColumnInfo(name = "lower", title = gettext("Lower"), type = "number", overtitle = overtitleCi)
-    estimatesTable$addColumnInfo(name = "upper", title = gettext("Upper"), type = "number", overtitle = overtitleCi)
+  if (options[["coefficientsConfidenceIntervals"]]) {
+    .sapAddBoundColumns(
+      estimatesTable,
+      options[["coefficientsConfidenceIntervalsLevel"]],
+      options[["confidenceIntervalBounds"]]
+    )
   }
 
   if (!.saSurvivalReady(options))
     return(estimatesTable)
 
   # check whether any predictors are present
-  anyRegression <- any(sapply(fit, function(x) {
+  anyRegression <- any(vapply(fit, function(x) {
     if (jaspBase::isTryError(x))
       return(FALSE)
     else
-      return(length(attr(x, "modelTerms")[["components"]]) > 0)
-  }))
+      return(length(.sapModelVariables(attr(x, "modelTerms"))) > 0)
+  }, logical(1)))
   if (anyRegression) {
     estimatesTable$addColumnInfo(name = "z",              title = gettext("z"),               type = "number")
     estimatesTable$addColumnInfo(name = "pValue",         title = gettext("p"),               type = "pvalue")
@@ -271,6 +300,10 @@
 
   # extract the data
   data <- .saSafeRbind(lapply(fit, .sapRowCoefficientsTable, options = options))
+  if (options[["analysisType"]] == "mixture") {
+    duplicate <- duplicated(data[c("subgroup", "model", "distribution", "components", "mixtureComponent")])
+    data[["mixtureComponent"]][duplicate] <- NA_integer_
+  }
   data <- .saSafeSimplify(data)
 
   # add test statistics and p-values
@@ -288,28 +321,56 @@
     estimatesTable$addFootnote(gettext("P-values are based on a Wald test."))
 
     # fix coefficient names
-    if (any(thisRegression))
-      data[["coefficient"]][thisRegression] <- sapply(data[["coefficient"]][thisRegression], .saTermNames, variables = c(options[["covariates"]], options[["factors"]]))
+    ordinaryTerms <- thisRegression & !data[["transformedCoefficient"]]
+    if (any(ordinaryTerms))
+      data[["coefficient"]][ordinaryTerms] <- vapply(
+        data[["coefficient"]][ordinaryTerms],
+        .saTermNames,
+        character(1),
+        variables = c(options[["covariates"]], options[["factors"]])
+      )
+    if (options[["modelAncillaryParameterRegression"]] && any(thisRegression))
+      data[["coefficient"]][thisRegression] <- paste0("[", data[["nativeParameter"]][thisRegression], "] ", data[["coefficient"]][thisRegression])
+
+    links <- unique(unlist(lapply(fit, function(model) {
+      if (jaspBase::isTryError(model))
+        return(character(0))
+      equations <- attr(model, "equations")[["equations"]]
+      vapply(equations[lengths(lapply(equations, function(equation) equation[["slopeIndices"]])) > 0L],
+        function(equation) gettextf("Regression coefficients for %1$s act on its %2$s link.", equation[["parameter"]], equation[["link"]]), character(1))
+    }), use.names = FALSE))
+    for (message in links)
+      estimatesTable$addFootnote(message)
   }
 
   data[["isRegressionCoefficient"]] <- NULL
+  data[["transformedCoefficient"]] <- NULL
+  data[["nativeParameter"]] <- NULL
 
   # add footnotes
   messages <- .sapSelectedModelMessage(fit, options)
+  messages <- c(messages, unique(unlist(lapply(fit, .sapInformationNote))))
   for (i in seq_along(messages))
     estimatesTable$addFootnote(messages[[i]])
 
-  if (any(sapply(fit, function(x) !jaspBase::isTryError(x) && attr(x, "components") > 1))) {
-    estimatesTable$addFootnote(gettext("The standard errors and confidence intervals of the mixing probabilities are based on the delta method."))
-    if (anyRegression)
-      estimatesTable$addFootnote(gettext("The component parameters correspond to the reference level of factors and zero value of covariates."))
+  fixedFits <- vapply(fit, function(x) !jaspBase::isTryError(x) && length(attr(x, "restrictParametersValues")) > 0L, logical(1))
+  if (any(fixedFits)) {
+    estimatesTable$addFootnote(gettext("Fixed parameters are specified by the user; their standard errors and confidence intervals are not estimated."))
+    if (any(vapply(fit[fixedFits], function(x) attr(x, "components") > 1L, logical(1))))
+      estimatesTable$addFootnote(gettext("Mixture components with fixed parameters retain the specified numbering."))
   }
+  if (any(vapply(fit, function(x) !jaspBase::isTryError(x) && length(attr(x, "structuralParameters")) > 0L, logical(1))))
+    estimatesTable$addFootnote(gettext("Eyring log-temperature coefficients are fixed by the preset; their standard errors and confidence intervals are not estimated."))
 
+  if (any(vapply(fit, function(x) !jaspBase::isTryError(x) && attr(x, "components") > 1, logical(1)))) {
+    estimatesTable$addFootnote(gettext("The standard errors and confidence intervals of the mixing probabilities are based on the delta method."))
+  }
   estimatesTable$setData(data)
   estimatesTable$showSpecifiedColumnsOnly <- TRUE
 
   return(estimatesTable)
 }
+
 .sapCoefficientsCovarianceMatrixTableFun <- function(fit, options) {
 
   # create the table
@@ -328,9 +389,11 @@
     return(covarianceMatrixTable)
 
   # add columns for each parameter
+  labels <- .sapCoefficientLabels(fit, covariance = TRUE)
   for (i in 1:nrow(data)) {
-    covarianceMatrixTable$addColumnInfo(name = data[["coefficient"]][i], title = data[["coefficient"]][i], type = "number")
+    covarianceMatrixTable$addColumnInfo(name = data[["coefficient"]][i], title = labels[i], type = "number")
   }
+  data[["coefficient"]] <- labels
 
   # add footnotes
   if (!is.null(attr(fit, "label")) && attr(fit, "label") != "")
@@ -347,6 +410,7 @@
 
 # adding rows to the output
 .sapRowModelInformation               <- function(fit) {
+
   return(data.frame(
     subgroup     = attr(fit, "subgroup"),
     model        = attr(fit, "modelTitle"),
@@ -354,6 +418,7 @@
     components   = attr(fit, "components")
   ))
 }
+
 .sapRowSummaryTable                   <- function(fit) {
 
   if (jaspBase::isTryError(fit))
@@ -367,6 +432,7 @@
     bic    = BIC(fit)
   ))
 }
+
 .sapRowSequentialModelComparisonTable <- function(fit0, fit1) {
 
   if (jaspBase::isTryError(fit0) || jaspBase::isTryError(fit1))
@@ -383,7 +449,7 @@
   ll1 <- fit1$loglik
 
   df <- fit1$npars - fit0$npars
-  if (.sapConstraintActive(fit0) || .sapConstraintActive(fit1)) {
+  if (.sapConstraintActive(fit0) || .sapConstraintActive(fit1) || !.sapModelsNested(fit0, fit1)) {
     chi2 <- pValue <- NA_real_
   } else {
     chi2   <- 2 * (ll1 - ll0)
@@ -401,6 +467,7 @@
     pValue       = pValue
   ))
 }
+
 .sapRowCoefficientsTable              <- function(fit, options) {
 
   if (jaspBase::isTryError(fit))
@@ -414,20 +481,32 @@
 
   # rename the CI columns
   colnames(coeffTable)[(ncol(coeffTable) - 2):(ncol(coeffTable)-1)] <- c("lower", "upper")
+  bounds <- .sapCoefficientBounds(fit, options[["coefficientsConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]])
+  coeffTable[["lower"]] <- bounds[, "lower"]
+  coeffTable[["upper"]] <- bounds[, "upper"]
   coeffTable[["isRegressionCoefficient"]] <- seq_len(nrow(fit[["res"]])) %in% fit[["covpars"]]
+  coeffTable[["nativeParameter"]] <- NA_character_
+  coeffTable[["transformedCoefficient"]] <- FALSE
+  for (equation in attr(fit, "equations")[["equations"]]) {
+    indices <- equation[["slopeIndices"]]
+    terms   <- colnames(equation[["matrix"]])[-1L]
+    labels  <- .sapTransformationNames(terms, fit, equation[["equation"]])
+    coeffTable[["nativeParameter"]][indices] <- equation[["parameter"]]
+    coeffTable[["transformedCoefficient"]][indices] <- labels != terms
+    coeffTable[["coefficient"]][indices] <- labels
+  }
 
   # label the parameters of mixture components
   if (!is.null(attr(fit, "mixture")))
-    coeffTable <- .sapmCoefficientsNames(coeffTable, fit)
+    coeffTable <- .sapmCoefficientsNames(coeffTable, fit, options)
   else if (options[["analysisType"]] == "mixture")
     coeffTable[["mixtureComponent"]] <- 1L
-  if (options[["analysisType"]] == "mixture")
-    coeffTable[["mixtureComponent"]][duplicated(coeffTable[["mixtureComponent"]])] <- NA_integer_
   if (.sapConstraintActive(fit))
     coeffTable[c("se", "lower", "upper")] <- NA_real_
 
   return(coeffTable)
 }
+
 .sapRowCovarianceMatrixTable     <- function(fit) {
 
   if (jaspBase::isTryError(fit))
@@ -435,7 +514,7 @@
 
   # one has recreate the matrix and use the names from the coefficients from the res table because
   # the the covariance matrix drops names if there is only a single parameter
-  covMat <- data.frame(fit[["cov"]])
+  covMat <- data.frame(.sapParameterCovariance(fit))
   if (.sapConstraintActive(fit))
     covMat[,] <- NA_real_
   colnames(covMat) <- rownames(fit[["res"]]) -> rownames(covMat)
@@ -451,15 +530,15 @@
 # adding columns to tables
 .sapAddModelColumns <- function(tempTable, options, output, includeModel = TRUE) {
 
-  always        <- options[["alwaysDisplayModelInformation"]]
+  always        <- options[["outputFormattingAlwaysDisplayModelInformation"]]
   groupedOutput <- output %in% c("modelSummary", "coefficients")
-  showSubgroup <- .sapHasSubgroups(options) && (
+  showSubgroup  <- .sapHasSubgroups(options) && (
     (groupedOutput && !.sapMultipleFamilies(options) && !.sapMultipleComponents(options) && !.sapMultipleModels(options)) ||
-    (output == "coefficientsCovarianceMatrix" && always))
+      (output == "coefficientsCovarianceMatrix" && always))
   showDistribution <- always || (output == "modelSummary" && .sapMultipleFamilies(options)) ||
     (output == "coefficients" && .sapFamilySelection(options) == "all")
   showComponents <- options[["analysisType"]] == "mixture" && (always || (groupedOutput && .sapMultipleComponents(options)))
-  showModel <- includeModel && (always || (output == "modelSummary" && .sapMultipleModels(options)) ||
+  showModel      <- includeModel && (always || (output == "modelSummary" && .sapMultipleModels(options)) ||
     (output == "coefficients" && .sapMultipleModels(options) && options[["interpretModel"]] == "all"))
 
   if (showSubgroup)
@@ -473,6 +552,7 @@
 
   return()
 }
+
 .sapAddRowModelInformation <- function(data, fit) {
 
   information <- .sapRowModelInformation(fit)
@@ -483,76 +563,53 @@
 
   return(data)
 }
-.sapCreatePredictionTable     <- function(options, atTitle, estimateNames, estimateTitles) {
-
-  tempTable <- createJaspTable()
-  .sapAddModelColumns(tempTable, options, output = "coefficientsCovarianceMatrix")
-  tempTable$addColumnInfo(name = "at", title = atTitle, type = "number")
-
-  for (i in seq_along(estimateNames)) {
-    .sapAddColumnsPredictionTable(
-      tempTable     = tempTable,
-      options       = options,
-      estimateName  = estimateNames[i],
-      estimateTitle = estimateTitles[i],
-      ciOvertitle   = length(estimateNames) == 1
-    )
-  }
-
-
-  return(tempTable)
-}
-.sapAddColumnsPredictionTable <- function(tempTable, options, estimateTitle, estimateName = "", ciOvertitle = TRUE) {
-
-  if (ciOvertitle) {
-
-    tempTable$addColumnInfo(name = paste0(estimateName, "estimate"), title = estimateTitle, type = "number")
-
-    if (options[["predictionsConfidenceInterval"]]) {
-      ciOvertitle <- gettextf("%s%% CI", 100 * options[["predictionsConfidenceIntervalLevel"]])
-      tempTable$addColumnInfo(name = paste0(estimateName, "lCi"), title = gettext("Lower"), type = "number", overtitle = ciOvertitle)
-      tempTable$addColumnInfo(name = paste0(estimateName, "uCi"), title = gettext("Upper"), type = "number", overtitle = ciOvertitle)
-    }
-  } else {
-
-    tempTable$addColumnInfo(name = paste0(estimateName, "estimate"), title = gettext("Estimate"), type = "number", overtitle = estimateTitle)
-
-    if (options[["predictionsConfidenceInterval"]]) {
-      tempTable$addColumnInfo(name = paste0(estimateName, "lCi"), title = gettext("Lower CI"), type = "number", overtitle = estimateTitle)
-      tempTable$addColumnInfo(name = paste0(estimateName, "uCi"), title = gettext("Upper CI"), type = "number", overtitle = estimateTitle)
-    }
-
-  }
-
-
-
-  return()
-}
 
 # Boundaries invalidate the regular interior-model uncertainty calculations.
 .sapConstraintActive <- function(fit) {
+
   constraints <- attr(fit, "constraints", exact = TRUE)
   return(!is.null(constraints) && constraints[["active"]])
 }
+
 .sapConstraintNote <- function(fit) {
+
   constraints <- attr(fit, "constraints", exact = TRUE)
   if (is.null(constraints))
     return(NULL)
   if (constraints[["spreadType"]] == "relative")
-    return(gettextf("The standard deviation of the natural logarithm of survival time was constrained to be at least %1$g in each component (%2$g%% of the unconstrained one-component model's log-time standard deviation, %3$g).", constraints[["minimumLogTimeSd"]], constraints[["relativePercent"]], constraints[["referenceLogTimeSd"]]))
-  return(gettextf("The standard deviation of the natural logarithm of survival time was constrained to be at least %1$g in each component.", constraints[["minimumLogTimeSd"]]))
+    return(gettextf(
+      "The baseline standard deviation of the natural logarithm of survival time was constrained to be at least %1$g in each component (%2$g%% of the unconstrained one-component model's baseline log-time standard deviation, %3$g).",
+      constraints[["minimumLogTimeSd"]],
+      constraints[["relativePercent"]],
+      constraints[["referenceLogTimeSd"]]
+    ))
+  return(gettextf(
+    "The baseline standard deviation of the natural logarithm of survival time was constrained to be at least %1$g in each component.",
+    constraints[["minimumLogTimeSd"]]
+  ))
 }
+
 .sapConstraintWarning <- function(fit) {
+
   if (!.sapConstraintActive(fit))
     return(NULL)
-  return(gettextf("The minimum log-time standard deviation bound (%1$g) is active. Standard errors, confidence intervals, covariance estimates, Wald tests, and likelihood-ratio tests involving this fit are unavailable.", attr(fit, "constraints")[["minimumLogTimeSd"]]))
+  return(gettextf(
+    "The minimum log-time standard deviation bound (%1$g) is active. Standard errors, confidence intervals, covariance estimates, Wald tests, and likelihood-ratio tests involving this fit are unavailable.",
+    attr(fit, "constraints")[["minimumLogTimeSd"]]
+  ))
 }
+
 .sapNativeFitWarnings <- function(fit) {
-  messages <- character(0)
+
+  messages    <- character(0)
+  unavailable <- attr(fit, "inferenceUnavailable", exact = TRUE)
+  if (!is.null(unavailable))
+    messages <- gettextf("Inference unavailable: %1$s", unavailable)
   for (message in attr(fit, "nativeWarnings", exact = TRUE))
-    messages <- c(messages, gettextf("Estimation warning: %1$s", message))
+    if (is.null(unavailable) || !grepl("hessian|covariance|positive definite|eigen|standard error", message, ignore.case = TRUE))
+      messages <- c(messages, gettextf("Estimation warning: %1$s", message))
   hessianWarning <- attr(fit, "nativeHessianWarning", exact = TRUE)
-  if (!is.null(hessianWarning) && hessianWarning)
+  if (is.null(unavailable) && !is.null(hessianWarning) && hessianWarning)
     messages <- c(messages, gettext("The Hessian or parameter covariance could not be used reliably; standard errors and confidence intervals may be unavailable or unreliable."))
   return(messages)
 }
@@ -581,26 +638,34 @@
 
   return(errors)
 }
+
 .sapSelectionFootnote     <- function(data, options) {
 
-  if (.sapMultipleComponents(options) && .sapComponentSelection(options) %in% c("bestAic", "bestBic") && !.sapBestModelSelection(options) && (options[["compareModelsAcrossComponents"]] || !.sapMultipleModels(options))) {
+  if (.sapMultipleComponents(options) && .sapComponentSelection(options) %in% c("bestAic", "bestBic") && !.sapBestModelSelection(options) && (options[["outputFormattingCompareModelsAcrossComponents"]] || !.sapMultipleModels(options))) {
 
-    if (.sapFamilySelection(options) %in% c("bestAic", "bestBic") && (options[["compareModelsAcrossDistributions"]] || !.sapMultipleModels(options))) {
+    if (.sapFamilySelection(options) %in% c("bestAic", "bestBic") && (options[["outputFormattingCompareModelsAcrossDistributions"]] || !.sapMultipleModels(options))) {
       selectedDistribution <- data[["distribution"]][which.min(data[[.sapSelectionCriterion(.sapFamilySelection(options))]])]
       distributionData     <- data[data[["distribution"]] %in% selectedDistribution, , drop = FALSE]
       selected             <- which.min(distributionData[[.sapSelectionCriterion(.sapComponentSelection(options))]])
-      message              <- gettextf("All following output is based on the best fitting %1$s distribution with %2$s.", distributionData[["distribution"]][selected], .sapComponentsLabel(distributionData[["components"]][selected]))
+      message              <- gettextf(
+        "All following output is based on the best fitting %1$s distribution with %2$s.",
+        distributionData[["distribution"]][selected],
+        .sapComponentsLabel(distributionData[["components"]][selected])
+      )
     } else if (!.sapMultipleFamilies(options)) {
       selected <- which.min(data[[.sapSelectionCriterion(.sapComponentSelection(options))]])
-      message  <- gettextf("All following output is based on the best fitting number of components (%1$s).", .sapComponentsLabel(data[["components"]][selected]))
+      message  <- gettextf(
+        "All following output is based on the best fitting number of components (%1$s).",
+        .sapComponentsLabel(data[["components"]][selected])
+      )
     } else {
-      message  <- gettext("All following output is based on the best fitting number of components within each distribution.")
+      message <- gettext("All following output is based on the best fitting number of components within each distribution.")
     }
 
-  } else if (.sapFamilySelection(options) %in% c("bestAic", "bestBic") && !.sapBestModelSelection(options) && (options[["compareModelsAcrossDistributions"]] || !.sapMultipleModels(options))) {
+  } else if (.sapFamilySelection(options) %in% c("bestAic", "bestBic") && !.sapBestModelSelection(options) && (options[["outputFormattingCompareModelsAcrossDistributions"]] || !.sapMultipleModels(options))) {
 
     selected <- which.min(data[[.sapSelectionCriterion(.sapFamilySelection(options))]])
-    message <- gettextf("All following output is based on the best fitting %1$s distribution.", data[["distribution"]][selected])
+    message  <- gettextf("All following output is based on the best fitting %1$s distribution.", data[["distribution"]][selected])
 
   } else {
 
@@ -611,6 +676,7 @@
   return(message)
 
 }
+
 .sapSelectedModelMessage  <- function(fit, options) {
 
   message <- NULL
@@ -630,7 +696,10 @@
     # only a single model is specified
 
     if (selectDistributions) {
-      message <- gettextf("Results are based on %1$s distribution which was the best fitting distribution.", attr(fit[[1]], "distribution"))
+      message <- gettextf(
+        "Results are based on %1$s distribution which was the best fitting distribution.",
+        attr(fit[[1]], "distribution")
+      )
     } else {
       message <- NULL
     }
@@ -643,13 +712,20 @@
       message <- gettextf("Results are based on %1$s.", attr(fit[[1]], "modelTitle"))
     } else if (!options[["interpretModel"]] %in% c("all", "bestAic", "bestBic") && selectDistributions) {
       # hand chosen model for the best distribution is shown
-      message <- gettextf("Results are based on %1$s with distribution %2$s which is the best fitting distribution across models.", attr(fit[[1]], "modelTitle"), attr(fit[[1]], "distribution"))
+      message <- gettextf(
+        "Results are based on %1$s with distribution %2$s which is the best fitting distribution across models.",
+        attr(fit[[1]], "modelTitle"),
+        attr(fit[[1]], "distribution")
+      )
     } else if (!selectModels && !selectDistributions) {
       # all models for all distributions are shown
       message <- NULL
     } else if (!selectModels && selectDistributions) {
       # all models for the best distribution are shown
-      message <- gettextf("Results are based on %1$s distribution which was the best fitting distribution.", attr(fit[[1]], "distribution"))
+      message <- gettextf(
+        "Results are based on %1$s distribution which was the best fitting distribution.",
+        attr(fit[[1]], "distribution")
+      )
     } else if (selectModels && !selectDistributions && .sapFamilySelection(options) != "all") {
       # best fitting model for the selected distribution is shown
       message <- gettext("Results are based on best fitting models.")
@@ -658,13 +734,18 @@
       message <- gettext("Results are based on best fitting models within each distribution.")
     } else if (selectModels && selectDistributions) {
       # best fitting model for the best distribution is shown
-      message <- gettextf("Results are based on %1$s with %2$s distribution which was the best fitting model across all models and distributions.", attr(fit[[1]], "modelTitle"), attr(fit[[1]], "distribution"))
+      message <- gettextf(
+        "Results are based on %1$s with %2$s distribution which was the best fitting model across all models and distributions.",
+        attr(fit[[1]], "modelTitle"),
+        attr(fit[[1]], "distribution")
+      )
     }
 
   }
 
   return(message)
 }
+
 .sapSelectedComponentsMessage <- function(fit, options) {
 
   # the fits were selected hierarchically: distribution - number of components - model
@@ -678,7 +759,11 @@
   if (!multipleModels || options[["interpretModel"]] == "all") {
 
     if (selectDistributions)
-      return(gettextf("Results are based on %1$s distribution with %2$s which was the best fitting combination of distribution and number of components.", distribution, components))
+      return(gettextf(
+        "Results are based on %1$s distribution with %2$s which was the best fitting combination of distribution and number of components.",
+        distribution,
+        components
+      ))
     else if (allDistributions)
       return(gettext("Results are based on the best fitting number of components within each distribution."))
     else
@@ -687,20 +772,38 @@
   } else if (!options[["interpretModel"]] %in% c("bestAic", "bestBic")) {
 
     if (selectDistributions)
-      return(gettextf("Results are based on %1$s with %2$s distribution and %3$s which was the best fitting combination of distribution and number of components across models.", model, distribution, components))
+      return(gettextf(
+        "Results are based on %1$s with %2$s distribution and %3$s which was the best fitting combination of distribution and number of components across models.",
+        model,
+        distribution,
+        components
+      ))
     else if (allDistributions)
       return(gettextf("Results are based on %1$s with the best fitting number of components within each distribution.", model))
     else
-      return(gettextf("Results are based on %1$s with %2$s which was the best fitting number of components across models.", model, components))
+      return(gettextf(
+        "Results are based on %1$s with %2$s which was the best fitting number of components across models.",
+        model,
+        components
+      ))
 
   } else {
 
     if (selectDistributions)
-      return(gettextf("Results are based on %1$s with %2$s distribution and %3$s which was the best fitting model across all models, distributions, and numbers of components.", model, distribution, components))
+      return(gettextf(
+        "Results are based on %1$s with %2$s distribution and %3$s which was the best fitting model across all models, distributions, and numbers of components.",
+        model,
+        distribution,
+        components
+      ))
     else if (allDistributions)
       return(gettext("Results are based on the best fitting number of components and model within each distribution."))
     else
-      return(gettextf("Results are based on %1$s with %2$s which was the best fitting model across all models and numbers of components.", model, components))
+      return(gettextf(
+        "Results are based on %1$s with %2$s which was the best fitting model across all models and numbers of components.",
+        model,
+        components
+      ))
   }
 }
 
@@ -710,12 +813,12 @@
   isValidIc <- !is.na(ic)
   validIc   <- ic[isValidIc]
 
-  deltaIc     <- validIc - min(validIc)
-  relativeIc  <- exp(-0.5 * deltaIc)
-  sumIc       <- sum(relativeIc)
-  icWeights   <- relativeIc/sumIc
+  deltaIc    <- validIc - min(validIc)
+  relativeIc <- exp(-0.5 * deltaIc)
+  sumIc      <- sum(relativeIc)
+  icWeights  <- relativeIc/sumIc
 
-  out            <- rep(0, length(ic))
+  out <- rep(0, length(ic))
   out[isValidIc] <- icWeights
 
   return(out)

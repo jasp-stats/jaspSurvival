@@ -1,0 +1,139 @@
+context("Other: flexsurv-lung")
+
+# This test file was auto-generated from a JASP example file.
+# The JASP file is stored in tests/testthat/jaspfiles/other/.
+
+test_that("ParametricSurvivalAnalysis (analysis 1) results match", {
+
+  # Load from JASP example file
+  jaspFile <- testthat::test_path("jaspfiles", "other", "flexsurv-lung.jasp")
+  opts <- jaspTools::analysisOptions(jaspFile)[[1]]
+  opts[["predictionsOutputTableFormat"]] <- "long"
+  dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
+
+  # Encode and run analysis
+  encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
+  set.seed(1)
+  results <- jaspTools::runAnalysis("ParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+
+  table <- results[["results"]][["coefficientsTable"]][["data"]]
+  jaspTools::expect_equal_tables(table,
+    list("shape", 1.3273153276572, 1.17503976080987, "", 0.0825228540267747,
+     1.49932456568063, "", "scale", 791.844306437345, 326.202637477711,
+     "", 358.294321979747, 1922.17147747643, "", "jaspColumn1", -0.0125645564580569,
+     -0.0263519930864257, 0.0740791045922131, 0.00703453570428965,
+     0.00122288017031197, -1.78612448443399, "jaspColumn2 (2)", 0.378622833083013,
+     0.128599390142555, 0.00299675933621449, 0.127565325134855, 0.628646276023471,
+     2.96807014510216, "jaspColumn3 (NA)", -1.65781153812662, -3.14201016958767,
+     0.0285801889784667, 0.757258114520583, -0.17361290666557, -2.1892291496621
+    ))
+
+  table <- results[["results"]][["summaryTable"]][["data"]]
+  jaspTools::expect_equal_tables(table,
+    list(2298.31113137002, 2315.34699022732, 5, -1144.15556568501))
+
+})
+
+test_that("ParametricSurvivalAnalysis (analysis 2) results match", {
+
+  # Load from JASP example file
+  jaspFile <- testthat::test_path("jaspfiles", "other", "flexsurv-lung.jasp")
+  opts <- jaspTools::analysisOptions(jaspFile)[[2]]
+  opts[["predictionsOutputTableFormat"]] <- "wide"
+  dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
+
+  # Encode and run analysis
+  encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
+  set.seed(1)
+  results <- jaspTools::runAnalysis("ParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+
+  table <- results[["results"]][["coefficientsTable"]][["data"]]
+  jaspTools::expect_equal_tables(table,
+    list("shape", 1.33414648096657, 1.1737225258017, "", 0.0872053665903555,
+     1.51649712223057, "", "scale", 1164.5196326514, 464.659137241452,
+     "", 545.884460798124, 2918.49630436918, "", "jaspColumn1", -0.0157210095170056,
+     -0.030011346637621, 0.031069211911205, 0.00729112230292792,
+     -0.00143067239639013, -2.15618513362373, "jaspColumn2", -0.000580000848110709,
+     -0.00971330948921979, 0.9009468062554, 0.00465993697494008,
+     0.00855330779299837, -0.124465384667175))
+
+  plotName <- results[["results"]][["customPredictionsResult"]][["collection"]][["customPredictionsResult_plots"]][["collection"]][["customPredictionsResult_plots_plot1"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-1_survival-time")
+
+  plotName <- results[["results"]][["customPredictionsResult"]][["collection"]][["customPredictionsResult_plots"]][["collection"]][["customPredictionsResult_plots_plot2"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-2_cumulative-hazard")
+
+  plotName <- results[["results"]][["customPredictionsResult"]][["collection"]][["customPredictionsResult_plots"]][["collection"]][["customPredictionsResult_plots_plot3"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  jaspTools::expect_equal_plots(testPlot, "analysis-2_figure-3_restricted-mean-survival-time")
+
+  table <- results[["results"]][["customPredictionsResult"]][["collection"]][["customPredictionsResult_tables"]][["collection"]][["customPredictionsResult_tables_quantileTable"]][["data"]]
+  jaspTools::expect_equal_tables(table,
+    list(0, 0, 0, 647.390260170193, 509.320075906405, 826.458125362788,
+     "<unicode>", "<unicode>", "<unicode>", 64.1394358277778, 45.2493881369048,
+     89.2307324602884, 112.565679691936, 83.72295301074, 149.876846242672,
+     159.984933286781, 121.938278189895, 208.550614362958, 209.415020442693,
+     162.619497291447, 269.265297688487, 263.246027818134, 206.101978147804,
+     335.856010239546, 324.498202276449, 254.919774791078, 412.049376167741,
+     398.194838381289, 314.334235494529, 505.112755841377, 494.972608468733,
+     390.819646505317, 628.644559448328, 77, 3, 224, 0, 0, 0, 1182.028920717,
+     781.785092463879, 1773.1848922365, "<unicode>", "<unicode>",
+     "<unicode>", 117.108138276555, 75.0960689595453, 178.23184865481,
+     205.526553397723, 135.459806383916, 307.188193339712, 292.106368690567,
+     194.976840650692, 432.095585126797, 382.35763777282, 256.271228693351,
+     563.427436077179, 480.644268672045, 322.201841138823, 707.665708552159,
+     592.480739068586, 395.954254550669, 873.313642870321, 727.038764721577,
+     487.002227033821, 1073.18100696044, 903.739172750246, 603.505830809263,
+     1341.79167103434, 39, -5, 225, 0, 0, 0, 667.294390883633, 539.862464493636,
+     828.473395183734, "<unicode>", "<unicode>", "<unicode>", 66.1114143902399,
+     47.6049131825193, 89.9432447027657, 116.02653188617, 88.3849011309702,
+     150.552544987217, 164.903699014712, 129.059323934102, 209.501905575524,
+     215.853523146076, 171.900071659464, 270.342014911002, 271.339574585595,
+     218.14707022814, 337.034594061469, 334.474958233033, 270.862341860702,
+     412.987204959278, 410.437410752512, 332.73531287703, 505.453519421325,
+     510.190630896108, 415.01071251878, 630.552112939498, 75, 5,
+     226, 0, 0, 0, 770.500576696667, 654.054658136906, 909.907488981894,
+     "<unicode>", "<unicode>", "<unicode>", 76.3364470162244, 57.4999259416408,
+     98.9515853920175, 133.971618751397, 107.334279772895, 164.869309455288,
+     190.408306927319, 157.796802600564, 228.277315974478, 249.238216802367,
+     210.287584299136, 294.118275804861, 313.305943456203, 267.760959192853,
+     366.011063144623, 386.206075953794, 331.618685398244, 448.747012038147,
+     473.917158608105, 407.96245884838, 549.582223171612, 589.098575832685,
+     505.931828774739, 687.324504836995, 66, 1, 227, 0, 0, 0, 874.269324872722,
+     723.683518584621, 1054.74187553627, "<unicode>", "<unicode>",
+     "<unicode>", 86.6172148529496, 65.0851068396515, 111.703508228057,
+     152.014521754214, 121.187301187296, 187.539013061367, 216.051936860575,
+     177.340407517996, 260.708554153372, 282.804885715317, 236.084008982414,
+     336.915823323476, 355.501065084732, 298.632195968305, 421.086300041903,
+     438.219172701272, 369.142088036504, 517.95617259196, 537.742925616293,
+     452.815441177935, 636.516017593489, 668.436636848206, 560.661377192085,
+     797.334834805506, 58, 0, 228))
+
+  table <- results[["results"]][["customPredictionsResult"]][["collection"]][["customPredictionsResult_tables"]][["collection"]][["customPredictionsResult_tables_timeTable12"]][["data"]]
+  jaspTools::expect_equal_tables(table,
+    list(0.480418052706879, 0.336278985076935, 0.666597929569761, 0.825184101792601,
+     0.593240318507633, 1.13266388012826, 164.453456882608, 151.874818875218,
+     175.012906854466, 216.972710833678, 193.769282968338, 237.987475026819,
+     77, 3, 224, 0.215174493651995, 0.123396430228427, 0.368674709075484,
+     0.369591796712174, 0.216156702636823, 0.631281021733651, 182.761403759157,
+     171.250577694446, 190.08854602503, 257.613300507016, 232.578304615554,
+     274.520370313471, 39, -5, 225, 0.461395697641743, 0.334415221483223,
+     0.619438789137471, 0.792510589858649, 0.591006158730613, 1.04865150399807,
+     165.669810757814, 154.594321871516, 175.19324670021, 219.535375246554,
+     198.918595611022, 238.234006799058, 75, 5, 226, 0.380845442860993,
+     0.295299475501645, 0.479126243223492, 0.654154445109497, 0.525349340307115,
+     0.80369916768502, 170.979383999623, 162.967672615223, 178.073067473905,
+     230.949361734216, 216.542845912875, 244.394400645215, 66, 1,
+     227, 0.321766712862635, 0.244600070487286, 0.414774814093853,
+     0.552678598242254, 0.434670193964368, 0.697352090020705, 175.043399661695,
+     167.400633152446, 181.432217862707, 239.937497401439, 225.518488653623,
+     252.740794802286, 58, 0, 228))
+
+  table <- results[["results"]][["summaryTable"]][["data"]]
+  jaspTools::expect_equal_tables(table,
+    list(2138.42001625437, 2151.78935326223, 4, -1065.21000812719))
+
+})
+

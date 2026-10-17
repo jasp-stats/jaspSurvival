@@ -1,7 +1,7 @@
 Package: jaspSurvival
 Type: Package
 Title: A Survival Module for JASP
-Version: 0.97.0
+Version: 0.98.0
 Date: 2020-10-15
 Author: JASP Team
 Website: jasp-stats.org
@@ -17,6 +17,7 @@ Imports:
   flexsurv,
   jaspBase,
   jaspGraphs,
+  splines,
   scales
 Suggests:
   testthat

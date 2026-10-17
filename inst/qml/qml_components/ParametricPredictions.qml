@@ -25,487 +25,985 @@ import JASP
 
 Section
 {
-	id:	predictionsRoot
-	property bool rightCensoring:	false
-	property bool mergeDistributionsAvailable:	false
-	property bool categoricalLevelsPossible:	false
-	property bool subgroupsAvailable:	false
-	property bool mergeTimeComponentsActive:	false
-	property bool mergeLifeComponentsActive:	false
-	property bool extraPlotSelected:	false
-	property alias survivalTimeExtraControls:	survivalTimeExtras.content
-	property alias lifeTimeExtraControls:	lifeTimeExtras.content
-
-	readonly property bool timeSeriesAvailable: (survivalTimeMergePlotsAcrossDistributions.checked && survivalTimeMergePlotsAcrossDistributions.enabled) || mergeTimeComponentsActive || (survivalTimeMergePlotsAcrossFactors.checked && survivalTimeMergePlotsAcrossFactors.enabled) || (survivalTimeMergePlotsAcrossSubgroups.checked && survivalTimeMergePlotsAcrossSubgroups.enabled)
-	readonly property bool lifeSeriesAvailable: (lifeTimeMergePlotsAcrossDistributions.checked && lifeTimeMergePlotsAcrossDistributions.enabled) || mergeLifeComponentsActive || (lifeTimeMergePlotsAcrossFactors.checked && lifeTimeMergePlotsAcrossFactors.enabled) || (lifeTimeMergePlotsAcrossSubgroups.checked && lifeTimeMergePlotsAcrossSubgroups.enabled)
-	readonly property bool lifePlotSelected: survivalProbabilityPlot.checked || hazardPlot.checked || cumulativeHazardPlot.checked || restrictedMeanSurvivalTimePlot.checked
-	readonly property bool plotSelected: survivalTimePlot.checked || lifePlotSelected || extraPlotSelected
-	readonly property bool legendPaletteAvailable: (survivalTimePlot.checked && timeSeriesAvailable) || (lifePlotSelected && lifeSeriesAvailable) || extraPlotSelected
-	property string quantileStepsInfo:	qsTr("Select the probabilities at which survival times are predicted: Quantiles, Sequence, or Custom.")
-	property string quantileNumberInfo:	qsTr("Specify the number of predicted survival-time quantiles when using Quantiles as the steps type.")
-	property string lifeTimeStepsInfo:	qsTr("Select the time points for prediction tables: Equal spacing, Sequence, or Custom. Equal spacing uses evenly spaced times up to the maximum observed time. Time plots place points adaptively within the selected range.")
-	property string lifeTimeSizeInfo:	qsTr("Set the time increment when using Sequence steps. Leaving this blank uses one tenth of the selected time range.")
-	property string lifeTimeCustomInfo:	qsTr("Specify custom steps of the life time.")
-
+	id: predictionsRoot
+	property var analysisForm
+	property bool mixture: false
+	property bool rightCensoring: false
+	property bool mergeDistributionsAvailable: false
+	property bool mergeComponentsAvailable: false
+	property bool categoricalLevelsPossible: false
+	property bool subgroupsAvailable: false
+	property bool extraPlotSelected: false
+	property bool componentPlotSelected: false
+	property var modelPredictors: []
+	property var covariateNames: []
+	property var factorNames: []
+	property bool predictorSourcesReady: false
+	property var predictionPredictors: []
+	readonly property bool variableInput: predictionInput.value === "variables"
+	readonly property var axisVariables: predictionsRoot.predictorView ? predictionRoles.axisVariables : contourRoles.axes
+	readonly property var lineVariables: predictorView ? predictionRoles.lineVariables : contourRoles.lineVariables
+	readonly property var panelVariables: predictorView ? predictionRoles.panelVariables : contourRoles.panelVariables
+	readonly property var groupedPredictors: lineVariables.concat(panelVariables)
+	readonly property var assignedPredictors: axisVariables.concat(groupedPredictors)
+	readonly property var assignedCovariates: covariateNames.filter(function(v) { return modelPredictors.indexOf(v) >= 0 && groupedPredictors.indexOf(v) >= 0; })
+	readonly property var unassignedPredictors: predictionsRoot.modelPredictors.filter(function(v) { return predictionsRoot.assignedPredictors.indexOf(v) < 0; })
+	readonly property var lineCovariates: assignedCovariates.filter(function(v) { return lineVariables.indexOf(v) >= 0; })
+	readonly property bool timeAxis: !variableInput || (predictionsRoot.predictorView && predictionRoles.axisIsTime)
+	readonly property bool fullTimeGrid: predictionPlotType.value === "standard" && (predictionRoles.axisIsTime || (predictionRoles.axisVariables.length === 0 && predictionRoles.automaticAssignments))
+	readonly property bool predictorView: !variableInput || predictionPlotType.value === "standard"
+	readonly property bool lifetimeSelected: survivalTime.checked || (relativeSurvivalTime.checked && relativeSurvivalTime.enabled)
+	readonly property bool categoricalAxis: predictionsRoot.predictorView && predictionRoles.axisIsCategorical
+	readonly property bool probabilitySelected: survivalProbability.checked || failureProbability.checked
+	readonly property bool scalarLifetimeSelected: lifetimeMean.checked || lifetimeMedian.checked
+	readonly property bool lifetimeSummarySelected: lifetimePercentiles.checked || scalarLifetimeSelected
+	readonly property bool lifetimePredictionSelected: survivalTime.checked && lifetimeSummarySelected
+	readonly property bool predictorPlotSelected: modelPlot.checked && predictorView
+	readonly property bool kaplanMeierProfilesAvailable: kaplanMeierEligibility.count > 0
+	readonly property bool timeMeasuresSelected: probabilitySelected || hazard.checked || cumulativeHazard.checked || restrictedMeanSurvivalTime.checked
+	readonly property string timeValuesTitle:
+	{
+		if (!restrictedMeanSurvivalTime.checked)
+			return qsTr("Time");
+		return probabilitySelected || hazard.checked || cumulativeHazard.checked ? qsTr("Time / horizon") : qsTr("Horizon");
+	}
+	readonly property bool plotSelected: modelPlot.checked || extraPlotSelected
+	readonly property bool predictionOutputSelected: modelPlot.checked || modelTable.checked || (predictionInput.value === "dataset" && predictionExport.checked)
+	readonly property bool legendPaletteAvailable: plotSelected
+	readonly property bool predictionIntervalAvailable: survivalTime.checked && (variableInput ?
+		lifetimeSummarySelected && predictionOutputSelected && !timeAxis && predictorView :
+		modelPlot.checked && scalarLifetimeSelected)
+	property string quantileStepsInfo: qsTr("Choose how to specify lifetime percentiles: equal intervals, a sequence or custom values.")
+	property string quantileNumberInfo: qsTr("Set the number of equal intervals between 0 and 100.")
+	property string lifeTimeStepsInfo: qsTr("Choose how to specify prediction times: equal intervals, a sequence or custom values.")
+	property string lifeTimeSizeInfo: qsTr("Set the time increment. Leave blank to use the default increment.")
+	property string lifeTimeCustomInfo: qsTr("Enter non-negative prediction times, separated by commas. Leave blank to use the default times.")
 	title: qsTr("Predictions")
+
+	onFullTimeGridChanged:
+	{
+		if (!variableInput || !analysisForm || !analysisForm.initialized() || !predictionRoles || !percentileGrid || !timeGrid || predictionRoles.applying || !percentileGrid.initialized || !timeGrid.initialized) return;
+		percentileGrid.currentIndex = fullTimeGrid ? 0 : 2;
+		timeGrid.currentIndex = fullTimeGrid ? 0 : 2;
+	}
+
+	AvailableVariablesList
+	{
+		id: kaplanMeierEligibility
+		name: "predictionsKaplanMeierEligibility"
+		visible: false
+		source: [{rSource: "kaplanMeierAvailability"}]
+	}
 
 	Group
 	{
-
 		Group
 		{
-			title:		qsTr("Survival Time")
-
+			title: qsTr("Outcome")
 			CheckBox
 			{
-				label:		qsTr("Table")
-				name:		"survivalTimeTable"
-				info: qsTr("Include a table with the predicted survival estimates.")
+				id: survivalTime
+				name: "predictionsOutcomeSurvivalTime"
+				label: qsTr("Survival time")
+				checked: false
+				info: qsTr("Predict lifetime percentiles, median or mean from the fitted model.")
 			}
-
 			CheckBox
 			{
-				id:			survivalTimePlot
-				label:		qsTr("Plot")
-				name:		"survivalTimePlot"
-				info: qsTr("Include a plot with the predicted survival estimates.")
+				id: relativeSurvivalTime
+				name: "predictionsOutcomeRelativeSurvivalTime"
+				label: qsTr("Relative survival time")
+				checked: false
+				enabled: predictionsRoot.variableInput && predictionsRoot.predictorView && !predictionsRoot.timeAxis
+				info: qsTr("Show the reference lifetime divided by the predicted lifetime at each predictor value.")
+			}
+			CheckBox
+			{
+				id: survivalProbability
+				name: "predictionsOutcomeSurvivalProbability"
+				label: qsTr("Survival probability")
+				checked: false
+				info: qsTr("Predict the probability of surviving beyond each selected time.")
+			}
+			CheckBox
+			{
+				id: failureProbability
+				name: "predictionsOutcomeFailureProbability"
+				label: qsTr("Failure probability")
+				checked: false
+				info: qsTr("Predict the probability of the event occurring by each selected time.")
+			}
+			CheckBox
+			{
+				id: hazard
+				name: "predictionsOutcomeHazard"
+				label: qsTr("Hazard")
+				checked: false
+				info: qsTr("Predict the event rate at each selected time.")
+			}
+			CheckBox
+			{
+				id: cumulativeHazard
+				name: "predictionsOutcomeCumulativeHazard"
+				label: qsTr("Cumulative hazard")
+				checked: false
+				info: qsTr("Predict the accumulated hazard up to each selected time.")
+			}
+			CheckBox
+			{
+				id: restrictedMeanSurvivalTime
+				name: "predictionsOutcomeRestrictedMeanSurvivalTime"
+				label: qsTr("Restricted mean survival time")
+				checked: false
+				info: qsTr("Predict the average survival time up to each selected time.")
 			}
 		}
 
 		DropDown
 		{
-			name:		"predictionsSurvivalTimeStepsType"
-			id:			predictionsSurvivalTimeStepsType
-			label:		qsTr("Steps type")
-			info: predictionsRoot.quantileStepsInfo
+			label: qsTr("Predict for")
+			id: predictionInput
+			name: "predictionsPredictFor"
+			startValue: "variables"
+			fieldWidth: 150 * jaspTheme.uiScale
+			info: qsTr("Choose predictions for selected variable values, manually entered observations, dataset rows with missing outcomes, or observations from a CSV file.")
 			values:
 			[
-				{ label: qsTr("Quantiles"),	value: "quantiles"},
-				{ label: qsTr("Sequence"),		value: "sequence"},
-				{ label: qsTr("Custom"),		value: "custom"}
+			{ value: "variables", 	label: qsTr("Variables")	 		},
+			{ value: "manual", 		label: qsTr("Manual input")			},
+			{ value: "dataset", 	label: qsTr("Missing outcomes (dataset)") },
+			{ value: "csv", 		label: qsTr("CSV file") 				}
 			]
+		}
+
+		FileSelector
+		{
+			name: "predictionsCsvFile"
+			label: qsTr("CSV file")
+			save: false
+			filter: "*.csv"
+			fieldWidth: 150 * jaspTheme.uiScale
+			visible: predictionInput.value === "csv"
+			info: qsTr("Select a CSV file with one observation per row. Column names and factor levels must match the dataset.")
+		}
+	}
+
+	Group
+	{
+		Group
+		{
+
+			Group
+			{
+				title: qsTr("Lifetime")
+				enabled: predictionsRoot.lifetimeSelected && predictionsRoot.predictionOutputSelected
+
+				Group
+				{
+					columns:	3
+
+					CheckBox
+					{
+						id: lifetimeMean
+						name: "predictionsLifetimeMean"
+						label: qsTr("Mean")
+						checked: false
+						info: qsTr("Predict the expected survival time.")
+					}
+					CheckBox
+					{
+						id: lifetimeMedian
+						name: "predictionsLifetimeMedian"
+						label: qsTr("Median")
+						checked: false
+						info: qsTr("Predict the median survival time (the 50th percentile).")
+					}
+					CheckBox
+					{
+						id: lifetimePercentiles
+						name: "predictionsLifetimePercentiles"
+						label: qsTr("Percentiles")
+						checked: true
+						info: qsTr("Predict survival times at the selected percentiles.")
+					}
+				}
+				Group
+				{
+					visible: lifetimePercentiles.checked
+					DropDown
+					{
+						name:		"predictionsLifetimePercentilesGrid"
+						id:			percentileGrid
+						label:		qsTr("Grid")
+						info: predictionsRoot.quantileStepsInfo
+						startValue: predictionsRoot.fullTimeGrid ? "quantiles" : "custom"
+						depends: ["predictionsXAxisVariables", "predictionsSeparateLines", "predictionsSeparatePlots", "predictionsLifetimeTimeId", "predictionsRolesAutomatic", "predictionsOutputPlotType"]
+						values:
+						[
+						{ label: qsTr("Equal intervals"),	value: "quantiles"	},
+						{ label: qsTr("Sequence"),			value: "sequence"	},
+						{ label: qsTr("Custom"),			value: "custom"		}
+						]
+					}
+					IntegerField
+					{
+						name:			"predictionsLifetimePercentilesIntervals"
+						label:			qsTr("Intervals")
+						defaultValue:	10
+						min:			1
+						visible:		percentileGrid.value === "quantiles"
+						info: predictionsRoot.quantileNumberInfo
+					}
+					Group
+					{
+						columns: 3
+						alignFields: false
+						visible: percentileGrid.value === "sequence"
+						FormulaField
+						{
+							name:			"predictionsLifetimePercentilesFrom"
+							id:				predictionsSurvivalTimeStepsFrom
+							label:			qsTr("From")
+							defaultValue: 	""
+							inputType: 		"string"
+							parseDefaultValue: false
+							placeholderText: qsTr("0")
+							fieldWidth: 	50 * jaspTheme.uiScale
+							info: qsTr("Set the first percentile in the sequence. Leave blank to start at 0.")
+						}
+						FormulaField
+						{
+							name:			"predictionsLifetimePercentilesStep"
+							id:				predictionsSurvivalTimeStepsSize
+							label:			qsTr("Step")
+							defaultValue: 	""
+							inputType: 		"string"
+							parseDefaultValue: false
+							placeholderText: qsTr("10")
+							fieldWidth: 	50 * jaspTheme.uiScale
+							info: qsTr("Set the percentile increment. Leave blank to use an increment of 10.")
+						}
+						FormulaField
+						{
+							name:			"predictionsLifetimePercentilesTo"
+							id:				predictionsSurvivalTimeStepsTo
+							label:			qsTr("To")
+							defaultValue: 	""
+							inputType: 		"string"
+							parseDefaultValue: false
+							placeholderText: qsTr("100")
+							fieldWidth: 	50 * jaspTheme.uiScale
+							info: qsTr("Set the last percentile in the sequence. Leave blank to end at 100.")
+						}
+					}
+					FormulaField
+					{
+						name:			"predictionsLifetimePercentilesValues"
+						label:			qsTr("Values")
+						visible:		percentileGrid.value === "custom"
+						defaultValue:	"25, 50, 75"
+						inputType: "string"
+						parseDefaultValue: false
+						info: qsTr("Enter lifetime percentiles from 0 to 100, separated by commas.")
+					}
+				}
+			}
+			Group
+			{
+				title: predictionsRoot.timeValuesTitle
+				enabled: (predictionsRoot.timeMeasuresSelected && predictionsRoot.predictionOutputSelected) || predictionsRoot.componentPlotSelected
+				DropDown
+				{
+					name:		"predictionsTimeGrid"
+					id:			timeGrid
+					label:		qsTr("Grid")
+					info: 		predictionsRoot.lifeTimeStepsInfo
+					startValue: predictionsRoot.fullTimeGrid ? "quantiles" : "customRelative"
+					depends: ["predictionsXAxisVariables", "predictionsSeparateLines", "predictionsSeparatePlots", "predictionsLifetimeTimeId", "predictionsRolesAutomatic", "predictionsOutputPlotType"]
+					values:
+					[
+					{ label: qsTr("Equal intervals"),	value: "quantiles"	},
+					{ label: qsTr("Sequence"),			value: "sequence"	},
+					{ label: qsTr("Custom (relative)"),	value: "customRelative" },
+					{ label: qsTr("Custom (absolute)"),	value: "customAbsolute" }
+					]
+				}
+				IntegerField
+				{
+					name:			"predictionsTimeIntervals"
+					label:			qsTr("Intervals")
+					defaultValue:	10
+					min:			1
+					visible:		timeGrid.value === "quantiles"
+					info: qsTr("Set the number of equal intervals between zero and the maximum follow-up time.")
+				}
+				Group
+				{
+					columns: 3
+					alignFields: false
+					visible: timeGrid.value === "sequence"
+
+					FormulaField
+					{
+						name:			"predictionsTimeFrom"
+						id:				predictionsLifeTimeStepsFrom
+						label:			qsTr("From")
+						defaultValue: 	""
+						inputType: 		"string"
+						parseDefaultValue: false
+						placeholderText: qsTr("0")
+						fieldWidth:		50 * jaspTheme.uiScale
+						info: qsTr("Set the first time in the sequence. Leave blank to start at 0.")
+					}
+					FormulaField
+					{
+						name:			"predictionsTimeStep"
+						id:				predictionsLifeTimeStepsSize
+						label:			qsTr("Step")
+						defaultValue: 	""
+						inputType: 		"string"
+						parseDefaultValue: false
+						placeholderText: qsTr("Maximum follow-up / 10")
+						fieldWidth:		50 * jaspTheme.uiScale
+						info: qsTr("Set the time increment. Leave blank to use the default increment.")
+					}
+					FormulaField
+					{
+						name:			"predictionsTimeTo"
+						id:				predictionsLifeTimeStepsTo
+						label:			qsTr("To")
+						defaultValue: 	""
+						inputType: 		"string"
+						parseDefaultValue: false
+						placeholderText: qsTr("Maximum follow-up")
+						fieldWidth:		50 * jaspTheme.uiScale
+						info: qsTr("Set the last time in the sequence. Leave blank to use the maximum follow-up time.")
+					}
+				}
+				FormulaField
+				{
+					name: "predictionsTimePercentages"
+					label: qsTr("Percentages")
+					defaultValue: "25, 50, 75"
+					inputType: "string"
+					parseDefaultValue: false
+					fieldWidth: 150 * jaspTheme.uiScale
+					visible: timeGrid.value === "customRelative"
+					info: qsTr("Enter prediction times as percentages of the maximum follow-up time, separated by commas.")
+				}
+				FormulaField
+				{
+					name:			"predictionsTimeValues"
+					label:			qsTr("Values")
+					visible:		timeGrid.value === "customAbsolute"
+					inputType: "string"
+					parseDefaultValue: false
+					placeholderText: qsTr("25%, 50%, 75% of follow-up")
+					fieldWidth: 180 * jaspTheme.uiScale
+					info: predictionsRoot.lifeTimeCustomInfo
+				}
+			}
+		}
+
+		Group
+		{
+			title: qsTr("Output")
+			CheckBox
+			{
+				id: modelPlot
+				name: "predictionsOutputPlot"
+				label: qsTr("Plot")
+				checked: true
+				childrenOnSameRow:	true
+				info: qsTr("Plot every selected measure in its own panel. For new observations, use observation numbers on the x-axis and separate lines for times or lifetime percentiles.")
+
+				DropDown
+				{
+					id: predictionPlotType
+					visible: predictionsRoot.variableInput
+					name: "predictionsOutputPlotType"
+					label: ""
+					startValue: "standard"
+					values: [{label: qsTr("Curves and points"), value: "standard"}, {label: qsTr("Contour"), value: "contour"}]
+					info: qsTr("Choose predictor plots for individual predictors, or contour plots for two numeric predictors.")
+				}
+			}
+			CheckBox
+			{
+				id: modelTable
+				name: "predictionsOutputTable"
+				label: qsTr("Table")
+				checked: false
+				childrenOnSameRow: true
+				info: qsTr("Show a table of the selected predictions.")
+
+				DropDown
+				{
+					name: "predictionsOutputTableFormat"
+					label: ""
+					startValue: "wide"
+					values: [{label: qsTr("Long"), value: "long"}, {label: qsTr("Wide"), value: "wide"}]
+					info: qsTr("Show times, horizons and lifetime percentiles in rows (Long) or separate column groups (Wide).")
+				}
+			}
+
+			CheckBox
+			{
+				id: predictionExport
+				name: "predictionsOutputExportPredictionsToDataset"
+				label: qsTr("Export predictions to dataset")
+				checked: false
+				visible: predictionInput.value === "dataset"
+				info: qsTr("Add the selected predictions as new columns in the dataset.")
+				TextField
+				{
+					name: "predictionsOutputExportPredictionsToDatasetColumnPrefix"
+					label: qsTr("Column prefix")
+					defaultValue: "Predicted"
+					fieldWidth: 150 * jaspTheme.uiScale
+					info: qsTr("Set a prefix for the names of exported prediction columns.")
+				}
+			}
+		}
+	}
+
+	ParametricPredictionRoles
+	{
+		id: predictionRoles
+		visible: predictionsRoot.variableInput && predictionsRoot.predictorView
+		Layout.columnSpan: 2
+		analysisForm: predictionsRoot.analysisForm
+		predictors: predictionsRoot.modelPredictors
+		covariates: predictionsRoot.covariateNames
+		factors: predictionsRoot.factorNames
+		sourcesReady: predictionsRoot.predictorSourcesReady
+	}
+	ParametricContourRoles
+	{
+		id: contourRoles
+		Layout.columnSpan: 2
+		visible: predictionsRoot.variableInput && !predictionsRoot.predictorView
+		predictors: predictionsRoot.modelPredictors
+		covariates: predictionsRoot.covariateNames
+		factors: predictionsRoot.factorNames
+	}
+	ParametricPredictionData
+	{
+		name: "predictionsManualInput"
+		cornerText: ""
+		rowNames: Array.from({length: tableView.rowCount}, function(value, index) { return qsTr("Observation %1").arg(index + 1); })
+		Layout.columnSpan: 2
+		Layout.fillWidth: true
+		predictionPredictors: predictionsRoot.predictionPredictors
+		factorPredictors: predictionsRoot.predictionPredictors.filter(function(v) { return predictionsRoot.covariateNames.indexOf(v) < 0; })
+		predictorsSourceReady: predictionsRoot.predictorSourcesReady
+		visible: predictionInput.value === "manual"
+	}
+
+	DropDown
+	{
+		id: conditioning
+		visible: predictionsRoot.variableInput
+		name: "predictionsUnassignedReferenceValues"
+		label: qsTr("Unassigned reference values")
+		Layout.columnSpan: 2
+		enabled: predictionsRoot.unassignedPredictors.length > 0
+		startValue: "average"
+		values: [{label: qsTr("Average (design)"), value: "average"}, {label: qsTr("Average (population)"), value: "population"}, {label: qsTr("Default"), value: "reference"}, {label: qsTr("Custom"), value: "custom"}]
+		info: qsTr("Choose a design average, a population average, default reference values or custom values.")
+	}
+	ParametricPredictionData
+	{
+		name: "predictionsUnassignedReferenceValuesCustomValues"
+		singleRow: true
+		cornerText: ""
+		rowNames: [qsTr("Value")]
+		Layout.columnSpan: 2
+		Layout.fillWidth: true
+		predictionPredictors: predictionsRoot.unassignedPredictors
+		factorPredictors: predictionsRoot.factorNames
+		predictorsSourceReady: predictionsRoot.predictorSourcesReady
+		visible: predictionsRoot.variableInput && conditioning.enabled && conditioning.value === "custom"
+		info: qsTr("Enter reference values for unassigned predictors. Leave cells empty to use design averages.")
+	}
+	Group
+	{
+		visible: predictionsRoot.variableInput
+		enabled: predictionsRoot.assignedCovariates.length > 0
+		Layout.columnSpan: 2
+
+		DropDown
+		{
+			id: assignedValues
+			name: "predictionsAssignedCovariateValues"
+			label: qsTr("Assigned covariate values")
+			startValue: "quantiles"
+			values: [{label: qsTr("Quantiles"), value: "quantiles"}, {label: qsTr("Custom"), value: "custom"}]
+			info: qsTr("Choose quantile groups or custom values for numeric predictors used in separate lines or plots.")
 		}
 
 		IntegerField
 		{
-			name:			"predictionsSurvivalTimeStepsNumber"
-			label:			qsTr("Number")
-			defaultValue:	10
-			min:			2
-			visible:		predictionsSurvivalTimeStepsType.value === "quantiles"
-			info: predictionsRoot.quantileNumberInfo
+			name: 			"predictionsAssignedCovariateValuesQuantiles"
+			label:			qsTr("Quantiles")
+			defaultValue:	3
+			min:		 	1
+			visible: 		assignedValues.value === "quantiles"
+			info: 			qsTr("Set the number of quantile groups for numeric predictors.")
 		}
 
-		DoubleField
+		CheckBox
 		{
-			name:			"predictionsSurvivalTimeStepsFrom"
-			id:				predictionsSurvivalTimeStepsFrom
-			label:			qsTr("From")
-			defaultValue:	0
-			min:			0
-			max:			predictionsSurvivalTimeStepsTo.value
-			visible:		predictionsSurvivalTimeStepsType.value === "sequence"
-			info: qsTr("Set the starting quantile of the predicted survival when using Sequence steps.")
-		}
+			name: "predictionsAssignedCovariateValuesGroupUniqueLevels"
+			label: qsTr("Group unique levels")
+			childrenOnSameRow: true
+			checked: true
+			visible: assignedValues.value === "quantiles"
+			enabled: predictionsRoot.assignedCovariates.length > 0
+			info: qsTr("Use individual values instead of quantile groups when the number of distinct values is within the specified limit.")
 
-		DoubleField
-		{
-			name:			"predictionsSurvivalTimeStepsSize"
-			id:				predictionsSurvivalTimeStepsSize
-			label:			qsTr("Size")
-			defaultValue:	0.1
-			max:			1
-			visible:		predictionsSurvivalTimeStepsType.value === "sequence"
-			info: qsTr("Define the size of each quantile of the predicted survival when using Sequence steps.")
+			IntegerField
+			{
+				name: 			"predictionsAssignedCovariateValuesGroupUniqueLevelsLimit"
+				label: 			""
+				defaultValue:	5
+				min: 			1
+			}
 		}
+	}
 
-		DoubleField
+	ParametricPredictionData
+	{
+		name: "predictionsAssignedCovariateValuesCustomValues"
+		cornerText: ""
+		rowNames: Array.from({length: tableView.rowCount}, function(value, index) { return qsTr("Level %1").arg(index + 1); })
+		Layout.columnSpan: 2
+		Layout.fillWidth: true
+		predictionPredictors: predictionsRoot.assignedCovariates
+		predictorsSourceReady: predictionsRoot.predictorSourcesReady
+		buttonAddText: qsTr("Add row")
+		buttonDeleteText: qsTr("Remove row")
+		visible: predictionsRoot.variableInput && assignedValues.value === "custom" && predictionsRoot.assignedCovariates.length > 0
+		info: qsTr("Enter values for each numeric predictor used in separate lines or plots. Their combinations define the prediction groups.")
+	}
+
+
+	Group
+	{
+		DropDown
 		{
-			name:			"predictionsSurvivalTimeStepsTo"
-			id:				predictionsSurvivalTimeStepsTo
-			label:			qsTr("To")
-			defaultValue:	1
-			min:			predictionsSurvivalTimeStepsFrom.value + predictionsSurvivalTimeStepsSize.value
-			max:			1
-			visible:		predictionsSurvivalTimeStepsType.value === "sequence"
-			info: qsTr("Set the ending quantile of the predicted survival when using Sequence steps.")
+			name: "predictionsSurvivalTimeYAxisScale"
+			visible: predictionsRoot.predictorView
+			label: qsTr("Survival time y-axis scale")
+			startValue: "none"
+			enabled: predictionsRoot.predictorPlotSelected && predictionsRoot.lifetimeSelected
+			values: [{label: qsTr("Linear"), value: "none"}, {label: qsTr("Log"), value: "log"}]
+			info: qsTr("Choose the y-axis scale for predicted survival time or relative survival time.")
 		}
-
-		FormulaField
+		DropDown
 		{
-			name:			"predictionsSurvivalTimeCustom"
-			label:			qsTr("Steps")
-			visible:		predictionsSurvivalTimeStepsType.value === "custom"
-			defaultValue:	"0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9"
-			info: qsTr("Specify custom steps of the predicted survival.")
+			name: "predictionsProbabilityYAxisScale"
+			visible: predictionsRoot.predictorView
+			label: qsTr("Probability y-axis scale")
+			startValue: "none"
+			enabled: predictionsRoot.predictorPlotSelected && predictionsRoot.probabilitySelected
+			values: [{label: qsTr("Linear"), value: "none"}, {label: qsTr("Log"), value: "log"}, {label: qsTr("Log(-log(1-p))"), value: "logmlogmp"}]
+			info: qsTr("Choose the y-axis scale for survival or failure probabilities.")
+		}
+		DropDown
+		{
+			name: "predictionsXAxisTransformation"
+			label: qsTr("X-axis transformation")
+			visible: predictionsRoot.variableInput && predictionsRoot.predictorView && predictionsRoot.timeAxis
+			enabled: modelPlot.checked && (predictionsRoot.timeMeasuresSelected || (survivalTime.checked && lifetimePercentiles.checked))
+			startValue: "none"
+			values: [{label: qsTr("Linear"), value: "none"}, {label: qsTr("Log"), value: "log"}]
+			info: qsTr("Choose the x-axis scale for lifetime percentiles or time.")
 		}
 
 		Group
 		{
-			title:		qsTr("Merge Plots Across")
-			columns:	2
+			title: qsTr("Covariate x-axis settings")
+			visible: predictionsRoot.variableInput && predictionsRoot.covariateNames.some(function(v) { return predictionsRoot.predictorView ? predictionRoles.axisVariables.indexOf(v) >= 0 : contourRoles.xVariable === v; })
 
-			CheckBox
+			ComponentsList
 			{
-				label:		qsTr("Distributions")
-				id:			survivalTimeMergePlotsAcrossDistributions
-				name:		"survivalTimeMergePlotsAcrossDistributions"
-				checked:	false
-				enabled:	predictionsRoot.mergeDistributionsAvailable
-				info: qsTr("Merge the plots for survival probability across distributions into a single plot. Only available when no model selection is being performed.")
+				name: "predictionsCovariateXAxisSettings"
+				preferredWidth: implicitWidth
+				optionKey: "variable"
+				source: [{name: "covariates", discard: [{values: predictionsRoot.covariateNames.filter(function(v) { return predictionRoles.axisVariables.indexOf(v) < 0; })}]}]
+				visible: predictionsRoot.predictorView && !predictionsRoot.timeAxis
+				enabled: modelPlot.checked
+				addItemManually: false
+				addBorder: false
+				rowComponent: ParametricPredictionAxis { title: rowLabel }
+				info: qsTr("Set the axis transformation and plotting range for each numeric predictor on the x-axis.")
 			}
-
-			CheckBox
+			ParametricPredictionAxis
 			{
-				label:		qsTr("Factors")
-				id:			survivalTimeMergePlotsAcrossFactors
-				name:		"survivalTimeMergePlotsAcrossFactors"
-				checked:	true
-				enabled:	predictionsRoot.categoricalLevelsPossible
-				info: qsTr("When checked, combine observed combinations of fitted factors in one plot. When unchecked, show a separate plot for each combination. In both cases, predictions use the unweighted mean model design (including interaction terms) within each combination.")
+				optionPrefix: "predictionsCovariateXAxisSettingsXAxis"
+				axisLabel: qsTr("X-axis")
+				visible: !predictionsRoot.predictorView
+				enabled: modelPlot.checked && contourRoles.xVariable !== ""
 			}
-
-			CheckBox
+			ParametricPredictionAxis
 			{
-				name:		"survivalTimeMergePlotsAcrossSubgroups"
-				id:			survivalTimeMergePlotsAcrossSubgroups
-				label:		qsTr("Subgroups")
-				checked:	false
-				enabled:	predictionsRoot.subgroupsAvailable
-				info: qsTr("Overlay the separately fitted subgroup curves in one plot, retaining separate observed data for each subgroup.")
+				optionPrefix: "predictionsCovariateXAxisSettingsYAxis"
+				axisLabel: qsTr("Y-axis")
+				visible: !predictionsRoot.predictorView
+				enabled: modelPlot.checked && contourRoles.yVariable !== ""
 			}
+		}
 
+		Group
+		{
+			title: qsTr("Contours")
+
+			visible: predictionsRoot.variableInput && !predictionsRoot.predictorView
+			enabled: modelPlot.checked
 			Group
 			{
-				id:		survivalTimeExtras
-				visible:	hasChildren
+				columns: 2
+				alignFields: false
+				DropDown
+				{
+					id: contourLevels
+					name: "predictionsContoursLevels"
+					label: qsTr("Levels")
+					startValue: "number"
+					values: [{label: qsTr("Number"), value: "number"}, {label: qsTr("Custom"), value: "custom"}]
+					info: qsTr("Choose automatic contour levels or enter custom levels for each selected measure.")
+
+				}
+
+				IntegerField
+				{
+					name: "predictionsContoursLevelsNumber"
+					label: ""
+					defaultValue: 5
+					min: 1
+					visible: contourLevels.value === "number"
+					info: qsTr("Set the approximate number of rounded contour levels.")
+				}
+			}
+
+			CheckBox
+			{
+				name: "predictionsContoursCommonAcrossFigures"
+				label: qsTr("Common across figures")
+				checked: false
+				visible: contourLevels.value === "number"
+				info: qsTr("Use the same contour levels across figures for each selected measure.")
+			}
+			TextField
+			{
+				name: "predictionsContoursLevelsSurvivalTime"
+				label: qsTr("Survival time")
+				visible: contourLevels.value === "custom" && survivalTime.checked
+				defaultValue: ""
+				inputType: "string"
+				validator: null
+				fieldWidth: 180 * jaspTheme.uiScale
+				info: qsTr("Enter contour levels in the outcome's original units, separated by commas.")
+			}
+			TextField
+			{
+				name: "predictionsContoursLevelsRelativeSurvivalTime"
+				label: qsTr("Relative survival time")
+				visible: contourLevels.value === "custom" && (relativeSurvivalTime.checked && relativeSurvivalTime.enabled)
+				defaultValue: ""
+				inputType: "string"
+				validator: null
+				fieldWidth: 180 * jaspTheme.uiScale
+				info: qsTr("Enter contour levels in the outcome's original units, separated by commas.")
+			}
+			TextField
+			{
+				name: "predictionsContoursLevelsSurvivalProbability"
+				label: qsTr("Survival probability")
+				visible: contourLevels.value === "custom" && survivalProbability.checked
+				defaultValue: ""
+				inputType: "string"
+				validator: null
+				fieldWidth: 180 * jaspTheme.uiScale
+				info: qsTr("Enter contour levels in the outcome's original units, separated by commas.")
+			}
+			TextField
+			{
+				name: "predictionsContoursLevelsFailureProbability"
+				label: qsTr("Failure probability")
+				visible: contourLevels.value === "custom" && failureProbability.checked
+				defaultValue: ""
+				inputType: "string"
+				validator: null
+				fieldWidth: 180 * jaspTheme.uiScale
+				info: qsTr("Enter contour levels in the outcome's original units, separated by commas.")
+			}
+			TextField
+			{
+				name: "predictionsContoursLevelsHazard"
+				label: qsTr("Hazard")
+				visible: contourLevels.value === "custom" && hazard.checked
+				defaultValue: ""
+				inputType: "string"
+				validator: null
+				fieldWidth: 180 * jaspTheme.uiScale
+				info: qsTr("Enter contour levels in the outcome's original units, separated by commas.")
+			}
+			TextField
+			{
+				name: "predictionsContoursLevelsCumulativeHazard"
+				label: qsTr("Cumulative hazard")
+				visible: contourLevels.value === "custom" && cumulativeHazard.checked
+				defaultValue: ""
+				inputType: "string"
+				validator: null
+				fieldWidth: 180 * jaspTheme.uiScale
+				info: qsTr("Enter contour levels in the outcome's original units, separated by commas.")
+			}
+			TextField
+			{
+				name: "predictionsContoursLevelsRestrictedMeanSurvivalTime"
+				label: qsTr("Restricted mean survival time")
+				visible: contourLevels.value === "custom" && restrictedMeanSurvivalTime.checked
+				defaultValue: ""
+				inputType: "string"
+				validator: null
+				fieldWidth: 180 * jaspTheme.uiScale
+				info: qsTr("Enter contour levels in the outcome's original units, separated by commas.")
 			}
 		}
+		Group
+		{
+			title: qsTr("Heatmap scale")
+			visible: predictionsRoot.variableInput && !predictionsRoot.predictorView
+			enabled: modelPlot.checked && contourRoles.lineVariables.length === 0
+			info: qsTr("Set the colour scale and limits of the heatmap for each selected measure.")
+			ParametricContourHeatmap
+			{
+				title: qsTr("Survival time")
+				optionPrefix: "predictionsHeatmapScaleSurvivalTime"
+				visible: survivalTime.checked
+			}
+			ParametricContourHeatmap
+			{
+				title: qsTr("Relative survival time")
+				optionPrefix: "predictionsHeatmapScaleRelativeSurvivalTime"
+				visible: relativeSurvivalTime.checked && relativeSurvivalTime.enabled
+			}
+			ParametricContourHeatmap
+			{
+				title: qsTr("Survival probability")
+				optionPrefix: "predictionsHeatmapScaleSurvivalProbability"
+				visible: survivalProbability.checked
+			}
+			ParametricContourHeatmap
+			{
+				title: qsTr("Failure probability")
+				optionPrefix: "predictionsHeatmapScaleFailureProbability"
+				visible: failureProbability.checked
+			}
+			ParametricContourHeatmap
+			{
+				title: qsTr("Hazard")
+				optionPrefix: "predictionsHeatmapScaleHazard"
+				visible: hazard.checked
+			}
+			ParametricContourHeatmap
+			{
+				title: qsTr("Cumulative hazard")
+				optionPrefix: "predictionsHeatmapScaleCumulativeHazard"
+				visible: cumulativeHazard.checked
+			}
+			ParametricContourHeatmap
+			{
+				title: qsTr("Restricted mean survival time")
+				optionPrefix: "predictionsHeatmapScaleRestrictedMeanSurvivalTime"
+				visible: restrictedMeanSurvivalTime.checked
+			}
+		}
+		IntegerField
+		{
+			name: "predictionsPredictorValuesInTable"
+			label: qsTr("Predictor values in table")
+			defaultValue: 10
+			min: 2
+			visible: predictionsRoot.variableInput && predictionsRoot.axisVariables.length > 0 && !predictionsRoot.timeAxis && !predictionsRoot.categoricalAxis && modelTable.checked
+			info: qsTr("Set the number of numeric predictor values used in prediction tables.")
+		}
+	}
 
+	Group
+	{
+		title: qsTr("Display")
 
 		Group
 		{
-			title:		qsTr("Options")
-
 			CheckBox
 			{
 				label:				qsTr("Confidence intervals")
-				name:				"predictionsConfidenceInterval"
+				name:				"predictionsDisplayConfidenceIntervals"
+				enabled:			predictionsRoot.predictionOutputSelected
 				checked:			true
 				childrenOnSameRow:	true
 				info: qsTr("Include confidence intervals for the figures and tables.")
-
 				CIField
 				{
-					name: "predictionsConfidenceIntervalLevel"
+					name: "predictionsDisplayConfidenceIntervalsLevel"
 					info: qsTr("Set the confidence level for the confidence intervals.")
 				}
 			}
-
-			DropDown
+			CheckBox
 			{
-				name:		"plotLegend"
-				label:		qsTr("Legend")
-				startValue:	"right"
-				enabled:	predictionsRoot.legendPaletteAvailable
-				info: qsTr("Choose the position of the legend on prediction plots with multiple displayed curves.")
-				values:
-				[
-					{ label: qsTr("Bottom"),	value: "bottom"},
-					{ label: qsTr("Right"),		value: "right"},
-					{ label: qsTr("Left"),		value: "left"},
-					{ label: qsTr("Top"),		value: "top"},
-					{ label: qsTr("None"),		value: "none"}
-				]
+				name: "predictionsDisplayPredictionInterval"
+				label: qsTr("Prediction interval")
+				checked: false
+				childrenOnSameRow: true
+				enabled: predictionsRoot.predictionIntervalAvailable
+				info: qsTr("Show a range for individual survival times at the selected predictor values.")
+				CIField
+				{
+					name: "predictionsDisplayPredictionIntervalLevel"
+					info: qsTr("Set the coverage of the prediction interval.")
+				}
 			}
+		}
 
-			ColorPalette
-			{
-				enabled:	predictionsRoot.legendPaletteAvailable
-				info: qsTr("Customize the color palette used in prediction plots with multiple displayed curves.")
-			}
-
-			DropDown
-			{
-				name:		"plotTheme"
-				label:		qsTr("Theme")
-				startValue:	"jasp"
-				enabled:	predictionsRoot.plotSelected
-				info: qsTr("Select the theme for prediction plots. The detailed theme works only for 'Survival probabilities' plots.")
-				values:
-				[
-					{ label: "JASP",					value: "jasp"},
-					{ label: qsTr("White background"),	value: "whiteBackground"},
-					{ label: qsTr("Light"),				value: "light"},
-					{ label: qsTr("Minimal")	,		value: "minimal"},
-					{ label: "APA",						value: "apa"},
-					{ label: "pubr",					value: "pubr"},
-					{ label: qsTr("Detailed"),			value: "detailed"}
-				]
-			}
+		CheckBox
+		{
+			name: "predictionsDisplayCombinePredictorPlots"
+			visible: predictionsRoot.variableInput
+			label: qsTr("Combine predictor plots")
+			checked: false
+			enabled: predictionsRoot.predictorPlotSelected && !predictionsRoot.timeAxis && predictionsRoot.axisVariables.length > 1
+			info: qsTr("Combine the plots for the selected predictors in one figure.")
+		}
+		DropDown
+		{
+			name:		"plotLegend"
+			label:		qsTr("Legend")
+			startValue:	"right"
+			enabled:	predictionsRoot.legendPaletteAvailable
+			info: qsTr("Choose the legend position for prediction plots.")
+			values:
+			[
+			{ label: qsTr("Bottom"),	value: "bottom" },
+			{ label: qsTr("Right"),		value: "right"	},
+			{ label: qsTr("Left"),		value: "left"	},
+			{ label: qsTr("Top"),		value: "top"	},
+			{ label: qsTr("None"),		value: "none"	}
+			]
+		}
+		DropDown
+		{
+			name:		"plotTheme"
+			label:		qsTr("Theme")
+			startValue:	"jasp"
+			enabled:	predictionsRoot.plotSelected
+			info: qsTr("Choose the theme for prediction plots.")
+			values:
+			[
+			{ label: "JASP",					value: "jasp"				},
+			{ label: qsTr("White background"),	value: "whiteBackground"	},
+			{ label: qsTr("Light"),				value: "light"				},
+			{ label: qsTr("Minimal")	,		value: "minimal"			},
+			{ label: "APA",						value: "apa"				},
+			{ label: "pubr",					value: "pubr"				},
+			{ label: qsTr("Detailed"),			value: "detailed"			}
+			]
+		}
+		CheckBox
+		{
+			name: "predictionsDisplayConnectXAxisLevels"
+			visible: predictionsRoot.variableInput
+			label: qsTr("Connect x-axis levels")
+			checked: true
+			enabled: predictionsRoot.predictorPlotSelected && predictionsRoot.axisVariables.some(function(variable) { return predictionsRoot.factorNames.indexOf(variable) >= 0; })
+			info: qsTr("Connect predicted values across factor levels on the x-axis.")
+		}
+		CheckBox
+		{
+			name: "predictionsDisplayObservedData"
+			visible: predictionsRoot.variableInput
+			label: qsTr("Observed data")
+			checked: false
+			enabled: modelPlot.checked && (predictionsRoot.predictorView ? predictionsRoot.lifetimePredictionSelected && !predictionsRoot.timeAxis : contourRoles.axes.length === 2)
+			info: qsTr("Add observed event times to predictor plots, or observed predictor values to contour plots.")
+		}
+		CheckBox
+		{
+			name:		"predictionsDisplayKaplanMeier"
+			visible: predictionsRoot.variableInput
+			label:		qsTr("Kaplan-Meier")
+			enabled:	modelPlot.checked && predictionsRoot.rightCensoring && predictionsRoot.timeAxis && predictionsRoot.probabilitySelected && predictionsRoot.kaplanMeierProfilesAvailable
+			info: qsTr("Overlay Kaplan-Meier curves for comparison with the model predictions, where available.")
+		}
+		CheckBox
+		{
+			name:		"predictionsDisplayCensoringEvents"
+			visible: predictionsRoot.variableInput
+			label:		qsTr("Censoring events")
+			enabled:	modelPlot.checked && predictionsRoot.rightCensoring && predictionPlotType.value === "standard" && ((predictionsRoot.timeAxis && predictionsRoot.timeMeasuresSelected) || predictionsRoot.lifetimePredictionSelected)
+			info: qsTr("Show censored observations as marks along the time axis.")
+		}
+		ColorPalette
+		{
+			enabled: predictionsRoot.legendPaletteAvailable
+			info: qsTr("Colors for prediction series.")
 		}
 	}
 
 	Group
 	{
+		columns: 1
 		Group
 		{
-			title:		qsTr("Survival Probability")
-
+			title: qsTr("Merge series across")
+			visible: predictionsRoot.variableInput
+			columns: 2
 			CheckBox
 			{
-				label:		qsTr("Table")
-				name:		"survivalProbabilityTable"
-				info: qsTr("Include a table with the predicted survival probabilities.")
+				name: "predictionsMergeSeriesAcrossDistributions"
+				label: qsTr("Distributions")
+				checked: false
+				enabled: predictionsRoot.mergeDistributionsAvailable
+				info: qsTr("Overlay selected distributions.")
 			}
-
 			CheckBox
 			{
-				id:			survivalProbabilityPlot
-				label:		qsTr("Plot")
-				name:		"survivalProbabilityPlot"
-				info: qsTr("Include a plot with the predicted survival probabilities.")
-
-				CheckBox
-				{
-					name:		"survivalProbabilityPlotKaplanMeier"
-					label:		qsTr("Kaplan-Meier")
-					enabled:	predictionsRoot.rightCensoring
-					info: qsTr("Show a Kaplan-Meier curve in the plot. Only available when Censoring Type is set to Right.")
-				}
-
-				CheckBox
-				{
-					name:		"survivalProbabilityPlotCensoringEvents"
-					label:		qsTr("Censoring events")
-					enabled:	predictionsRoot.rightCensoring
-					info: qsTr("Show censoring events as rug marks in the plot. Only available when Censoring Type is set to Right.")
-				}
-
-				DropDown
-				{
-					name:		"survivalProbabilityPlotTransformXAxis"
-					label:		qsTr("X-axis transformation")
-					startValue:	"none"
-					info: qsTr("Select the transformation for the x-axis of the plot")
-					values:
-					[
-						{ label: qsTr("None"),			value: "none"},
-						{ label: qsTr("Log"),			value: "log"}
-					]
-				}
-
-				DropDown
-				{
-					name:		"survivalProbabilityPlotTransformYAxis"
-					label:		qsTr("Y-axis transformation")
-					startValue:	"none"
-					info: qsTr("Select the transformation for the y-axis of the plot")
-					values:
-					[
-						{ label: qsTr("None"),				value: "none"},
-						{ label: qsTr("Log"),				value: "log"},
-						{ label: qsTr("Log(-log(1-p))"),	value: "logmlogmp"}
-					]
-				}
+				name: "predictionsMergeSeriesAcrossSubgroups"
+				label: qsTr("Subgroups")
+				checked: false
+				enabled: predictionsRoot.subgroupsAvailable
+				info: qsTr("Overlay predictions for the separately fitted subgroups.")
 			}
-
 			CheckBox
 			{
-				label:		qsTr("As failure probability")
-				name:		"survivalProbabilityAsFailureProbability"
-				info: qsTr("Transform the output from survival probability to failure probability (i.e., 1 - Survival Probability).")
+				name: "predictionsMergeSeriesAcrossComponents"
+				label: qsTr("Components")
+				checked: false
+				visible: predictionsRoot.mixture
+				enabled: predictionsRoot.mergeComponentsAvailable
+				info: qsTr("Overlay selected numbers of mixture components.")
 			}
 		}
-
-		Group
-		{
-			title: qsTr("Hazard")
-
-			CheckBox
-			{
-				label: qsTr("Table")
-				name: "hazardTable"
-				info: qsTr("Include a table with the predicted hazard estimates.")
-			}
-
-			CheckBox
-			{
-				id:		hazardPlot
-				label: qsTr("Plot")
-				name: "hazardPlot"
-				info: qsTr("Include a plot with the predicted hazard estimates.")
-			}
-		}
-
-		Group
-		{
-			title: qsTr("Cumulative Hazard")
-
-			CheckBox
-			{
-				label: qsTr("Table")
-				name: "cumulativeHazardTable"
-				info: qsTr("Include a table with the predicted cumulative hazard estimates.")
-			}
-
-			CheckBox
-			{
-				id:		cumulativeHazardPlot
-				label: qsTr("Plot")
-				name: "cumulativeHazardPlot"
-				info: qsTr("Include a plot with the predicted cumulative hazard estimates.")
-			}
-		}
-
-		Group
-		{
-			title: qsTr("Restricted Mean Survival Time")
-
-			CheckBox
-			{
-				label: qsTr("Table")
-				name: "restrictedMeanSurvivalTimeTable"
-				info: qsTr("Include a table with the restricted mean survival time estimates.")
-			}
-
-			CheckBox
-			{
-				id:		restrictedMeanSurvivalTimePlot
-				label: qsTr("Plot")
-				name: "restrictedMeanSurvivalTimePlot"
-				info: qsTr("Include a plot with the restricted mean survival time estimates.")
-			}
-		}
-
-		DropDown
-		{
-			name:		"predictionsLifeTimeStepsType"
-			id:			predictionsLifeTimeStepsType
-			label:		qsTr("Steps type")
-			info: predictionsRoot.lifeTimeStepsInfo
-			values:
-			[
-				{ label: qsTr("Equal spacing"),	value: "quantiles"},
-				{ label: qsTr("Sequence"),		value: "sequence"},
-				{ label: qsTr("Custom"),		value: "custom"}
-			]
-		}
-
-		IntegerField
-		{
-			name:			"predictionsLifeTimeStepsNumber"
-			label:			qsTr("Number")
-			defaultValue:	10
-			min:			2
-			visible:		predictionsLifeTimeStepsType.value === "quantiles"
-			info: qsTr("Specify the number of time points when using Equal spacing as the steps type.")
-		}
-
-		FormulaField
-		{
-			name:			"predictionsLifeTimeStepsFrom"
-			id:				predictionsLifeTimeStepsFrom
-			label:			qsTr("From")
-			defaultValue:	0
-			min:			0
-			max:			predictionsLifeTimeStepsTo.value
-			visible:		predictionsLifeTimeStepsType.value === "sequence"
-			fieldWidth:		40 * jaspTheme.uiScale
-			info: qsTr("Set the starting time when using Sequence steps.")
-		}
-
-		FormulaField
-		{
-			name:			"predictionsLifeTimeStepsSize"
-			id:				predictionsLifeTimeStepsSize
-			label:			qsTr("Size")
-			defaultValue:	""
-			visible:		predictionsLifeTimeStepsType.value === "sequence"
-			fieldWidth:		40 * jaspTheme.uiScale
-			info: predictionsRoot.lifeTimeSizeInfo
-		}
-
-		FormulaField
-		{
-			name:			"predictionsLifeTimeStepsTo"
-			id:				predictionsLifeTimeStepsTo
-			label:			qsTr("To")
-			min:			predictionsLifeTimeStepsFrom.value
-			defaultValue:	""
-			visible:		predictionsLifeTimeStepsType.value === "sequence"
-			fieldWidth:		40 * jaspTheme.uiScale
-			info: qsTr("Set the ending time when using Sequence steps. Leaving this blank uses the maximum observed time.")
-		}
-
-		CheckBox
-		{
-			name:		"predictionsLifeTimeRoundSteps"
-			label:		qsTr("Round steps")
-			checked:	true
-			visible:	predictionsLifeTimeStepsType.value === "quantiles" || predictionsLifeTimeStepsType.value === "sequence"
-			info: qsTr("Round table time points to the nearest integer when using Equal spacing or Sequence steps. Time plots use unrounded points placed adaptively within the selected range.")
-		}
-
-		FormulaField
-		{
-			name:			"predictionsLifeTimeCustom"
-			label:			qsTr("Steps")
-			visible:		predictionsLifeTimeStepsType.value === "custom"
-			defaultValue:	"0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9"
-			info: predictionsRoot.lifeTimeCustomInfo
-		}
-
 		CheckBox
 		{
 			label:		qsTr("Merge tables across measures")
-			name:		"lifeTimeMergeTablesAcrossMeasures"
+			name:		"predictionsMergeTablesAcrossMeasures"
 			checked:	false
-			info: qsTr("Merge the tables for survival time, survival probabilities, hazard, cumulative hazard, and restricted mean survival time into a single table.")
+			enabled: predictionsRoot.predictorView
+			info: qsTr("Combine the selected time-based prediction measures in one table.")
 		}
 
-		Group
+		CheckBox
 		{
-			title:		qsTr("Merge Plots Across")
-			columns:	2
-
-			CheckBox
-			{
-				label:		qsTr("Distributions")
-				id:			lifeTimeMergePlotsAcrossDistributions
-				name:		"lifeTimeMergePlotsAcrossDistributions"
-				checked:	false
-				enabled:	predictionsRoot.mergeDistributionsAvailable
-				info: qsTr("Merge the plots for survival time, survival probabilities, hazard, cumulative hazard, and restricted mean survival across distributions into a single plot. Only available when no model selection is being performed.")
-			}
-
-			CheckBox
-			{
-				label:		qsTr("Factors")
-				id:			lifeTimeMergePlotsAcrossFactors
-				name:		"lifeTimeMergePlotsAcrossFactors"
-				checked:	true
-				enabled:	predictionsRoot.categoricalLevelsPossible
-				info: qsTr("When checked, combine observed combinations of fitted factors in one plot. When unchecked, show a separate plot for each combination. In both cases, predictions use the unweighted mean model design (including interaction terms) within each combination.")
-			}
-
-			CheckBox
-			{
-				name:		"lifeTimeMergePlotsAcrossSubgroups"
-				id:			lifeTimeMergePlotsAcrossSubgroups
-				label:		qsTr("Subgroups")
-				checked:	false
-				enabled:	predictionsRoot.subgroupsAvailable
-				info: qsTr("Overlay the separately fitted subgroup curves in one plot, retaining separate observed data for each subgroup.")
-			}
-
-			Group
-			{
-				id:		lifeTimeExtras
-				visible:	hasChildren
-			}
+			name:		"predictionsRoundTimeTableValues"
+			label:		qsTr("Round time table values")
+			checked:	true
+			visible:	timeGrid.value === "quantiles" || timeGrid.value === "sequence"
+			enabled: modelTable.checked
+			info: qsTr("Round prediction times in tables to the nearest integer.")
 		}
-
 	}
-
 }

@@ -13,6 +13,21 @@
 
 
 ---
+# jaspSurvival 0.98.0
+## Added
+* Reworked Predictions controls for flexible plots and predictions
+* Prediction tables offer Long and Wide layouts, defaulting to Wide.
+* Advanced model terms
+* Ancillary parameter regressions
+* Restrict model parameters
+* Show fitted model equations
+* Density diagnostic plots
+* Explicit stratification for probability plots
+* One-sided confidence intervals
+
+## Fixed
+* Counting-process response residuals use the exit time consistently in plots and exports.
+
 # jaspSurvival 0.97.0
 ## Added
 * Added the Parametric Mixture Survival Analysis

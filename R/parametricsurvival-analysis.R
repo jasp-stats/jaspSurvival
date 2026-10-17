@@ -31,22 +31,49 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
   return()
 }
 
+# Shared entry point: validate, update retained fits, then build requested outputs.
 .sapRun <- function(jaspResults, dataset, options) {
+
+  # Prepare the option contract before validation and dependency comparisons.
+  options <- .sapPrepareModelTerms(options)
+  .sapValidateModelPredictionEvaluations(options)
+  # Preserve rows omitted from fitting for missing-outcome predictions and exports.
+  predictionDataset <- dataset
 
   if (.saSurvivalReady(options)) {
     dataset <- .saCheckDataset(dataset, options, type = "parametric")
     if (options[["analysisType"]] == "mixture") {
       .sapmCheckDataset(dataset, options)
     }
+    .sapValidateParameterRestrictions(dataset, options)
+    .sapValidatePredictionReferences(dataset, options)
   }
 
-  # Censoring summary table
-  if (options[["censoringSummary"]])
-    .saCensoringSummaryTable(jaspResults, dataset, options)
-
   # Fit the models
-  .sapFit(jaspResults, dataset, options)
+
+  # Changes to retained inference require rebuilding outputs that depend on its bounds.
+  informationChanged <- .sapFit(jaspResults, dataset, options)
+  if (informationChanged) {
+    for (key in c("fitErrors", "censoringSummaryTable", "summaryTable", "sequentialModelComparisonTable", "coefficientsTable", "coefficientsCovarianceMatrixTable", "modelEquations",
+      "survivalTimeTable", "survivalTimePlot", "survivalProbabilityTable", "survivalProbabilityPlot",
+      "failureProbabilityTable", "failureProbabilityPlot",
+      "relativeSurvivalTimeTable", "relativeSurvivalTimePlot",
+      "meanSurvivalTimeTable", "meanSurvivalTimePlot", "medianSurvivalTimeTable", "medianSurvivalTimePlot",
+      "relativeMeanSurvivalTimeTable", "relativeMeanSurvivalTimePlot", "relativeMedianSurvivalTimeTable", "relativeMedianSurvivalTimePlot",
+      "hazardTable", "hazardPlot", "cumHazardTable", "cumulativeHazardPlot", "rmstTable",
+      "restrictedMeanSurvivalTimePlot", "lifeTimeTable", "probabilityPlot", "densityPlot", "mixtureComponentPlot", "customPredictionsResult", "kaplanMeierAvailability",
+      "residualsVsTimePlot", "residualsVsPredictorsPlot", "residualVsPredictedPlot", "residualHistogram",
+      "mixtureComponentsTable", "mixtureClassificationTable", "mixtureDiagnosticsTable"))
+      jaspResults[[key]] <- NULL
+  }
+  if (options[["censoringSummary"]])
+    .saCensoringSummaryTable(jaspResults, dataset, options, weighted = TRUE)
+
+  # Share draws across all outputs, then release transient storage on exit.
+  options[["simulationContext"]] <- .sapSimulationContext(jaspResults, options)
+  on.exit(.sapReleaseSimulationContext(options[["simulationContext"]]), add = TRUE)
   .sapFitErrorsTable(jaspResults, options)
+  .sapKaplanMeierAvailability(jaspResults, options)
 
   # Statistics
   if (options[["modelSummary"]])
@@ -57,67 +84,74 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
     .sapCoefficientsTable(jaspResults, options)
   if (options[["coefficientsCovarianceMatrix"]])
     .sapCoefficientsCovarianceMatrixTable(jaspResults, options)
+  if (options[["fittedModelEquation"]])
+    .sapModelEquations(jaspResults, options)
 
 
-  # Predictions use the same output contract for every measure.
-  measures <- c("survivalTime", "survivalProbability", "hazard", "cumulativeHazard", "restrictedMeanSurvivalTime")
-  for (measure in measures) {
-    if (options[[paste0(measure, "Table")]] && (measure == "survivalTime" || !options[["lifeTimeMergeTablesAcrossMeasures"]]))
-      .sapPredictionOutput(jaspResults, options, measure)
-  }
-  if (options[["lifeTimeMergeTablesAcrossMeasures"]])
-    .sapLifeTimeTable(jaspResults, options)
-  for (measure in measures) {
-    if (options[[paste0(measure, "Plot")]])
-      .sapPredictionOutput(jaspResults, options, measure, plot = TRUE)
-  }
+  # Predictions
+  .sapModelPredictions(jaspResults, options)
+  customExports <- .sapCustomPredictions(jaspResults, predictionDataset, dataset, options)
 
   # Diagnostics
   .sapResidualPlots(jaspResults, options)
+  if (options[["densityPlot"]])
+    .sapDensityPlot(jaspResults, options)
   if (options[["probabilityPlot"]])
     .sapProbabilityPlot(jaspResults, options)
 
   # Mixture
   if (options[["analysisType"]] == "mixture") {
-    if (options[["mixtureComponentsTable"]])
+    if (options[["mixtureMeanAndMedian"]])
       .sapmComponentsTable(jaspResults, options)
-    if (options[["mixtureClassificationTable"]])
+    if (options[["mixtureClassification"]])
       .sapmClassificationTable(jaspResults, options)
-    if (options[["mixtureDiagnosticsTable"]])
+    if (options[["mixtureEstimationDiagnostics"]])
       .sapmDiagnosticsTable(jaspResults, options)
     if (options[["mixtureComponentPlot"]])
       .sapmComponentPlot(jaspResults, options)
   }
 
-  .saExportColumns(jaspResults, options)
+  .saExportColumns(jaspResults, options, additional = customExports, informationChanged = informationChanged)
 
   return()
 }
 
 .sapDistributions <- c(
-  exponential = "exp", gamma = "gamma", generalizedF = "genf", generalizedGamma = "gengamma",
-  gompertz = "gompertz", logLogistic = "llogis", logNormal = "lnorm", weibull = "weibull",
+  exponential              = "exp", gamma = "gamma", generalizedF = "genf", generalizedGamma = "gengamma",
+  gompertz                 = "gompertz", logLogistic = "llogis", logNormal = "lnorm", weibull = "weibull",
   generalizedGammaOriginal = "gengamma.orig", generalizedFOriginal = "genf.orig"
 )
-.sapDistributionOptions <- paste0("selectedParametricDistribution",
+.sapDistributionOptions <- paste0("selectedParametricDistributions",
   toupper(substring(names(.sapDistributions), 1, 1)), substring(names(.sapDistributions), 2))
 
 .sapDependencies <- c(
   "intervalStart", "intervalEnd", "timeToEvent", "eventStatus", "eventIndicator", "censoringType",
-  "factors", "covariates", "weights", "subgroup", "distribution", "includeFullDatasetInSubgroupAnalysis",
-  .sapDistributionOptions, "modelTerms",
-  # Coefficient intervals are computed during fitting, not by scaling the standard error.
-  "coefficientsConfidenceIntervalLevel"
+  "factors", "covariates", "weights", "subgroup", "distribution", "outputFormattingIncludeFullDatasetInSubgroupAnalysis",
+  "restrictParameters", "restrictParametersValues",
+  .sapDistributionOptions, "modelTerms", "modelAdvancedSpecification", "modelAdvancedSpecificationTerms",
+  "modelAncillaryParameterRegression", paste0("modelAncillaryParameter", 1:3, "ModelTerms"),
+  paste0("modelAncillaryParameter", 1:3, "AdvancedSpecification"), paste0("modelAncillaryParameter", 1:3, "AdvancedSpecificationTerms")
 )
 .sapFitExcludedDependencies <- c(
-  "modelTerms", "includeFullDatasetInSubgroupAnalysis", "mixtureComponents", "mixtureMaximumComponents",
-  "compareModelsAcrossComponents"
+  "modelTerms", "modelAdvancedSpecificationTerms", "outputFormattingIncludeFullDatasetInSubgroupAnalysis", "mixtureComponents", "mixtureMaximumComponents",
+  "outputFormattingCompareModelsAcrossComponents", paste0("modelAncillaryParameter", 1:3, "ModelTerms"), paste0("modelAncillaryParameter", 1:3, "AdvancedSpecificationTerms")
 )
-.sapOutputDependencies         <- c("compareModelsAcrossDistributions", "alwaysDisplayModelInformation")
+.sapOutputDependencies         <- c("outputFormattingCompareModelsAcrossDistributions", "outputFormattingAlwaysDisplayModelInformation")
 .sapSelectedOutputDependencies <- c(.sapOutputDependencies, "interpretModel")
 .sapSimulationDependencies     <- c("confidenceIntervalSimulationDraws", "setSeed", "seed")
-.sapPredictionCiDependencies   <- c("predictionsConfidenceInterval", "predictionsConfidenceIntervalLevel", .sapSimulationDependencies)
-.sapProbabilityCiDependencies  <- c("probabilityPlotConfidenceInterval", "probabilityPlotConfidenceIntervalLevel", .sapSimulationDependencies)
+.sapPredictionCiDependencies   <- c("predictionsDisplayConfidenceIntervals", "predictionsDisplayConfidenceIntervalsLevel", "confidenceIntervalBounds", .sapSimulationDependencies)
+.sapPredictionTypes <- c(
+  survivalTime       = "quantile", relativeSurvivalTime = "quantile", survivalProbability = "survival",
+  failureProbability = "survival", hazard = "hazard", cumulativeHazard = "cumhaz", restrictedMeanSurvivalTime = "rmst"
+)
+.sapModelPredictionOptions <- paste0("predictionsOutcome",
+  toupper(substring(names(.sapPredictionTypes), 1L, 1L)), substring(names(.sapPredictionTypes), 2L))
+.sapModelPredictionTimeOptions <- setdiff(.sapModelPredictionOptions, paste0("predictionsOutcome", c("SurvivalTime", "RelativeSurvivalTime")))
+.sapLifetimeSummaryOptions <- paste0("predictionsLifetime", c("Percentiles", "Median", "Mean"))
+.sapPredictionQuantileDependencies <- paste0("predictionsLifetimePercentiles", c("Grid", "Intervals", "From", "Step", "To", "Values"))
+.sapPredictionTimeDependencies <- c(paste0("predictionsTime", c("Grid", "Intervals", "From", "Step", "To", "Values", "Percentages")),
+  "predictionsRoundTimeTableValues")
+.sapProbabilityCiDependencies  <- c("probabilityPlotConfidenceIntervals", "probabilityPlotConfidenceIntervalsLevel", "confidenceIntervalBounds", .sapSimulationDependencies)
 .sapGetDependencies <- function(options) {
 
   if (options[["analysisType"]] == "mixture")

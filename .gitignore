@@ -67,3 +67,6 @@ AGENTS.md
 # StatsVault local workspace and generated agent bridges
 .StatsVault/
 CLAUDE.md
+codex.toml
+/.claude
+/.agents
