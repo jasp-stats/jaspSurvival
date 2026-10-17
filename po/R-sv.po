@@ -1,1814 +1,998 @@
 msgid ""
 msgstr ""
+"POT-Creation-Date: 2026-10-17 05:53\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Qt-Contexts: true\n"
-"Language: sv\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-msgctxt "Description|"
-msgid "Survival"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Perform analyses of censored time to event data."
-msgstr ""
-
-msgctxt "Description|"
-msgid "Classical"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Non-parametric"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Non-parametric Survival Analysis"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Semi-parametric"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Semi-parametric Survival Analysis"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Parametric"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Parametric Survival Analysis"
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Time to Event"
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Event Status"
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Event Indicator"
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Strata"
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Weights"
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Censoring summary"
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Tests"
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Peto and Peto"
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Flemming-Harrington"
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Rho"
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Life table"
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
 msgid ""
-"Generate a life table summarizing survival data at specified time intervals."
+"An open interval may use negative infinity for its start or positive "
+"infinity for its end, but not the reverse."
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Steps type"
+msgid "No observations remain after excluding missing values."
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Default"
+msgid "The end time must be larger than the start time."
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Quantilies"
+msgid "The interval end must be greater than or equal to the interval start."
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Fixed size"
+msgid "The weights variable must be an integer."
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Number"
+msgid "The weights variable must not contain missing values."
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Specify the number of intervals when using Quantiles as the steps type."
+msgid "The weights variable must be positive."
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Round steps"
+msgid "%1$i observations omitted due to missing values."
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "From"
+msgid "Events"
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Set the starting time for intervals when using Fixed size steps."
+msgid "Censored"
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Size"
+msgid "Left censored"
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Define the size of each interval when using Fixed size steps."
+msgid "Right censored"
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "To"
+msgid "Interval censored"
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid "Set the ending time for intervals when using Fixed size steps."
+msgid "Censoring Summary"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "This analysis performs a parametric survival analysis."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Interval Start"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Interval End"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Time to Event"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Event Status"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Event Indicator"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Covariates"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Factors"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Weights"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Subgroup"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Censoring Type"
+msgid "Count"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the type of censoring in your data: right, left, or interval "
-"censoring."
+msgid "%1$s: non-finite values were exported as missing."
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Right"
+msgid "The column '%1$s' already exists. Specify a different export prefix."
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Counting"
+msgid "Export"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Interval"
+msgid "Message"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Censoring summary"
+msgid "Exported values could not be matched to the original observations."
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Distribution"
+msgid "Fitted mean survival time"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Exponential"
+msgid "Response residual"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Gamma"
+msgid "Fitted median survival time"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Generalized F"
+msgid "Cox-Snell residual"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Generalized gamma"
+msgid "Component %1$i probability"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Gompertz"
+msgid "Component index"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Log-logistic"
+msgid "Martingale residual"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Log-normal"
+msgid "Deviance residual"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Weibull"
+msgid "Fitted relative risk"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "All"
+msgid "Fitted linear predictor"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Best AIC"
+msgid "Full dataset"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Best BIC"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Model"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include intercept"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Interpret model"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Model summary"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with information about the model fit."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Rank models"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Rank models based on the selected criterion."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "AIC"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "BIC"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Log lik."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "AIC weights"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include AIC weights in the model summary."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "BIC weights"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include BIC weights in the model summary."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Coefficients"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with coefficient estimates."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Confidence intervals"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include confidence intervals for the coefficients."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Set the confidence level for the confidence intervals."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Coefficients covariance matrix"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Include a table with the covariance matrix of the coefficient estimates."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Sequential model comparison"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with the results of the sequential model comparison."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Predictions"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Survival Time"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Table"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with the predicted survival estimates."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Plot"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a plot with the predicted survival estimates."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Steps type"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Quantilies"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Sequence"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Custom"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Number"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "From"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Set the starting quantile of the predicted survival when using Sequence "
-"steps."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Size"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "To"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Set the ending quantile of the predicted survival when using Sequence steps."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Steps"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Specify custom steps of the predicted survival."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Merge plots across distributions"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Options"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include confidence intervals for the figures and tables."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Legend"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Bottom"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Left"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Top"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "None"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Theme"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "White background"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Light"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Minimal"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Detailed"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Survival Probability"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with the predicted survival probabilities."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a plot with the predicted survival probabilities."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Kaplan-Meier"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Censoring events"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "X-axis transformation"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Select the transformation for the x-axis of the plot"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Log"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Y-axis transformation"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Select the transformation for the y-axis of the plot"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "As failure probability"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Hazard"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with the predicted hazard estimates."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a plot with the predicted hazard estimates."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Cumulative Hazard"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with the predicted cumulative hazard estimates."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a plot with the predicted cumulative hazard estimates."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Restricted Mean Survival Time"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with the restricted mean survival time estimates."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a plot with the restricted mean survival time estimates."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Set the starting quantile of the life time when using Sequence steps."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Round steps"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Specify custom steps of the life time."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Merge tables across measures"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Diagnostics"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Residual Plots"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Residuals vs. time"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Residuals vs. predictors"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Residuals vs. predicted survival"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Plot residuals versus predicted survival probabilities."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Residuals histogram"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Display a histogram of residuals to assess their distribution."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Type"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Select the type of residuals to plot"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Response"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Cox-Snell"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Probability plot"
+msgid "Martingale Residuals"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Canvas"
+msgid "Deviance Residuals"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Empirical points"
+msgid "Score Residuals"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Plot empirical failure probability points based on the observed failure "
-"times."
+msgid "Schoenfeld Residuals"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Coordinates"
+msgid "Scaled Schoenfeld Residuals"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Display the time and failure probability next to each empirical point."
+msgid "Survival Plot"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Fitted curve"
+msgid "Risk Plot"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Plot the fitted curve from the selected parametric model."
+msgid "Cumulative Hazard Plot"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include confidence interval bounds for the fitted probability curve."
+msgid "Complementary Log-Log Plot"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Set the confidence level for the probability plot confidence intervals."
+msgid "log(Time)"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Grid"
+msgid "Kaplan-Meier Summary Table"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Display probability-paper grid lines."
+msgid "%s%% CI"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Plotting position"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Median"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Benard"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Hazen"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Mean"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Blom"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Rank adjustment"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the rank adjustment method for right-censored observations. The "
-"Kaplan-Meier adjustment follows the WeibullR/Minitab convention, including "
-"the final-failure adjustment used to keep points finite on probability paper."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Johnson"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Ties"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Highest"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Lowest"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Sequential"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Choose the legend position for probability plots with multiple fitted curves."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Select the theme for the probability plot's appearance."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Advanced"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Selected Parametric Distributions"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Output Formatting"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include full dataset in subgroup analysis"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Compare models across distributions"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Always display model information"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Interval Start"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Interval End"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Time to Event"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Event Status"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Event Indicator"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Covariates"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Factors"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Weights"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Censoring Type"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Right"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Counting"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Censoring summary"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Method"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Efron"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Breslow"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Exact"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid ""
-"Choose the method for handling tied event times: Efron, Breslow, or Exact."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Strata, Cluster, and Frailty"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Strata"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Cluster"
+msgid "N"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Frailty"
+msgid "Restricted Mean"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Distribution"
+msgid "Standard Error"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Gamma"
+msgid "Median Survival"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Gaussian"
+msgid "Lower"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "T"
+msgid "Upper"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "EM"
+msgid "Tests Table"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "AIC"
+msgid "Test"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Fixed"
+msgid "Chi Square"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "REML"
+msgid "df"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Df"
+msgid "p"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Fix"
+msgid "At least one strata needs to be specified"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Theta"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Model"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Components"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Model fit"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Include overall model fit statistics in the output."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Tests"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Test all parameters of the H₁ model."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Likelihood ratio"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Include the Likelihood Ratio Test in the model summary."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Wald"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Coefficients"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Display the estimated coefficients in the model output."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Vovk-Sellke maximum p-ratio"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Include the Vovk-Sellke maximum p-ratio for each coefficient."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Hazard ratio estimates"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Include frailty"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Confidence intervals"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Include confidence intervals for the coefficients."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Plot"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Diagnostics"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Proportional Hazards"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Table"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Provide a table to test the proportional hazards assumption."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Generate plots to assess the proportional hazards assumption."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Transformation"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "KM"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Rank"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Identity"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Test terms"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Residual Plots"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Residuals vs. time"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Residuals vs. predictors"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Residuals vs. predicted survival"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Residuals histogram"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Type"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Martingale"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Deviance"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Score"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Schoenfeld"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Scaled Schoenfeld"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Plot"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Type"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Survival"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Risk"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Cumulative hazard"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Complementary log-log"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Risk table"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Number at risk"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Display the number of subjects at risk at each time point in the risk table."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Cum. number of observed events"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Cum. number of censored obs."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Number of events in time interval"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Number of censored obs. in time interval"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "As a single line"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Add quantile"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Legend"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Bottom"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Right"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Left"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Top"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "None"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "Theme"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "JASP"
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid "ggsurvfit"
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"This analysis computes a survival curve for censored data using the Kaplan-"
-"Meier estimator for single-event survival data. It estimates the probability "
-"of survival over time, allowing you to understand and visualize the "
-"distribution of survival times within your data. The analysis accommodates "
-"censored observations (subjects for whom the event has not occurred during "
-"the study period) and enables comparison of survival curves across different "
-"groups using statistical tests such as the Log-Rank test, Peto and Peto "
-"test, and Fleming-Harrington test. Additionally, you can generate life "
-"tables to summarize survival data at specified intervals."
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"Select the variable that represents the time until the event or censoring "
-"occurs."
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"Choose the variable that indicates the event status, specifying whether each "
-"observation is an event or censored."
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"Specify the value in the Event Status variable that indicates the occurrence "
-"of the event."
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"Select variables to define strata, allowing separate survival curves for "
-"each stratum."
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"Select a variable for case weights, weighting each observation accordingly "
-"in the model."
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"Create a summary table with information about the censoring status of the "
-"data."
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Log-rank (Mantel-Haenszel)"
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"Include the Log-Rank (Mantel-Haenszel) test to compare survival curves "
-"across strata."
+msgid "Peto and Peto"
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"Include the Peto and Peto modification of the Gehan-Wilcoxon test to compare "
-"survival curves across strata."
+msgid "Flemming-Harrington"
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"Include the Fleming-Harrington test to compare survival curves across "
-"strata., with a customizable rho parameter."
+msgid "Life Table"
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"Set the rho parameter for the Fleming-Harrington test, controlling the "
-"weight given to different time points (values between 0 and 1)."
+msgid "Time"
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"Select the method to define intervals for the life table: Default, "
-"Quantiles, or Fixed size."
+msgid "At Risk"
 msgstr ""
 
-msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"Round the interval boundaries to the nearest integer when using Quantiles "
-"steps."
+msgid "Survival"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the variable that represents the start time of the observation "
-"interval. Only available when Censoring Type is set to Interval or Counting."
+msgid "At least one starting value method must be selected."
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the variable that represents the end time of the observation "
-"interval. Only available when Censoring Type is set to Interval or Counting."
+msgid "The mixture model requires all event times to be positive."
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the variable that represents the time until the event or censoring "
-"occurs. Only available when Censoring Type is set to Right or Counting."
+msgid "No starting values could be constructed for the mixture model."
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Choose the variable that indicates the event status, specifying whether each "
-"observation is an event or censored."
+msgid "Fitting %1$s mixture (%2$i components)"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Specify the value in the Event Status variable that indicates the occurrence "
-"of the event."
+msgid "The mixture model could not be estimated from any starting value: %1$s"
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
+msgid "The mixture model could not be finalized: %1$s"
+msgstr ""
+
 msgid ""
-"Add continuous variables as covariates to include them in the Cox regression "
+"The component probabilities could not be evaluated accurately. Try a "
+"different distribution or fewer components."
+msgstr ""
+
+msgid ""
+"No constrained candidate converged. Try more starting values, a different "
+"distribution, or fewer components."
+msgstr ""
+
+msgid "The log-likelihood is not finite."
+msgstr ""
+
+msgid "The EM algorithm produced no valid state."
+msgstr ""
+
+msgid ""
+"The mixture model requires events or positive censoring times. Check the "
+"survival times and event status."
+msgstr ""
+
+msgid ""
+"A mixture component degenerated during the estimation. Consider fewer "
+"components."
+msgstr ""
+
+msgid "Censoring type '%1$s' is not supported by the mixture model."
+msgstr ""
+
+msgid ""
+"The initial parameters do not satisfy the minimum log-time standard "
+"deviation."
+msgstr ""
+
+msgid ""
+"The selected solution could not be retained while computing its covariance. "
+"Try a different distribution or fewer components."
+msgstr ""
+
+msgid "The log-likelihood of the mixture model is not finite."
+msgstr ""
+
+msgid ""
+"The likelihood may lose numerical precision at these censoring or entry "
+"times. Results cannot be reported reliably. Try a different distribution or "
+"fewer components."
+msgstr ""
+
+msgid ""
+"A minimum log-time standard deviation is not available for %1$s. Select log-"
+"normal, Weibull, log-logistic, or gamma."
+msgstr ""
+
+msgid ""
+"The one-component reference model could not be fitted. Try a different "
+"distribution or use an absolute minimum log-time standard deviation."
+msgstr ""
+
+msgid ""
+"The one-component reference model did not yield a converged, positive log-"
+"time standard deviation. Try a different distribution or use an absolute "
+"minimum log-time standard deviation."
+msgstr ""
+
+msgid ""
+"The fitted parameters do not satisfy the minimum log-time standard "
+"deviation. Results cannot be reported reliably."
+msgstr ""
+
+msgid ""
+"The constrained optimizer did not converge. Try a different distribution or "
+"a simpler model."
+msgstr ""
+
+msgid ""
+"Some mixture quantiles could not be evaluated accurately and are shown as "
+"missing."
+msgstr ""
+
+msgid "Component Mean and Median"
+msgstr ""
+
+msgid "Mixture Classification"
+msgstr ""
+
+msgid "Estimation Diagnostics"
+msgstr ""
+
+msgid "Mixture Components"
+msgstr ""
+
+msgid "Component"
+msgstr ""
+
+msgid "Estimate"
+msgstr ""
+
+msgid ""
+"Some component means or medians are infinite or could not be evaluated "
+"numerically and are shown as missing."
+msgstr ""
+
+msgid ""
+"Some standard errors or confidence intervals could not be evaluated and are "
+"shown as missing."
+msgstr ""
+
+msgid "Standard errors and confidence intervals are based on the delta method."
+msgstr ""
+
+msgid ""
+"The component means and medians correspond to the reference level of factors "
+"and zero value of covariates."
+msgstr ""
+
+msgid "Mixing probability"
+msgstr ""
+
+msgid "Mean"
+msgstr ""
+
+msgid "Median"
+msgstr ""
+
+msgid "Component %1$i"
+msgstr ""
+
+msgid "Classified"
+msgstr ""
+
+msgid "Proportion"
+msgstr ""
+
+msgid "Mean posterior probability"
+msgstr ""
+
+msgid ""
+"Observations are classified to the component with the highest posterior "
+"probability. The relative entropy of the classification is %1$.3f (values "
+"close to 1 indicate low uncertainty in the assignments)."
+msgstr ""
+
+msgid "Distribution"
+msgstr ""
+
+msgid "Model"
+msgstr ""
+
+msgid "Components"
+msgstr ""
+
+msgid "Starts"
+msgstr ""
+
+msgid "Replications"
+msgstr ""
+
+msgid "Log Lik."
+msgstr ""
+
+msgid "Next Best Log Lik."
+msgstr ""
+
+msgid "Degenerate Candidates"
+msgstr ""
+
+msgid "Min. Component n (ESS)"
+msgstr ""
+
+msgid "Min. Component Events"
+msgstr ""
+
+msgid "Optimizer Converged"
+msgstr ""
+
+msgid "Hessian Positive Definite"
+msgstr ""
+
+msgid "yes"
+msgstr ""
+
+msgid "no"
+msgstr ""
+
+msgid "Estimation warning: %1$s"
+msgstr ""
+
+msgid ""
+"The reported solution was reached by only %1$i of %2$i starts; the estimates "
+"might be a local optimum. Consider more random starts."
+msgstr ""
+
+msgid ""
+"All candidate solutions were flagged as degenerate or failed to converge; "
+"the reported estimates may be unreliable. Consider fewer components or more "
+"starting values."
+msgstr ""
+
+msgid ""
+"The selected solution triggered component diagnostics despite satisfying the "
+"spread bound. Inspect the component sizes and dispersion before interpreting "
+"the mixture."
+msgstr ""
+
+msgid ""
+"The smallest component is supported by %1$.1f effective events; such a "
+"component is weakly identified. Consider fewer components."
+msgstr ""
+
+msgid ""
+"All components coincide; the mixture is not identified and its standard "
+"errors are unreliable. Consider fewer components."
+msgstr ""
+
+msgid ""
+"Components %1$s coincide; the mixture is not identified and its standard "
+"errors are unreliable. Consider fewer components."
+msgstr ""
+
+msgid ""
+"The Hessian or parameter covariance could not be used reliably; standard "
+"errors and confidence intervals may be unavailable or unreliable."
+msgstr ""
+
+msgid ""
+"The log-likelihood is lower than that of the nested model with %1$s; the "
+"reported estimates are a local optimum. Consider more random starts."
+msgstr ""
+
+msgid "%1$s model %2$s with %3$s%4$s"
+msgstr ""
+
+msgid "%1$s and %2$s"
+msgstr ""
+
+msgid "mixing probability"
+msgstr ""
+
+msgid "Survival Probability"
+msgstr ""
+
+msgid "Failure Probability"
+msgstr ""
+
+msgid "Density"
+msgstr ""
+
+msgid "Hazard"
+msgstr ""
+
+msgid ""
+"The model failed to produce predictions. Consider simplifying the model."
+msgstr ""
+
+msgid "No finite predictions are available for this plot."
+msgstr ""
+
+msgid "%1$s (log scale)"
+msgstr ""
+
+msgid "Component 1"
+msgstr ""
+
+msgid "Mixture"
+msgstr ""
+
+msgid ""
+"Membership probabilities were specified in an incorrect format. Try '0.95, "
+"0.99'."
+msgstr ""
+
+msgid "Membership probabilities must be greater than 0.5 and less than 1."
+msgstr ""
+
+msgid "Membership probabilities must be distinct."
+msgstr ""
+
+msgid "Residuals vs. Time"
+msgstr ""
+
+msgid "Residuals vs. Predictors"
+msgstr ""
+
+msgid "Residuals vs. Predicted"
+msgstr ""
+
+msgid "Residual Histogram"
+msgstr ""
+
+msgid "Residuals vs. %1$s"
+msgstr ""
+
+msgid "Predicted Time"
+msgstr ""
+
+msgid "Cox-Snell residuals are not available for interval-censored data."
+msgstr ""
+
+msgid "Subgroup: %1$s"
+msgstr ""
+
+msgid "%1$s, %2$i comp."
+msgstr ""
+
+msgid ""
+"No parametric distribution selected. Please select at least one parametric "
+"distribution."
+msgstr ""
+
+msgid ""
+"The model failed to produce a probability plot. Consider simplifying the "
 "model."
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predicted Survival Time"
+msgstr ""
+
+msgid "Predicted Failure Probability"
+msgstr ""
+
+msgid "Predicted Survival Probability"
+msgstr ""
+
+msgid "Predicted Hazard"
+msgstr ""
+
+msgid "Predicted Cumulative Hazard"
+msgstr ""
+
+msgid "Predicted Restricted Mean Survival Time"
+msgstr ""
+
+msgid "Life Time Table"
+msgstr ""
+
+msgid "Some predictions could not be evaluated and are shown as missing."
+msgstr ""
+
+msgid "Some requested quantities are infinite or exceed numerical range."
+msgstr ""
+
 msgid ""
-"Add categorical variables as factors to include them in the Cox regression "
+"Some confidence intervals could not be evaluated and are shown as missing."
+msgstr ""
+
+msgid "Survival Time"
+msgstr ""
+
+msgid "Cumulative Hazard"
+msgstr ""
+
+msgid "Restricted Mean Survival Time"
+msgstr ""
+
+msgid "Quantile"
+msgstr ""
+
+msgid ""
+"Life time tables cannot be merged when a model produces multiple "
+"predictions. Disable 'Merge tables across measures'."
+msgstr ""
+
+msgid ""
+"The model failed to produce survival predictions. Consider simplifying the "
 "model."
 msgstr ""
 
-msgctxt "ParametricSurvivalAnalysis|"
 msgid ""
-"Select a variable for case weights, weighting each observation accordingly "
-"in the model."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select a variable for subgroup analysis, allowing for separate analyses "
-"within each subgroup."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"If interval censoring is selected, the following coding needs to be used: "
-"left-censored data is represented as (NA, t2), right-censored data as (t1, "
-"NA), exact data as (t, t), and interval-censored data as (t1, t2)."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Create a summary table with information about the censoring status of the "
-"data."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Choose the parametric distribution for the analysis. All fits and display "
-"results for all 'Selected parametric families' in the 'Advanced' section. "
-"'Best AIC' and 'Best BIC' fit all `Selected parametric families` in the "
-"Advanced section and display the results only for a parametric family with "
-"the lowest AIC/BIC."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Generalized gamma (original)"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Generalized F (original)"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the model to interpret. Defaults to the last specified model. "
-"Alternatives are 'All' which produces results for all of the specified "
-"models or 'Best' which produces results for the best fitting model based on "
-"either AIC or BIC. If distribution and model selection is specified "
-"simultanously, the best model within the best performing distribution is "
-"going to be selected. If model selection is specified while all "
-"distributions are selected, the best model within each distribution is going "
-"to be selected."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the method to define intervals for the life table: Default, "
-"Quantiles, or Custom."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Specify the number of quantiles of the predicted surival when using "
-"Quantiles as the steps type."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Define the size of each quantile of the predicted survival when using "
-"Sequence steps."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Merge the plots for survival probability across distributions into a single "
-"plot. Only available when no model selection is being performed."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Choose the position of the legend on prediction plots with multiple "
-"displayed curves."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Customize the color palette used in prediction plots with multiple displayed "
-"curves."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the theme for prediction plots. The detailed theme works only for "
-"'Survival probabilities' plots."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Show a Kaplan-Meier curve in the plot. Only available when Censoring Type is "
-"set to Right."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Show censoring events as rug marks in the plot. Only available when "
-"Censoring Type is set to Right."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Log(-log(1-p))"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Transform the output from survival probability to failure probability (i.e., "
-"1 - Survival Probability)."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Specify the number of quantiles of the life time when using Quantiles as the "
-"steps type."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Define the size of each quantile of the life time when using Sequence steps. "
-"The default '' corresponds to 1/10 of the maximum observed time."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Set the final step of the life time when using Sequence steps. The default "
-"'' corresponds to the maximum observed time."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Round the interval boundaries to the nearest integer when using Quantiles or "
-"Sequence steps."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Merge the tables for survival time, survival probabilities, hazard, "
-"cumulative hazard, and restricted mean survival time into a single table."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Merge the plots for survival time, survival probabilities, hazard, "
-"cumulative hazard, and restricted mean survival across distributions into a "
-"single plot. Only available when no model selection is being performed."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Plot residuals versus time. Only available when Censoring Type is set to "
-"Right."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Plot residuals versus predictors to assess model fit. Available when model "
-"terms are specified."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Create a model-based probability plot to assess how well the selected "
-"parametric distribution describes the observed failure times. Only available "
-"when Censoring Type is set to Right."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the probability-paper scale. A distribution matching the selected "
-"canvas appears approximately as a straight line. The exponential canvas uses "
-"linear time and cumulative-hazard probability scaling; the other canvases "
-"use log time."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Show censored observations as rug marks at the bottom of the plot. Only "
-"available when Censoring Type is set to Right."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Merge the probability plots across distributions into a single plot. Only "
-"available when no model selection is being performed."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the method used to compute empirical failure probability plotting "
-"positions."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select how tied failure times are handled when computing empirical plotting "
-"positions."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Customize the color palette used in probability plots with multiple fitted "
-"curves."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Include the full dataset output in the subgroup analysis. This option is "
-"only available when the subgroup analysis is selected."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Compare models across distributions. This option is only available when the "
-"multiple models and parametric distributions are specified."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Always display model information (distribution and model name) in output "
-"tables."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"This option generates a customizable survival plot to visualize the "
-"estimated survival probabilities over time from your survival analysis. You "
-"can choose different transformations of the survival probabilities to "
-"display, such as Survival, Risk, Cumulative Hazard, or Complementary Log-Log "
-"functions, depending on your analytical needs. The plot allows you to "
-"include confidence intervals to assess the precision of the estimates and "
-"add a risk table to provide detailed information about the number of "
-"subjects at risk and events over time. You can further enhance the plot by "
-"adding quantile lines to highlight specific survival times (e.g., median "
-"survival time) and adjust the legend position, color palette, and overall "
-"theme to suit your preferences."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Select the type of statistic to plot: Survival, Risk, Cumulative Hazard, or "
-"Complementary Log-Log."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Include confidence intervals in the survival plot to show the variability "
-"around the estimates."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Add a risk table below the plot to display additional information about the "
-"number of subjects at risk over time."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Display the cumulative number of observed events (e.g., deaths) at each time "
-"point in the risk table."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Display the cumulative number of censored observations at each time point in "
-"the risk table."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Display the number of events that occurred within each time interval in the "
-"risk table."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Display the number of censored observations within each time interval in the "
-"risk table."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Combine all selected risk table statistics into a single line for a more "
-"compact display."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Add a vertical line on the plot at a specified quantile (e.g., median "
-"survival time)."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Specify the quantile value (between 0 and 1) at which to add the vertical "
-"line on the plot."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Choose the position of the legend on the plot: Bottom, Right, Left, Top, or "
-"None. Only available when Strata variables are specified."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Customize the color palette used in the plot. Only available when Strata "
-"variables are specified."
-msgstr ""
-
-msgctxt "SurvivalPlot|"
-msgid ""
-"Select the theme for the plot's appearance: JASP for the default look or "
-"ggsurvfit for the ggsurvfit package style."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid ""
-"This analysis performs a Cox proportional hazards regression, a statistical "
-"method used in survival analysis to examine the relationship between the "
-"time until an event occurs (such as death or failure) and one or more "
-"predictor variables. It helps you understand how different factors influence "
-"the risk or hazard of the event happening at any given time. The Cox model "
-"is particularly useful because it can handle censored data (when the event "
-"has not occurred for some subjects during the study period) and does not "
-"require assumptions about the baseline hazard function."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid ""
-"Select the variable that represents the start time of the observation "
-"interval. Only available when Censoring Type is set to Counting."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid ""
-"Select the variable that represents the end time of the observation "
-"interval. Only available when Censoring Type is set to Counting."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid ""
-"Select the variable that represents the time until the event or censoring "
-"occurs. Only available when Censoring Type is set to Right."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid ""
-"Choose the variable that indicates the event status, specifying whether each "
-"observation is an event or censored."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid ""
-"Specify the value in the Event Status variable that indicates the occurrence "
-"of the event."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid ""
-"Add continuous variables as covariates to include them in the Cox regression "
+"The model failed to produce hazard predictions. Consider simplifying the "
 "model."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
-"Add categorical variables as factors to include them in the Cox regression "
+"The model failed to produce cumulative predictions. Consider simplifying the "
 "model."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
-"Select a variable for case weights, weighting each observation accordingly "
-"in the model."
+"The model failed to produce restricted mean survival time predictions. "
+"Consider simplifying the model."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "%1$s (log(-log(1-p)) scale)"
+msgstr ""
+
 msgid ""
-"Select the type of censoring in your data: Right censoring or Counting "
-"process."
+"Custom steps for predicted survival time were specified in an incorrect "
+"format. Try '0.25, 0.50, 0.75'."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Custom steps for predicted survival time must be between 0 and 1."
+msgstr ""
+
 msgid ""
-"Create a summary table with information about the censoring status of the "
-"data."
+"Step from for predicted survival time must be a finite, non-negative number."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Step to for predicted survival time must be a finite, positive number."
+msgstr ""
+
 msgid ""
-"Select variables to define strata, allowing separate baseline hazard "
-"functions for each stratum."
+"Step size for predicted survival time must be a finite, positive number."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Step to for predicted survival time must be greater than step from."
+msgstr ""
+
 msgid ""
-"Select a variable to define clusters of correlated observations for robust "
-"variance estimation. Disabled when a Frailty variable is specified or Method "
-"is set to Exact."
+"Custom steps for predicted survival time must be greater than or equal to 0."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Probability Plot"
+msgstr ""
+
+msgid "The probability plot requires at least one fitted model."
+msgstr ""
+
 msgid ""
-"Select a variable for frailty to model unobserved heterogeneity using random "
-"effects. Disabled when a Cluster variable is specified."
+"The probability plot requires at least one positive observed failure time, "
+"censored observation, or fitted curve."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Fitted"
+msgstr ""
+
+msgid "Failure Probability (%s scale)"
+msgstr ""
+
+msgid "exponential"
+msgstr ""
+
+msgid "log-normal"
+msgstr ""
+
+msgid "Time (log scale)"
+msgstr ""
+
+msgid "log-logistic"
+msgstr ""
+
+msgid "Weibull"
+msgstr ""
+
+msgid "The probability plot requires positive time values."
+msgstr ""
+
+msgid "Model fitting"
+msgstr ""
+
+msgid "Model Summary"
+msgstr ""
+
+msgid "Sequential Model Comparison"
+msgstr ""
+
+msgid "Coefficients Summary"
+msgstr ""
+
+msgid "Coefficients Covariance Matrix"
+msgstr ""
+
+msgid "AIC"
+msgstr ""
+
+msgid "BIC"
+msgstr ""
+
+msgid "AIC Weight"
+msgstr ""
+
+msgid "BIC Weight"
+msgstr ""
+
+msgid "Rank"
+msgstr ""
+
+msgid "Error:"
+msgstr ""
+
+msgid "Warning:"
+msgstr ""
+
 msgid ""
-"Choose the distribution for the frailty term: Gamma, Gaussian, or T "
-"distribution. Only available when a Frailty variable is specified."
+"Comparisons involving an active spread bound have no likelihood-ratio "
+"statistic or p-value; other comparisons use the %1$s approximation."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Likelihood ratio test for nested models based on %s distribution."
+msgstr ""
+
+msgid "z"
+msgstr ""
+
+msgid "P-values are based on a Wald test."
+msgstr ""
+
 msgid ""
-"Select the estimation method for the frailty distribution. Options vary "
-"based on the chosen Distribution."
+"The standard errors and confidence intervals of the mixing probabilities are "
+"based on the delta method."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
-"Set the degrees of freedom (Df) for the T frailty distribution. Only visible "
-"when Distribution is set to T."
+"The component parameters correspond to the reference level of factors and "
+"zero value of covariates."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
-"Choose the parameter to fix in the frailty model when Method is set to "
-"Fixed: Theta or Df."
+"The covariance matrix uses the estimation scale: distribution parameters "
+"constrained to be positive are log-transformed. This scale can differ from "
+"the coefficients table."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
-"Specify the value of Theta to fix in the frailty model. Only visible when "
-"Fix is set to Theta."
+"The v parameters are conditional stick-breaking weights on the logit scale, "
+"not the component mixing probabilities reported in the coefficients table."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Lower CI"
+msgstr ""
+
+msgid "Upper CI"
+msgstr ""
+
 msgid ""
-"Specify the degrees of freedom (Df) to fix in the frailty model. Only "
-"visible when Fix is set to Df."
+"The standard deviation of the natural logarithm of survival time was "
+"constrained to be at least %1$g in each component (%2$g%% of the "
+"unconstrained one-component model's log-time standard deviation, %3$g)."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
-"Include the Wald Test in the model summary. Disabled when a Frailty variable "
-"is specified."
+"The standard deviation of the natural logarithm of survival time was "
+"constrained to be at least %1$g in each component."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Score (log-rank)"
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
-"Include the Score (Log-Rank) Test in the model summary. Disabled when a "
-"Frailty variable is specified."
+"The minimum log-time standard deviation bound (%1$g) is active. Standard "
+"errors, confidence intervals, covariance estimates, Wald tests, and "
+"likelihood-ratio tests involving this fit are unavailable."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Display the hazard ratio estimates (exponentiated coefficients)."
+msgid "%1$s failed with the following message: %2$s"
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "%1$s model %2$s%3$s failed with the following message: %4$s."
+msgstr ""
+
 msgid ""
-"Include the effect of frailty in hazard ratio estimates. Only available when "
-"a Frailty variable is specified."
+"All following output is based on the best fitting %1$s distribution with "
+"%2$s."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid "Set the confidence level (e.g., 95%) for the confidence intervals."
-msgstr ""
-
-msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
-"Select the transformation for time in proportional hazards testing: KM, "
-"Rank, or Identity."
+"All following output is based on the best fitting number of components "
+"(%1$s)."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
-"Test the proportional hazards assumption for individual model terms (instead "
-"of coefficients)."
+"All following output is based on the best fitting number of components "
+"within each distribution."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid ""
-"Plot residuals versus time to detect non-proportional hazards. Available "
-"only for Martingale or Deviance residuals."
+msgid "All following output is based on the best fitting %1$s distribution."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
-"Plot residuals versus predictors to assess model fit. Available when model "
-"terms are specified."
+"Results are based on %1$s distribution which was the best fitting "
+"distribution."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid ""
-"Plot residuals versus predicted survival probabilities. Available only for "
-"Martingale or Deviance residuals."
+msgid "Results are based on %1$s."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
 msgid ""
-"Display a histogram of residuals to assess their distribution. Available "
-"only for Martingale or Deviance residuals."
+"Results are based on %1$s with distribution %2$s which is the best fitting "
+"distribution across models."
 msgstr ""
 
-msgctxt "SemiParametricSurvivalAnalysis|"
-msgid ""
-"Select the type of residuals to plot: Martingale, Deviance, Score, "
-"Schoenfeld, or Scaled Schoenfeld."
+msgid "Results are based on best fitting models."
 msgstr ""
+
+msgid "Results are based on best fitting models within each distribution."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s with %2$s distribution which was the best fitting "
+"model across all models and distributions."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s distribution with %2$s which was the best fitting "
+"combination of distribution and number of components."
+msgstr ""
+
+msgid ""
+"Results are based on the best fitting number of components within each "
+"distribution."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s which was the best fitting number of components."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s with %2$s distribution and %3$s which was the best "
+"fitting combination of distribution and number of components across models."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s with the best fitting number of components within "
+"each distribution."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s with %2$s which was the best fitting number of "
+"components across models."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s with %2$s distribution and %3$s which was the best "
+"fitting model across all models, distributions, and numbers of components."
+msgstr ""
+
+msgid ""
+"Results are based on the best fitting number of components and model within "
+"each distribution."
+msgstr ""
+
+msgid ""
+"Results are based on %1$s with %2$s which was the best fitting model across "
+"all models and numbers of components."
+msgstr ""
+
+msgid "Model Tests Table"
+msgstr ""
+
+msgid "At least one factor or covariate needs to be specified"
+msgstr ""
+
+msgid "The model failed with the following message: %1$s."
+msgstr ""
+
+msgid "Likelihood ratio"
+msgstr ""
+
+msgid "Wald"
+msgstr ""
+
+msgid "Score"
+msgstr ""
+
+msgid "Tests are based on the H₁ model."
+msgstr ""
+
+msgid "Cox Proportional Hazards Summary Table"
+msgstr ""
+
+msgid ""
+"Either 'theta' of 'df' must be set to a value larger than zero when using "
+"'Fixed' frailty method."
+msgstr ""
+
+msgid "The null model failed with the following message:"
+msgstr ""
+
+msgid "%1$i observations with %2$i events."
+msgstr ""
+
+msgid "Null model contains nuisance parameters: %1$s"
+msgstr ""
+
+msgid "Robust variance estimation based on %1$s."
+msgstr ""
+
+msgid "Frailty based on %1$s."
+msgstr ""
+
+msgid "Model Fit Summary Table"
+msgstr ""
+
+msgid "Concordance"
+msgstr ""
+
+msgid "Frailty Summary Table"
+msgstr ""
+
+msgid "Variance"
+msgstr ""
+
+msgid "Cox Proportional Hazards Estimates Table"
+msgstr ""
+
+msgid "Robust Standard Error"
+msgstr ""
+
+msgid "%.0f%% CI"
+msgstr ""
+
+msgid "VS-MPR%s"
+msgstr ""
+
+msgid ""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value,\n"
+"  the maximum possible odds in favor of H%1$s over H%2$s equals\n"
+"  1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37\n"
+"  (Sellke, Bayarri, & Berger, 2001)."
+msgstr ""
+
+msgid "Results are stratified via: %1$s."
+msgstr ""
+
+msgid "Hazard Ratios Estimates Table"
+msgstr ""
+
+msgid "Hazard Ratio"
+msgstr ""
+
+msgid "Proporational Hazards Assumption Test Table"
+msgstr ""
+
+msgid "The model test failed with the following message: %1$s"
+msgstr ""
+
+msgid "Global"
+msgstr ""
+
+msgid "Tests are performed using the %1$s survival times transformation."
+msgstr ""
+
+msgid "Proporational Hazards Assumption Test Plots"
+msgstr ""
+
+msgid "Beta(t)"
+msgstr ""
+
+msgid "Residual Plots"
+msgstr ""
+
+msgid "No predictors in the model."
+msgstr ""
+
+msgid "Predicted Survival"
+msgstr ""
+
+msgid "Residuals Histogram"
+msgstr ""
+
+msgid ""
+"%1$i candidate fit was omitted because its likelihood could not be evaluated "
+"reliably at the available numerical precision."
+msgid_plural ""
+"%1$i candidate fits were omitted because their likelihoods could not be "
+"evaluated reliably at the available numerical precision."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"Component %1$s has a negligible weight or diverging parameters; consider "
+"fewer components."
+msgid_plural ""
+"Components %1$s have a negligible weight or diverging parameters; consider "
+"fewer components."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%1$i component"
+msgid_plural "%1$i components"
+msgstr[0] ""
+msgstr[1] ""
