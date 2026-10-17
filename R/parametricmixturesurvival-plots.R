@@ -239,9 +239,9 @@
     if (length(time) == 0)
       return(NULL)
   }
+  if (length(unique(time)) < 2L)
+    return(NULL)
   binWidthType <- options[[paste0(prefix, "ObservedDataBinWidthType")]]
-  if (length(time) < 2L && binWidthType %in% c("fd", "scott"))
-    binWidthType <- "sturges"
   if (binWidthType == "manual") {
     binWidthType <- options[[paste0(prefix, "ObservedDataNumberOfBins")]]
   } else if (binWidthType == "doane") {
@@ -261,6 +261,9 @@
   histogram <- graphics::hist(time, breaks = binWidthType, plot = FALSE)
   breaks    <- if (logTime) histogram[["breaks"]] else pmax(0, histogram[["breaks"]])
   breaks    <- unique(breaks)
+  occupied  <- cut(time, breaks = breaks, include.lowest = TRUE, labels = FALSE)
+  if (length(unique(occupied[!is.na(occupied)])) < 2L)
+    return(NULL)
 
   # Survival drops supply probability masses. Do not normalize an unidentified tail away.
   outcome     <- .saGetSurvObject(options, dataset)
