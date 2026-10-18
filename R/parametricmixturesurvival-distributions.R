@@ -451,11 +451,15 @@
   logPower <- shape * logRatio
   # Native dweibull forms powers before taking logs, which can yield Inf - Inf
   # (or Inf * 0) in the tails of narrow components, including valid CI draws.
-  logMaximum <- log(.Machine$double.xmax)
-  tail       <- rep(FALSE, n)
-  tail[valid] <- abs(logRatio[valid]) > logMaximum | logPower[valid] > logMaximum |
-    (shape[valid] - 1) * logRatio[valid] > logMaximum |
-    log(shape[valid]) - log(scale[valid]) + (shape[valid] - 1) * logRatio[valid] > logMaximum
+  logMaximum   <- log(.Machine$double.xmax)
+  logMinimum   <- log(.Machine$double.xmin)
+  logPrefactor <- (shape[valid] - 1) * logRatio[valid]
+  logLeading   <- log(shape[valid]) - log(scale[valid]) + logPrefactor
+  tail         <- rep(FALSE, n)
+  tail[valid] <- logRatio[valid] < logMinimum | logRatio[valid] > logMaximum |
+    logPower[valid] < logMinimum | logPower[valid] > logMaximum |
+    logPrefactor < logMinimum | logPrefactor > logMaximum |
+    logLeading < logMinimum | logLeading > logMaximum
   out <- rep(NA_real_, n)
   out[!tail] <- stats::dweibull(x[!tail], shape[!tail], scale[!tail], log = log)
   logDensity <- log(shape[tail]) - log(scale[tail]) + (shape[tail] - 1) * logRatio[tail] - exp(logPower[tail])
