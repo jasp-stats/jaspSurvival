@@ -261,6 +261,62 @@
     }, numeric(arguments[["n"]]))
     return(.sapmLogSumExp(matrix(logs, nrow = arguments[["n"]])))
   }
+  # flexsurv 2.3.2 defaults use 1 - p: rates 1/2, weight .5, t=50 give Inf
+  # instead of h=1 and H=50.69314718. At rates 2/3 and t=1e17, log d - log S
+  # also loses log(2). Combine native component log hazards, centering survival
+  # before adding log weights so equal huge survivals retain their mixing weights.
+  hMixture <- function(x, ...) {
+    parameters <- list(...)
+    arguments  <- splitArguments(parameters, length(x))
+    n          <- arguments[["n"]]
+    x          <- rep_len(x, n)
+    if (n == 0L)
+      return(numeric(0))
+
+    logSurvival <- matrix(vapply(seq_len(components), function(k)
+      do.call(family[["p"]], c(list(x), arguments[["components"]][[k]], list(lower.tail = FALSE, log.p = TRUE))), numeric(n)), nrow = n)
+    activeSurvival <- logSurvival
+    activeSurvival[arguments[["probabilities"]] == 0] <- -Inf
+    maximum <- Reduce(pmax, lapply(seq_len(components), function(k) activeSurvival[, k]))
+    rows    <- which(is.finite(x) & is.finite(maximum) & rowSums(is.na(logSurvival)) == 0)
+    out     <- rep(NA_real_, n)
+
+    # Retain invalid and nonfinite-time classifications rather than inventing limits.
+    other <- setdiff(seq_len(n), rows)
+    if (length(other)) {
+      pars <- lapply(parameters, function(value) rep_len(value, n)[other])
+      out[other] <- exp(do.call(dMixture, c(list(x[other]), pars, list(log = TRUE))) -
+        do.call(pMixture, c(list(x[other]), pars, list(lower.tail = FALSE, log.p = TRUE))))
+    }
+    if (length(rows)) {
+      logHazard <- matrix(vapply(seq_len(components), function(k) {
+        pars <- lapply(arguments[["components"]][[k]], function(value) value[rows])
+        if (!"log" %in% names(formals(family[["h"]])))
+          return(do.call(family[["d"]], c(list(x[rows]), pars, list(log = TRUE))) - logSurvival[rows, k])
+        value   <- do.call(family[["h"]], c(list(x[rows]), pars, list(log = TRUE)))
+        missing <- which(!is.finite(value))
+        # Native gamma hazards can form 0/0 while log density/survival stay finite.
+        if (length(missing)) {
+          difference <- do.call(family[["d"]], c(list(x[rows[missing]]), lapply(pars, function(value) value[missing]), list(log = TRUE))) -
+            logSurvival[rows[missing], k]
+          finite <- is.finite(difference)
+          value[missing[finite]] <- difference[finite]
+        }
+        return(value)
+      }, numeric(length(rows))), nrow = length(rows))
+      mass      <- log(arguments[["probabilities"]][rows, , drop = FALSE]) + (logSurvival[rows, , drop = FALSE] - maximum[rows])
+      numerator <- mass + logHazard
+      numerator[mass == -Inf & !is.na(mass)] <- -Inf
+      out[rows] <- exp(.sapmLogSumExp(numerator) - .sapmLogSumExp(mass))
+    }
+    return(out)
+  }
+  HMixture <- function(x, ...) {
+    out <- -pMixture(x, ..., lower.tail = FALSE, log.p = TRUE)
+    # Remove log-sum roundoff at nonpositive times without replacing invalid rows.
+    out[which(rep_len(x, length(out)) <= 0 & is.finite(out))] <- 0
+    return(out)
+  }
   qMixture <- function(p, ..., lower.tail = TRUE, log.p = FALSE) {
     if (!length(p))
       return(numeric(0))
@@ -374,7 +430,7 @@
       transforms     = c(rep(family[["transforms"]], components),     rep(list(stats::qlogis), components - 1)),
       inv.transforms = c(rep(family[["inv.transforms"]], components), rep(list(stats::plogis), components - 1))
     ),
-    dfns          = list(d = dMixture, p = pMixture, q = qMixture, r = rMixture, rmst = rmstMixture, mean = meanMixture),
+    dfns          = list(d = dMixture, p = pMixture, h = hMixture, H = HMixture, q = qMixture, r = rMixture, rmst = rmstMixture, mean = meanMixture),
     componentPars = componentPars,
     weightPars    = weightPars
   ))

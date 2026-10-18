@@ -1,5 +1,5 @@
-# Native inference only; saved fits from earlier information policies must refit.
-.sapInformationPolicyVersion <- "native-design-standardization-3"
+# Refit saved dfns closures after stable mixture h/H and Weibull density updates.
+.sapInformationPolicyVersion <- "native-design-standardization-5"
 
 .sapInformationRecord <- function(fit, method, outcome, provenance) {
 
