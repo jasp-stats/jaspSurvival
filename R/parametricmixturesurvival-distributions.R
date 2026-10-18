@@ -299,18 +299,31 @@
       value <- ifelse(upperTail, upper, lower) / -targetLog
       return(ifelse(upperTail, -expm1(value), exp(value)))
     }
-    quantiles <- try(do.call(flexsurv::qgeneric, c(list(pdist = logTimeCdf,
-      p = ifelse(upperTail, -expm1(-1), exp(-1)), targetLog = target, upperTail = upperTail), parameters)), silent = TRUE)
-    if (!inherits(quantiles, "try-error")) {
+    solveQuantiles <- function(rows) {
+      values <- rep(NA_real_, length(rows))
+      pars <- lapply(parameters, function(x) x[rows])
+      quantiles <- try(do.call(flexsurv::qgeneric, c(list(pdist = logTimeCdf,
+        p = ifelse(upperTail[rows], -expm1(-1), exp(-1)), targetLog = target[rows],
+        upperTail = upperTail[rows]), pars)), silent = TRUE)
+      if (inherits(quantiles, "try-error"))
+        return(values)
       quantiles   <- exp(quantiles)
-      probability <- do.call(pMixture, c(list(q = quantiles, log.p = TRUE), parameters))
-      if (any(upperTail)) {
-        survival <- do.call(pMixture, c(list(q = quantiles, lower.tail = FALSE, log.p = TRUE), parameters))
-        probability[upperTail] <- survival[upperTail]
+      probability <- do.call(pMixture, c(list(q = quantiles, log.p = TRUE), pars))
+      if (any(upperTail[rows])) {
+        survival <- do.call(pMixture, c(list(q = quantiles, lower.tail = FALSE, log.p = TRUE), pars))
+        probability[upperTail[rows]] <- survival[upperTail[rows]]
       }
-      accurate <- is.finite(quantiles) & quantiles > 0 & is.finite(probability) & abs(probability - target) <= 1e-7
-      out[index[accurate]] <- quantiles[accurate]
+      accurate <- is.finite(quantiles) & quantiles > 0 & is.finite(probability) & abs(probability - target[rows]) <= 1e-7
+      values[accurate] <- quantiles[accurate]
+      return(values)
     }
+    quantiles <- solveQuantiles(seq_along(index))
+    # A failed vector root must not erase valid percentiles in other rows.
+    # Retry only missing entries; successful vector results remain unchanged.
+    if (length(index) > 1L)
+      for (i in which(is.na(quantiles)))
+        quantiles[i] <- solveQuantiles(i)
+    out[index] <- quantiles
     if (anyNA(out[index]))
       warning(gettext("Some mixture quantiles could not be evaluated accurately and are shown as missing."), call. = FALSE)
 

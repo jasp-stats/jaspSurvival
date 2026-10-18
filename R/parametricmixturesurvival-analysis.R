@@ -432,6 +432,9 @@
   degenerate <- any(!is.finite(theta)) || any(!is.finite(ess)) || min(ess) < 3 ||
     (is.finite(logIqrRatio) && logIqrRatio < 0.01) || any(magnitude) || fit[["opt"]][["convergence"]] != 0
 
+  if (!degenerate)
+    degenerate <- .sapWeibullSingularCandidate(fit)
+
   return(list(degenerate = degenerate))
 }
 
