@@ -41,7 +41,9 @@
   # A changed cohort also discards previous-component starts and posteriors.
   cohortChanged <- !is.null(out) && (!identical(attr(out, "fittingRows", exact = TRUE), rownames(dataset)) ||
     !identical(attr(out, "frequencyRowNames", exact = TRUE), attr(dataset, "frequencyRowNames", exact = TRUE)))
-  if (cohortChanged) {
+  candidatePolicyChanged <- !is.null(out) && options[["analysisType"]] == "mixture" &&
+    !identical(attr(out, "mixtureCandidatePolicyVersion", exact = TRUE), .sapmCandidatePolicyVersion)
+  if (cohortChanged || candidatePolicyChanged) {
     out <- NULL
     fitContainer$object <- NULL
   }
@@ -54,7 +56,7 @@
 
   assessment         <- .sapAssessInformationStore(out, options[["censoringType"]])
   out                <- assessment[["store"]]
-  informationChanged <- cohortChanged || assessment[["changed"]]
+  informationChanged <- cohortChanged || candidatePolicyChanged || assessment[["changed"]]
   # Rebuild retained output when a fitted transformation's constants change.
   if (!is.null(out) && !isTRUE(all.equal(lapply(attr(out, "modelTerms"), .sapModelTransformations),
     lapply(options[["modelTerms"]], .sapModelTransformations))))
@@ -123,6 +125,7 @@
   attr(out, "fittingRows")                          <- rownames(dataset)
   attr(out, "frequencyRowNames")                    <- attr(dataset, "frequencyRowNames", exact = TRUE)
   attr(out, "informationPolicyVersion")             <- .sapInformationPolicyVersion
+  attr(out, "mixtureCandidatePolicyVersion")        <- .sapmCandidatePolicyVersion
 
   fitContainer$object <- out
 

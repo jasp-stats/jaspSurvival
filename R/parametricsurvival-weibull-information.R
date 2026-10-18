@@ -125,30 +125,6 @@
   return(list(logLik = sum(contributions), score = score + scoreCorrection, H = H + correction))
 }
 
-# A stationary mixture can have a flat coefficient direction even when its
-# component sizes and marginal spreads appear regular. Use the exact supported
-# information, scaled to remove coefficient units, to detect numerical rank loss.
-.sapWeibullSingularCandidate <- function(fit) {
-
-  specification <- attr(fit, "equations", exact = TRUE)
-  if (is.null(specification) || length(specification[["structuralFixed"]]) == 0L)
-    return(FALSE)
-  response <- fit[["data"]][["m"]][[1L]]
-  target <- .sapWeibullTarget(fit, specification, attr(response, "type"))
-  if (is.null(target) || length(target[["free"]]) == 0L)
-    return(FALSE)
-  value <- .sapWeibullDerivatives(target)
-  if (!is.finite(value[["logLik"]]) ||
-    abs(value[["logLik"]] - fit[["loglik"]]) > sqrt(.Machine$double.eps) * max(1, abs(fit[["loglik"]])))
-    stop(gettext("The Weibull information target differs from the fitted likelihood."))
-  H <- value[["H"]]
-  if (any(!is.finite(H)) || any(diag(H) <= 0))
-    return(TRUE)
-  scales <- sqrt(diag(H))
-  eigenvalues <- eigen(H / outer(scales, scales), symmetric = TRUE, only.values = TRUE)[["values"]]
-  return(min(eigenvalues) <= nrow(H) * .Machine$double.eps * max(abs(eigenvalues)))
-}
-
 # Polish an already converged, unconstrained native search; finalization stays at its point.
 .sapWeibullRefine <- function(fit, fitCall, specification, censoringType) {
 

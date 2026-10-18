@@ -23,6 +23,7 @@
   "mixtureEmIterations", "setSeed", "seed", "outputFormattingCompareModelsAcrossComponents",
   "mixtureConstrainMinimumSpread", "mixtureConstrainMinimumSpreadType", "mixtureMinimumLogTimeSdRelative", "mixtureMinimumLogTimeSd"
 )
+.sapmCandidatePolicyVersion <- 1L
 
 .sapmCheckDataset               <- function(dataset, options) {
 
@@ -242,32 +243,36 @@
     stop(error)
   }
 
-  selection <- .sapmSelectCandidate(candidates, constrained = !is.null(constraint))
-  best      <- candidates[[selection[["selected"]]]]
-
-  # native covariance/CI construction at the selected estimates, without another optimization
-  native <- .sapmNativeFit(
-    formula,
-    dataset,
-    options,
-    family,
-    components,
-    mixture,
-    best[["inits"]],
-    caseWeights,
-    hessian          = TRUE,
-    constraint       = constraint,
-    fixed            = nativeFixed,
-    parameterNames   = parameterNames,
-    specification    = specification,
-    searchProvenance = best[["searchProvenance"]]
-  )
-  if (jaspBase::isTryError(native[["fit"]]))
-    stop(gettextf("The mixture model could not be finalized: %1$s", jaspBase::.extractErrorMessage(native[["fit"]])))
+  # Finalize in likelihood order. Check the actual free-parameter information
+  # before accepting a candidate, regardless of its distribution or censoring.
+  finalized <- .sapmFinalizeCandidates(candidates, function(candidate) {
+    native <- .sapmNativeFit(
+      formula,
+      dataset,
+      options,
+      family,
+      components,
+      mixture,
+      candidate[["inits"]],
+      caseWeights,
+      hessian          = TRUE,
+      constraint       = constraint,
+      fixed            = nativeFixed,
+      parameterNames   = parameterNames,
+      specification    = specification,
+      searchProvenance = candidate[["searchProvenance"]]
+    )
+    if (!jaspBase::isTryError(native[["fit"]])) {
+      .sapmCheckPrecision(native[["fit"]], family, components, survObject)
+      .sapmCheckFinalPoint(native[["fit"]], candidate[["inits"]], candidate[["logLik"]])
+    }
+    return(native)
+  }, constrained = !is.null(constraint))
+  selection <- finalized[["selection"]]
+  best      <- finalized[["candidate"]]
+  native    <- finalized[["native"]]
 
   fit <- native[["fit"]]
-  .sapmCheckPrecision(fit, family, components, survObject)
-  .sapmCheckFinalPoint(fit, best[["inits"]], best[["logLik"]])
   constraintInfo <- .sapmConstraintInfo(fit, constraint, family, components)
   fit            <- .sapmApplyConstraintInference(fit, constraintInfo)
 
@@ -432,10 +437,44 @@
   degenerate <- any(!is.finite(theta)) || any(!is.finite(ess)) || min(ess) < 3 ||
     (is.finite(logIqrRatio) && logIqrRatio < 0.01) || any(magnitude) || fit[["opt"]][["convergence"]] != 0
 
-  if (!degenerate)
-    degenerate <- .sapWeibullSingularCandidate(fit)
-
   return(list(degenerate = degenerate))
+}
+
+# Reuse native same-point finalization, including analytic information when
+# available. Only finalists need a Hessian, rather than every starting value.
+.sapmFinalizeCandidates <- function(candidates, finalize, constrained = FALSE) {
+
+  finalized <- vector("list", length(candidates))
+  repeat {
+    selection <- .sapmSelectCandidate(candidates, constrained)
+    index     <- selection[["selected"]]
+    candidate <- candidates[[index]]
+    if (is.null(finalized[[index]]))
+      finalized[[index]] <- finalize(candidate)
+    native <- finalized[[index]]
+    if (jaspBase::isTryError(native[["fit"]]))
+      stop(gettextf("The mixture model could not be finalized: %1$s", jaspBase::.extractErrorMessage(native[["fit"]])))
+    # Bounds require constrained inference; an all-degenerate search retains
+    # its existing best-point fallback and warning rather than looping forever.
+    if (constrained || candidate[["degenerate"]] || !isTRUE(.sapmSingularCandidate(native[["fit"]])))
+      return(list(selection = selection, candidate = candidate, native = native))
+    candidates[[index]][["degenerate"]] <- TRUE
+  }
+}
+
+.sapmSingularCandidate <- function(fit) {
+
+  if (fit[["npars"]] == 0L)
+    return(FALSE)
+  H <- fit[["opt"]][["hessian"]]
+  if (!is.matrix(H) || !identical(dim(H), rep(as.integer(fit[["npars"]]), 2L)) || any(!is.finite(H)))
+    return(NA)
+  H <- (H + t(H)) / 2
+  if (any(diag(H) <= 0))
+    return(TRUE)
+  scales <- sqrt(diag(H))
+  eigenvalues <- eigen(H / outer(scales, scales), symmetric = TRUE, only.values = TRUE)[["values"]]
+  return(min(eigenvalues) <= nrow(H) * .Machine$double.eps * max(abs(eigenvalues)))
 }
 
 # Rank admissible native solutions and retain replication and degeneracy diagnostics.
