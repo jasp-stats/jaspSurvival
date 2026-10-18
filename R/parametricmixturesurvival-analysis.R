@@ -23,8 +23,7 @@
   "mixtureEmIterations", "setSeed", "seed", "outputFormattingCompareModelsAcrossComponents",
   "mixtureConstrainMinimumSpread", "mixtureConstrainMinimumSpreadType", "mixtureMinimumLogTimeSdRelative", "mixtureMinimumLogTimeSd"
 )
-# Cached native fits also retain their custom distribution closures.
-.sapmCandidatePolicyVersion <- 2L
+.sapmCandidatePolicyVersion <- 1L
 
 .sapmCheckDataset               <- function(dataset, options) {
 

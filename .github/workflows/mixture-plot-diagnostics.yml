@@ -5,7 +5,6 @@ name: mixture-plot-diagnostics
     paths:
       - '.github/scripts/diagnose-mixture-plots.R'
       - '.github/workflows/mixture-plot-diagnostics.yml'
-      - 'R/parametricmixturesurvival-distributions.R'
   workflow_dispatch:
 
 permissions:
