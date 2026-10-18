@@ -104,7 +104,7 @@
   family     <- .sapmFamily(attr(fit, "family"))
   parameters <- if (attr(fit, "components") > 1L) .sapmParameterNames(family, attr(fit, "components"))[["componentPars"]] else family[["pars"]]
   return(stats::setNames(lapply(parameters, function(location) {
-    design <- fit[["data"]][["mml"]][[location]]
+    design <- stats::model.matrix(fit, par = location)
     if (is.null(design))
       design <- matrix(1, nrow(fit[["data"]][["m"]]), 1L, dimnames = list(rownames(fit[["data"]][["m"]]), "(Intercept)"))
     parameters <- c(match(location, rownames(fit[["res.t"]])), fit[["covpars"]][fit[["mx"]][[location]]])

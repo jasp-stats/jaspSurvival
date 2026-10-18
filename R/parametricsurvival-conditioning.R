@@ -150,6 +150,9 @@
 }
 
 # Native link coefficients map to the same parameters for points and draws.
+# The equivalent flexsurv 2.3.2 normboot adapter needs an unused covariance-guard
+# bypass for supplied draws, list stacking and no-covariate profile replication.
+# It was slower at 100 profiles/B=128; retain this short bulk tcrossprod projection.
 .sapPredictionParameters <- function(fit, X, rawsim) {
 
   stopifnot(ncol(X) == fit[["ncoveffs"]])

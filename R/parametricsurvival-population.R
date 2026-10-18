@@ -1,4 +1,10 @@
 # Standardize responses over observed profiles, retaining their joint distribution.
+# flexsurv 2.3.2 standsurv is not a replacement for this shared-draw path:
+# identical at scenarios gave bootstrap ratio CI [.89696, 1.12995] instead of [1, 1];
+# bootstrap cl=.8 looks for hardcoded 2.5%/97.5% columns, and partially fixed
+# delta intervals have a dimension mismatch. With main ~x and shape ~z,
+# at(x=value) can collapse unweighted z profiles to the first row, changing
+# predictions when rows reverse. Keep common draws, one-sided bounds and log tails.
 .sapPopulationDesigns <- function(fit, data, options, used) {
 
   training  <- attr(fit, "dataset")
@@ -82,6 +88,9 @@
 }
 
 # Invert the weighted population distribution separately for each coefficient draw.
+# A tested flexsurv 2.3.2 qgeneric adapter still needed explicit draw indexing,
+# endpoint/cure screening, log-tail residual checks and failed-row retries;
+# it offered neither less scaffolding nor a speed benefit on the tested draws.
 .sapPopulationQuantile <- function(fit, parameters, weights, probability) {
 
   draws <- nrow(parameters) / length(weights)

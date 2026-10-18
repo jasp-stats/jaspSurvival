@@ -449,8 +449,9 @@
   logRatio <- rep(0, n)
   logRatio[valid] <- log(x[valid]) - log(scale[valid])
   logPower <- shape * logRatio
-  # Native dweibull forms powers before taking logs, which can yield Inf - Inf
-  # (or Inf * 0) in the tails of narrow components, including valid CI draws.
+  # R 4.5.2 dweibull forms ratios/powers before logs: e.g. x=1, shape=2,
+  # scale=1e300 loses finite log f=-1380.8579; extreme ratios can also yield
+  # Inf - Inf or Inf * 0. Evaluate only these overflow/underflow rows in log space.
   logMaximum   <- log(.Machine$double.xmax)
   logMinimum   <- log(.Machine$double.xmin)
   logPrefactor <- (shape[valid] - 1) * logRatio[valid]
@@ -471,8 +472,8 @@
 
 .sapMeanGompertz <- function(shape, rate = 1) {
 
-  # A negative shape leaves positive survival at infinity: unrestricted mean
-  # lifetime is infinite even when numerical integration returns a finite value.
+  # A negative shape leaves positive survival at infinity, so the mean is Inf.
+  # flexsurv 2.3.2 mean_gompertz(-.1, rate=1) instead integrates to about 1.1301.
   size     <- max(length(shape), length(rate))
   shape    <- rep_len(shape, size)
   rate     <- rep_len(rate, size)

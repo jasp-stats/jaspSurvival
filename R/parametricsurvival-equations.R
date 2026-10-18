@@ -130,12 +130,12 @@
     slope    <- fit[["covpars"]][fit[["mx"]][[parameter]]]
     if (!identical(unname(expected[slope]), unname(equation[["slopeNames"]])))
       stop("Native coefficient indices differ from the prepared equation specification.")
-    matrix <- fit[["data"]][["mml"]][[parameter]]
+    matrix <- stats::model.matrix(fit, par = parameter)
     if (length(slope) > 0L && !identical(colnames(matrix), colnames(equation[["matrix"]])))
       stop("Native design columns differ from the prepared equation specification.")
     equation[["baselineIndex"]] <- match(parameter, expected)
     equation[["slopeIndices"]]  <- slope
-    equation[["terms"]]         <- fit[["data"]][["mml"]][[parameter]]
+    equation[["terms"]]         <- matrix
     specification[["equations"]][[parameter]] <- equation
   }
   return(specification)
@@ -195,7 +195,7 @@
 
   return(stats::setNames(lapply(family[["pars"]], function(parameter) {
     native <- if (components == 1L) parameter else paste0(parameter, component)
-    matrix <- fit[["data"]][["mml"]][[native]]
+    matrix <- stats::model.matrix(fit, par = native)
     if (is.null(matrix))
       return(matrix(numeric(0), nrow(fit[["data"]][["m"]]), 0L))
     return(matrix[, -1L, drop = FALSE])
