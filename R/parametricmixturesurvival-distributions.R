@@ -16,16 +16,17 @@
 #
 
 # Component parameters and native mixture distribution functions.
-.sapmOrderedInits               <- function(fit, family, components) {
+.sapmOrderedInits               <- function(fit, family, components, link = FALSE) {
+
+  inits <- fit[[if (link) "res.t" else "res"]][, "est"]
 
   # Fixed values identify components; median ordering would assign them to other components.
   if (length(setdiff(fit[["fixedpars"]], match(names(attr(fit, "structuralParameters")), rownames(fit[["res"]])))) > 0L)
-    return(unname(fit[["res"]][, "est"]))
+    return(unname(inits))
 
   # order estimates before flexsurvreg constructs their covariance and confidence intervals
   estimates <- .sapmComponentEstimates(fit, family, components)
   order     <- .sapmComponentOrder(family, estimates[["base"]])
-  inits     <- fit[["res"]][, "est"]
   if (components == 1 || identical(order, seq_len(components)))
     return(unname(inits))
 
@@ -42,7 +43,8 @@
       inits[targetIndex] <- original[sourceIndex]
     }
   weightIndex <- match(.sapmParameterNames(family, components)[["weightPars"]], names(inits))
-  inits[weightIndex] <- stats::plogis(.sapmReorderedWeights(fit[["res.t"]][weightIndex, "est"], order))
+  reordered <- .sapmReorderedWeights(fit[["res.t"]][weightIndex, "est"], order)
+  inits[weightIndex] <- if (link) reordered else stats::plogis(reordered)
 
   return(unname(inits))
 }

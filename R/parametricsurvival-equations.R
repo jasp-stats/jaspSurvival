@@ -557,7 +557,9 @@
   fitCall <- .sapFixedFitCall(fitCall, fixed, current[["parameterNames"]])
   fitCall <- .sapEyringControls(fitCall, schema)
   fit     <- suppressWarnings(suppressMessages(.sapmCompressedFit(fitCall, function(...) {
-    .sapEyringNativeFit(list(...), schema, options[["censoringType"]])
+    nativeCall <- list(...)
+    attr(nativeCall, "nativeFixedValues") <- attr(fitCall, "nativeFixedValues")
+    .sapNativeFit(nativeCall, schema, options[["censoringType"]])
   })))
   .sapVerifyNativeSchema(fit, current)
 
@@ -573,8 +575,8 @@
     return(native[["matrix"]][, -1L, drop = FALSE])
   }), family[["pars"]])
   linkBaseline <- fit[["res.t"]][family[["pars"]], "est"]
-  return(list(base = base, beta = beta, linkBaseline = linkBaseline, nativeControl = fitCall[["control"]],
-    structuralInitialAdjustment = attr(fitCall, "structuralInitialAdjustment"), fullParameterScales = attr(fitCall, "fullParameterScales"),
+  return(list(base = base, beta = beta, linkBaseline = linkBaseline, nativeControl = attr(fit, "nativeControl"),
+    structuralInitialAdjustment = attr(fitCall, "structuralInitialAdjustment"),
     parameters                  = .sapmParameters(family, base, beta, matrices, linkBaseline)))
 }
 

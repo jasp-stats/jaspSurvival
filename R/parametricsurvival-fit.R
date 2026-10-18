@@ -43,7 +43,9 @@
     !identical(attr(out, "frequencyRowNames", exact = TRUE), attr(dataset, "frequencyRowNames", exact = TRUE)))
   candidatePolicyChanged <- !is.null(out) && options[["analysisType"]] == "mixture" &&
     !identical(attr(out, "mixtureCandidatePolicyVersion", exact = TRUE), .sapmCandidatePolicyVersion)
-  if (cohortChanged || candidatePolicyChanged) {
+  informationPolicyChanged <- !is.null(out) &&
+    !identical(attr(out, "informationPolicyVersion", exact = TRUE), .sapInformationPolicyVersion)
+  if (cohortChanged || candidatePolicyChanged || informationPolicyChanged) {
     out <- NULL
     fitContainer$object <- NULL
   }
@@ -54,9 +56,7 @@
   if (!is.null(out))
     fitContainer$object <- out
 
-  assessment         <- .sapAssessInformationStore(out, options[["censoringType"]])
-  out                <- assessment[["store"]]
-  informationChanged <- cohortChanged || candidatePolicyChanged || assessment[["changed"]]
+  informationChanged <- cohortChanged || candidatePolicyChanged || informationPolicyChanged
   # Rebuild retained output when a fitted transformation's constants change.
   if (!is.null(out) && !isTRUE(all.equal(lapply(attr(out, "modelTerms"), .sapModelTransformations),
     lapply(options[["modelTerms"]], .sapModelTransformations))))

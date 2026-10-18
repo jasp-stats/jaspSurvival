@@ -83,6 +83,7 @@
   else
     dlist <- .sapFixedDistribution(dlist, fixed, parameterNames)
   fitCall[["dist"]] <- dlist
+  attr(fitCall, "nativeFixedValues") <- fixed
 
   # flexsurv passes only the free parameters to optim; bounds and steps must match.
   for (name in c("lower", "upper")) {
@@ -104,6 +105,7 @@
   fit[["optpars"]]   <- setdiff(seq_len(nrow(fit[["res"]])), fit[["fixedpars"]])
   attr(fit, "restrictParametersValues") <- fixed[!names(fixed) %in% names(structural)]
   attr(fit, "structuralParameters") <- structural
+  fit[["res"]][names(fixed), "est"] <- fixed
 
   # flexsurv's fully fixed fit returns estimates only, with no optimizer or intervals.
   if (fit[["npars"]] == 0L) {
@@ -165,10 +167,8 @@
   fitCall <- .sapEyringInitials(fitCall, schema, fixed)
   fitCall <- .sapFixedFitCall(fitCall, fixed, specification[["parameterNames"]])
   fitCall <- .sapEyringControls(fitCall, schema)
-  fit     <- .sapEyringNativeFit(fitCall, schema, options[["censoringType"]])
-  attr(fit, "nativeControl") <- fitCall[["control"]]
+  fit     <- .sapNativeFit(fitCall, schema, options[["censoringType"]])
   attr(fit, "structuralInitialAdjustment") <- attr(fitCall, "structuralInitialAdjustment")
-  attr(fit, "fullParameterScales") <- attr(fitCall, "fullParameterScales")
   attr(fit, "equations") <- .sapVerifyNativeSchema(fit, schema[["specification"]])
   return(.sapCompleteFixedFit(fit, fixed, options[["coefficientsConfidenceIntervalsLevel"]], specification[["structuralFixed"]]))
 }

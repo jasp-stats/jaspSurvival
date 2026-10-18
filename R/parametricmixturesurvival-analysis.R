@@ -210,7 +210,8 @@
         next
       }
 
-      orderedInits <- try(.sapmOrderedInits(fit, family, components), silent = TRUE)
+      orderedInits <- try(list(natural = .sapmOrderedInits(fit, family, components),
+        link = .sapmOrderedInits(fit, family, components, link = TRUE)), silent = TRUE)
       if (jaspBase::isTryError(orderedInits)) {
         recordFailure(start[["name"]], state[["iteration"]], "ordering", orderedInits)
         next
@@ -222,7 +223,9 @@
           iteration        = state[["iteration"]],
           logLik           = fit[["loglik"]],
           converged        = fit[["opt"]][["convergence"]] == 0,
-          inits            = orderedInits,
+          inits            = orderedInits[["natural"]],
+          initialSeed      = inits,
+          selectedPoint    = orderedInits[["link"]],
           warnings         = native[["warnings"]],
           searchProvenance = attr(fit, "searchProvenance")
         ),
@@ -253,18 +256,21 @@
       family,
       components,
       mixture,
-      candidate[["inits"]],
+      # A valid original seed builds metadata; the selected link vector, not its
+      # possibly 0/Inf natural baseline, initializes standardized finalization.
+      candidate[["initialSeed"]],
       caseWeights,
       hessian          = TRUE,
       constraint       = constraint,
       fixed            = nativeFixed,
       parameterNames   = parameterNames,
       specification    = specification,
-      searchProvenance = candidate[["searchProvenance"]]
+      searchProvenance = candidate[["searchProvenance"]],
+      selectedPoint    = candidate[["selectedPoint"]]
     )
     if (!jaspBase::isTryError(native[["fit"]])) {
       .sapmCheckPrecision(native[["fit"]], family, components, survObject)
-      .sapmCheckFinalPoint(native[["fit"]], candidate[["inits"]], candidate[["logLik"]])
+      .sapmCheckFinalPoint(native[["fit"]], candidate[["selectedPoint"]], candidate[["logLik"]], link = TRUE)
     }
     return(native)
   }, constrained = !is.null(constraint))
@@ -466,14 +472,19 @@
 
   if (fit[["npars"]] == 0L)
     return(FALSE)
-  H <- fit[["opt"]][["hessian"]]
+  H <- .sapNativeDiagnosticHessian(fit)
   if (!is.matrix(H) || !identical(dim(H), rep(as.integer(fit[["npars"]]), 2L)) || any(!is.finite(H)))
     return(NA)
   H <- (H + t(H)) / 2
   if (any(diag(H) <= 0))
     return(TRUE)
   scales <- sqrt(diag(H))
-  eigenvalues <- eigen(H / outer(scales, scales), symmetric = TRUE, only.values = TRUE)[["values"]]
+  normalized <- H / outer(scales, scales)
+  if (any(!is.finite(normalized)))
+    return(NA)
+  eigenvalues <- tryCatch(eigen(normalized, symmetric = TRUE, only.values = TRUE)[["values"]], error = function(error) NULL)
+  if (is.null(eigenvalues) || any(!is.finite(eigenvalues)))
+    return(NA)
   return(min(eigenvalues) <= nrow(H) * .Machine$double.eps * max(abs(eigenvalues)))
 }
 
@@ -518,7 +529,7 @@
 
 .sapmHessianPositiveDefinite    <- function(fit) {
 
-  hessian <- fit[["opt"]][["hessian"]]
+  hessian <- .sapNativeDiagnosticHessian(fit)
 
   if (fit[["npars"]] == 0L)
     return(TRUE)
@@ -933,7 +944,8 @@
   fixed            = numeric(0),
   parameterNames   = NULL,
   specification    = NULL,
-  searchProvenance = NULL
+  searchProvenance = NULL,
+  selectedPoint    = NULL
 ) {
 
   hessianWarning <- FALSE
@@ -961,7 +973,13 @@
   schema <- if (!is.null(specification)) .sapNativeSchema(fitCall, specification, fixed)
 
   if (!is.null(constraint)) {
-    point <- .sapmConstraintPoint(inits, constraint, family, components)
+    constraintInits <- inits
+    if (!is.null(selectedPoint)) {
+      indices <- .sapmConstraintBounds(constraint, family, components, length(inits))[["index"]]
+      inverseLink <- family[["inv.transforms"]][[match(constraint[["parameter"]], family[["pars"]])]]
+      constraintInits[indices] <- inverseLink(selectedPoint[indices])
+    }
+    point <- .sapmConstraintPoint(constraintInits, constraint, family, components)
     if (!point[["feasible"]])
       return(list(
         fit            = try(stop(gettext("The initial parameters do not satisfy the minimum log-time standard deviation.")), silent = TRUE),
@@ -987,12 +1005,11 @@
   fitCall <- .sapFixedFitCall(fitCall, fixed, parameterNames)
   if (!is.null(schema))
     fitCall <- .sapEyringControls(fitCall, schema)
-  covarianceError    <- NULL
-  covarianceHessian  <- NULL
-  covarianceFunction <- get(".hess_to_cov", envir = asNamespace("flexsurv"), inherits = FALSE)
   fit                <- try(withCallingHandlers(
     suppressMessages(.sapmCompressedFit(fitCall, function(...) {
-      .sapEyringNativeFit(list(...), schema, options[["censoringType"]], searchProvenance)
+      nativeCall <- list(...)
+      attr(nativeCall, "nativeFixedValues") <- attr(fitCall, "nativeFixedValues")
+      .sapNativeFit(nativeCall, schema, options[["censoringType"]], searchProvenance, selectedPoint)
     })),
     warning = function(w) {
       message <- conditionMessage(w)
@@ -1001,47 +1018,18 @@
       else
         warnings <<- unique(c(warnings, message))
       invokeRestart("muffleWarning")
-    },
-    error = function(error) {
-      if (!hessian)
-        return()
-      frames <- which(vapply(seq_len(sys.nframe()), function(frame)
-        identical(sys.function(frame), covarianceFunction), logical(1)))
-      if (length(frames) > 0L) {
-        covarianceError <<- conditionMessage(error)
-        covarianceHessian <<- get("hessian", envir = sys.frame(frames[length(frames)]), inherits = FALSE)
-      }
     }
   ), silent = TRUE)
-  if (jaspBase::isTryError(fit) && !is.null(covarianceError)) {
-    # A singular covariance does not invalidate the selected point estimates.
-    # Re-evaluate the same point with maxit=0, without requesting its covariance.
-    fitCall[["hessian"]] <- FALSE
-    fit <- try(suppressWarnings(suppressMessages(.sapmCompressedFit(fitCall, function(...) {
-      .sapEyringNativeFit(list(...), schema, options[["censoringType"]], searchProvenance)
-    }))), silent = TRUE)
-    if (!jaspBase::isTryError(fit)) {
-      fit <- .sapEyringUnavailableInference(fit,
-        gettextf("Native covariance finalization failed: %1$s. Confidence intervals are unavailable.", covarianceError))
-      fit[["opt"]][["hessian"]] <- covarianceHessian
-      provenance <- attr(fit, "informationProvenance", exact = TRUE)
-      provenance[["nativeH"]] <- covarianceHessian
-      provenance[["nativeAttempt"]] <- TRUE
-      provenance[["nativeCondition"]] <- covarianceError
-      attr(fit, "informationProvenance") <- provenance
-      hessianWarning <- TRUE
-    }
-  }
   fit <- .sapCompleteFixedFit(fit, fixed, options[["coefficientsConfidenceIntervalsLevel"]],
     if (is.null(specification)) numeric(0) else specification[["structuralFixed"]])
   if (!jaspBase::isTryError(fit)) {
-    attr(fit, "nativeControl") <- fitCall[["control"]]
     attr(fit, "structuralInitialAdjustment") <- attr(fitCall, "structuralInitialAdjustment")
-    attr(fit, "fullParameterScales") <- attr(fitCall, "fullParameterScales")
   }
   if (!jaspBase::isTryError(fit) && !is.null(specification))
     attr(fit, "equations") <- .sapVerifyNativeSchema(fit, schema[["specification"]])
   if (!jaspBase::isTryError(fit) && !is.null(attr(fit, "inferenceUnavailable")))
+    hessianWarning <- TRUE
+  if (!jaspBase::isTryError(fit) && isTRUE(attr(fit, "nativeHessianWarning", exact = TRUE)))
     hessianWarning <- TRUE
   if (!jaspBase::isTryError(fit) && identical(attr(fit, "informationOutcome", exact = TRUE), "analyticAvailable"))
     hessianWarning <- FALSE
@@ -1049,10 +1037,10 @@
   return(list(fit = fit, hessianWarning = hessianWarning, warnings = warnings))
 }
 
-.sapmCheckFinalPoint            <- function(fit, expected, logLik) {
+.sapmCheckFinalPoint            <- function(fit, expected, logLik, link = FALSE) {
 
-  actual    <- unname(fit[["res"]][, "est"])
-  tolerance <- sqrt(.Machine$double.eps) * pmax(abs(expected), .Machine$double.xmin)
+  actual    <- unname(fit[[if (link) "res.t" else "res"]][, "est"])
+  tolerance <- sqrt(.Machine$double.eps) * pmax(abs(expected), if (link) 1 else .Machine$double.xmin)
   if (length(actual) != length(expected) || any(!is.finite(actual)) || any(abs(actual - expected) > tolerance) ||
     !is.finite(fit[["loglik"]]) || abs(fit[["loglik"]] - logLik) > sqrt(.Machine$double.eps) * max(1, abs(logLik)))
     stop(gettext("The selected solution could not be retained while computing its covariance. Try a different distribution or fewer components."))

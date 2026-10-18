@@ -214,8 +214,9 @@
   schema     <- .sapNativeSchema(pilotCall, specification, fixed)
   pilot      <- schema[["fit"]]
   descriptor <- list(dlist = flexsurv::flexsurv.dists[[distribution]], dfns = NULL)
+  initialSeed <- unname(pilot[["res"]][, "est"])
   native     <- .sapmNativeFit(formula, dataset, options, family, 1L, descriptor,
-    unname(pilot[["res"]][, "est"]), weights, constraint = constraint, fixed = fixed, parameterNames = parameterNames, specification = specification)
+    initialSeed, weights, constraint = constraint, fixed = fixed, parameterNames = parameterNames, specification = specification)
   if (jaspBase::isTryError(native[["fit"]]))
     stop(jaspBase::.extractErrorMessage(native[["fit"]]))
   candidate        <- native[["fit"]]
@@ -223,13 +224,16 @@
   if (candidate[["opt"]][["convergence"]] != 0)
     stop(gettext("The constrained optimizer did not converge. Try a different distribution or a simpler model."))
 
-  inits  <- unname(candidate[["res"]][, "est"])
+  # Preserve the searched link point separately from the representable metadata
+  # seed: a selected raw natural baseline may be 0/Inf with finite predictions.
+  selectedPoint <- unname(candidate[["res.t"]][, "est"])
   native <- .sapmNativeFit(formula, dataset, options, family, 1L, descriptor,
-    inits, weights, hessian = TRUE, constraint = constraint, fixed = fixed, parameterNames = parameterNames, specification = specification, searchProvenance = attr(candidate, "searchProvenance"))
+    initialSeed, weights, hessian = TRUE, constraint = constraint, fixed = fixed, parameterNames = parameterNames,
+    specification = specification, searchProvenance = attr(candidate, "searchProvenance"), selectedPoint = selectedPoint)
   if (jaspBase::isTryError(native[["fit"]]))
     stop(jaspBase::.extractErrorMessage(native[["fit"]]))
   fit <- native[["fit"]]
-  .sapmCheckFinalPoint(fit, inits, candidate[["loglik"]])
+  .sapmCheckFinalPoint(fit, selectedPoint, candidate[["loglik"]], link = TRUE)
 
   info <- .sapmConstraintInfo(fit, constraint, family, 1L)
   fit  <- .sapmApplyConstraintInference(fit, info)
