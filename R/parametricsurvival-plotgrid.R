@@ -44,15 +44,15 @@
 # and excess mandatory nodes keep the original grid, which may exceed the cap.
 .sapAdaptivePlotTimes <- function(times, evaluate, xTransform = identity, xInverse = identity,
   yTransform = identity, limits = NULL, minimum = 17L,
-  maximum    = 201L, anchors = numeric(0), preserveFirstAnchor = FALSE) {
+  maximum    = 201L, anchors = numeric(0), scoutCount = 129L) {
   xRange <- try(xTransform(range(times)), silent = TRUE)
   if (inherits(xRange, "try-error") || any(!is.finite(xRange)) || diff(xRange) <= 0)
     return(times)
 
-  uniform <- try(xInverse(seq(xRange[1], xRange[2], length.out = 129L)), silent = TRUE)
+  uniform <- try(xInverse(seq(xRange[1], xRange[2], length.out = scoutCount)), silent = TRUE)
   if (inherits(uniform, "try-error") || any(!is.finite(uniform)))
     return(times)
-  uniform[c(1L, 129L)] <- range(times)
+  uniform[c(1L, scoutCount)] <- range(times)
   anchors <- anchors[anchors >= min(times) & anchors <= max(times)]
   scouts  <- sort(unique(c(times, anchors, uniform)))
   x       <- try(xTransform(scouts), silent = TRUE)
@@ -82,12 +82,7 @@
     clip     <- function(z) if (is.null(limits)) z else pmin(pmax(z, limits[1]), limits[2])
     actual   <- clip(y)
     span     <- diff(range(actual))
-    retained <- sort(unique(match(xTransform(uniform[seq(1L, 129L, length.out = minimum)]), x)))
-    # The earliest model landmark marks the onset of the fitted tail. Keep it
-    # independently of threshold ties in the adaptive interpolation error.
-    interiorAnchors <- anchors[anchors > min(times) & anchors < max(times)]
-    if (preserveFirstAnchor && length(interiorAnchors))
-      retained <- sort(unique(c(retained, match(xTransform(min(interiorAnchors)), x))))
+    retained <- sort(unique(match(xTransform(uniform[seq(1L, scoutCount, length.out = minimum)]), x)))
     # Keep visible entry/exit neighbours before clipping can hide their bends.
     crossings <- if (is.null(limits)) integer(0) else unique(unlist(lapply(limits, function(edge)
       which(rowSums((y[-nrow(y), , drop = FALSE] < edge) != (y[-1L, , drop = FALSE] < edge)) > 0L))))

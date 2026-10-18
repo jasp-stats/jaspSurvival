@@ -409,7 +409,8 @@
       plot = TRUE
     )
     if (scenarios[["timeAxis"]] && !type %in% c("quantile", "mean", "median")) {
-      # Refine the plotting grid without computing confidence bounds at scout points.
+      # Refine point estimates on a dense time grid; plotting does not require
+      # lifetime percentiles or confidence bounds at scout points.
       scoutOptions <- options
       scoutOptions[["predictionsDisplayConfidenceIntervals"]] <- FALSE
       evaluate   <- function(times) matrix(
@@ -419,15 +420,10 @@
       logTime    <- options[["predictionsXAxisTransformation"]] == "log"
       yTransform <- if (type == "survival") switch(options[["predictionsProbabilityYAxisScale"]],
         none = identity, log = log, logmlogmp = function(p) log(-log1p(-p))) else identity
-      anchors <- try(
-        .sapModelPredictionValues(model, scenarios, scoutOptions, "quantile", c(.001, .01, .1, .5, .9, .99, .999))[["estimate"]],
-        silent = TRUE
-      )
       at      <- .sapAdaptivePlotTimes(at, evaluate, xTransform = if (logTime) log else identity,
         xInverse = if (logTime) exp else identity, yTransform = yTransform, minimum = if (options[["predictionsDisplayConfidenceIntervals"]]) 65L else 17L,
         maximum  = if (options[["predictionsDisplayConfidenceIntervals"]]) 129L else 201L,
-        anchors  = if (inherits(anchors, "try-error")) numeric(0) else anchors[is.finite(anchors)],
-        preserveFirstAnchor = type == "survival" && attr(model, "components") > 1L)
+        scoutCount = 513L)
     }
     .sapModelPredictionValues(model, scenarios, options, type, at, measure)
   })

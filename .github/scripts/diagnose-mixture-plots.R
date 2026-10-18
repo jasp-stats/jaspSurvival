@@ -11,7 +11,7 @@ diagnostic$record <- function(kind, value) {
   diagnostic$events[[length(diagnostic$events) + 1L]] <- list(
     phase = diagnostic$phase, case = diagnostic$case, kind = kind, value = value)
   if (kind == "grid")
-    cat("GRID", diagnostic$phase, diagnostic$case, "preserve", value$preserveFirstAnchor,
+    cat("GRID", diagnostic$phase, diagnostic$case, "scouts", value$scoutCount,
       "anchors", length(value$anchors), "selected", length(value$selected),
       "first times", paste(head(value$selected, 6L), collapse = ","), "\n")
 }
@@ -57,10 +57,10 @@ runPhase <- function(phase) {
       state <- get(".mixturePlotDiagnostic", envir = .GlobalEnv)
       field <- function(name) get0(name, envir = parent.frame(), inherits = FALSE)
       state$record("grid", list(times = times, anchors = anchors,
-        inputAnchors = .diagnosticInputAnchors, preserveFirstAnchor = preserveFirstAnchor,
+        inputAnchors = .diagnosticInputAnchors, scoutCount = scoutCount,
         selected = returnValue(), minimum = minimum, maximum = maximum,
         scouts = field("scouts"), raw = field("raw"), transformedX = field("x"),
-        interiorAnchors = field("interiorAnchors"), retained = field("retained"),
+        retained = field("retained"),
         selectionAttempt = field("selected")))
     }))
   trace(".sapModelPredictionValues", where = ns, print = FALSE, exit = quote({

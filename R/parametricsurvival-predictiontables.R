@@ -188,6 +188,7 @@
     pointOptions[["predictionsDisplayConfidenceIntervals"]] <- FALSE
     probabilities <- unname(.sapBoundProbabilities(options[["predictionsDisplayPredictionIntervalLevel"]], "twoSided"))
     range         <- .sapModelPredictionValues(fit, scenarios, pointOptions, "quantile", probabilities, "survivalTime")
+    notes <- unique(c(notes, attr(range, "predictionWarnings")))
     data[["predictionLower"]] <- range[["estimate"]][range[["at"]] == probabilities[1L]][first[["Scenario"]]]
     data[["predictionUpper"]] <- range[["estimate"]][range[["at"]] == probabilities[2L]][first[["Scenario"]]]
   }
