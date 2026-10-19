@@ -17,6 +17,7 @@ Imports:
   flexsurv,
   jaspBase,
   jaspGraphs,
+  ReliaGrowR,
   splines,
   scales
 Suggests:

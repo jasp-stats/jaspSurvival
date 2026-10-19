@@ -42,4 +42,11 @@ Description
 		func:			"ParametricMixtureSurvivalAnalysis"
 	}
 
+	Analysis
+	{
+		menu:			qsTr("Reliability Growth")
+		title:			qsTr("Reliability Growth Analysis")
+		func:			"ReliabilityGrowthAnalysis"
+	}
+
 }
