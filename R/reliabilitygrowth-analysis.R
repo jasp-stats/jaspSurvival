@@ -23,14 +23,19 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
   return()
 }
 
-.sargReady <- function(options) options[["time"]] != ""
+.sargReady <- function(options) {
+
+  return(options[["time"]] != "")
+}
 
 .sargModelLabel <- function(model) {
-  switch(model, duane = gettext("Duane"), crowAmsaa = gettext("Crow\u2013AMSAA"),
-    logLinear = gettext("Log-linear NHPP"), piecewise = gettext("Piecewise power-law NHPP"))
+
+  return(switch(model, duane = gettext("Duane"), crowAmsaa = gettext("Crow\u2013AMSAA"),
+    logLinear = gettext("Log-linear NHPP"), piecewise = gettext("Piecewise power-law NHPP")))
 }
 
 .sargMethod <- function(options) {
+
   if (options[["model"]] %in% c("duane", "piecewise"))
     return("LS")
   if (options[["model"]] == "logLinear")
@@ -81,17 +86,14 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
   if (!.sargReady(options))
     return()
 
-  subgroup <- unlist(options[["subgroup"]])
-  subgroup <- subgroup[subgroup != ""]
-  groups <- if (length(subgroup) == 0) list(seq_len(nrow(dataset))) else {
-    levels <- do.call(interaction, c(lapply(dataset[subgroup], factor), list(drop = TRUE, lex.order = TRUE, sep = " | ")))
-    split(seq_len(nrow(dataset)), levels, drop = TRUE)
-  }
+  hasSubgroups <- .sapHasSubgroups(options)
+  groups <- if (hasSubgroups) split(seq_len(nrow(dataset)), .sapSubgroupFactor(dataset, options), drop = TRUE) else
+    list(seq_len(nrow(dataset)))
   fits <- lapply(seq_along(groups), function(index) {
     rows <- groups[[index]]
-    label <- if (length(subgroup) == 0) gettext("Full dataset") else names(groups)[index]
+    label <- if (hasSubgroups) names(groups)[index] else gettext("Full dataset")
     result <- try(.sargFitModel(dataset[rows, , drop = FALSE], options), silent = TRUE)
-    if (inherits(result, "try-error"))
+    if (jaspBase::isTryError(result))
       result <- list(error = jaspBase::.extractErrorMessage(result))
     result[["label"]] <- label
     result[["rows"]] <- rows
@@ -176,20 +178,20 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
       breaks <- fit[["psi"]][, "Est."]
       estimates[rownames(fit[["psi"]])] <- breaks
       record[["positive"]] <- rep(FALSE, length(estimates))
-      record[["parameterLabels"]] <- names(estimates)
+      labels <- names(estimates)
     } else {
       estimates[1] <- exp(estimates[1])
       jacobian <- diag(c(estimates[1], 1))
       covariance <- jacobian %*% covariance %*% jacobian
       record[["positive"]] <- c(TRUE, FALSE)
-      record[["parameterLabels"]] <- if (model == "duane") c("A", "alpha") else c("lambda", "beta")
+      labels <- if (model == "duane") c("A", "alpha") else c("lambda", "beta")
     }
   } else if (model == "logLinear") {
     estimates <- c(native[["params"]][["a"]] - log(scale), native[["params"]][["b"]] / scale)
     jacobian <- diag(c(1, 1 / scale))
     covariance <- jacobian %*% native[["vcov"]] %*% jacobian
     record[["positive"]] <- c(FALSE, FALSE)
-    record[["parameterLabels"]] <- c("a", "b")
+    labels <- c("a", "b")
     record[["df"]] <- Inf
   } else {
     beta   <- native[["params"]][["beta"]]
@@ -198,10 +200,10 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
     jacobian <- rbind(c(-lambda * log(scale), scale^(-beta)), c(1, 0))
     covariance <- jacobian %*% native[["vcov"]] %*% t(jacobian)
     record[["positive"]] <- c(TRUE, TRUE)
-    record[["parameterLabels"]] <- c("lambda", "beta")
+    labels <- c("lambda", "beta")
     record[["df"]] <- Inf
   }
-  names(estimates) <- record[["parameterLabels"]]
+  names(estimates) <- labels
   dimnames(covariance) <- list(names(estimates), names(estimates))
   record[["estimates"]] <- estimates
   record[["covariance"]] <- covariance
@@ -209,6 +211,7 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
 }
 
 .sargFits <- function(jaspResults, valid = FALSE) {
+
   fits <- jaspResults[["fit"]]$object
   if (valid)
     fits <- Filter(function(fit) is.null(fit[["error"]]), fits)
@@ -216,5 +219,6 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
 }
 
 .sargCritical <- function(level, df) {
-  if (is.finite(df)) stats::qt((1 + level) / 2, df) else stats::qnorm((1 + level) / 2)
+
+  return(if (is.finite(df)) stats::qt((1 + level) / 2, df) else .sapBoundCritical(level, "twoSided"))
 }

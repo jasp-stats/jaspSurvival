@@ -428,16 +428,9 @@
 
   rankData <- .sapProbabilityPlotHandleTies(rankData, options[["probabilityPlotTies"]])
 
-  probability <- switch(
-    options[["probabilityPlotPlottingPosition"]],
-    "median"      = stats::qbeta(0.5, rankData[["adjustedRank"]], n - rankData[["adjustedRank"]] + 1),
-    "benard"      = (rankData[["adjustedRank"]] - 0.3) / (n + 0.4),
-    "hazen"       = (rankData[["adjustedRank"]] - 0.5) / n,
-    "mean"        = rankData[["adjustedRank"]] / (n + 1),
-    "kaplanMeier" = .sapProbabilityPlotKaplanMeierPlottingPosition(rankData[["adjustedRank"]], n),
-    "blom"        = (rankData[["adjustedRank"]] - 0.375) / (n + 0.25),
-    stats::qbeta(0.5, rankData[["adjustedRank"]], n - rankData[["adjustedRank"]] + 1)
-  )
+  probability <- if (options[["probabilityPlotPlottingPosition"]] == "kaplanMeier")
+    .sapProbabilityPlotKaplanMeierPlottingPosition(rankData[["adjustedRank"]], n) else
+    .saProbabilityPlottingPositions(rankData[["adjustedRank"]], n, options[["probabilityPlotPlottingPosition"]])
 
   out <- data.frame(time = rankData[["time"]], probability = probability)
   rownames(out) <- NULL

@@ -6,21 +6,22 @@
 
 .sargIntervalMean <- function(fit) {
 
-  mean <- diff(c(0, .sargObserved(fit)))
+  mean <- diff(c(0, .sargFittedCumulativeFailures(fit)))
   if (any(!is.finite(mean) | mean <= 0))
     stop(gettext("The fitted curve does not give finite positive expected counts in every interval. Count residuals and probability diagnostics require a valid increasing NHPP cumulative mean."))
   return(mean)
 }
 
 .sargResidualLabel <- function(type) {
-  switch(type, regression = gettext("Regression Residuals"), response = gettext("Response Residuals"),
-    pearson = gettext("Pearson Residuals"), deviance = gettext("Deviance Residuals"), quantile = gettext("Randomized Quantile Residuals"))
+
+  return(switch(type, regression = gettext("Regression Residuals"), response = gettext("Response Residuals"),
+    pearson = gettext("Pearson Residuals"), deviance = gettext("Deviance Residuals"), quantile = gettext("Randomized Quantile Residuals")))
 }
 
 .sargResidualValue <- function(fit, type, quantile = NULL) {
 
   if (type == "quantile") {
-    if (inherits(quantile, "try-error"))
+    if (jaspBase::isTryError(quantile))
       stop(jaspBase::.extractErrorMessage(quantile))
     return(quantile)
   }
@@ -97,11 +98,11 @@
   return()
 }
 
-.sargDiagnosticSection <- function(jaspResults, key, title, dependencies, position, fits, builder, width = 440, height = 320) {
+.sargDiagnosticSection <- function(jaspResults, options, key, title, dependencies, position, fits, builder, width = 440, height = 320) {
 
   if (!is.null(jaspResults[[key]]))
     return()
-  if (length(fits) == 1L && nzchar(fits[[1L]][["label"]]) && any(nzchar(unlist(options[["subgroup"]]))))
+  if (length(fits) == 1L && nzchar(fits[[1L]][["label"]]) && .sapHasSubgroups(options))
     title <- gettextf("%1$s: %2$s", title, fits[[1L]][["label"]])
   output <- if (length(fits) == 1L) createJaspPlot(title = title, width = width, height = height) else createJaspContainer(title = title)
   output$dependOn(c(.sargFitDependencies, dependencies))
@@ -114,7 +115,7 @@
       output[[paste0("plot", i)]] <- plot
     }
     value <- try(builder(i), silent = TRUE)
-    if (inherits(value, "try-error"))
+    if (jaspBase::isTryError(value))
       plot$setError(jaspBase::.extractErrorMessage(value))
     else
       plot$plotObject <- value
@@ -126,7 +127,7 @@
 
   key <- switch(kind, time = "residualsVsTimePlot", predicted = "residualVsPredictedPlot", histogram = "residualHistogram")
   title <- switch(kind, time = gettext("Residuals vs. Time"), predicted = gettext("Residuals vs. Predicted"), histogram = gettext("Residual Histogram"))
-  .sargDiagnosticSection(jaspResults, key, title, c(option, "residualPlotResidualType"), position, fits, function(i) {
+  .sargDiagnosticSection(jaspResults, options, key, title, c(option, "residualPlotResidualType"), position, fits, function(i) {
     fit <- fits[[i]]
     type <- options[["residualPlotResidualType"]]
     residual <- .sargResidualValue(fit, type, quantiles[[i]])
@@ -147,19 +148,12 @@
   return()
 }
 
-.sargProbabilityPositions <- function(n, method) {
-  rank <- seq_len(n)
-  switch(method,
-    median = stats::qbeta(.5, rank, n - rank + 1), benard = (rank - .3) / (n + .4),
-    hazen = (rank - .5) / n, mean = rank / (n + 1), blom = (rank - .375) / (n + .25))
-}
-
 .sargProbabilityData <- function(fit, residuals, options) {
 
-  if (inherits(residuals, "try-error"))
+  if (jaspBase::isTryError(residuals))
     stop(jaspBase::.extractErrorMessage(residuals))
   n <- length(residuals)
-  probability <- .sargProbabilityPositions(n, options[["probabilityPlotPlottingPosition"]])
+  probability <- .saProbabilityPlottingPositions(seq_len(n), n, options[["probabilityPlotPlottingPosition"]])
   transform <- if (options[["probabilityPlotCanvas"]] == "normal") stats::qnorm else identity
   alpha <- (1 - options[["probabilityPlotReferenceEnvelopeLevel"]]) / 2
   return(data.frame(theoretical = transform(probability), observed = if (options[["probabilityPlotCanvas"]] == "normal")
@@ -174,11 +168,10 @@
     return()
   groups <- if (options[["probabilityPlotMergePlotsAcrossSubgroups"]]) list(seq_along(fits)) else as.list(seq_along(fits))
   selected <- lapply(groups, function(indices) list(label = if (length(indices) == 1L) fits[[indices]][["label"]] else ""))
-  .sargDiagnosticSection(jaspResults, "probabilityPlot", gettext("Probability Plot"), .sargProbabilityDependencies, 6.4, selected, function(i) {
+  .sargDiagnosticSection(jaspResults, options, "probabilityPlot", gettext("Probability Plot"), .sargProbabilityDependencies, 6.4, selected, function(i) {
     indices <- groups[[i]]
     data <- do.call(rbind, lapply(indices, function(index) .sargProbabilityData(fits[[index]], quantiles[[index]], options)))
-    plot <- .sargProbabilityFigure(data, options)
-    return(plot)
+    return(.sargProbabilityFigure(data, options))
   }, width = if (options[["probabilityPlotMergePlotsAcrossSubgroups"]] && length(fits) > 1L) 650 else 520, height = 420)
   jaspResults[["probabilityPlot"]]$addCitation("Dunn, P. K., & Smyth, G. K. (1996). Randomized quantile residuals. Journal of Computational and Graphical Statistics, 5(3), 236-244. https://doi.org/10.1080/10618600.1996.10474708")
   return()
@@ -201,11 +194,11 @@
       plot <- plot + ggplot2::geom_text(ggplot2::aes(label = sprintf("(%.3f, %.3f)", theoretical, observed)),
         vjust = -.8, size = 2.5, show.legend = FALSE)
   }
-  if (nlevels(data[["subgroup"]]) == 1L)
-    plot <- plot + ggplot2::scale_colour_manual(values = "grey40") + ggplot2::scale_fill_manual(values = "grey40")
-  else
-    plot <- plot + jaspGraphs::scale_JASPcolor_discrete(options[["probabilityPlotColorPalette"]]) +
-      jaspGraphs::scale_JASPfill_discrete(options[["probabilityPlotColorPalette"]])
+  colourScale <- jaspGraphs::scale_JASPcolor_discrete(options[["probabilityPlotColorPalette"]])
+  fillScale   <- jaspGraphs::scale_JASPfill_discrete(options[["probabilityPlotColorPalette"]])
+  colourScale$palette <- .sapPlotPalette(colourScale$palette, nlevels(data[["subgroup"]]))
+  fillScale$palette   <- .sapPlotPalette(fillScale$palette, nlevels(data[["subgroup"]]))
+  plot <- plot + colourScale + fillScale
   uniform <- options[["probabilityPlotCanvas"]] == "uniform"
   plot <- plot + ggplot2::labs(x = if (uniform) gettext("Theoretical Probability") else gettext("Theoretical Normal Quantile"),
     y = if (uniform) gettext("Observed Probability") else gettext("Observed Quantile Residual"), colour = gettext("Subgroup"), fill = gettext("Subgroup"),

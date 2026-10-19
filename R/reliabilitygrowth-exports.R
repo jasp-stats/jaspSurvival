@@ -1,19 +1,18 @@
-.sargExportOptions <- c("exportResidualsRegression", "exportResidualsResponse", "exportResidualsPearson",
-  "exportResidualsDeviance", "exportResidualsQuantile", "exportFittedValuesCumulativeFailures", "exportFittedValuesIntervalFailures")
+.sargExportDefinitions <- list(
+  exportResidualsRegression = list(type = "regression", suffix = "RegressionResidual"),
+  exportResidualsResponse   = list(type = "response", suffix = "ResponseResidual"),
+  exportResidualsPearson    = list(type = "pearson", suffix = "PearsonResidual"),
+  exportResidualsDeviance   = list(type = "deviance", suffix = "DevianceResidual"),
+  exportResidualsQuantile   = list(type = "quantile", suffix = "QuantileResidual"),
+  exportFittedValuesCumulativeFailures = list(type = "cumulative", suffix = "CumulativeFailures"),
+  exportFittedValuesIntervalFailures   = list(type = "interval", suffix = "IntervalFailures")
+)
+.sargExportOptions <- names(.sargExportDefinitions)
 
 .sargExportRecords <- function(fits, options, nRows, quantiles) {
 
-  definitions <- list(
-    list(option = "exportResidualsRegression", type = "regression", suffix = "RegressionResidual"),
-    list(option = "exportResidualsResponse", type = "response", suffix = "ResponseResidual"),
-    list(option = "exportResidualsPearson", type = "pearson", suffix = "PearsonResidual"),
-    list(option = "exportResidualsDeviance", type = "deviance", suffix = "DevianceResidual"),
-    list(option = "exportResidualsQuantile", type = "quantile", suffix = "QuantileResidual"),
-    list(option = "exportFittedValuesCumulativeFailures", type = "cumulative", suffix = "CumulativeFailures"),
-    list(option = "exportFittedValuesIntervalFailures", type = "interval", suffix = "IntervalFailures")
-  )
-  selected <- Filter(function(definition) options[[definition[["option"]]]] &&
-    (definition[["type"]] != "regression" || .sargMethod(options) == "LS"), definitions)
+  selected <- .sargExportDefinitions[vapply(.sargExportOptions, function(name) options[[name]] &&
+    (.sargExportDefinitions[[name]][["type"]] != "regression" || .sargMethod(options) == "LS"), logical(1))]
   if (!length(selected))
     return(list(columns = list(), messages = character(0)))
   prefix <- trimws(options[["exportColumnPrefix"]])
@@ -25,9 +24,9 @@
     values <- rep(NA_real_, nRows)
     for (i in seq_along(fits)) {
       fit <- fits[[i]]
-      value <- try(switch(definition[["type"]], cumulative = .sargObserved(fit), interval = .sargIntervalMean(fit),
+      value <- try(switch(definition[["type"]], cumulative = .sargFittedCumulativeFailures(fit), interval = .sargIntervalMean(fit),
         .sargResidualValue(fit, definition[["type"]], quantiles[[i]])), silent = TRUE)
-      if (inherits(value, "try-error")) {
+      if (jaspBase::isTryError(value)) {
         messages <- c(messages, gettextf("%1$s, %2$s: %3$s", fit[["label"]], definition[["suffix"]], jaspBase::.extractErrorMessage(value)))
         next
       }
@@ -37,7 +36,7 @@
       }
       values[fit[["rows"]]] <- value
     }
-    columns[[definition[["suffix"]]]] <- list(name = paste0(prefix, "_", definition[["suffix"]]), value = values)
+    columns[[definition[["suffix"]]]] <- list(name = paste0(prefix, "_", definition[["suffix"]]), value = values, type = "scale")
   }
   return(list(columns = columns, messages = unique(messages)))
 }
@@ -62,9 +61,8 @@
   jaspResults[["exportColumns"]] <- container
   for (key in names(records[["columns"]])) {
     record <- records[["columns"]][[key]]
-    column <- createJaspColumn(columnName = record[["name"]], dependencies = dependencies)
-    container[[key]] <- column
-    column$setScale(record[["value"]])
+    container[[key]] <- createJaspColumn(columnName = record[["name"]], dependencies = dependencies)
+    .saSetExportColumn(container[[key]], record)
   }
   .saExportMessages(container, records[["messages"]])
   return()

@@ -1,11 +1,13 @@
 .sargMeasures <- function(options) {
-  .sargMeasureNames[vapply(.sargPredictionOptions, function(key) options[[key]], logical(1))]
+
+  return(.sargMeasureNames[vapply(.sargPredictionOptions, function(key) options[[key]], logical(1))])
 }
 
 .sargMeasureLabel <- function(measure) {
-  switch(measure, survivalProbability = gettext("Survival Probability"), failureProbability = gettext("Failure Probability"),
+
+  return(switch(measure, survivalProbability = gettext("Survival Probability"), failureProbability = gettext("Failure Probability"),
     cumulativeFailures = gettext("Cumulative Failures"), failureIntensity = gettext("Failure Intensity"),
-    cumulativeMtbf = gettext("Cumulative MTBF"), instantaneousMtbf = gettext("Instantaneous MTBF"))
+    cumulativeMtbf = gettext("Cumulative MTBF"), instantaneousMtbf = gettext("Instantaneous MTBF")))
 }
 
 .sargTimes <- function(record, options, plot = FALSE) {
@@ -53,6 +55,7 @@
 }
 
 .sargBreakpoints <- function(record) {
+
   if (record[["model"]] != "piecewise")
     return(numeric(0))
   return(exp(record[["native"]][["model"]][["psi"]][, "Est."]))
@@ -87,24 +90,6 @@
     upper <- prediction[["upper_bounds"]]
   }
 
-  coefficients <- record[["estimates"]]
-  model <- record[["model"]]
-  if (model == "logLinear") {
-    intensity <- exp(coefficients[1] + coefficients[2] * times)
-    gradient  <- cbind(1, times)
-  } else if (model == "piecewise") {
-    slopes <- native[["betas"]][["log_times"]][, "Est."]
-    segment <- findInterval(log(times), log(.sargBreakpoints(record))) + 1L
-    intensity <- mean * slopes[segment] / times
-    gradient <- NULL
-  } else if (model == "duane") {
-    intensity <- mean * (1 - coefficients[2]) / times
-    gradient  <- cbind(-1 / coefficients[1], -1 / (1 - coefficients[2]) - log(times))
-  } else {
-    intensity <- mean * coefficients[2] / times
-    gradient  <- cbind(1 / coefficients[1], 1 / coefficients[2] + log(times))
-  }
-
   if (measure == "cumulativeFailures") {
     estimate <- mean
   } else if (measure == "cumulativeMtbf") {
@@ -113,6 +98,23 @@
     upper    <- times / lower
     lower    <- newLower
   } else {
+    coefficients <- record[["estimates"]]
+    model        <- record[["model"]]
+    if (model == "logLinear") {
+      intensity <- exp(coefficients[1] + coefficients[2] * times)
+      gradient  <- cbind(1, times)
+    } else if (model == "piecewise") {
+      slopes    <- native[["betas"]][["log_times"]][, "Est."]
+      segment   <- findInterval(log(times), log(.sargBreakpoints(record))) + 1L
+      intensity <- mean * slopes[segment] / times
+      gradient  <- NULL
+    } else if (model == "duane") {
+      intensity <- mean * (1 - coefficients[2]) / times
+      gradient  <- cbind(-1 / coefficients[1], -1 / (1 - coefficients[2]) - log(times))
+    } else {
+      intensity <- mean * coefficients[2] / times
+      gradient  <- cbind(1 / coefficients[1], 1 / coefficients[2] + log(times))
+    }
     estimate <- if (measure == "failureIntensity") intensity else 1 / intensity
     lower <- upper <- rep(NA_real_, length(times))
     if (!is.null(gradient) && record[["inferenceAvailable"]]) {
@@ -143,7 +145,8 @@
   return(prediction)
 }
 
-.sargObserved <- function(record) {
+.sargFittedCumulativeFailures <- function(record) {
+
   return(if (record[["model"]] == "duane") record[["time"]] / record[["native"]][["Fitted_Values"]] else record[["native"]][["fitted_values"]])
 }
 
@@ -199,28 +202,29 @@
   .sargGroupColumn(table, options)
   errors <- character(0)
   forecast <- FALSE
-  data <- lapply(measures, function(measure) {
-    rows <- lapply(predictions[[measure]], function(prediction) {
-      if (inherits(prediction[["table"]], "try-error")) {
-        errors <<- c(errors, gettextf("%1$s: %2$s", prediction[["label"]], jaspBase::.extractErrorMessage(prediction[["table"]])))
-        return(NULL)
+  data <- list()
+  for (measure in measures) {
+    rows <- list()
+    for (prediction in predictions[[measure]]) {
+      if (jaspBase::isTryError(prediction[["table"]])) {
+        errors <- c(errors, gettextf("%1$s: %2$s", prediction[["label"]], jaspBase::.extractErrorMessage(prediction[["table"]])))
+        next
       }
       frame <- prediction[["table"]]
-      forecast <<- forecast || any(frame[["forecast"]])
+      forecast <- forecast || any(frame[["forecast"]])
       frame[["forecast"]] <- NULL
       if (merged)
         names(frame)[match(c("estimate", "lower", "upper"), names(frame))] <- paste0(measure, ".", c("estimate", "lower", "upper"))
-      frame
-    })
-    rows <- Filter(Negate(is.null), rows)
-    if (length(rows) > 0) do.call(rbind, rows)
-  })
+      rows[[length(rows) + 1L]] <- frame
+    }
+    data[[measure]] <- .saSafeRbind(rows)
+  }
   data <- Filter(Negate(is.null), data)
   wide <- options[["predictionsOutputTableFormat"]] == "wide"
   data <- if (length(data) > 0) Reduce(function(x, y) merge(x, y, by = c("subgroup", "time"), all = TRUE, sort = FALSE), data)
   times <- if (wide && !is.null(data)) sort(unique(data[["time"]]))
   if (!wide)
-    .sargColumn(table, "time", gettext("Time"))
+    table$addColumnInfo(name = "time", title = gettext("Time"), type = "number")
   .sargPredictionTableColumns(table, options, measures, times)
   if (!is.null(data)) {
     labels <- vapply(.sargFits(jaspResults, valid = TRUE), `[[`, character(1), "label")
@@ -253,6 +257,7 @@
 }
 
 .sargPredictionTableColumns <- function(table, options, measures, times = NULL) {
+
   specification <- list(levels = if (options[["predictionsDisplayConfidenceIntervals"]]) options[["predictionsDisplayConfidenceIntervalsLevel"]] else numeric(0), direction = "twoSided")
   for (measure in measures) {
     prefix <- if (length(measures) > 1L) paste0(measure, ".") else ""
@@ -269,6 +274,7 @@
 }
 
 .sargPredictionWideData <- function(data, measures, times) {
+
   labels <- unique(data[["subgroup"]])
   wide <- data.frame(subgroup = labels)
   for (measure in measures) {

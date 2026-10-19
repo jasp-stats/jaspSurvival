@@ -17,7 +17,7 @@
     output$position <- i
     container[[paste0("plot", i)]] <- output
     plot <- try(.sargPredictionPlot(fits[indices], predictions[indices], measure, options), silent = TRUE)
-    if (inherits(plot, "try-error"))
+    if (jaspBase::isTryError(plot))
       output$setError(jaspBase::.extractErrorMessage(plot))
     else {
       size <- .sapPredictionPlotSize(plot, options, 550, 320)
@@ -31,7 +31,7 @@
 
 .sargPredictionPlot <- function(fits, predictions, measure, options) {
 
-  errors <- vapply(predictions, function(x) inherits(x[["plot"]], "try-error"), logical(1))
+  errors <- vapply(predictions, function(x) jaspBase::isTryError(x[["plot"]]), logical(1))
   if (any(errors))
     stop(paste(vapply(predictions[errors], function(x) gettextf("%1$s: %2$s", x[["label"]],
       jaspBase::.extractErrorMessage(x[["plot"]])), character(1)), collapse = "\n"))
@@ -68,13 +68,11 @@
 .sargPlotStyle <- function(plot, options, groups, probability = FALSE) {
 
   labels <- unique(as.character(plot$data[["subgroup"]]))
-  if (groups == 1L) {
-    plot <- plot + ggplot2::scale_colour_manual(values = "grey40", limits = labels) +
-      ggplot2::scale_fill_manual(values = "grey40", limits = labels)
-  } else {
-    plot <- plot + jaspGraphs::scale_JASPcolor_discrete(palette = options[["colorPalette"]], limits = labels) +
-      jaspGraphs::scale_JASPfill_discrete(palette = options[["colorPalette"]], limits = labels)
-  }
+  colourScale <- jaspGraphs::scale_JASPcolor_discrete(palette = options[["colorPalette"]], limits = labels)
+  fillScale   <- jaspGraphs::scale_JASPfill_discrete(palette = options[["colorPalette"]], limits = labels)
+  colourScale$palette <- .sapPlotPalette(colourScale$palette, groups)
+  fillScale$palette   <- .sapPlotPalette(fillScale$palette, groups)
+  plot <- plot + colourScale + fillScale
   plot <- .sapPredictionPlotAddTheme(plot, options)
   if (groups == 1L)
     plot <- plot + ggplot2::theme(legend.position = "none")
