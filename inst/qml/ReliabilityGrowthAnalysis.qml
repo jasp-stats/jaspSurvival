@@ -62,6 +62,7 @@ Form
 			name: "estimationMethod"
 			label: qsTr("Estimation")
 			depends: model
+			enabled: model.value === "crowAmsaa"
 			startValue: model.value === "duane" || model.value === "piecewise" ? "ls" : "mle"
 			values: model.value === "crowAmsaa" ? [
 				{label: qsTr("Maximum likelihood"), value: "mle"},
@@ -120,20 +121,29 @@ Form
 	Section
 	{
 		title: qsTr("Advanced")
-		CheckBox
+		columns: 2
+		Group
 		{
-			name: "piecewiseStartingBreakpoints"
-			label: qsTr("Starting change points")
-			enabled: model.value === "piecewise"
-			info: qsTr("Provide initial locations for estimated change points. When unchecked, the package initializes one change point automatically. These locations are starting values, not fixed change points.")
-			TextField
+			title: qsTr("Model Options")
+			visible: model.value === "piecewise"
+			CheckBox
 			{
-				name: "piecewiseStartingBreakpointsValues"
-				label: qsTr("Times")
-				fieldWidth: 180 * jaspTheme.uiScale
-				info: qsTr("Enter starting change-point times in the original time units, separated by commas.")
+				name: "piecewiseStartingBreakpoints"
+				label: qsTr("Starting change points")
+				info: qsTr("Provide initial locations for estimated change points. When unchecked, the package initializes one change point automatically. These locations are starting values, not fixed change points.")
+				TextField
+				{
+					name: "piecewiseStartingBreakpointsValues"
+					label: qsTr("Times")
+					fieldWidth: 180 * jaspTheme.uiScale
+					info: qsTr("Enter starting change-point times in the original time units, separated by commas.")
+				}
 			}
 		}
-		SetSeed { enabled: model.value === "piecewise" || diagnostics.quantileSelected || growthExport.quantileSelected }
+		SetSeed
+		{
+			title: qsTr("Reproducibility")
+			enabled: model.value === "piecewise" || diagnostics.quantileSelected || growthExport.quantileSelected
+		}
 	}
 }

@@ -16,6 +16,10 @@ Duane fits log cumulative MTBF against log time. Crow–AMSAA fits a power-law c
 
 Maximum likelihood uses grouped interval counts, not an exact-event-time likelihood. MLE time is scaled internally and results are reported in the original units. Fits reaching known numerical bounds are rejected. ReliaGrowR does not return optimizer convergence status. Regression and NHPP likelihood fit statistics should not be compared directly.
 
+The **Estimation** selector is enabled for Crow–AMSAA, which offers maximum likelihood and least squares. Other models display their single available method in a disabled selector.
+
+Under **Advanced**, **Model Options** appears for the piecewise model and contains **Starting change points** with its nested **Times** field. **Reproducibility** contains **Set seed**, enabled for piecewise fitting or selected randomized quantile diagnostics and exports. These groups follow the two-column Advanced layout used in parametric survival.
+
 ## Statistics
 
 Statistics uses the same interface component as parametric survival. **Model summary** and the growth-specific **Data summary** appear on the left; **Coefficients**, their nested confidence-interval control, and **Coefficients covariance matrix** appear on the right. **Fitted model equation** retains the same decimal-place control. Model ranking, information-criterion weights and sequential comparisons are omitted because this analysis fits one selected model independently to each subgroup.
