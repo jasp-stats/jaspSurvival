@@ -84,64 +84,22 @@ Form
 		}
 	}
 
-	Section
+	SA.ParametricStatistics
 	{
-		title: qsTr("Statistics")
-		CheckBox
-		{
-			name: "dataSummary"
-			label: qsTr("Data summary")
-			checked: true
-			info: qsTr("Show the number of observation intervals, total failures, follow-up time and observed cumulative MTBF.")
-		}
-		CheckBox
-		{
-			name: "modelSummary"
-			label: qsTr("Model summary")
-			checked: true
-			info: qsTr("Show the estimation method, log-likelihood, parameter count, AIC and BIC.")
-		}
-		CheckBox
-		{
-			name: "coefficients"
-			label: qsTr("Coefficients")
-			checked: true
-			info: qsTr("Show the model parameters with standard errors.")
+		modelComparisonVisible: false
+		modelSummaryInfo: qsTr("Show the reliability-growth model, estimation method, log-likelihood, parameter count, AIC and BIC for each independently fitted subgroup.")
+		coefficientsInfo: qsTr("Show reliability-growth parameter estimates and standard errors. Confidence intervals follow the model's estimation method.")
+		covarianceInfo: qsTr("Show the covariance matrix on the reported parameter scale, with one matrix per fitted subgroup.")
+		equationInfo: qsTr("Show the fitted cumulative-mean, failure-intensity or cumulative-MTBF equations. Small nonzero coefficients are displayed in scientific notation when needed.")
+		extraSummaryControls: [
 			CheckBox
 			{
-				name: "coefficientsConfidenceIntervals"
-				label: qsTr("Confidence intervals")
+				name: "dataSummary"
+				label: qsTr("Data summary")
 				checked: true
-				childrenOnSameRow: true
-				info: qsTr("Include confidence intervals for the parameters.")
-				CIField
-				{
-					name: "coefficientsConfidenceIntervalsLevel"
-					info: qsTr("Set the confidence level for the parameters.")
-				}
+				info: qsTr("Show observation intervals, total failures, follow-up time and observed cumulative MTBF for each subgroup.")
 			}
-		}
-		CheckBox
-		{
-			name: "coefficientsCovarianceMatrix"
-			label: qsTr("Coefficients covariance matrix")
-			info: qsTr("Show the covariance matrix on the reported parameter scale.")
-		}
-		CheckBox
-		{
-			name: "fittedModelEquation"
-			label: qsTr("Fitted model equation")
-			info: qsTr("Show the fitted cumulative mean or cumulative MTBF equation.")
-			IntegerField
-			{
-				name: "fittedModelEquationDecimals"
-				label: qsTr("Decimals")
-				defaultValue: 3
-				min: 0
-				max: 15
-				info: qsTr("Set the number of decimal places in the fitted equations.")
-			}
-		}
+		]
 	}
 
 	SA.ReliabilityGrowthPredictions { hasSubgroups: subgroup.count > 0 }

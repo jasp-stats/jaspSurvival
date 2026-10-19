@@ -16,12 +16,6 @@
     .sargColumn(table, "subgroup", gettext("Subgroup"), "string")
 }
 
-.sargCiColumns <- function(table, level) {
-  title <- gettextf("%1$s%% CI", format(100 * level, trim = TRUE))
-  table$addColumnInfo(name = "lower", title = gettext("Lower"), type = "number", overtitle = title)
-  table$addColumnInfo(name = "upper", title = gettext("Upper"), type = "number", overtitle = title)
-}
-
 .sargSetRows <- function(table, rows) {
   if (length(rows) > 0)
     table$setData(do.call(rbind, rows))
@@ -52,7 +46,7 @@
 
   fits <- .sargFits(jaspResults, valid = TRUE)
   if (options[["dataSummary"]] && is.null(jaspResults[["dataSummaryTable"]])) {
-    table <- .sargCreateTable(jaspResults, "dataSummaryTable", gettext("Data Summary"), "dataSummary", 1)
+    table <- .sargCreateTable(jaspResults, "dataSummaryTable", gettext("Data Summary"), "dataSummary", 0.5)
     .sargGroupColumn(table, options)
     .sargColumn(table, "intervals", gettext("Intervals"), "integer")
     .sargColumn(table, "failures", gettext("Failures"), "integer")
@@ -62,14 +56,14 @@
       failures = sum(fit[["counts"]]), time = max(fit[["time"]]), mtbf = max(fit[["time"]]) / sum(fit[["counts"]]))))
   }
   if (options[["modelSummary"]] && is.null(jaspResults[["summaryTable"]])) {
-    table <- .sargCreateTable(jaspResults, "summaryTable", gettext("Model Summary"), "modelSummary", 2)
+    table <- .sargCreateTable(jaspResults, "summaryTable", gettext("Model Summary"), "modelSummary", 1)
     .sargGroupColumn(table, options)
     .sargColumn(table, "model", gettext("Model"), "string")
     .sargColumn(table, "method", gettext("Estimation"), "string")
     .sargColumn(table, "logLik", gettext("Log Lik."))
     .sargColumn(table, "df", "df", "integer")
-    .sargColumn(table, "aic", "AIC")
-    .sargColumn(table, "bic", "BIC")
+    table$addColumnInfo(name = "aic", title = "AIC", type = "number", format = "dp:3")
+    table$addColumnInfo(name = "bic", title = "BIC", type = "number", format = "dp:3")
     .sargSetRows(table, lapply(fits, function(fit) {
       native <- fit[["native"]]
       # Native grouped Poisson log likelihoods omit the count-factorial constant.
@@ -85,13 +79,13 @@
   }
   if (options[["coefficients"]] && is.null(jaspResults[["coefficientsTable"]])) {
     table <- .sargCreateTable(jaspResults, "coefficientsTable", gettext("Coefficients Summary"),
-      c("coefficients", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel"), 3)
+      c("coefficients", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel"), 2)
     .sargGroupColumn(table, options)
-    .sargColumn(table, "parameter", gettext("Parameter"), "string")
+    .sargColumn(table, "parameter", "", "string")
     .sargColumn(table, "estimate", gettext("Estimate"))
     .sargColumn(table, "se", gettext("Standard Error"))
     if (options[["coefficientsConfidenceIntervals"]])
-      .sargCiColumns(table, options[["coefficientsConfidenceIntervalsLevel"]])
+      .sapAddBoundColumns(table, options[["coefficientsConfidenceIntervalsLevel"]], "twoSided")
     .sargSetRows(table, lapply(fits, .sargCoefficientRows, level = options[["coefficientsConfidenceIntervalsLevel"]]))
     if (options[["model"]] == "piecewise")
       table$addFootnote(gettext("Coefficients describe the segmented regression of log cumulative failures on log time. Change-point coefficients are reported as log times."))
@@ -101,12 +95,13 @@
   if (options[["coefficientsCovarianceMatrix"]])
     .sargCovarianceTables(jaspResults, options, fits)
   if (options[["fittedModelEquation"]] && is.null(jaspResults[["modelEquations"]])) {
-    table <- .sargCreateTable(jaspResults, "modelEquations", gettext("Fitted Model Equation"),
-      c("fittedModelEquation", "fittedModelEquationDecimals"), 3.2)
+    table <- .sargCreateTable(jaspResults, "modelEquations", gettext("Fitted Model Equations"),
+      c("fittedModelEquation", "fittedModelEquationDecimals"), 2.2)
     .sargGroupColumn(table, options)
+    .sargColumn(table, "model", gettext("Model"), "string")
     .sargColumn(table, "equation", gettext("Equation"), "string")
-    .sargSetRows(table, lapply(fits, function(fit) data.frame(subgroup = fit[["label"]], equation = .sargEquation(fit, options))))
-    table$addFootnote(gettext("M(t) is the expected cumulative number of failures since time zero. Cumulative MTBF is t / M(t)."))
+    .sargSetRows(table, lapply(fits, .sargEquationRows, options = options))
+    table$addFootnote(gettext("M(t) is expected cumulative failures, m(t) is instantaneous failure intensity, and cumulative MTBF is t / M(t)."))
   }
   return()
 }
@@ -120,24 +115,32 @@
   positive <- fit[["positive"]]
   lower[positive] <- exp(log(estimates[positive]) - halfWidth[positive] / estimates[positive])
   upper[positive] <- exp(log(estimates[positive]) + halfWidth[positive] / estimates[positive])
-  return(data.frame(subgroup = fit[["label"]], parameter = names(estimates), estimate = as.numeric(estimates),
+  return(data.frame(subgroup = c(fit[["label"]], rep(NA_character_, length(estimates) - 1L)), parameter = names(estimates), estimate = as.numeric(estimates),
     se = as.numeric(se), lower = as.numeric(lower), upper = as.numeric(upper)))
 }
 
 .sargCovarianceTables <- function(jaspResults, options, fits) {
   if (!is.null(jaspResults[["covarianceMatrices"]]))
     return()
-  container <- createJaspContainer(title = gettext("Coefficients Covariance Matrix"))
-  container$dependOn(c(.sargFitDependencies, "coefficientsCovarianceMatrix"))
-  container$position <- 3.1
-  jaspResults[["covarianceMatrices"]] <- container
+  title <- gettext("Coefficients Covariance Matrix")
+  output <- if (length(fits) <= 1L) createJaspTable(title = title) else createJaspContainer(title = title)
+  output$dependOn(c(.sargFitDependencies, "coefficientsCovarianceMatrix"))
+  output$position <- 2.1
+  jaspResults[["covarianceMatrices"]] <- output
+  if (!length(fits)) {
+    output$showSpecifiedColumnsOnly <- TRUE
+    .sargColumn(output, "parameter", "", "string")
+    return()
+  }
   for (i in seq_along(fits)) {
     fit <- fits[[i]]
-    table <- createJaspTable(title = fit[["label"]])
-    table$position <- i
+    table <- if (length(fits) == 1L) output else createJaspTable(title = fit[["label"]])
+    if (length(fits) > 1L) {
+      table$position <- i
+      output[[paste0("group", i)]] <- table
+    }
     table$showSpecifiedColumnsOnly <- TRUE
-    container[[paste0("group", i)]] <- table
-    .sargColumn(table, "parameter", gettext("Parameter"), "string")
+    .sargColumn(table, "parameter", "", "string")
     parameters <- names(fit[["estimates"]])
     for (j in seq_along(parameters)) .sargColumn(table, paste0("p", j), parameters[j])
     if (!fit[["inferenceAvailable"]]) {
@@ -147,12 +150,15 @@
     values <- as.data.frame(fit[["covariance"]])
     names(values) <- paste0("p", seq_along(parameters))
     table$setData(cbind(data.frame(parameter = parameters), values))
+    if (length(fits) == 1L && any(nzchar(unlist(options[["subgroup"]]))))
+      table$addFootnote(gettextf("Subgroup: %1$s", fit[["label"]]))
+    table$addFootnote(gettext("The covariance matrix uses the same reported parameter scale as the coefficient estimates."))
   }
   return()
 }
 
 .sargEquation <- function(fit, options) {
-  number <- function(x) formatC(x, digits = options[["fittedModelEquationDecimals"]], format = "f")
+  number <- function(x) vapply(x, .sapEquationNumber, character(1), decimals = options[["fittedModelEquationDecimals"]])
   estimates <- number(fit[["estimates"]])
   switch(fit[["model"]],
     duane = paste0("MTBF(t) = ", estimates[1], " * t^(", estimates[2], ")"),
@@ -166,4 +172,10 @@
         i, number(scales[i]), number(slopes[i]), if (i == 1L) "0" else number(breaks[i - 1L]),
         if (i > length(breaks)) "Inf" else number(breaks[i])), character(1))
     })
+}
+
+.sargEquationRows <- function(fit, options) {
+  equations <- .sargEquation(fit, options)
+  return(data.frame(subgroup = c(fit[["label"]], rep(NA_character_, length(equations) - 1L)),
+    model = c(.sargModelLabel(fit[["model"]]), rep(NA_character_, length(equations) - 1L)), equation = equations))
 }

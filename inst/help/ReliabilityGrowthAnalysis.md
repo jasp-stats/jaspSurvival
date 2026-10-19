@@ -16,6 +16,16 @@ Duane fits log cumulative MTBF against log time. Crow–AMSAA fits a power-law c
 
 Maximum likelihood uses grouped interval counts, not an exact-event-time likelihood. MLE time is scaled internally and results are reported in the original units. Fits reaching known numerical bounds are rejected. ReliaGrowR does not return optimizer convergence status. Regression and NHPP likelihood fit statistics should not be compared directly.
 
+## Statistics
+
+Statistics uses the same interface component as parametric survival. **Model summary** and the growth-specific **Data summary** appear on the left; **Coefficients**, their nested confidence-interval control, and **Coefficients covariance matrix** appear on the right. **Fitted model equation** retains the same decimal-place control. Model ranking, information-criterion weights and sequential comparisons are omitted because this analysis fits one selected model independently to each subgroup.
+
+Output follows the parametric order: data summary, model summary, coefficient estimates, covariance matrices and fitted equations. Coefficient tables show estimates, standard errors and optional two-sided confidence intervals, without predictor Wald tests. Repeated subgroup labels are suppressed within each coefficient or equation block. Covariance has one table per subgroup, with a single table when only one fit is available.
+
+Calculations and parameter scales are unchanged. Growth covariance matrices use the reported coefficient scale, as stated in their footnote; the parametric survival covariance convention can differ. Model summaries retain the likelihood distinction between grouped-count maximum likelihood and log-scale least squares. AIC and BIC use the same three-decimal formatting as parametric survival.
+
+Fitted equations identify the selected model and its cumulative mean, intensity or cumulative MTBF. The shared equation formatter uses scientific notation when a nonzero coefficient would otherwise round to zero. Decimal-place settings affect equation display only, not fitted estimates or predictions.
+
 ## Predictions
 
 Choose **Outcome**, evaluation times under **Time**, and plot/table **Output**. No predictor assignments are needed. These controls follow the parametric survival Predictions layout.

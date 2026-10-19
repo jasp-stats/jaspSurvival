@@ -28,64 +28,81 @@ Section
 	id:	statisticsRoot
 	property bool multipleResults:	false
 	property bool multipleModels:	false
+	property bool modelComparisonVisible:	true
 	property string modelSummaryInfo:	qsTr("Include a table with information about the model fit.")
+	property string coefficientsInfo:	qsTr("Include a table with coefficient estimates.")
+	property string covarianceInfo:	qsTr("Include a table with the covariance matrix of the coefficient estimates.")
+	property string equationInfo:	qsTr("Show the fitted model equations in a table.")
+	property alias extraSummaryControls:	summaryExtras.content
 	property alias extraStatisticsControls:	statisticsExtras.content
 
 	title: qsTr("Statistics")
 
-	CheckBox
+	Group
 	{
-		label:		qsTr("Model summary")
-		name:		"modelSummary"
-		checked:	true
-		info: statisticsRoot.modelSummaryInfo
-
 		CheckBox
 		{
-			name:		"modelSummaryRankModels"
-			label:		qsTr("Rank models")
-			enabled:	statisticsRoot.multipleResults
-			info: qsTr("Rank models based on the selected criterion.")
+			label:		qsTr("Model summary")
+			name:		"modelSummary"
+			checked:	true
+			info: statisticsRoot.modelSummaryInfo
 
-			RadioButtonGroup
+			CheckBox
 			{
-				name:		"modelSummaryRankModelsBy"
+				name:		"modelSummaryRankModels"
+				label:		qsTr("Rank models")
+				visible:	statisticsRoot.modelComparisonVisible
+				enabled:	statisticsRoot.multipleResults
+				info: qsTr("Rank models based on the selected criterion.")
 
-				RadioButton
+				RadioButtonGroup
 				{
-					label:		qsTr("AIC")
-					value:		"aic"
-					checked:	true
-				}
+					name:		"modelSummaryRankModelsBy"
 
-				RadioButton
-				{
-					label:		qsTr("BIC")
-					value:		"bic"
-				}
+					RadioButton
+					{
+						label:		qsTr("AIC")
+						value:		"aic"
+						checked:	true
+					}
 
-				RadioButton
-				{
-					label:		qsTr("Log lik.")
-					value:		"logLik"
+					RadioButton
+					{
+						label:		qsTr("BIC")
+						value:		"bic"
+					}
+
+					RadioButton
+					{
+						label:		qsTr("Log lik.")
+						value:		"logLik"
+					}
 				}
+			}
+
+			CheckBox
+			{
+				name:		"modelSummaryAicWeights"
+				label:		qsTr("AIC weights")
+				visible:	statisticsRoot.modelComparisonVisible
+				enabled:	statisticsRoot.multipleResults
+				info: qsTr("Include AIC weights in the model summary.")
+			}
+
+			CheckBox
+			{
+				name:		"modelSummaryBicWeights"
+				label:		qsTr("BIC weights")
+				visible:	statisticsRoot.modelComparisonVisible
+				enabled:	statisticsRoot.multipleResults
+				info: qsTr("Include BIC weights in the model summary.")
 			}
 		}
 
-		CheckBox
+		Group
 		{
-			name:		"modelSummaryAicWeights"
-			label:		qsTr("AIC weights")
-			enabled:	statisticsRoot.multipleResults
-			info: qsTr("Include AIC weights in the model summary.")
-		}
-
-		CheckBox
-		{
-			name:		"modelSummaryBicWeights"
-			label:		qsTr("BIC weights")
-			enabled:	statisticsRoot.multipleResults
-			info: qsTr("Include BIC weights in the model summary.")
+			id:		summaryExtras
+			visible:	hasChildren
 		}
 	}
 
@@ -96,7 +113,7 @@ Section
 			label:		qsTr("Coefficients")
 			name:		"coefficients"
 			checked:	true
-			info: qsTr("Include a table with coefficient estimates.")
+			info: statisticsRoot.coefficientsInfo
 
 			CheckBox
 			{
@@ -119,7 +136,7 @@ Section
 			label:		qsTr("Coefficients covariance matrix")
 			name:		"coefficientsCovarianceMatrix"
 			checked:	false
-			info: qsTr("Include a table with the covariance matrix of the coefficient estimates.")
+			info: statisticsRoot.covarianceInfo
 		}
 
 		Group
@@ -134,7 +151,7 @@ Section
 		name:	"fittedModelEquation"
 		label:	qsTr("Fitted model equation")
 		checked:	false
-		info:	qsTr("Show the fitted model equations in a table.")
+		info:	statisticsRoot.equationInfo
 
 		IntegerField
 		{
@@ -152,6 +169,7 @@ Section
 		label:		qsTr("Sequential model comparison")
 		name:		"sequentialModelComparison"
 		checked:	false
+		visible:	statisticsRoot.modelComparisonVisible
 		enabled:	statisticsRoot.multipleModels
 		info: qsTr("Include a table with the results of the sequential model comparison.")
 	}
