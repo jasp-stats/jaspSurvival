@@ -58,6 +58,7 @@ Form
 		}
 		DropDown
 		{
+			id: estimationMethod
 			name: "estimationMethod"
 			label: qsTr("Estimation")
 			depends: model
@@ -145,46 +146,17 @@ Form
 
 	SA.ReliabilityGrowthPredictions { hasSubgroups: subgroup.count > 0 }
 
-	Section
+	SA.ReliabilityGrowthDiagnostics
 	{
-		title: qsTr("Diagnostics")
-		CheckBox
-		{
-			name: "residualPlot"
-			label: qsTr("Residuals vs. time")
-			info: qsTr("Plot log-scale regression residuals for least squares, or interval Pearson residuals for maximum likelihood.")
-		}
-		CheckBox
-		{
-			name: "residualTable"
-			label: qsTr("Fitted values and residuals")
-			info: qsTr("Show observed and fitted cumulative failures and model residuals at each interval endpoint.")
-		}
+		id: diagnostics
+		leastSquares: estimationMethod.value === "ls"
+		hasSubgroups: subgroup.count > 0
 	}
 
-	Section
+	SA.ReliabilityGrowthExport
 	{
-		title: qsTr("Export")
-		CheckBox
-		{
-			name: "exportFittedValues"
-			label: qsTr("Fitted cumulative failures")
-			info: qsTr("Add fitted cumulative failures to the dataset in the original row order.")
-		}
-		CheckBox
-		{
-			name: "exportResiduals"
-			label: qsTr("Residuals")
-			info: qsTr("Add log-scale regression residuals or interval Pearson residuals to the dataset.")
-		}
-		TextField
-		{
-			name: "exportColumnPrefix"
-			label: qsTr("Column prefix")
-			defaultValue: "Growth"
-			fieldWidth: 150 * jaspTheme.uiScale
-			info: qsTr("Set the prefix for exported columns.")
-		}
+		id: growthExport
+		leastSquares: estimationMethod.value === "ls"
 	}
 
 	Section
@@ -204,6 +176,6 @@ Form
 				info: qsTr("Enter starting change-point times in the original time units, separated by commas.")
 			}
 		}
-		SetSeed { enabled: model.value === "piecewise" }
+		SetSeed { enabled: model.value === "piecewise" || diagnostics.quantileSelected || growthExport.quantileSelected }
 	}
 }

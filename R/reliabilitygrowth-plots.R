@@ -81,34 +81,3 @@
   # Match AFT: axis ticks span curves, intervals and observed/reference overlays.
   return(.sapPredictionPrettyAxes(plot, probabilityAxis = probability))
 }
-
-.sargResidualPlots <- function(jaspResults, options, fits) {
-
-  if (!is.null(jaspResults[["residualPlots"]]) || length(fits) == 0)
-    return()
-  container <- createJaspContainer(title = gettext("Residuals vs. Time"))
-  container$position <- 6.1
-  container$dependOn(c(.sargFitDependencies, "residualPlot", .sargPlotDependencies))
-  jaspResults[["residualPlots"]] <- container
-  for (i in seq_along(fits)) {
-    fit <- fits[[i]]
-    output <- createJaspPlot(title = fit[["label"]], width = 440, height = 320)
-    output$position <- i
-    container[[paste0("plot", i)]] <- output
-    result <- try({
-      data <- data.frame(time = fit[["time"]], residual = .sargResiduals(fit), subgroup = fit[["label"]])
-      plot <- ggplot2::ggplot(data, ggplot2::aes(x = time, y = residual)) +
-        ggplot2::geom_hline(yintercept = 0, linetype = "dashed", colour = "grey60") +
-        jaspGraphs::geom_point(colour = "grey40") +
-        ggplot2::labs(x = gettext("Time"), y = if (fit[["method"]] == "MLE") gettext("Pearson Residual") else gettext("Log-scale Residual"))
-      if (options[["predictionsXAxisTransformation"]] == "log")
-        plot <- plot + ggplot2::scale_x_log10()
-      .sargPlotStyle(plot, options, 1L)
-    }, silent = TRUE)
-    if (inherits(result, "try-error"))
-      output$setError(jaspBase::.extractErrorMessage(result))
-    else
-      output$plotObject <- result
-  }
-  return()
-}

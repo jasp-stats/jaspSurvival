@@ -147,13 +147,6 @@
   return(if (record[["model"]] == "duane") record[["time"]] / record[["native"]][["Fitted_Values"]] else record[["native"]][["fitted_values"]])
 }
 
-.sargResiduals <- function(record) {
-  if (record[["method"]] == "LS")
-    return(as.numeric(stats::residuals(record[["native"]][["model"]])))
-  mean <- diff(c(0, .sargObserved(record)))
-  return((record[["counts"]] - mean) / sqrt(mean))
-}
-
 .sargPredictionState <- function(jaspResults, options) {
 
   if (!is.null(jaspResults[["predictions"]]))

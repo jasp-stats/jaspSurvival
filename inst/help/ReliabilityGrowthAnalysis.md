@@ -41,12 +41,40 @@ Tables support **Long** (times in rows) and **Wide** (times in column groups) fo
 
 Confidence intervals describe uncertainty in fitted quantities, not future count variability. Rate-based intervals are unavailable for piecewise models. Uncertainty is unavailable when covariance estimation is unreliable.
 
-## Diagnostics and export
+## Diagnostics
 
-Least-squares residuals use the regression's logarithmic scale. MLE residuals are Pearson residuals for interval counts. Exports preserve the original dataset row order; failed subgroup fits produce missing exported values.
+The Diagnostics layout follows parametric survival: **Residual Plots** on the left and **Probability plot** on the right. Numerical fitted values and residuals are available under **Export**, rather than as a diagnostic table.
+
+Choose residuals versus **time**, residuals versus **predicted**, or a residual **histogram**, with one plot per fitted subgroup. The **Type** selector offers:
+
+- **Regression:** the package's least-squares regression residuals, on the log cumulative MTBF scale for Duane and log cumulative failures scale for Crow–AMSAA and piecewise fits. Available for least squares only.
+- **Response:** observed minus fitted interval failures.
+- **Pearson:** response residual divided by the square root of the fitted interval mean.
+- **Deviance:** signed square root of the Poisson interval deviance.
+- **Randomized quantile:** standard normal quantiles obtained by randomizing within each observed count's Poisson probability jump.
+
+Count residuals assume an NHPP, including an NHPP interpretation of the Duane growth curve. Their fitted interval means are differences of the package's fitted cumulative failures. Residuals versus predicted uses fitted log regression values for Regression, and fitted interval counts for the other types. Residual plots use the same JASP construction as parametric survival, independently of prediction-plot settings.
+
+### Probability plots
+
+For grouped interval counts, **Normal (Q-Q)** compares ordered randomized quantile residuals with standard normal quantiles; **Uniform (P-P)** compares their cumulative probabilities with uniform plotting positions. Under the fitted NHPP they should approximately follow the identity line. One point represents one observation interval; counts are not expanded into invented failure times. These plots apply to all four models under their NHPP interpretation.
+
+These are count-model diagnostics, not Weibull or other lifetime probability-paper plots. The native ReliaGrowR Q-Q/P-P helpers do not provide the required grouped-count diagnostic, so these plots wrap the package's fitted interval means with the discrete probability-integral transform of Dunn and Smyth (1996).
+
+Controls mirror the applicable parametric probability-plot controls: empirical points and coordinates, reference line, subgroup overlays, plotting positions, grid, legend, palette and theme. A **Reference envelope** shows pointwise order-statistic bounds for the reference distribution, treating fitted parameters as known. It excludes parameter-estimation uncertainty and is an exploratory envelope, not a calibrated goodness-of-fit test.
+
+Randomized quantile residuals are cached and shared by residual plots, probability plots and exports. Visual changes do not redraw the randomization. Use **Set seed** under **Advanced** to reproduce it across runs.
+
+## Export
+
+The column prefix appears above **Residuals** and **Fitted Values**, as in parametric survival. Select each desired residual type separately. Fitted cumulative failures and fitted interval failures can also be exported. For example, prefix `Growth` produces `Growth_PearsonResidual`, `Growth_QuantileResidual`, `Growth_CumulativeFailures` and `Growth_IntervalFailures`.
+
+Exports preserve the original dataset row order, including interleaved subgroups. Failed subgroup fits or unavailable values produce missing entries; export calculation problems are reported. Regression residuals are unavailable for maximum likelihood. Count diagnostics require finite positive fitted interval means. Existing columns owned by another analysis or supplied by the user are not overwritten.
 
 ## Reference
 
 [ReliaGrowR: Reliability Growth Analysis and Repairable Systems Modeling](https://doi.org/10.32614/CRAN.package.ReliaGrowR).
 
 [NIST: NHPP power-law model and count probabilities](https://itl.nist.gov/div898/handbook/apr/section1/apr172.htm).
+
+[Dunn and Smyth (1996): Randomized Quantile Residuals](https://gksmyth.github.io/pubs/residual.pdf).
