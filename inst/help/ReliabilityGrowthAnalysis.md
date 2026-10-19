@@ -27,6 +27,8 @@ Choose **Outcome**, evaluation times under **Time**, and plot/table **Output**. 
 - **Cumulative MTBF:** t / M(t).
 - **Instantaneous MTBF:** 1 / m(t), a local rate-based measure rather than expected waiting time to the next failure.
 
+Failure intensity and cumulative failures are the recurrent-event analogues of hazard and cumulative hazard in parametric survival analysis. The latter is an expected count, not a failure probability. Neither MTBF outcome equals mean survival time; survival probabilities and lifetime quantiles have no direct counterparts among these four outcomes.
+
 **Display** controls confidence intervals, legend, theme, observed data and colors. Axis controls select linear or logarithmic scales. **Merge series across: Subgroups** overlays independent subgroup curves.
 
 Tables support **Long** (times in rows) and **Wide** (times in column groups) formats. **Merge tables across measures** places selected outcomes together. Optional **Round time table values** rounds evaluation times before calculating table predictions; rounded times must remain positive. Plot evaluation times remain unrounded.

@@ -13,14 +13,18 @@
   groups <- if (options[["predictionsMergeSeriesAcrossSubgroups"]]) list(seq_along(fits)) else as.list(seq_along(fits))
   for (i in seq_along(groups)) {
     indices <- groups[[i]]
-    output <- createJaspPlot(title = if (length(groups) == 1L) "" else fits[[indices]][["label"]], width = 530, height = 380)
+    output <- createJaspPlot(title = if (length(groups) == 1L) "" else fits[[indices]][["label"]], width = 440, height = 320)
     output$position <- i
     container[[paste0("plot", i)]] <- output
     plot <- try(.sargPredictionPlot(fits[indices], predictions[indices], measure, options), silent = TRUE)
     if (inherits(plot, "try-error"))
       output$setError(jaspBase::.extractErrorMessage(plot))
-    else
+    else {
+      size <- .sapPredictionPlotSize(plot, options, 550, 320)
+      output$width  <- size[["width"]]
+      output$height <- size[["height"]]
       output$plotObject <- plot
+    }
   }
   return()
 }
@@ -37,7 +41,7 @@
   if (options[["predictionsDisplayConfidenceIntervals"]])
     plot <- plot + ggplot2::geom_ribbon(ggplot2::aes(ymin = lower, ymax = upper, fill = subgroup),
       colour = NA, alpha = 0.15, na.rm = TRUE, show.legend = FALSE)
-  plot <- plot + ggplot2::geom_line(linewidth = 0.7)
+  plot <- plot + jaspGraphs::geom_line()
   if (options[["predictionsDisplayObservedData"]] && measure %in% c("cumulativeFailures", "cumulativeMtbf")) {
     observed <- do.call(rbind, lapply(fits, function(fit) data.frame(time = fit[["time"]],
       estimate = if (measure == "cumulativeFailures") fit[["cumulativeCounts"]] else fit[["time"]] / fit[["cumulativeCounts"]],
@@ -61,16 +65,19 @@
 
 .sargPlotStyle <- function(plot, options, groups) {
 
+  labels <- unique(as.character(plot$data[["subgroup"]]))
   if (groups == 1L) {
-    plot <- plot + ggplot2::scale_colour_manual(values = "grey40") + ggplot2::scale_fill_manual(values = "grey40")
+    plot <- plot + ggplot2::scale_colour_manual(values = "grey40", limits = labels) +
+      ggplot2::scale_fill_manual(values = "grey40", limits = labels)
   } else {
-    plot <- plot + jaspGraphs::scale_JASPcolor_discrete(palette = options[["colorPalette"]]) +
-      jaspGraphs::scale_JASPfill_discrete(palette = options[["colorPalette"]])
+    plot <- plot + jaspGraphs::scale_JASPcolor_discrete(palette = options[["colorPalette"]], limits = labels) +
+      jaspGraphs::scale_JASPfill_discrete(palette = options[["colorPalette"]], limits = labels)
   }
   plot <- .sapPredictionPlotAddTheme(plot, options)
   if (groups == 1L)
     plot <- plot + ggplot2::theme(legend.position = "none")
-  return(plot)
+  # Match AFT: axis ticks span curves, intervals and observed/reference overlays.
+  return(.sapPredictionPrettyAxes(plot))
 }
 
 .sargResidualPlots <- function(jaspResults, options, fits) {
@@ -83,14 +90,14 @@
   jaspResults[["residualPlots"]] <- container
   for (i in seq_along(fits)) {
     fit <- fits[[i]]
-    output <- createJaspPlot(title = fit[["label"]], width = 530, height = 340)
+    output <- createJaspPlot(title = fit[["label"]], width = 440, height = 320)
     output$position <- i
     container[[paste0("plot", i)]] <- output
     result <- try({
       data <- data.frame(time = fit[["time"]], residual = .sargResiduals(fit), subgroup = fit[["label"]])
       plot <- ggplot2::ggplot(data, ggplot2::aes(x = time, y = residual)) +
         ggplot2::geom_hline(yintercept = 0, linetype = "dashed", colour = "grey60") +
-        ggplot2::geom_point(colour = "grey40") +
+        jaspGraphs::geom_point(colour = "grey40") +
         ggplot2::labs(x = gettext("Time"), y = if (fit[["method"]] == "MLE") gettext("Pearson Residual") else gettext("Log-scale Residual"))
       if (options[["predictionsXAxisTransformation"]] == "log")
         plot <- plot + ggplot2::scale_x_log10()
