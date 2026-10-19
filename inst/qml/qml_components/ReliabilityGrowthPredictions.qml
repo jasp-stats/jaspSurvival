@@ -7,14 +7,30 @@ Section
 {
 	id: predictionsRoot
 	property bool hasSubgroups: false
-	readonly property bool outcomeSelected: cumulativeFailures.checked || failureIntensity.checked || cumulativeMtbf.checked || instantaneousMtbf.checked
-	readonly property int outcomeCount: Number(cumulativeFailures.checked) + Number(failureIntensity.checked) + Number(cumulativeMtbf.checked) + Number(instantaneousMtbf.checked)
+	readonly property bool outcomeSelected: outcomeCount > 0
+	readonly property int outcomeCount: Number(survivalProbability.checked) + Number(failureProbability.checked) + Number(cumulativeFailures.checked) + Number(failureIntensity.checked) + Number(cumulativeMtbf.checked) + Number(instantaneousMtbf.checked)
 	readonly property bool predictionOutputSelected: outcomeSelected && (modelPlot.checked || modelTable.checked)
 	title: qsTr("Predictions")
 
 	Group
 	{
 		title: qsTr("Outcome")
+		CheckBox
+		{
+			id: survivalProbability
+			name: "predictionsOutcomeSurvivalProbability"
+			label: qsTr("Survival probability")
+			checked: false
+			info: qsTr("Predict event-free survival: the probability of no events from time zero to each selected time, exp(-M(t)), assuming an NHPP. For Duane, this assumes an NHPP interpretation of its fitted growth curve. This does not add patient-level censoring support.")
+		}
+		CheckBox
+		{
+			id: failureProbability
+			name: "predictionsOutcomeFailureProbability"
+			label: qsTr("Failure probability")
+			checked: false
+			info: qsTr("Predict the probability of at least one event from time zero to each selected time, 1 - exp(-M(t)), assuming an NHPP. For Duane, this assumes an NHPP interpretation of its fitted growth curve. This is the complement of event-free survival.")
+		}
 		CheckBox
 		{
 			id: cumulativeFailures

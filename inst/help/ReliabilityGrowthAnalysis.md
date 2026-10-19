@@ -22,12 +22,18 @@ Choose **Outcome**, evaluation times under **Time**, and plot/table **Output**. 
 
 **Equal intervals** spans the first observed endpoint to maximum follow-up. **Sequence** provides From, Step and To fields; extend To beyond observed follow-up to forecast. **Custom (relative)** accepts percentages of each subgroup's maximum follow-up, including percentages above 100 for forecasting. **Custom (absolute)** accepts times in the original units; empty input uses 25%, 50% and 75% of follow-up. Evaluation times must be positive. A dashed vertical line marks the observed endpoint when forecasting; dotted lines mark estimated change points.
 
+- **Survival probability:** event-free survival exp(-M(t)), the probability of no events between time zero and t under an NHPP.
+- **Failure probability:** 1 - exp(-M(t)), the probability of at least one event between time zero and t under an NHPP.
 - **Cumulative failures:** expected cumulative failures M(t).
 - **Failure intensity:** instantaneous failure rate m(t).
 - **Cumulative MTBF:** t / M(t).
 - **Instantaneous MTBF:** 1 / m(t), a local rate-based measure rather than expected waiting time to the next failure.
 
-Failure intensity and cumulative failures are the recurrent-event analogues of hazard and cumulative hazard in parametric survival analysis. The latter is an expected count, not a failure probability. Neither MTBF outcome equals mean survival time; survival probabilities and lifetime quantiles have no direct counterparts among these four outcomes.
+Failure intensity and cumulative failures are the recurrent-event analogues of hazard and cumulative hazard in parametric survival analysis. The latter is an expected count, not a failure probability. Neither MTBF outcome equals mean survival time.
+
+The probability outcomes transform ReliaGrowR's fitted cumulative mean; no additional model is fitted. Survival and failure probabilities sum to one. Their confidence intervals transform the cumulative-mean bounds, reversing their order for survival. For Duane, this interpretation additionally assumes its fitted growth curve is the cumulative mean of an NHPP. These are probabilities since time zero, not conditional probabilities of the next event after an arbitrary starting time.
+
+In medical applications, survival probability means remaining event-free for the specified event. These outputs do not add patient-level exposure or censoring support. The interval-count input requirements and restriction on zero-count intervals still apply; use a suitable patient-level survival analysis for individually censored time-to-event data.
 
 **Display** controls confidence intervals, legend, theme, observed data and colors. Axis controls select linear or logarithmic scales. **Merge series across: Subgroups** overlays independent subgroup curves.
 
@@ -42,3 +48,5 @@ Least-squares residuals use the regression's logarithmic scale. MLE residuals ar
 ## Reference
 
 [ReliaGrowR: Reliability Growth Analysis and Repairable Systems Modeling](https://doi.org/10.32614/CRAN.package.ReliaGrowR).
+
+[NIST: NHPP power-law model and count probabilities](https://itl.nist.gov/div898/handbook/apr/section1/apr172.htm).

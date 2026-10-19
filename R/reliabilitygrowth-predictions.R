@@ -1,10 +1,10 @@
 .sargMeasures <- function(options) {
-  values <- c("cumulativeFailures", "failureIntensity", "cumulativeMtbf", "instantaneousMtbf")
-  values[vapply(.sargPredictionOptions, function(key) options[[key]], logical(1))]
+  .sargMeasureNames[vapply(.sargPredictionOptions, function(key) options[[key]], logical(1))]
 }
 
 .sargMeasureLabel <- function(measure) {
-  switch(measure, cumulativeFailures = gettext("Cumulative Failures"), failureIntensity = gettext("Failure Intensity"),
+  switch(measure, survivalProbability = gettext("Survival Probability"), failureProbability = gettext("Failure Probability"),
+    cumulativeFailures = gettext("Cumulative Failures"), failureIntensity = gettext("Failure Intensity"),
     cumulativeMtbf = gettext("Cumulative MTBF"), instantaneousMtbf = gettext("Instantaneous MTBF"))
 }
 
@@ -59,6 +59,9 @@
 }
 
 .sargPredict <- function(record, times, measure, level) {
+
+  if (measure %in% c("survivalProbability", "failureProbability"))
+    return(.sargProbabilityPrediction(.sargPredict(record, times, "cumulativeFailures", level), measure))
 
   native <- record[["native"]]
   # The package warns about evaluating inside the observed range; this is expected
@@ -127,6 +130,19 @@
     subgroup = record[["label"]], forecast = times > max(record[["time"]])))
 }
 
+.sargProbabilityPrediction <- function(prediction, measure) {
+
+  columns <- c("estimate", "lower", "upper")
+  if (measure == "survivalProbability") {
+    # The survival transform decreases, so its interval endpoints reverse.
+    prediction[columns] <- lapply(prediction[c("estimate", "upper", "lower")], function(value) exp(-value))
+  } else {
+    # expm1 preserves small probabilities lost by subtracting exp(-M) from one.
+    prediction[columns] <- lapply(prediction[columns], function(value) -expm1(-value))
+  }
+  return(prediction)
+}
+
 .sargObserved <- function(record) {
   return(if (record[["model"]] == "duane") record[["time"]] / record[["native"]][["Fitted_Values"]] else record[["native"]][["fitted_values"]])
 }
@@ -186,7 +202,7 @@
     return()
   table <- .sargCreateTable(jaspResults, key, if (merged) gettext("Predictions") else .sargMeasureLabel(measures),
     c(.sargPredictionDependencies, .sargTableDependencies, "predictionsOutputTable"),
-    if (merged) 4 else 4 + match(measures, c("cumulativeFailures", "failureIntensity", "cumulativeMtbf", "instantaneousMtbf")) / 10)
+    if (merged) 4 else 4 + match(measures, .sargMeasureNames) / 10)
   .sargGroupColumn(table, options)
   errors <- character(0)
   forecast <- FALSE
@@ -228,6 +244,11 @@
     table$setError(paste(errors, collapse = "\n"))
   else
     for (error in errors) table$addFootnote(error)
+  if (any(measures %in% c("survivalProbability", "failureProbability"))) {
+    table$addFootnote(gettext("Probabilities assume an NHPP: survival is no events and failure is at least one event since time zero."))
+    if (options[["model"]] == "duane")
+      table$addFootnote(gettext("Duane probabilities assume its fitted growth curve is the cumulative mean of an NHPP."))
+  }
   if (options[["predictionsDisplayConfidenceIntervals"]]) {
     table$addFootnote(gettext("Intervals describe uncertainty in the fitted quantity, not variation in future failure counts."))
     if (options[["model"]] == "piecewise" && any(measures %in% c("failureIntensity", "instantaneousMtbf")))

@@ -8,7 +8,7 @@
     return()
   container <- createJaspContainer(title = .sargMeasureLabel(measure))
   container$dependOn(c(.sargFitDependencies, .sargPredictionDependencies, .sargPlotDependencies, "predictionsOutputPlot"))
-  container$position <- 5 + match(measure, c("cumulativeFailures", "failureIntensity", "cumulativeMtbf", "instantaneousMtbf")) / 10
+  container$position <- 5 + match(measure, .sargMeasureNames) / 10
   jaspResults[[key]] <- container
   groups <- if (options[["predictionsMergeSeriesAcrossSubgroups"]]) list(seq_along(fits)) else as.list(seq_along(fits))
   for (i in seq_along(groups)) {
@@ -59,11 +59,13 @@
     plot <- plot + ggplot2::scale_x_log10()
   if (options[["predictionsYAxisScale"]] == "log")
     plot <- plot + ggplot2::scale_y_log10()
-  plot <- .sargPlotStyle(plot, options, length(fits))
+  else if (measure %in% c("survivalProbability", "failureProbability"))
+    plot <- plot + ggplot2::scale_y_continuous(limits = c(0, 1), oob = scales::oob_keep)
+  plot <- .sargPlotStyle(plot, options, length(fits), probability = measure %in% c("survivalProbability", "failureProbability"))
   return(plot)
 }
 
-.sargPlotStyle <- function(plot, options, groups) {
+.sargPlotStyle <- function(plot, options, groups, probability = FALSE) {
 
   labels <- unique(as.character(plot$data[["subgroup"]]))
   if (groups == 1L) {
@@ -77,7 +79,7 @@
   if (groups == 1L)
     plot <- plot + ggplot2::theme(legend.position = "none")
   # Match AFT: axis ticks span curves, intervals and observed/reference overlays.
-  return(.sapPredictionPrettyAxes(plot))
+  return(.sapPredictionPrettyAxes(plot, probabilityAxis = probability))
 }
 
 .sargResidualPlots <- function(jaspResults, options, fits) {

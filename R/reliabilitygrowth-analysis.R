@@ -1,7 +1,8 @@
 .sargFitDependencies <- c("time", "failures", "subgroup", "timeType", "model", "estimationMethod",
   "piecewiseStartingBreakpoints", "piecewiseStartingBreakpointsValues", "setSeed", "seed")
 .sargTimeDependencies <- paste0("predictionsTime", c("Grid", "Intervals", "From", "To", "Step", "Values", "Percentages"))
-.sargPredictionOptions <- paste0("predictionsOutcome", c("CumulativeFailures", "FailureIntensity", "CumulativeMtbf", "InstantaneousMtbf"))
+.sargMeasureNames <- c("survivalProbability", "failureProbability", "cumulativeFailures", "failureIntensity", "cumulativeMtbf", "instantaneousMtbf")
+.sargPredictionOptions <- paste0("predictionsOutcome", c("SurvivalProbability", "FailureProbability", "CumulativeFailures", "FailureIntensity", "CumulativeMtbf", "InstantaneousMtbf"))
 .sargTableDependencies <- c("predictionsOutputTableFormat", "predictionsMergeTablesAcrossMeasures", "predictionsRoundTimeTableValues")
 .sargPredictionDependencies <- c(.sargTimeDependencies, .sargPredictionOptions,
   "predictionsDisplayConfidenceIntervals", "predictionsDisplayConfidenceIntervalsLevel")
