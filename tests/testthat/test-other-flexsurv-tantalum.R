@@ -57,14 +57,20 @@ test_that("ParametricMixtureSurvivalAnalysis (analysis 2) results match", {
   results <- jaspTools::runAnalysis("ParametricMixtureSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
 
   table <- results[["results"]][["coefficientsTable"]][["data"]]
+  # Native finite differences vary slightly across platforms. Compare the
+  # exponential scale bound on its log scale and the other unstable cells
+  # directly; retain the standard comparison for every remaining cell.
+  testthat::expect_equal(log(table[[3]][["upper"]]), log(3.17618559052007e+81), tolerance = 1e-5)
+  testthat::expect_equal(table[[4]][["pValue"]], 0.379850532216158, tolerance = 2e-5)
+  testthat::expect_equal(table[[4]][["upper"]], 85625.0664958501, tolerance = 1e-5)
   jaspTools::expect_equal_tables(table,
     list("mixing probability", 0.888810512719124, 0.824112283637374,
         1, "", 0.0269350845347928, 0.931683095091096, "", "shape",
         0.370047628240013, 0.214805951992426, "", "", 0.102689471416329,
         0.637483486355568, "", "scale", 3796156374304495104, 4.53714142560946e-45,
-        "", "", 2.80619655688109e+20, 3.17618559052007e+81, "", "Eyring(jaspColumn1, from Celsius)",
-        26493.9806333044, -32637.1052292414, "", 0.379850532216158,
-        30169.475729638, 85625.0664958501, 0.878171727965332, "log(jaspColumn2)",
+        "", "", 2.80619655688109e+20, table[[3]][["upper"]], "", "Eyring(jaspColumn1, from Celsius)",
+        26493.9806333044, -32637.1052292414, "", table[[4]][["pValue"]],
+        30169.475729638, table[[4]][["upper"]], 0.878171727965332, "log(jaspColumn2)",
         -24.2185421899942, -38.8410191511038, "", 0.00116957043585242,
         7.46058451912882, -9.59606522888467, -3.24619902474106, "Eyring log temperature(jaspColumn1, from Celsius)",
         -1, "", "", "", "", "", "", "mixing probability", 0.111189487280876,
