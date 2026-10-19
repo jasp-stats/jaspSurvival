@@ -22,10 +22,10 @@
 
   # Saved plots must redraw when their definition or layout options change.
   definition <- jaspResults[["probabilityPlotDefinition"]]
-  if (is.null(definition) || !identical(definition$object, 5L)) {
+  if (is.null(definition) || !identical(definition$object, 6L)) {
     definition <- createJaspState()
     definition$dependOn(c("probabilityPlotStratifyBy", "probabilityPlotStratifyByVariables"))
-    definition$object <- 5L
+    definition$object <- 6L
     jaspResults[["probabilityPlotDefinition"]] <- definition
     jaspResults[["probabilityPlot"]] <- NULL
   }
@@ -172,7 +172,11 @@
   if (any(vapply(fitList, function(model) is.null(attr(model, "probabilityPlotStrata")), logical(1))))
     fitList <- .sapProbabilityPlotPrepareFits(fitList, options)
   displayDatasets   <- lapply(fitList, function(model) .sapProbabilityPlotDisplayDataset(.sapPlotObservedDataset(model), model, options))
-  observedTimeRange <- .sapProbabilityPlotTimeRange(unlist(lapply(displayDatasets, .saExtractSurvTimes, options = options), use.names = FALSE))
+  mappedTimes <- unlist(lapply(displayDatasets, .saExtractSurvTimes, options = options), use.names = FALSE)
+  if (!any(is.finite(mappedTimes) & mappedTimes > 0))
+    mappedTimes <- unlist(lapply(fitList, function(model)
+      .saExtractSurvTimes(.sapPlotObservedDataset(model), options)), use.names = FALSE)
+  observedTimeRange <- .sapProbabilityPlotTimeRange(mappedTimes)
   timeSequence      <- if (is.null(axisSetup)) .sapProbabilityPlotTimeSequence(observedTimeRange, options) else
     .sapProbabilityPlotTimeSequence(axisSetup[["timeRange"]], options, expand = FALSE)
   adjusted        <- any(vapply(displayDatasets, function(dataset) identical(attr(dataset, "probabilityPlotAdjusted"), TRUE), logical(1)))
@@ -215,8 +219,10 @@
   if (nrow(empiricalData) == 0 && nrow(curveData) == 0 && nrow(censoringData) == 0)
     stop(gettext("The probability plot requires at least one positive observed failure time, censored observation, or fitted curve."))
 
+  notes <- unique(c(unlist(lapply(displayDatasets, attr, "probabilityPlotWarnings"), use.names = FALSE),
+    attr(curveData, "predictionWarnings")))
   return(list(empiricalData = empiricalData, curveData = curveData, censoringData = censoringData,
-    observedTimeRange = observedTimeRange, adjusted = adjusted))
+    observedTimeRange = observedTimeRange, adjusted = adjusted, notes = notes))
 }
 
 .sapCreateProbabilityPlot <- function(fit, options, axisSetup = NULL) {
@@ -309,6 +315,9 @@
   if (data[["adjusted"]])
     plot <- plot + ggplot2::xlab(if (.sapProbabilityPlotUsesLogTime(.sapProbabilityPlotCanvasTransform(options[["probabilityPlotCanvas"]])))
       gettext("Adjusted time (log scale)") else gettext("Adjusted time"))
+  if (length(data[["notes"]]))
+    plot <- plot + ggplot2::labs(caption = paste(unlist(lapply(data[["notes"]], strwrap, width = 60L)), collapse = "\n")) +
+      ggplot2::theme(plot.caption.position = "plot", plot.caption = ggplot2::element_text(hjust = 0))
 
   return(plot)
 }
@@ -344,30 +353,38 @@
   event <- dataset[[options[["eventStatus"]]]]
 
   weights <- .sapCaseWeights(dataset, options)
+  originalTime <- attr(dataset, "probabilityPlotOriginalTime", exact = TRUE)
+  rankTime <- attr(dataset, "probabilityPlotRankTime", exact = TRUE)
+  originalTime <- if (is.null(originalTime)) time else unname(originalTime[rownames(dataset)])
+  rankTime <- if (is.null(rankTime)) time else unname(rankTime[rownames(dataset)])
 
-  keep <- is.finite(time) & time > 0 & !is.na(event) & is.finite(weights) & weights > 0
+  keep <- is.finite(originalTime) & originalTime > 0 & !is.na(event) & is.finite(weights) & weights > 0
   if (censored)
     keep <- keep & !event
   time    <- time[keep]
+  rankTime <- rankTime[keep]
   event   <- as.logical(event[keep])
   weights <- as.integer(weights[keep])
 
   if (any(weights > 1L)) {
     observationIndex <- rep.int(seq_along(time), weights)
     time             <- time[observationIndex]
+    rankTime         <- rankTime[observationIndex]
     event            <- event[observationIndex]
   }
 
-  return(data.frame(time = time, event = event))
+  return(data.frame(time = time, event = event, rankTime = rankTime))
 }
 
 .sapProbabilityPlotEmpiricalData <- function(dataset, options) {
 
   observations <- .sapProbabilityPlotObservations(dataset, options)
-  if (nrow(observations) == 0 || !any(observations[["event"]]))
+  if (nrow(observations) == 0 || !any(observations[["event"]]) || anyNA(observations[["rankTime"]]))
     return(data.frame(time = numeric(0), probability = numeric(0), label = character(0)))
 
-  out <- .sapProbabilityPlotRankData(observations[["time"]], observations[["event"]], options)
+  out <- .sapProbabilityPlotRankData(observations[["rankTime"]], observations[["event"]], options)
+  out[["time"]] <- observations[["time"]][match(out[["time"]], observations[["rankTime"]])]
+  out <- out[is.finite(out[["time"]]) & out[["time"]] > 0, , drop = FALSE]
 
   if (nrow(out) == 0)
     return(out)
@@ -387,6 +404,7 @@
 
   observations <- .sapProbabilityPlotObservations(dataset, options, censored = TRUE)
   out          <- observations[, "time", drop = FALSE]
+  out          <- out[is.finite(out[["time"]]) & out[["time"]] > 0, , drop = FALSE]
   out          <- out[order(out[["time"]]), , drop = FALSE]
   rownames(out) <- NULL
 

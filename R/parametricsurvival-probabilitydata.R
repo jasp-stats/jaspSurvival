@@ -1,60 +1,25 @@
 # Probability diagnostics map failures and censoring bounds to each stratum's
 # frequency-weighted reference model design.
 
-.sapProbabilityPlotReferenceTimes <- function(fit, logSurvival, reference, time) {
+.sapProbabilityPlotReferenceTimes <- function(fit, logSurvival, reference) {
 
-  # Lower-tail log probabilities avoid native wrappers that mishandle upper-tail
-  # log quantiles. Keep both tails accurate when converting the probability.
-  logFailure    <- logSurvival
-  smallSurvival <- logSurvival < -log(2)
-  logFailure[smallSurvival] <- log1p(-exp(logSurvival[smallSurvival]))
-  logFailure[!smallSurvival] <- log(-expm1(logSurvival[!smallSurvival]))
-  adjusted <- suppressWarnings(do.call(fit[["dfns"]][["q"]], c(list(logFailure),
-    as.list(as.data.frame(reference)), list(lower.tail = TRUE, log.p = TRUE), fit[["aux"]])))
-  mapped <- suppressWarnings(do.call(fit[["dfns"]][["p"]], c(list(adjusted),
-    as.list(as.data.frame(reference)), list(lower.tail = FALSE, log.p = TRUE), fit[["aux"]])))
-  inaccurate <- !is.finite(adjusted) | is.na(mapped) | abs(mapped - logSurvival) > 1e-10 * (1 + abs(logSurvival))
-  inaccurate[is.na(inaccurate)] <- TRUE
-  # Native quantile wrappers can round a valid extreme probability to one.
-  # Refine only affected rows on log time using the fitted log-survival function.
-  for (row in which(inaccurate & is.finite(time) & time > 0)) {
-    parameters <- as.list(as.data.frame(reference[row, , drop = FALSE]))
-    target     <- logSurvival[row]
-    adjusted[row] <- NA_real_
-    at <- function(value) do.call(fit[["dfns"]][["p"]], c(list(value), parameters,
-      list(lower.tail = FALSE, log.p = TRUE), fit[["aux"]]))
-    limit <- suppressWarnings(at(Inf))
-    if (!is.finite(target) || (!is.na(limit) && target <= limit))
-      next
-    evaluate <- function(value) at(exp(value)) - target
-    lower    <- upper <- log(time[row])
-    minimum  <- log(.Machine$double.xmin) + log(.Machine$double.eps)
-    maximum  <- log(.Machine$double.xmax) - log(2)
-    step     <- 1
-    for (iteration in seq_len(16L)) {
-      low  <- suppressWarnings(evaluate(lower))
-      high <- suppressWarnings(evaluate(upper))
-      if (is.na(low) || is.na(high))
-        break
-      if (low == 0) {
-        adjusted[row] <- exp(lower)
-        break
-      }
-      if (high == 0) {
-        adjusted[row] <- exp(upper)
-        break
-      }
-      if (low >= 0 && high <= 0) {
-        adjusted[row] <- exp(stats::uniroot(evaluate, c(lower, upper), f.lower = low, f.upper = high, tol = 1e-10)$root)
-        break
-      }
-      if (low < 0)
-        lower <- max(minimum, lower - step)
-      if (high > 0)
-        upper <- min(maximum, upper + step)
-      step <- step * 2
-    }
-  }
+  logFailure <- ifelse(logSurvival < -log(2), log1p(-exp(logSurvival)), log(-expm1(logSurvival)))
+  evaluate <- function(rows) tryCatch({
+    parameters <- as.list(as.data.frame(reference[rows, , drop = FALSE]))
+    adjusted <- suppressWarnings(do.call(fit[["dfns"]][["q"]], c(list(logFailure[rows]), parameters,
+      list(lower.tail = TRUE, log.p = TRUE), fit[["aux"]])))
+    mapped <- suppressWarnings(do.call(fit[["dfns"]][["p"]], c(list(adjusted), parameters,
+      list(lower.tail = FALSE, log.p = TRUE), fit[["aux"]])))
+    accurate <- is.finite(adjusted) & !is.na(mapped) &
+      abs(mapped - logSurvival[rows]) <= 1e-10 * (1 + abs(logSurvival[rows]))
+    adjusted[which(is.na(accurate) | !accurate)] <- NA_real_
+    adjusted
+  }, error = function(error) rep(NA_real_, length(rows)))
+  adjusted <- evaluate(seq_along(logSurvival))
+  # Retry native scalar calls only; never reconstruct a failed quantile locally.
+  if (length(adjusted) > 1L)
+    for (row in which(is.na(adjusted)))
+      adjusted[row] <- evaluate(row)
   return(adjusted)
 }
 
@@ -93,12 +58,22 @@
   } else {
     logSurvival <- do.call(fit[["dfns"]][["p"]], c(list(time), as.list(as.data.frame(individual[, parameters, drop = FALSE])),
       list(lower.tail = FALSE, log.p = TRUE), fit[["aux"]]))
-    adjustedTime <- .sapProbabilityPlotReferenceTimes(fit, logSurvival, reference, time)
+    adjustedTime <- .sapProbabilityPlotReferenceTimes(fit, logSurvival, reference)
   }
   positive <- is.finite(time) & time > 0
-  if (any(!is.finite(adjustedTime[positive]) | adjustedTime[positive] <= 0)) {
-    message <- gettext("Some observations cannot be mapped to positive, finite times at the automatic reference profile. Stratify by the predictors associated with cure fractions or extreme tails, or simplify the model.")
-    stop(structure(list(message = message, call = NULL), class = c("probabilityPlotError", "error", "condition")))
+  missing <- positive & (!is.finite(adjustedTime) | adjustedTime <= 0)
+  if (any(missing)) {
+    # Keep the full cohort's probability ordering for empirical ranks, even
+    # when the inverse CDF cannot provide a displayed time for some rows.
+    logSurvival <- do.call(fit[["dfns"]][["p"]], c(list(time), as.list(as.data.frame(individual[, parameters, drop = FALSE])),
+      list(lower.tail = FALSE, log.p = TRUE), fit[["aux"]]))
+    attr(dataset, "probabilityPlotRankTime") <- stats::setNames(-logSurvival, rownames(dataset))
+    attr(dataset, "probabilityPlotOriginalTime") <- stats::setNames(time, rownames(dataset))
+    attr(dataset, "probabilityPlotWarnings") <- gettext("Some observed times could not be mapped to the reference profile and are omitted from this diagnostic. Available points and fitted curves are retained.")
+    if (anyNA(logSurvival[positive]))
+      attr(dataset, "probabilityPlotWarnings") <- c(attr(dataset, "probabilityPlotWarnings"),
+        gettext("Empirical points for affected strata are unavailable because their fitted probabilities could not be evaluated. Fitted curves are retained where available."))
+    adjustedTime[missing] <- NA_real_
   }
   # The same increasing transformation applies to failures and censoring bounds.
   dataset[[options[["timeToEvent"]]]] <- adjustedTime
