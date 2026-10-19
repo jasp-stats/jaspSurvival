@@ -603,6 +603,8 @@
         if (field %in% names(layer$data))
           colours <- unique(c(colours, as.character(layer$data[[field]])))
   colours     <- unique(c(kaplanMeierColours, colours))
+  # Unmatched observed points use fixed gray and have no colour legend key.
+  colours     <- colours[!is.na(colours)]
   colorScale  <- jaspGraphs::scale_JASPcolor_discrete(options[["colorPalette"]])
   fillScale   <- jaspGraphs::scale_JASPfill_discrete(options[["colorPalette"]])
   singleTrace <- length(setdiff(colours, kaplanMeierColours)) == 1L && length(kaplanMeierColours) <= 1L
