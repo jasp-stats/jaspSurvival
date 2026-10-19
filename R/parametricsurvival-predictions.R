@@ -276,7 +276,7 @@
     context   = options[["simulationContext"]],
     fn        = if (measure == "failureProbability") .sapNativePredictionFunction(fit, "failure")
   )
-  if (!is.null(at))
+  if (!is.null(at) && type != "mean")
     arguments[[if (type == "quantile") "quantiles" else "t"]] <- at
 
   return(arguments)
