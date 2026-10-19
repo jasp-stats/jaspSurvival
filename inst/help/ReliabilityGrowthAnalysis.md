@@ -18,12 +18,18 @@ Maximum likelihood uses grouped interval counts, not an exact-event-time likelih
 
 ## Predictions
 
-Choose measures and evaluation times directly; no predictor assignments are needed. Extend **To** beyond observed follow-up to forecast. A dashed vertical line marks the observed endpoint when forecasting; dotted lines mark estimated change points.
+Choose **Outcome**, evaluation times under **Time**, and plot/table **Output**. No predictor assignments are needed. These controls follow the parametric survival Predictions layout.
+
+**Equal intervals** spans the first observed endpoint to maximum follow-up. **Sequence** provides From, Step and To fields; extend To beyond observed follow-up to forecast. **Custom (relative)** accepts percentages of each subgroup's maximum follow-up, including percentages above 100 for forecasting. **Custom (absolute)** accepts times in the original units; empty input uses 25%, 50% and 75% of follow-up. Evaluation times must be positive. A dashed vertical line marks the observed endpoint when forecasting; dotted lines mark estimated change points.
 
 - **Cumulative failures:** expected cumulative failures M(t).
 - **Failure intensity:** instantaneous failure rate m(t).
 - **Cumulative MTBF:** t / M(t).
 - **Instantaneous MTBF:** 1 / m(t), a local rate-based measure rather than expected waiting time to the next failure.
+
+**Display** controls confidence intervals, legend, theme, observed data and colors. Axis controls select linear or logarithmic scales. **Merge series across: Subgroups** overlays independent subgroup curves.
+
+Tables support **Long** (times in rows) and **Wide** (times in column groups) formats. **Merge tables across measures** places selected outcomes together. Optional **Round time table values** rounds evaluation times before calculating table predictions; rounded times must remain positive. Plot evaluation times remain unrounded.
 
 Confidence intervals describe uncertainty in fitted quantities, not future count variability. Rate-based intervals are unavailable for piecewise models. Uncertainty is unavailable when covariance estimation is unreliable.
 

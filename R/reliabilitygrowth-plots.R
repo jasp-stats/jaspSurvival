@@ -10,7 +10,7 @@
   container$dependOn(c(.sargFitDependencies, .sargPredictionDependencies, .sargPlotDependencies, "predictionsOutputPlot"))
   container$position <- 5 + match(measure, c("cumulativeFailures", "failureIntensity", "cumulativeMtbf", "instantaneousMtbf")) / 10
   jaspResults[[key]] <- container
-  groups <- if (options[["predictionsMergeSubgroups"]]) list(seq_along(fits)) else as.list(seq_along(fits))
+  groups <- if (options[["predictionsMergeSeriesAcrossSubgroups"]]) list(seq_along(fits)) else as.list(seq_along(fits))
   for (i in seq_along(groups)) {
     indices <- groups[[i]]
     output <- createJaspPlot(title = if (length(groups) == 1L) "" else fits[[indices]][["label"]], width = 530, height = 380)
@@ -34,11 +34,11 @@
   data <- do.call(rbind, lapply(predictions, `[[`, "plot"))
   data[["subgroup"]] <- factor(data[["subgroup"]], levels = vapply(fits, `[[`, character(1), "label"))
   plot <- ggplot2::ggplot(data, ggplot2::aes(x = time, y = estimate, colour = subgroup, group = subgroup))
-  if (options[["predictionsConfidenceIntervals"]])
+  if (options[["predictionsDisplayConfidenceIntervals"]])
     plot <- plot + ggplot2::geom_ribbon(ggplot2::aes(ymin = lower, ymax = upper, fill = subgroup),
       colour = NA, alpha = 0.15, na.rm = TRUE, show.legend = FALSE)
   plot <- plot + ggplot2::geom_line(linewidth = 0.7)
-  if (options[["predictionsObservedData"]] && measure %in% c("cumulativeFailures", "cumulativeMtbf")) {
+  if (options[["predictionsDisplayObservedData"]] && measure %in% c("cumulativeFailures", "cumulativeMtbf")) {
     observed <- do.call(rbind, lapply(fits, function(fit) data.frame(time = fit[["time"]],
       estimate = if (measure == "cumulativeFailures") fit[["cumulativeCounts"]] else fit[["time"]] / fit[["cumulativeCounts"]],
       subgroup = fit[["label"]])))
@@ -53,7 +53,7 @@
   plot <- plot + ggplot2::labs(x = gettext("Time"), y = .sargMeasureLabel(measure), colour = gettext("Subgroup"), fill = gettext("Subgroup"))
   if (options[["predictionsXAxisTransformation"]] == "log")
     plot <- plot + ggplot2::scale_x_log10()
-  if (options[["predictionsYAxisTransformation"]] == "log")
+  if (options[["predictionsYAxisScale"]] == "log")
     plot <- plot + ggplot2::scale_y_log10()
   plot <- .sargPlotStyle(plot, options, length(fits))
   return(plot)

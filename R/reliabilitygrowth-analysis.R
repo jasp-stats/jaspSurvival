@@ -1,11 +1,12 @@
 .sargFitDependencies <- c("time", "failures", "subgroup", "timeType", "model", "estimationMethod",
   "piecewiseStartingBreakpoints", "piecewiseStartingBreakpointsValues", "setSeed", "seed")
-.sargTimeDependencies <- paste0("predictionsTime", c("Grid", "Intervals", "From", "To", "Step", "Values"))
-.sargPredictionOptions <- paste0("predictions", c("CumulativeFailures", "FailureIntensity", "CumulativeMtbf", "InstantaneousMtbf"))
+.sargTimeDependencies <- paste0("predictionsTime", c("Grid", "Intervals", "From", "To", "Step", "Values", "Percentages"))
+.sargPredictionOptions <- paste0("predictionsOutcome", c("CumulativeFailures", "FailureIntensity", "CumulativeMtbf", "InstantaneousMtbf"))
+.sargTableDependencies <- c("predictionsOutputTableFormat", "predictionsMergeTablesAcrossMeasures", "predictionsRoundTimeTableValues")
 .sargPredictionDependencies <- c(.sargTimeDependencies, .sargPredictionOptions,
-  "predictionsConfidenceIntervals", "predictionsConfidenceIntervalsLevel")
-.sargPlotDependencies <- c("predictionsObservedData", "predictionsMergeSubgroups", "predictionsXAxisTransformation",
-  "predictionsYAxisTransformation", "plotTheme", "plotLegend", "colorPalette")
+  "predictionsDisplayConfidenceIntervals", "predictionsDisplayConfidenceIntervalsLevel")
+.sargPlotDependencies <- c("predictionsDisplayObservedData", "predictionsMergeSeriesAcrossSubgroups", "predictionsXAxisTransformation",
+  "predictionsYAxisScale", "plotTheme", "plotLegend", "colorPalette")
 
 ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
 

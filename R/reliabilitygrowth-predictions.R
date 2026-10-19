@@ -11,24 +11,34 @@
 .sargTimes <- function(record, options, plot = FALSE) {
 
   message <- gettext("Prediction times must be positive finite numbers. Enter numbers separated by commas.")
-  if (options[["predictionsTimeGrid"]] == "custom") {
-    times <- sort(unique(.sargNumbers(options[["predictionsTimeValues"]], message)))
+  grid <- options[["predictionsTimeGrid"]]
+  if (grid == "customAbsolute") {
+    times <- sort(unique(.sargNumbers(options[["predictionsTimeValues"]], message, max(record[["time"]]) * c(.25, .5, .75))))
     if (length(times) == 0)
       stop(message)
-  } else {
+  } else if (grid == "customRelative") {
+    percentages <- .sargNumbers(options[["predictionsTimePercentages"]],
+      gettext("Enter positive percentages of maximum follow-up, separated by commas."))
+    if (length(percentages) == 0)
+      stop(gettext("Enter positive percentages of maximum follow-up, separated by commas."))
+    times <- sort(unique(max(record[["time"]]) * percentages / 100))
+  } else if (grid == "quantiles") {
+    times <- seq(min(record[["time"]]), max(record[["time"]]), length.out = options[["predictionsTimeIntervals"]] + 1L)
+  } else if (grid == "sequence") {
     from <- .sargNumbers(options[["predictionsTimeFrom"]], message, min(record[["time"]]))
     to   <- .sargNumbers(options[["predictionsTimeTo"]], message, max(record[["time"]]))
     if (length(from) != 1 || length(to) != 1 || from > to)
       stop(gettext("From and To must each contain one positive time, with From less than or equal to To."))
-    if (options[["predictionsTimeGrid"]] == "sequence") {
-      step <- .sargNumbers(options[["predictionsTimeStep"]], gettext("Step must contain one positive finite number."),
-        if (from == to) from else (to - from) / 10)
-      if (length(step) != 1 || (to - from) / step > 10000)
-        stop(gettext("Specify one positive step producing no more than 10,001 prediction times."))
-      times <- seq(from, to, by = step)
-    } else {
-      times <- seq(from, to, length.out = options[["predictionsTimeIntervals"]] + 1L)
-    }
+    step <- .sargNumbers(options[["predictionsTimeStep"]], gettext("Step must contain one positive finite number."),
+      if (from == to) from else (to - from) / 10)
+    if (length(step) != 1 || (to - from) / step > 10000)
+      stop(gettext("Specify one positive step producing no more than 10,001 prediction times."))
+    times <- seq(from, to, by = step)
+  }
+  if (!plot && grid %in% c("quantiles", "sequence") && options[["predictionsRoundTimeTableValues"]]) {
+    times <- unique(round(times))
+    if (any(times <= 0))
+      stop(gettext("Rounding produces a non-positive evaluation time. Disable Round time table values to retain the original times."))
   }
   if (length(times) > 10001)
     stop(gettext("Specify no more than 10,001 prediction times."))
@@ -134,12 +144,12 @@
     return(jaspResults[["predictions"]]$object)
   state <- createJaspState()
   state$dependOn(c(.sargFitDependencies, .sargPredictionDependencies, "predictionsXAxisTransformation",
-    "predictionsOutputPlot", "predictionsOutputTable"))
+    "predictionsOutputPlot", "predictionsOutputTable", "predictionsRoundTimeTableValues"))
   jaspResults[["predictions"]] <- state
   predictions <- list()
   for (measure in .sargMeasures(options)) {
     predictions[[measure]] <- lapply(.sargFits(jaspResults, valid = TRUE), function(record) {
-      evaluate <- function(plot) .sargPredict(record, .sargTimes(record, options, plot), measure, options[["predictionsConfidenceIntervalsLevel"]])
+      evaluate <- function(plot) .sargPredict(record, .sargTimes(record, options, plot), measure, options[["predictionsDisplayConfidenceIntervalsLevel"]])
       list(label = record[["label"]],
         table = if (options[["predictionsOutputTable"]]) try(evaluate(FALSE), silent = TRUE),
         plot  = if (options[["predictionsOutputPlot"]]) try(evaluate(TRUE), silent = TRUE))
@@ -154,48 +164,107 @@
   if (!options[["predictionsOutputPlot"]] && !options[["predictionsOutputTable"]])
     return()
   predictions <- .sargPredictionState(jaspResults, options)
-  for (measure in .sargMeasures(options)) {
-    if (options[["predictionsOutputTable"]])
-      .sargPredictionTable(jaspResults, options, measure, predictions[[measure]])
+  measures <- .sargMeasures(options)
+  if (options[["predictionsOutputTable"]] && length(measures) > 0) {
+    if (options[["predictionsMergeTablesAcrossMeasures"]])
+      .sargPredictionTable(jaspResults, options, measures, predictions)
+    else
+      for (measure in measures) .sargPredictionTable(jaspResults, options, measure, predictions)
+  }
+  for (measure in measures) {
     if (options[["predictionsOutputPlot"]])
       .sargPredictionPlots(jaspResults, options, measure, predictions[[measure]])
   }
   return()
 }
 
-.sargPredictionTable <- function(jaspResults, options, measure, predictions) {
+.sargPredictionTable <- function(jaspResults, options, measures, predictions) {
 
-  key <- paste0(measure, "Table")
+  merged <- length(measures) > 1L
+  key <- if (merged) "predictionsTable" else paste0(measures, "Table")
   if (!is.null(jaspResults[[key]]))
     return()
-  table <- .sargCreateTable(jaspResults, key, .sargMeasureLabel(measure),
-    c(.sargPredictionDependencies, "predictionsOutputTable"), 4 + match(measure, c("cumulativeFailures", "failureIntensity", "cumulativeMtbf", "instantaneousMtbf")) / 10)
+  table <- .sargCreateTable(jaspResults, key, if (merged) gettext("Predictions") else .sargMeasureLabel(measures),
+    c(.sargPredictionDependencies, .sargTableDependencies, "predictionsOutputTable"),
+    if (merged) 4 else 4 + match(measures, c("cumulativeFailures", "failureIntensity", "cumulativeMtbf", "instantaneousMtbf")) / 10)
   .sargGroupColumn(table, options)
-  .sargColumn(table, "time", gettext("Time"))
-  .sargColumn(table, "estimate", gettext("Estimate"))
-  if (options[["predictionsConfidenceIntervals"]])
-    .sargCiColumns(table, options[["predictionsConfidenceIntervalsLevel"]])
   errors <- character(0)
-  data <- lapply(predictions, function(prediction) {
-    if (inherits(prediction[["table"]], "try-error")) {
-      errors <<- c(errors, gettextf("%1$s: %2$s", prediction[["label"]], jaspBase::.extractErrorMessage(prediction[["table"]])))
-      return(NULL)
-    }
-    prediction[["table"]]
+  forecast <- FALSE
+  data <- lapply(measures, function(measure) {
+    rows <- lapply(predictions[[measure]], function(prediction) {
+      if (inherits(prediction[["table"]], "try-error")) {
+        errors <<- c(errors, gettextf("%1$s: %2$s", prediction[["label"]], jaspBase::.extractErrorMessage(prediction[["table"]])))
+        return(NULL)
+      }
+      frame <- prediction[["table"]]
+      forecast <<- forecast || any(frame[["forecast"]])
+      frame[["forecast"]] <- NULL
+      if (merged)
+        names(frame)[match(c("estimate", "lower", "upper"), names(frame))] <- paste0(measure, ".", c("estimate", "lower", "upper"))
+      frame
+    })
+    rows <- Filter(Negate(is.null), rows)
+    if (length(rows) > 0) do.call(rbind, rows)
   })
   data <- Filter(Negate(is.null), data)
-  if (length(data) > 0)
-    table$setData(do.call(rbind, data))
-  if (length(errors) > 0 && length(data) == 0)
+  wide <- options[["predictionsOutputTableFormat"]] == "wide"
+  data <- if (length(data) > 0) Reduce(function(x, y) merge(x, y, by = c("subgroup", "time"), all = TRUE, sort = FALSE), data)
+  times <- if (wide && !is.null(data)) sort(unique(data[["time"]]))
+  if (!wide)
+    .sargColumn(table, "time", gettext("Time"))
+  .sargPredictionTableColumns(table, options, measures, times)
+  if (!is.null(data)) {
+    labels <- vapply(.sargFits(jaspResults, valid = TRUE), `[[`, character(1), "label")
+    data <- data[order(match(data[["subgroup"]], labels), data[["time"]]), , drop = FALSE]
+    if (wide)
+      data <- .sargPredictionWideData(data, measures, times)
+    else {
+      bounds <- grep("(lower|upper)$", names(data))
+      names(data)[bounds] <- paste0(names(data)[bounds], "1")
+    }
+    table$setData(data)
+  }
+  if (length(errors) > 0 && is.null(data))
     table$setError(paste(errors, collapse = "\n"))
   else
     for (error in errors) table$addFootnote(error)
-  if (options[["predictionsConfidenceIntervals"]]) {
+  if (options[["predictionsDisplayConfidenceIntervals"]]) {
     table$addFootnote(gettext("Intervals describe uncertainty in the fitted quantity, not variation in future failure counts."))
-    if (options[["model"]] == "piecewise" && measure %in% c("failureIntensity", "instantaneousMtbf"))
+    if (options[["model"]] == "piecewise" && any(measures %in% c("failureIntensity", "instantaneousMtbf")))
       table$addFootnote(gettext("Confidence intervals for rate-based measures are unavailable for piecewise models."))
   }
-  if (length(data) > 0 && any(vapply(data, function(x) any(x[["forecast"]]), logical(1))))
+  if (forecast)
     table$addFootnote(gettext("Predictions beyond observed follow-up extrapolate the fitted trend."))
   return()
+}
+
+.sargPredictionTableColumns <- function(table, options, measures, times = NULL) {
+  specification <- list(levels = if (options[["predictionsDisplayConfidenceIntervals"]]) options[["predictionsDisplayConfidenceIntervalsLevel"]] else numeric(0), direction = "twoSided")
+  for (measure in measures) {
+    prefix <- if (length(measures) > 1L) paste0(measure, ".") else ""
+    title <- .sargMeasureLabel(measure)
+    if (is.null(times)) {
+      .sapPredictionTableColumns(table, specification, title, prefix)
+    } else {
+      for (i in seq_along(times))
+        .sapPredictionTableColumns(table, specification,
+          .sapPredictionTableEvaluationTitle(title, "time", times[i]), paste0(prefix, "at", i, "."))
+    }
+  }
+  return()
+}
+
+.sargPredictionWideData <- function(data, measures, times) {
+  labels <- unique(data[["subgroup"]])
+  wide <- data.frame(subgroup = labels)
+  for (measure in measures) {
+    prefix <- if (length(measures) > 1L) paste0(measure, ".") else ""
+    for (i in seq_along(times)) {
+      rows <- data[data[["time"]] == times[i], , drop = FALSE]
+      selected <- match(labels, rows[["subgroup"]])
+      for (field in c("estimate", "lower", "upper"))
+        wide[[paste0(prefix, "at", i, ".", if (field == "estimate") "estimate" else paste0(field, "1"))]] <- rows[[paste0(prefix, field)]][selected]
+    }
+  }
+  return(wide)
 }
