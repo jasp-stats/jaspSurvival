@@ -180,7 +180,7 @@
     warnings <- attr(values[[measure]], "predictionWarnings")
     if (measures[[measure]] == "quantile" && any(is.infinite(values[[measure]][["estimate"]])))
       warnings <- c(setdiff(warnings, gettext("Some requested quantities are infinite or exceed numerical range.")),
-        gettext("Lifetime percentiles that are infinite or exceed numerical range cannot be drawn as finite plot points."))
+        gettext("Some lifetime percentiles are infinite or exceed numerical range."))
     notes <- unique(c(notes, warnings))
   }
   if (interval) {
