@@ -192,7 +192,7 @@ Form
 					id:			mixtureComponentPlot
 					label:		qsTr("Component plot")
 					name:		"mixtureComponentPlot"
-					info: qsTr("Show the overall mixture and the contribution of each component to the selected measure.")
+					info: qsTr("Show the mixture and each component's survival measures. Density curves are weighted by the mixing proportions and sum to the mixture density.")
 
 					DropDown
 					{
@@ -377,7 +377,7 @@ Form
 					inclusive:		JASP.MaxOnly
 					decimals:		6
 					visible:		mixtureConstrainMinimumSpreadType.currentValue === "absolute"
-					info: qsTr("Set the minimum standard deviation of log survival time for each component.")
+					info: qsTr("Set the minimum standard deviation of log survival time. Choose an application-specific bound and check sensitivity; 0.1 is only a preset.")
 				}
 			}
 

@@ -1,5 +1,11 @@
 context("Verified: vassiliou2003-1")
 
+# Source: Vassiliou & Mettas (2003), Understanding Accelerated Life-Testing Analysis, #2003RM-100.
+# https://www.tce.edu/sites/default/files/PDF/Mech-Reliability-Engg.pdf
+# Printed p. 10, section 9.3.3/Table 2: Weibull shape 4.291, C = 58.984, B = 1861.618.
+# Published rounded point estimates are the external anchors; the higher-precision
+# estimates and confidence limits below are regression expectations from the fixture.
+
 # This test file was auto-generated from a JASP example file.
 # The JASP file is stored in tests/testthat/jaspfiles/verified/.
 

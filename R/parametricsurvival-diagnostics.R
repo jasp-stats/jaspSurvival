@@ -164,6 +164,7 @@
     return(tempPlot)
   }
 
+  res <- rep(res, .sapCaseWeights(attr(fit, "dataset"), options))
   tempPlot$plotObject <- try(.saPlotCanvasPadding(jaspGraphs::jaspHistogram(res, xName =.saResidualsPlotName(options))))
 
   return(tempPlot)

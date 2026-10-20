@@ -1,5 +1,11 @@
 context("Verified: vassiliou2003-2")
 
+# Source: Vassiliou & Mettas (2003), Understanding Accelerated Life-Testing Analysis, #2003RM-100.
+# https://www.tce.edu/sites/default/files/PDF/Mech-Reliability-Engg.pdf
+# Printed p. 11, section 10.1.2/Table 3: shape 5.874, A = 0.0000597, humidity b = 0.281, temperature phi = 5630.330.
+# Published rounded point estimates are the external anchors; the higher-precision
+# estimates and confidence limits below are regression expectations from the fixture.
+
 # This test file was auto-generated from a JASP example file.
 # The JASP file is stored in tests/testthat/jaspfiles/verified/.
 

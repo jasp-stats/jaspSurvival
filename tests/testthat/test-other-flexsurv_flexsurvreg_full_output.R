@@ -8,7 +8,6 @@ test_that("ParametricSurvivalAnalysis (analysis 1) results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "flexsurv_flexsurvreg_full_output.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[1]]
-  opts[["predictionsOutputTableFormat"]] <- "long"
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
   # Encode and run analysis
@@ -238,7 +237,6 @@ test_that("ParametricSurvivalAnalysis (analysis 2) results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "flexsurv_flexsurvreg_full_output.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[2]]
-  opts[["predictionsOutputTableFormat"]] <- "long"
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
   # Encode and run analysis
@@ -458,7 +456,6 @@ test_that("ParametricSurvivalAnalysis (analysis 3) results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "flexsurv_flexsurvreg_full_output.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[3]]
-  opts[["predictionsOutputTableFormat"]] <- "long"
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
   # Encode and run analysis

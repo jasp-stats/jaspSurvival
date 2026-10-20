@@ -16,9 +16,13 @@
 #
 
 # Starting memberships for the mixture estimator.
-.sapmStarts                     <- function(options, family, survObject, emSurvObject, components, previous) {
+.sapmStarts                     <- function(options, family, survObject, emSurvObject, components, previous, caseWeights = rep(1, nrow(survObject))) {
 
   logTime       <- .sapmLogTimes(emSurvObject)
+  # Only starting partitions need unit-level ranks and random draws.
+  # Collapse soft memberships before constructing any model matrices.
+  rows          <- if (any(caseWeights != 1)) rep(seq_along(logTime), caseWeights) else seq_along(logTime)
+  logTime       <- logTime[rows]
   probabilities <- .sapmStartMembershipProbabilities(options)
   # Keep decimal complements stable across probability and softening inputs.
   softness <- signif(1 - probabilities, 15)
@@ -31,10 +35,13 @@
   addPartition <- function(name, membership) {
     membership <- try(membership, silent = TRUE)
     for (i in seq_along(probabilities)) {
+      posterior <- if (jaspBase::isTryError(membership)) membership else
+        .sapmSoftPosterior(membership, components, softness = softness[i])
+      if (!jaspBase::isTryError(posterior) && any(caseWeights != 1))
+        posterior <- rowsum(posterior, rows, reorder = FALSE) / caseWeights
       add(
         name      = name,
-        posterior = if (jaspBase::isTryError(membership)) membership else
-          .sapmSoftPosterior(membership, components, softness = softness[i]),
+        posterior = posterior,
         probabilityIndex = i
       )
     }
@@ -64,7 +71,7 @@
 
   if (options[["mixtureStartingValuesRandom"]]) {
     jaspBase::.setSeedJASP(options)
-    events <- .sapmEventIndicator(emSurvObject)
+    events <- .sapmEventIndicator(emSurvObject)[rows]
     for (i in seq_len(options[["mixtureStartingValuesRandomCount"]]))
       addPartition(paste0("random", i), .sapmRandomMembership(logTime, events, components))
   }

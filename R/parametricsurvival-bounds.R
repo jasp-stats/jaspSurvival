@@ -279,7 +279,7 @@
       if (!is.null(reference)) {
         baseline  <- subsetPoint(reference[["point"]], rows, times)
         numerator <- .sapPredictionDrawValues(reference[["fit"]], baseline, type, fn, partStart, B, rawsim, transform, context)
-        values    <- numerator / values
+        values    <- if (isTRUE(reference[["inverse"]])) values / numerator else numerator / values
       }
       failed    <- failed + sum(is.na(values))
       evaluated <- evaluated + length(values)

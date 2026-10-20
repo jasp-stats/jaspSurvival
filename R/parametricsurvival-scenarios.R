@@ -46,7 +46,8 @@
   if (!.sapModelPredictionActive(options) || identical(axes, options[["predictionsLifetimeTimeId"]]))
     return()
   if (options[["predictionsLifetimePercentiles"]] &&
-    (options[["predictionsOutcomeSurvivalTime"]] || (options[["predictionsOutcomeRelativeSurvivalTime"]] && .sapRelativeLifeAvailable(options))))
+    (options[["predictionsOutcomeSurvivalTime"]] ||
+      ((options[["predictionsOutcomeTimeRatio"]] || options[["predictionsOutcomeRelativeSurvivalTime"]]) && .sapRelativeLifeAvailable(options))))
     .sapOptions2PredictionQuantile(options)
   if (any(vapply(.sapModelPredictionTimeOptions, function(name) options[[name]], logical(1)))) {
     if (options[["predictionsTimeGrid"]] == "customRelative")
@@ -236,8 +237,8 @@
 
   fit       <- .sapPredictionConditionedFit(fit, scenarios[["data"]], options, .sapPredictionUsedVariables(options))
   arguments <- .sapPredictionArguments(fit, options, type, at, measure)
-  if (measure == "relativeSurvivalTime") {
-    result <- .sapPredictionRatioSummary(fit, scenarios, options, at, type)
+  if (.sapRelativeMeasure(measure)) {
+    result <- .sapPredictionRatioSummary(fit, scenarios, options, at, type, measure)
   } else if (options[["predictionsUnassignedReferenceValues"]] == "population") {
     result <- .sapPopulationSummary(fit, options, if (measure == "failureProbability") "failure" else type, at, fast)
   } else if (fast) {
@@ -475,7 +476,7 @@
   data  <- encoding[["data"]]
   typed <- !is.null(encoding[["field"]])
   plot  <- ggplot2::ggplot(data, ggplot2::aes(x = x, y = estimate, color = Colour, group = Series))
-  if (type %in% c("quantile", "mean", "median") && !timeAxis && options[["predictionsDisplayPredictionInterval"]] && measure != "relativeSurvivalTime") {
+  if (type %in% c("quantile", "mean", "median") && !timeAxis && options[["predictionsDisplayPredictionInterval"]] && !.sapRelativeMeasure(measure)) {
     prediction <- .sapModelPredictionRange(fit, options, type)
     if (!is.null(prediction)) {
       if (any(!is.finite(prediction[["lower"]]) | !is.finite(prediction[["upper"]]))) {
@@ -504,7 +505,7 @@
       ))
     }
   }
-  showObserved <- type %in% c("quantile", "mean", "median") && !timeAxis && measure != "relativeSurvivalTime" && options[["predictionsDisplayObservedData"]]
+  showObserved <- type %in% c("quantile", "mean", "median") && !timeAxis && !.sapRelativeMeasure(measure) && options[["predictionsDisplayObservedData"]]
   if (showObserved) {
     plot <- .sapAddObservedLifetimeLayer(plot, fit, options, data, type, timeRole, categorical)
   }
@@ -578,7 +579,7 @@
       }
     }
   }
-  if (measure != "relativeSurvivalTime" && options[["censoringType"]] == "right" &&
+  if (!.sapRelativeMeasure(measure) && options[["censoringType"]] == "right" &&
     options[["predictionsDisplayCensoringEvents"]] &&
     ((timeAxis && !type %in% c("mean", "median")) || (!timeAxis && type %in% c("quantile", "mean", "median")))) {
     observed <- .sapPredictionRugData(fit, options, data, type, timeRole)
@@ -655,7 +656,7 @@
   }
   plot <- plot + .sapPredictionOutcomeScale(options, type)
   plot <- .sapPredictionPlotAddTheme(plot, options)
-  if (measure == "relativeSurvivalTime")
+  if (.sapRelativeMeasure(measure))
     plot <- plot + ggplot2::geom_hline(yintercept = 1, linetype = 3, colour = "grey50")
   plot <- plot + ggplot2::labs(colour = encoding[["colourTitle"]], fill = NULL) + ggplot2::guides(fill = "none")
   if (!is.null(encoding[["colourTitle"]]) || identical(encoding[["field"]], "percentile"))

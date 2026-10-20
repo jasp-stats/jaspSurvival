@@ -40,7 +40,7 @@
   # Every complete model and family shares the actual NA-filtered cohort.
   # A changed cohort also discards previous-component starts and posteriors.
   cohortChanged <- !is.null(out) && (!identical(attr(out, "fittingRows", exact = TRUE), rownames(dataset)) ||
-    !identical(attr(out, "frequencyRowNames", exact = TRUE), attr(dataset, "frequencyRowNames", exact = TRUE)))
+    !identical(attr(out, "frequencyWeights", exact = TRUE), .sapCaseWeights(dataset, options)))
   candidatePolicyChanged <- !is.null(out) && options[["analysisType"]] == "mixture" &&
     !identical(attr(out, "mixtureCandidatePolicyVersion", exact = TRUE), .sapmCandidatePolicyVersion)
   informationPolicyChanged <- !is.null(out) &&
@@ -123,7 +123,7 @@
   attr(out, "distributions")                        <- distributions
   attr(out, "includeFullDatasetInSubgroupAnalysis") <- options[["outputFormattingIncludeFullDatasetInSubgroupAnalysis"]]
   attr(out, "fittingRows")                          <- rownames(dataset)
-  attr(out, "frequencyRowNames")                    <- attr(dataset, "frequencyRowNames", exact = TRUE)
+  attr(out, "frequencyWeights")                     <- .sapCaseWeights(dataset, options)
   attr(out, "informationPolicyVersion")             <- .sapInformationPolicyVersion
   attr(out, "mixtureCandidatePolicyVersion")        <- .sapmCandidatePolicyVersion
 
@@ -260,6 +260,8 @@
   } else {
     fit <- try(.sapFitSingle(dataset, options, distribution, modelTerms), silent = silent)
   }
+
+  fit <- .sapFrequencyFitSummary(fit)
 
   # flexsurvreg stores a scalar NA covariance if the Hessian is not finite, the output expects a matrix
   if (!jaspBase::isTryError(fit) && !is.matrix(fit[["cov"]])) {

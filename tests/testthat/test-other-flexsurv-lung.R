@@ -8,7 +8,6 @@ test_that("ParametricSurvivalAnalysis (analysis 1) results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "flexsurv-lung.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[1]]
-  opts[["predictionsOutputTableFormat"]] <- "long"
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
   # Encode and run analysis
@@ -18,19 +17,25 @@ test_that("ParametricSurvivalAnalysis (analysis 1) results match", {
 
   table <- results[["results"]][["coefficientsTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list("shape", 1.3273153276572, 1.17503976080987, "", 0.0825228540267747,
-     1.49932456568063, "", "scale", 791.844306437345, 326.202637477711,
-     "", 358.294321979747, 1922.17147747643, "", "jaspColumn1", -0.0125645564580569,
-     -0.0263519930864257, 0.0740791045922131, 0.00703453570428965,
-     0.00122288017031197, -1.78612448443399, "jaspColumn2 (2)", 0.378622833083013,
-     0.128599390142555, 0.00299675933621449, 0.127565325134855, 0.628646276023471,
-     2.96807014510216, "jaspColumn3 (NA)", -1.65781153812662, -3.14201016958767,
-     0.0285801889784667, 0.757258114520583, -0.17361290666557, -2.1892291496621
-    ))
+    list("shape", 1.36050776434482, 1.20536020716401, "", 0.0840472841601082,
+        1.53562509019403, "", "scale", 771.572846755434, 323.893561814016,
+        "", 341.709179341196, 1838.02559864443, "", "jaspColumn1",
+        -0.00756119587284572, -0.0210331600403129, 0.271315595485767,
+        0.00687357740944852, 0.00591076829462149, -1.10003793111459,
+        "jaspColumn2 (2)", 0.399487493409137, 0.154860784842978,
+        0.00137085645053114, 0.12481183863364, 0.644114201975295,
+        3.20071795898908, "jaspColumn3 (1)", -0.296395572789955,
+        -0.583130198717774, 0.042764678958556, 0.14629586471463,
+        -0.00966094686213481, -2.02600103132179, "jaspColumn3 (2)",
+        -0.662140921031336, -0.991806468233036, 8.26327420856648e-05,
+        0.168199798466737, -0.332475373829636, -3.9366332603679,
+        "jaspColumn3 (3)", -1.34846275788118, -2.81396577178145,
+        0.071320030828621, 0.747719358855554, 0.117040256019087,
+        -1.80343432587477))
 
   table <- results[["results"]][["summaryTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(2298.31113137002, 2315.34699022732, 5, -1144.15556568501))
+    list(2275.53765358663, 2299.35639525974, 7L, -1130.76882679331))
 
 })
 
@@ -39,7 +44,6 @@ test_that("ParametricSurvivalAnalysis (analysis 2) results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "flexsurv-lung.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[2]]
-  opts[["predictionsOutputTableFormat"]] <- "wide"
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
   # Encode and run analysis

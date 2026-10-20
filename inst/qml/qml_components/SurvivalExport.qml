@@ -52,7 +52,7 @@ Section
 			name:		"exportResidualsResponse"
 			label:		qsTr("Response")
 			enabled:	!exportRoot.intervalCensoring
-			info: qsTr("Export the difference between observed and predicted mean survival time. Unavailable for interval-censored data.")
+			info: qsTr("Export observed minus predicted mean survival time, treating censored times as observed. Unavailable for interval-censored data.")
 		}
 
 		CheckBox
@@ -60,7 +60,7 @@ Section
 			name:		"exportResidualsCoxSnell"
 			label:		qsTr("Cox-Snell")
 			enabled:	!exportRoot.intervalCensoring
-			info: qsTr("Export Cox-Snell residuals for each observation. Unavailable for interval-censored data.")
+			info: qsTr("Export Cox-Snell residuals. For counting-process data, these are conditional on survival to entry. Unavailable for interval-censored data.")
 		}
 	}
 
@@ -73,7 +73,7 @@ Section
 			visible:	exportRoot.cox
 			name:		"exportFittedValuesRelativeRisk"
 			label:		qsTr("Relative risk")
-			info: qsTr("Export the fitted relative risk for each observation.")
+			info: qsTr("Export the fitted relative risk, centered at mean covariate values within each stratum.")
 		}
 
 		CheckBox
@@ -81,7 +81,7 @@ Section
 			visible:	exportRoot.cox
 			name:		"exportFittedValuesLinearPredictor"
 			label:		qsTr("Linear predictor")
-			info: qsTr("Export the fitted log relative risk for each observation.")
+			info: qsTr("Export the fitted log relative risk, centered at mean covariate values within each stratum.")
 		}
 
 		CheckBox

@@ -21,7 +21,7 @@
   }
   selected <- vapply(.sapModelPredictionTimeOptions, function(name) options[[name]], logical(1))
   times    <- if (any(selected)) .sapModelPredictionAt(fit, options, "survival", "x") else numeric(0)
-  ids      <- setdiff(names(.sapPredictionTypes), c("survivalTime", "relativeSurvivalTime"))
+  ids      <- setdiff(names(.sapPredictionTypes), c("survivalTime", "timeRatio", "relativeSurvivalTime"))
   for (id in ids[selected]) {
     type <- .sapPredictionTypes[[id]]
     measures[[length(measures) + 1L]] <- list(

@@ -111,7 +111,7 @@
   if (options[["mixtureStartingValuesSplitOfThePreviousSolution"]])
     previousSolution <- .sapmPreviousSolution(dataset, options, distribution, modelTerms, components, previous, family, covariates, survObject)
 
-  starts <- .sapmStarts(options, family, survObject, emSurvObject, components, previousSolution)
+  starts <- .sapmStarts(options, family, survObject, emSurvObject, components, previousSolution, caseWeights)
   if (length(starts) == 0)
     stop(gettext("No starting values could be constructed for the mixture model."))
 
@@ -1031,8 +1031,6 @@
     hessianWarning <- TRUE
   if (!jaspBase::isTryError(fit) && isTRUE(attr(fit, "nativeHessianWarning", exact = TRUE)))
     hessianWarning <- TRUE
-  if (!jaspBase::isTryError(fit) && identical(attr(fit, "informationOutcome", exact = TRUE), "analyticAvailable"))
-    hessianWarning <- FALSE
 
   return(list(fit = fit, hessianWarning = hessianWarning, warnings = warnings))
 }

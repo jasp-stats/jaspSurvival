@@ -1,34 +1,23 @@
 # jaspSurvival Changelog
 
-> **HOW TO READ AND UPDATE THIS CHANGELOG:**
-> 
-> This document follows a modified [Keep a Changelog](https://keepachangelog.com/) format adapted for the R/JASP ecosystem. Releases are listed in reverse chronological order (newest first).
-> As an example see [jaspModuleTemplate](https://github.com/jasp-stats/jaspModuleTemplate/blob/master/NEWS.md)
-> * **Adding New Changes (For Contributors):** All new commits should be logged at the very top of the file under the `# jaspModuleTemplate (development version)` header. Place your bullet point under the appropriate category (`## Added`, `## Fixed`, etc.). 
-> * **Issue References:** Please reference the relevant GitHub Issue (if any) at the end of your line (e.g., `([Issue #19](https://github.com/jasp-stats/jaspModuleTemplate/issues/19)`). 
-> * **Format Categories:** >   * **Added:** New template features, QML examples, or build tools.
->   * **Changed:** Updates to default configurations, boilerplate code, or dependencies. 
->   * **Fixed:** Bug fixes in the build pipeline, R wrappers, or QML layouts.
->   * **Deprecated / Removed:** Outdated template components or legacy code.
-
-
----
 # jaspSurvival 0.98.0
 ## Added
-* Reworked Predictions controls for flexible plots and predictions
-* Prediction tables offer Long and Wide layouts, defaulting to Wide.
-* Advanced model terms
-* Ancillary parameter regressions
-* Restrict model parameters
-* Show fitted model equations
-* Density diagnostic plots
-* Explicit stratification for probability plots
-* One-sided confidence intervals
+* Flexible prediction plots, including contours and heatmaps, and Long or Wide prediction tables.
+* Population-averaged predictions and predictions from manual input, CSV files and dataset rows, with export.
+* Time ratios, acceleration factors and prediction intervals for survival time.
+* Predictor transformations, temperature models, factor contrasts and reference levels.
+* Ancillary parameter regressions, fixed parameters and fitted model equations.
+* Density diagnostics, stratified probability plots and one-sided confidence intervals.
+
+## Changed
+* Improved estimation and uncertainty estimates for parametric and mixture survival models.
+* Mixture component plots show each component's survival measures; density curves show weighted contributions.
 
 ## Fixed
 * Counting-process response residuals use the exit time consistently in plots and exports.
-* Refine right-censored Weibull Eyring fits with analytic derivatives and compute their confidence intervals from analytic information, including mixture models.
-* Retain the earliest model landmark in adaptive mixture survival prediction curves to stabilize early-tail sampling.
+* Missing values in unused predictors no longer exclude observations.
+* Saved analyses retain Kaplan-Meier overlays and censoring marks when upgraded.
+* Faster frequency-weighted analyses and population-averaged survival percentiles.
 
 # jaspSurvival 0.97.0
 ## Added

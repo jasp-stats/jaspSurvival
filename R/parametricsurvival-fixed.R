@@ -160,6 +160,7 @@
   )
   if (options[["weights"]] != "")
     fitCall[["weights"]] <- .sapCaseWeights(dataset, options)
+  fitCall[["inits"]] <- .sapFrequencyInitials(fitCall, distribution)
 
   schema <- .sapNativeSchema(fitCall, specification, fixed)
   if (!is.null(schema[["restrictedInitials"]]))

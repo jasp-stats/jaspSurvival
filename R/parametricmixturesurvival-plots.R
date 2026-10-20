@@ -232,7 +232,8 @@
 
 .sapmObservedDensity            <- function(dataset, options, prefix = "mixtureComponentPlot") {
 
-  time    <- dataset[[options[["timeToEvent"]]]]
+  # Bin rules use the frequency sample, not the number of input rows.
+  time    <- rep(dataset[[options[["timeToEvent"]]]], .sapCaseWeights(dataset, options))
   logTime <- options[[paste0(prefix, "XAxisTransformation")]] == "log"
   if (logTime) {
     time <- log(time[time > 0])
@@ -338,7 +339,7 @@
     mixtureDensity <- marginalDensity(mixtureDensity)
   componentFunction <- function(k) {
     function(t, start, ...) {
-      return(.sapmComponentContribution(t, list(...), k, family, fit, type))
+      return(.sapmComponentCurve(t, list(...), k, family, fit, type))
     }
   }
   if (marginal) {
@@ -426,54 +427,27 @@
   return(out)
 }
 
-.sapmComponentContribution <- function(t, arguments, k, family, fit, type) {
+# Survival measures describe each latent component; density curves partition
+# the mixture density and therefore include the mixing proportion.
+.sapmComponentCurve <- function(t, arguments, k, family, fit, type) {
 
-  n           <- max(length(t), lengths(arguments))
-  t           <- rep_len(t, n)
-  parameters  <- lapply(stats::setNames(arguments[paste0(family[["pars"]], k)], family[["pars"]]), rep_len, length.out = n)
-  components  <- attr(fit, "components")
-  probability <- .sapmStickBreaking(do.call(cbind, lapply(arguments[paste0("v", seq_len(components - 1L))], rep_len, length.out = n)), n)[, k]
-
-  if (type == "cumulativeHazard")
-    return(.sapmComponentCumulativeHazard(t, arguments, k, family, fit))
-  if (type == "hazard") {
-    logDensity  <- do.call(family[["d"]], c(list(t), parameters, list(log = TRUE)))
-    logSurvival <- do.call(fit[["dfns"]][["p"]], c(list(t), arguments, list(lower.tail = FALSE, log.p = TRUE)))
-    out         <- numeric(n)
-    positive    <- probability > 0
-    out[positive] <- exp(log(probability[positive]) + logDensity[positive] - logSurvival[positive])
-    return(out)
-  }
-
+  n          <- max(length(t), lengths(arguments))
+  t          <- rep_len(t, n)
+  parameters <- lapply(stats::setNames(arguments[paste0(family[["pars"]], k)], family[["pars"]]), rep_len, length.out = n)
   value <- switch(type,
     survival                   = do.call(family[["p"]], c(list(t), parameters, list(lower.tail = FALSE))),
     failureProbability         = do.call(family[["p"]], c(list(t), parameters)),
     density                    = do.call(family[["d"]], c(list(t), parameters)),
+    hazard                     = exp(do.call(family[["d"]], c(list(t), parameters, list(log = TRUE))) -
+      do.call(family[["p"]], c(list(t), parameters, list(lower.tail = FALSE, log.p = TRUE)))),
+    cumulativeHazard           = -do.call(family[["p"]], c(list(t), parameters, list(lower.tail = FALSE, log.p = TRUE))),
     restrictedMeanSurvivalTime = do.call(family[["rmst"]], c(list(t), parameters)))
+  if (type != "density")
+    return(value)
+  components  <- attr(fit, "components")
+  probability <- .sapmStickBreaking(do.call(cbind, lapply(arguments[paste0("v", seq_len(components - 1L))], rep_len, length.out = n)), n)[, k]
   out <- probability * value
   out[probability == 0] <- 0
-  return(out)
-}
-
-.sapmComponentCumulativeHazard <- function(t, arguments, k, family, fit) {
-
-  n                <- length(t)
-  numericArguments <- lapply(arguments[vapply(arguments, is.numeric, logical(1))], rep_len, length.out = n)
-  groups           <- split(seq_len(n), .sapPredictorGroups(as.data.frame(numericArguments)))
-  out              <- rep(NA_real_, n)
-  for (rows in groups) {
-    rows <- rows[is.finite(t[rows]) & t[rows] >= 0]
-    if (length(rows) == 0L)
-      next
-    parameters <- arguments
-    for (name in names(numericArguments))
-      parameters[[name]] <- numericArguments[[name]][rows[1]]
-    times      <- sort(unique(c(0, t[rows])))
-    increments <- vapply(seq_len(length(times) - 1L), function(i)
-      stats::integrate(function(time) .sapmComponentContribution(time, parameters, k, family, fit, "hazard"),
-        lower = times[i], upper = times[i + 1L], rel.tol = 1e-7, abs.tol = 1e-9, subdivisions = 200L)[["value"]], numeric(1))
-    out[rows] <- c(0, cumsum(increments))[match(t[rows], times)]
-  }
   return(out)
 }
 

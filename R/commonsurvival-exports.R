@@ -152,14 +152,12 @@
   return()
 }
 
-# Restore dataset order after fitting-row filtering and frequency expansion.
+# Restore dataset order after fitting-row filtering.
 .saExportAlign <- function(fit, values) {
 
   dataset      <- attr(fit, "dataset")
   rowNames     <- attr(dataset, "exportRowNames")
-  originalRows <- attr(dataset, "frequencyRowNames", exact = TRUE)
-  originalRows <- if (is.null(originalRows)) rownames(dataset) else unname(originalRows[rownames(dataset)])
-  rows         <- match(originalRows, rowNames)
+  rows         <- match(rownames(dataset), rowNames)
   if (length(values) != nrow(dataset) || anyNA(rows))
     stop(gettext("Exported values could not be matched to the original observations."))
 

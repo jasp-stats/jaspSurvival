@@ -107,9 +107,10 @@
 
   if (options[["predictionsUnassignedReferenceValues"]] == "population") {
     attr(fit, "predictionPopulation") <- .sapPopulationDesigns(fit, data, options, used)
-    times <- .saExtractSurvTimes(attr(fit, "dataset"), options)
-    times <- times[is.finite(times) & times > 0]
-    attr(fit, "populationAnchor") <- if (length(times)) log(stats::median(times)) else 0
+    training <- attr(fit, "dataset")
+    times    <- .saExtractSurvTimes(training, options)
+    keep     <- is.finite(times) & times > 0
+    attr(fit, "populationAnchor") <- if (any(keep)) log(.sapFrequencyQuantile(times[keep], .sapCaseWeights(training, options)[keep], .5)) else 0
     attr(fit, "predictionX") <- NULL
     return(fit)
   }

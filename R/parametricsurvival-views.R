@@ -31,9 +31,9 @@
 
   measures <- .sapModelPredictionOptions
   if (!.sapRelativeLifeAvailable(options))
-    measures <- setdiff(measures, "predictionsOutcomeRelativeSurvivalTime")
+    measures <- setdiff(measures, c("predictionsOutcomeTimeRatio", "predictionsOutcomeRelativeSurvivalTime"))
   if (!length(.sapSelectedLifetimeSummaries(options)))
-    measures <- setdiff(measures, c("predictionsOutcomeSurvivalTime", "predictionsOutcomeRelativeSurvivalTime"))
+    measures <- setdiff(measures, c("predictionsOutcomeSurvivalTime", "predictionsOutcomeTimeRatio", "predictionsOutcomeRelativeSurvivalTime"))
   return(any(vapply(measures, function(measure) options[[measure]], logical(1))))
 }
 
@@ -183,7 +183,7 @@
     return(.sapModelPredictionContour(fit, options, type, measure, contourLevels))
 
   axes <- .sapModelPredictionAxes(options)
-  if (measure == "relativeSurvivalTime" &&
+  if (.sapRelativeMeasure(measure) &&
     (!length(axes) || options[["predictionsLifetimeTimeId"]] %in% axes)) {
     plot <- createJaspPlot()
     plot$setError(gettext("Assign predictors to X-axis variables and Time to Separate lines or Separate plots."))
@@ -211,7 +211,11 @@
 }
 
 # Compare reference and requested lifetimes using matched joint coefficient draws.
-.sapPredictionRatioSummary <- function(fit, scenarios, options, at, type = "quantile") {
+.sapRelativeMeasure <- function(measure) {
+  return(measure %in% c("timeRatio", "relativeSurvivalTime"))
+}
+
+.sapPredictionRatioSummary <- function(fit, scenarios, options, at, type = "quantile", measure = "relativeSurvivalTime") {
 
   data      <- scenarios[["data"]]
   variable  <- scenarios[["xVariable"]]
@@ -241,10 +245,11 @@
     draws  <- .sapJointDraws(fit, B, seed, options[["simulationContext"]])
     bounds <- .sapPredictionBounds(currentFit, point, type, NULL, 0, B, draws, identity, options[["simulationContext"]],
       options[["predictionsDisplayConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]],
-      reference = list(fit = referenceFit, point = baseline))
+      reference = list(fit = referenceFit, point = baseline, inverse = measure == "timeRatio"))
   }
   for (i in seq_along(point)) {
-    point[[i]][["est"]] <- baseline[[i]][["est"]] / point[[i]][["est"]]
+    point[[i]][["est"]] <- if (measure == "timeRatio") point[[i]][["est"]] / baseline[[i]][["est"]] else
+      baseline[[i]][["est"]] / point[[i]][["est"]]
     indices <- (i - 1L) * length(at) + seq_along(at)
     point[[i]][["lcl"]] <- if (is.null(bounds)) NA_real_ else bounds["lower", indices]
     point[[i]][["ucl"]] <- if (is.null(bounds)) NA_real_ else bounds["upper", indices]
@@ -253,13 +258,16 @@
         point[[i]][[field]] <- point[[i]][["est"]]
     }
   }
+  referenceLabel <- if (options[["predictionsUnassignedReferenceValues"]] == "population")
+    gettextf("%1$s averaged over the fitting population", jaspBase::decodeColNames(variable)) else if
+    (variable %in% .sapPredictionMarginalFactors(fit, options, setdiff(.sapPredictionUsedVariables(options), variable)))
+      gettextf("%1$s averaged equally over its factor levels (design average)", jaspBase::decodeColNames(variable)) else
+    gettextf("%1$s = %2$s", jaspBase::decodeColNames(variable), as.character(reference[[variable]][1L]))
   attr(point, "predictionWarnings") <- c(attr(bounds, "predictionWarnings"),
-    if (options[["predictionsUnassignedReferenceValues"]] == "population")
-      gettext("The reference lifetime averages over the fitting population, holding line and panel predictors fixed."),
-    if (type == "quantile")
-      gettext("Relative life is reference/current lifetime. Ratios may depend on the percentile.") else
-      if (type == "mean") gettext("Relative mean survival time is the reference mean divided by the current mean.") else
-        gettext("Relative median survival time is the reference median divided by the current median."))
+    gettextf("Reference: %1$s; line and panel predictors are held fixed.", referenceLabel),
+    if (measure == "timeRatio") gettext("Time ratio = current/reference lifetime. Values above 1 indicate longer survival.") else
+      gettext("Acceleration factor = reference/current lifetime. Values above 1 indicate shorter survival."),
+    if (type == "quantile") gettext("Ratios may depend on the percentile."))
   return(point)
 }
 

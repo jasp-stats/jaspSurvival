@@ -29,8 +29,8 @@
       next
 
     for (measure in selected) {
-      lifetime <- measure %in% c("survivalTime", "relativeSurvivalTime")
-      if (measure == "relativeSurvivalTime" && !.sapRelativeLifeAvailable(options))
+      lifetime <- measure %in% c("survivalTime", "timeRatio", "relativeSurvivalTime")
+      if (.sapRelativeMeasure(measure) && !.sapRelativeLifeAvailable(options))
         next
       if (!plot && !lifetime && mergeTables)
         next
@@ -54,7 +54,9 @@
     "survivalTime" = list(type = "quantile", table = "survivalTimeTable", plot = "survivalTimePlot",
       title = gettext("Predicted Survival Time"), position = c(3.11, 3.01)),
     "relativeSurvivalTime" = list(type = "quantile", table = "relativeSurvivalTimeTable", plot = "relativeSurvivalTimePlot",
-      title = gettext("Relative Survival Time"), position = c(3.12, 3.02)),
+      title = gettext("Acceleration Factor"), position = c(3.12, 3.02)),
+    "timeRatio" = list(type = "quantile", table = "timeRatioTable", plot = "timeRatioPlot",
+      title = gettext("Time Ratio"), position = c(3.115, 3.015)),
     "survivalProbability" = list(type = "survival", table = "survivalProbabilityTable", plot = "survivalProbabilityPlot",
       title    = gettext("Predicted Survival Probability"),
       position = c(3.13, 3.03)),
@@ -67,11 +69,13 @@
     "restrictedMeanSurvivalTime" = list(type = "rmst", table = "rmstTable", plot = "restrictedMeanSurvivalTimePlot",
       title = gettext("Predicted Restricted Mean Survival Time"), position = c(3.17, 3.07))
   )
-  if (measure %in% c("survivalTime", "relativeSurvivalTime") && summary != "quantile") {
+  if (measure %in% c("survivalTime", "timeRatio", "relativeSurvivalTime") && summary != "quantile") {
     specification[["type"]] <- summary
     prefix <- paste0(summary, "SurvivalTime")
     if (measure == "relativeSurvivalTime")
       prefix <- paste0("relative", toupper(substr(prefix, 1L, 1L)), substring(prefix, 2L))
+    if (measure == "timeRatio")
+      prefix <- paste0("timeRatio", toupper(substr(prefix, 1L, 1L)), substring(prefix, 2L))
     specification[["table"]] <- paste0(prefix, "Table")
     specification[["plot"]] <- paste0(prefix, "Plot")
     specification[["title"]] <- .sapPredictionTitle(summary, options, measure)
@@ -121,7 +125,7 @@
 
 .sapPredictionDependencies <- function(options, measure, plot = FALSE) {
 
-  survivalTime <- measure %in% c("survivalTime", "relativeSurvivalTime")
+  survivalTime <- measure %in% c("survivalTime", "timeRatio", "relativeSurvivalTime")
   dependencies <- c(
     "predictionsPredictFor",
     .sapGetDependencies(options), .sapSelectedOutputDependencies,
@@ -246,12 +250,14 @@
 .sapPredictionTitle <- function(type, options, measure = type) {
 
   if (type %in% c("mean", "median")) {
-    if (measure == "relativeSurvivalTime")
-      return(if (type == "mean") gettext("Relative Mean Survival Time") else gettext("Relative Median Survival Time"))
+    if (.sapRelativeMeasure(measure))
+      return(if (measure == "timeRatio")
+        if (type == "mean") gettext("Mean Time Ratio") else gettext("Median Time Ratio") else
+        if (type == "mean") gettext("Mean Acceleration Factor") else gettext("Median Acceleration Factor"))
     return(if (type == "mean") gettext("Mean Survival Time") else gettext("Median Survival Time"))
   }
-  if (measure == "relativeSurvivalTime")
-    return(gettext("Relative Survival Time"))
+  if (.sapRelativeMeasure(measure))
+    return(if (measure == "timeRatio") gettext("Time Ratio") else gettext("Acceleration Factor"))
   if (measure == "failureProbability")
     return(gettext("Failure Probability"))
   return(switch(type,

@@ -123,6 +123,20 @@ Upgrades
 		toVersion: "0.97.0"
 		msg: qsTr("Parametric survival models now always include an intercept. Results may change if this saved analysis previously excluded the intercept.")
 
+		ChangeRename
+		{
+			from: "survivalProbabilityPlotAddKaplanMeier"
+			to: "survivalProbabilityPlotKaplanMeier"
+			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
+		}
+
+		ChangeRename
+		{
+			from: "survivalProbabilityPlotAddCensoringEvents"
+			to: "survivalProbabilityPlotCensoringEvents"
+			condition: function(options) { return options[from] !== undefined && options[to] === undefined; }
+		}
+
 		ChangeRemove
 		{
 			name: "includeIntercept"

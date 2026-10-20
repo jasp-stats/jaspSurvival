@@ -91,7 +91,7 @@
 # A tested flexsurv 2.3.2 qgeneric adapter still needed explicit draw indexing,
 # endpoint/cure screening, log-tail residual checks and failed-row retries;
 # it offered neither less scaffolding nor a speed benefit on the tested draws.
-.sapPopulationQuantile <- function(fit, parameters, weights, probability) {
+.sapPopulationQuantile <- function(fit, parameters, weights, probability, initial = NULL) {
 
   draws <- nrow(parameters) / length(weights)
   if (probability == 0)
@@ -103,33 +103,65 @@
   target    <- if (lowerTail) log(probability) else log1p(-probability)
   lower     <- rep(log(.Machine$double.xmin * .Machine$double.eps), draws)
   upper     <- rep(log(.Machine$double.xmax), draws)
+  anchor    <- attr(fit, "populationAnchor")
+  current   <- rep(min(max(anchor, lower[1L]), upper[1L]), draws)
+  tight     <- rep(FALSE, draws)
+  selectParameters <- function(rows)
+    parameters[as.vector(outer(rows, (seq_along(weights) - 1L) * draws, `+`)), , drop = FALSE]
 
-  # Resolve endpoints and unreachable tail probabilities before starting the root search.
-  cure     <- .sapPopulationTotals(fit, parameters, weights, Inf)$logProbability
-  smallest <- .sapPopulationTotals(fit, parameters, weights, exp(lower), lowerTail = lowerTail)$logProbability
-  largest  <- .sapPopulationTotals(fit, parameters, weights, exp(upper), lowerTail = lowerTail)$logProbability
-  result   <- rep(NA_real_, draws)
-  result[which(probability >= -expm1(cure))] <- Inf
-  if (lowerTail) {
-    result[which(target >= log(-expm1(cure)) | largest < target)] <- Inf
-    result[which(smallest > target)] <- 0
-  } else {
-    result[which(target <= cure | largest > target)] <- Inf
-    result[which(smallest < target)] <- 0
+  # A population quantile lies between its smallest and largest profile
+  # quantiles. Finite Weibull log quantiles also establish that no cure or
+  # floating-point endpoint check is needed for these draws.
+  if (identical(attr(fit, "family"), "weibull") && "shape" %in% colnames(parameters)) {
+    logQuantiles <- matrix(log(parameters[, "scale"]) + log(-log1p(-probability)) / parameters[, "shape"], draws)
+    minimum <- apply(logQuantiles, 1L, min)
+    maximum <- apply(logQuantiles, 1L, max)
+    tight <- is.finite(minimum) & is.finite(maximum) & minimum > lower + 1e-8 & maximum < upper - 1e-8
+    lower[tight] <- minimum[tight] - 1e-8
+    upper[tight] <- maximum[tight] + 1e-8
+    current[tight] <- as.vector(logQuantiles[tight, , drop = FALSE] %*% weights)
   }
-  active  <- is.na(result) & !is.na(smallest) & !is.na(largest)
-  anchor  <- attr(fit, "populationAnchor")
-  current <- rep(min(max(anchor, lower[1L]), upper[1L]), draws)
-  # Safeguard Newton steps on log time; a small marginal hazard needs bisection.
+
+  result <- rep(NA_real_, draws)
+  active <- tight
+  rows   <- which(!tight)
+  if (length(rows)) {
+    part     <- selectParameters(rows)
+    cure     <- .sapPopulationTotals(fit, part, weights, Inf)$logProbability
+    smallest <- .sapPopulationTotals(fit, part, weights, exp(lower[rows]), lowerTail = lowerTail)$logProbability
+    largest  <- .sapPopulationTotals(fit, part, weights, exp(upper[rows]), lowerTail = lowerTail)$logProbability
+    value    <- rep(NA_real_, length(rows))
+    value[which(probability >= -expm1(cure))] <- Inf
+    if (lowerTail) {
+      value[which(target >= log(-expm1(cure)) | largest < target)] <- Inf
+      value[which(smallest > target)] <- 0
+    } else {
+      value[which(target <= cure | largest > target)] <- Inf
+      value[which(smallest < target)] <- 0
+    }
+    result[rows] <- value
+    active[rows] <- is.na(value) & !is.na(smallest) & !is.na(largest)
+  }
+  # Consecutive percentiles share exact solved values and inverse-CDF slopes.
+  # This supplies only a starting point; every result meets the same root test.
+  if (!is.null(initial)) {
+    step <- initial$logTime + (probability - initial$probability) * exp(-initial$logTime - initial$logDensity)
+    valid <- is.finite(step) & step > lower & step < upper
+    current[valid] <- step[valid]
+  }
+  solvedDensity <- rep(NA_real_, draws)
   for (iteration in seq_len(100L)) {
     if (!any(active))
       break
-    totals     <- .sapPopulationTotals(fit, parameters, weights, exp(current), density = TRUE, lowerTail = lowerTail)
-    difference <- totals$logProbability - target
-    correction <- difference * exp(totals$logProbability - totals$logDensity - current)
-    accurate   <- active & !is.na(difference) & abs(difference) <= 1e-9 &
+    rows       <- which(active)
+    evaluated  <- .sapPopulationTotals(fit, selectParameters(rows), weights, exp(current[rows]), density = TRUE, lowerTail = lowerTail)
+    difference <- correction <- rep(NA_real_, draws)
+    difference[rows] <- evaluated$logProbability - target
+    correction[rows] <- difference[rows] * exp(evaluated$logProbability - evaluated$logDensity - current[rows])
+    accurate <- active & !is.na(difference) & abs(difference) <= 1e-9 &
       ((is.finite(correction) & abs(correction) <= 1e-10) | upper - lower <= 1e-10)
     result[which(accurate)] <- exp(current[which(accurate)])
+    solvedDensity[rows[accurate[rows]]] <- evaluated$logDensity[accurate[rows]]
     active <- active & !accurate & !is.na(difference)
     if (!any(active))
       break
@@ -143,6 +175,7 @@
     active   <- active & nextTime != current
     current  <- nextTime
   }
+  attr(result, "populationQuantileState") <- list(logTime = log(result), logDensity = solvedDensity, probability = probability)
   return(result)
 }
 
@@ -190,9 +223,18 @@
     values <- .sapPopulationMeans(fit, parameters)
     return(matrix(as.vector(matrix(values, draws) %*% weights), draws, length(at)))
   }
+  if (type %in% c("quantile", "median")) {
+    probabilities <- if (type == "median") rep(.5, length(at)) else at
+    values <- matrix(NA_real_, draws, length(at))
+    initial <- NULL
+    for (i in order(probabilities)) {
+      value <- .sapPopulationQuantile(fit, parameters, weights, probabilities[i], initial)
+      values[, i] <- value
+      initial <- attr(value, "populationQuantileState")
+    }
+    return(values)
+  }
   return(vapply(at, function(time) {
-    if (type %in% c("quantile", "median"))
-      return(.sapPopulationQuantile(fit, parameters, weights, if (type == "median") .5 else time))
     if (type == "rmst") {
       values <- do.call(
         fit[["dfns"]][["rmst"]],

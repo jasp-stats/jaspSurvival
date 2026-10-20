@@ -1,5 +1,11 @@
 context("Verified: vassiliou2003-3")
 
+# Source: Vassiliou & Mettas (2003), Understanding Accelerated Life-Testing Analysis, #2003RM-100.
+# https://www.tce.edu/sites/default/files/PDF/Mech-Reliability-Engg.pdf
+# Printed p. 13, Figures 21-22 (paper clips): lognormal SD = 0.1459, K = 1.1264e-5, n = 1.8740. Here log-scale intercept = -log(K), log-stress slope = -n.
+# Published rounded point estimates are the external anchors; the higher-precision
+# estimates and confidence limits below are regression expectations from the fixture.
+
 # This test file was auto-generated from a JASP example file.
 # The JASP file is stored in tests/testthat/jaspfiles/verified/.
 

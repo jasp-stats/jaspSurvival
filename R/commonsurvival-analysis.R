@@ -99,9 +99,6 @@
       .quitAnalysis(gettext("The interval end must be greater than or equal to the interval start."))
   }
 
-  if (type == "parametric")
-    dataset <- .sapUnrollFrequencyDataset(dataset, options)
-
   if (!is.null(covariatesVariable) && length(covariatesVariable) > 0)
     .hasErrors(
       dataset                      = dataset,

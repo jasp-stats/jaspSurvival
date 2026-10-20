@@ -52,7 +52,7 @@ Section
 	readonly property bool timeAxis: !variableInput || (predictionsRoot.predictorView && predictionRoles.axisIsTime)
 	readonly property bool fullTimeGrid: predictionPlotType.value === "standard" && (predictionRoles.axisIsTime || (predictionRoles.axisVariables.length === 0 && predictionRoles.automaticAssignments))
 	readonly property bool predictorView: !variableInput || predictionPlotType.value === "standard"
-	readonly property bool lifetimeSelected: survivalTime.checked || (relativeSurvivalTime.checked && relativeSurvivalTime.enabled)
+	readonly property bool lifetimeSelected: survivalTime.checked || (timeRatio.checked && timeRatio.enabled) || (relativeSurvivalTime.checked && relativeSurvivalTime.enabled)
 	readonly property bool categoricalAxis: predictionsRoot.predictorView && predictionRoles.axisIsCategorical
 	readonly property bool probabilitySelected: survivalProbability.checked || failureProbability.checked
 	readonly property bool scalarLifetimeSelected: lifetimeMean.checked || lifetimeMedian.checked
@@ -140,12 +140,21 @@ Section
 			}
 			CheckBox
 			{
-				id: relativeSurvivalTime
-				name: "predictionsOutcomeRelativeSurvivalTime"
-				label: qsTr("Relative survival time")
+				id: timeRatio
+				name: "predictionsOutcomeTimeRatio"
+				label: qsTr("Time ratio")
 				checked: false
 				enabled: predictionsRoot.variableInput && predictionsRoot.predictorView && !predictionsRoot.timeAxis
-				info: qsTr("Show the reference lifetime divided by the predicted lifetime at each predictor value.")
+				info: qsTr("Current lifetime divided by reference lifetime. Values above 1 indicate longer survival.")
+			}
+			CheckBox
+			{
+				id: relativeSurvivalTime
+				name: "predictionsOutcomeRelativeSurvivalTime"
+				label: qsTr("Acceleration factor")
+				checked: false
+				enabled: predictionsRoot.variableInput && predictionsRoot.predictorView && !predictionsRoot.timeAxis
+				info: qsTr("Reference lifetime divided by current lifetime. Values above 1 indicate shorter survival.")
 			}
 			CheckBox
 			{
@@ -629,7 +638,7 @@ Section
 			startValue: "none"
 			enabled: predictionsRoot.predictorPlotSelected && predictionsRoot.lifetimeSelected
 			values: [{label: qsTr("Linear"), value: "none"}, {label: qsTr("Log"), value: "log"}]
-			info: qsTr("Choose the y-axis scale for predicted survival time or relative survival time.")
+			info: qsTr("Choose the y-axis scale for survival time, time ratios or acceleration factors.")
 		}
 		DropDown
 		{
@@ -740,7 +749,7 @@ Section
 			TextField
 			{
 				name: "predictionsContoursLevelsRelativeSurvivalTime"
-				label: qsTr("Relative survival time")
+				label: qsTr("Acceleration factor")
 				visible: contourLevels.value === "custom" && (relativeSurvivalTime.checked && relativeSurvivalTime.enabled)
 				defaultValue: ""
 				inputType: "string"
@@ -818,7 +827,7 @@ Section
 			}
 			ParametricContourHeatmap
 			{
-				title: qsTr("Relative survival time")
+				title: qsTr("Acceleration factor")
 				optionPrefix: "predictionsHeatmapScaleRelativeSurvivalTime"
 				visible: relativeSurvivalTime.checked && relativeSurvivalTime.enabled
 			}

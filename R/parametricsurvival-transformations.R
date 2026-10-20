@@ -167,10 +167,18 @@
       paste0("I(", if (signed) paste0("sign(", numericExpression, ") * "), value,
         "^", number(transformation[["powerExponent"]]), ")")
     },
-    polynomial    = paste0("stats::poly(", numericExpression, ", degree = ", transformation[["polynomialDegree"]], ", raw = FALSE)"),
+    polynomial    = {
+      degree <- transformation[["polynomialDegree"]]
+      coefs  <- if (!all(weights == 1)) paste0(", coefs = ",
+        paste(deparse(.sapFrequencyPolynomial(as.numeric(as.character(dataset[[variable]])), weights, degree),
+          width.cutoff = 500L, control = c("keepNA", "keepInteger", "niceNames", "showAttributes", "digits17")), collapse = "")) else ""
+      paste0("stats::poly(", numericExpression, ", degree = ", degree, ", raw = FALSE", coefs, ")")
+    },
     naturalSpline = {
       # Embed the fitting-data knots, including for predictions on a new cohort.
-      basis  <- splines::ns(dataset[[variable]], df = transformation[["splineDf"]])
+      df     <- transformation[["splineDf"]]
+      knots  <- if (df > 1L) .sapFrequencyQuantile(dataset[[variable]], weights, seq_len(df - 1L) / df) else numeric(0)
+      basis  <- splines::ns(dataset[[variable]], knots = knots, Boundary.knots = range(dataset[[variable]]))
       vector <- function(values) paste0("c(", paste(number(values, scientific = TRUE), collapse = ", "), ")")
       paste0("splines::ns(", variable, ", knots = ", vector(attr(basis, "knots")),
         ", Boundary.knots = ", vector(attr(basis, "Boundary.knots")), ", intercept = FALSE)")

@@ -14,7 +14,7 @@
 
 .sapLifeTimeTableFun <- function(fit, options) {
 
-  measures <- as.list(.sapPredictionTypes[!names(.sapPredictionTypes) %in% c("survivalTime", "relativeSurvivalTime")])
+  measures <- as.list(.sapPredictionTypes[!names(.sapPredictionTypes) %in% c("survivalTime", "timeRatio", "relativeSurvivalTime")])
   selected <- vapply(.sapModelPredictionTimeOptions, function(name) options[[name]], logical(1))
   return(.sapPredictionVariablesTable(fit, options, measures[selected], merged = TRUE))
 }
@@ -33,7 +33,7 @@
   if (!wide && !type %in% c("mean", "median"))
     table$addColumnInfo(name = "at",
       title = if (type == "quantile") gettext("Percentile") else gettext("Time"), type = "number")
-  interval <- type %in% c("quantile", "mean", "median") && !merged && names(measures)[1L] != "relativeSurvivalTime" &&
+  interval <- type %in% c("quantile", "mean", "median") && !merged && !.sapRelativeMeasure(names(measures)[1L]) &&
     options[["predictionsDisplayPredictionInterval"]] && options[["predictionsOutputPlotType"]] == "standard" &&
     !options[["predictionsLifetimeTimeId"]] %in% .sapModelPredictionAxes(options)
   contour <- options[["predictionsOutputPlotType"]] == "contour"

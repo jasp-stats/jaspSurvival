@@ -58,6 +58,7 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
       "survivalTimeTable", "survivalTimePlot", "survivalProbabilityTable", "survivalProbabilityPlot",
       "failureProbabilityTable", "failureProbabilityPlot",
       "relativeSurvivalTimeTable", "relativeSurvivalTimePlot",
+      "timeRatioTable", "timeRatioPlot", "timeRatioMeanSurvivalTimeTable", "timeRatioMeanSurvivalTimePlot", "timeRatioMedianSurvivalTimeTable", "timeRatioMedianSurvivalTimePlot",
       "meanSurvivalTimeTable", "meanSurvivalTimePlot", "medianSurvivalTimeTable", "medianSurvivalTimePlot",
       "relativeMeanSurvivalTimeTable", "relativeMeanSurvivalTimePlot", "relativeMedianSurvivalTimeTable", "relativeMedianSurvivalTimePlot",
       "hazardTable", "hazardPlot", "cumHazardTable", "cumulativeHazardPlot", "rmstTable",
@@ -141,12 +142,12 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
 .sapSimulationDependencies     <- c("confidenceIntervalSimulationDraws", "setSeed", "seed")
 .sapPredictionCiDependencies   <- c("predictionsDisplayConfidenceIntervals", "predictionsDisplayConfidenceIntervalsLevel", "confidenceIntervalBounds", .sapSimulationDependencies)
 .sapPredictionTypes <- c(
-  survivalTime       = "quantile", relativeSurvivalTime = "quantile", survivalProbability = "survival",
+  survivalTime       = "quantile", timeRatio = "quantile", relativeSurvivalTime = "quantile", survivalProbability = "survival",
   failureProbability = "survival", hazard = "hazard", cumulativeHazard = "cumhaz", restrictedMeanSurvivalTime = "rmst"
 )
 .sapModelPredictionOptions <- paste0("predictionsOutcome",
   toupper(substring(names(.sapPredictionTypes), 1L, 1L)), substring(names(.sapPredictionTypes), 2L))
-.sapModelPredictionTimeOptions <- setdiff(.sapModelPredictionOptions, paste0("predictionsOutcome", c("SurvivalTime", "RelativeSurvivalTime")))
+.sapModelPredictionTimeOptions <- setdiff(.sapModelPredictionOptions, paste0("predictionsOutcome", c("SurvivalTime", "TimeRatio", "RelativeSurvivalTime")))
 .sapLifetimeSummaryOptions <- paste0("predictionsLifetime", c("Percentiles", "Median", "Mean"))
 .sapPredictionQuantileDependencies <- paste0("predictionsLifetimePercentiles", c("Grid", "Intervals", "From", "Step", "To", "Values"))
 .sapPredictionTimeDependencies <- c(paste0("predictionsTime", c("Grid", "Intervals", "From", "Step", "To", "Values", "Percentages")),

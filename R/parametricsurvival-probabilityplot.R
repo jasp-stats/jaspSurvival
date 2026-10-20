@@ -448,8 +448,9 @@
 .sapProbabilityPlotJohnsonAdjustedRanks <- function(orderedData) {
 
   n            <- nrow(orderedData)
-  adjustedRank <- numeric(0)
-  failureTime  <- numeric(0)
+  adjustedRank <- numeric(sum(orderedData[["event"]]))
+  failureTime  <- orderedData[["time"]][orderedData[["event"]]]
+  failure      <- 0L
   previousRank <- 0
 
   for (i in seq_len(n)) {
@@ -459,8 +460,8 @@
     reverseRank  <- n - i + 1
     previousRank <- previousRank + (n + 1 - previousRank) / (reverseRank + 1)
 
-    adjustedRank <- c(adjustedRank, previousRank)
-    failureTime  <- c(failureTime, orderedData[["time"]][i])
+    failure <- failure + 1L
+    adjustedRank[failure] <- previousRank
   }
 
   return(data.frame(time = failureTime, adjustedRank = adjustedRank))
@@ -469,7 +470,7 @@
 .sapProbabilityPlotKaplanMeierAdjustedRanks <- function(orderedData) {
 
   n            <- nrow(orderedData)
-  adjustedRank <- numeric(0)
+  adjustedRank <- numeric(n)
   previousRank <- 0
 
   for (i in seq_len(n)) {
@@ -479,7 +480,7 @@
       currentRank <- previousRank
     }
 
-    adjustedRank <- c(adjustedRank, currentRank)
+    adjustedRank[i] <- currentRank
     previousRank <- currentRank
   }
 

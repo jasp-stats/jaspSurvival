@@ -8,7 +8,6 @@ test_that("ParametricSurvivalAnalysis results match", {
   # Load from JASP example file
   jaspFile <- testthat::test_path("jaspfiles", "other", "flexsurv_flexsurvreg_example_ovarian.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)
-  opts[["predictionsOutputTableFormat"]] <- "long"
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
   # Encode and run analysis
