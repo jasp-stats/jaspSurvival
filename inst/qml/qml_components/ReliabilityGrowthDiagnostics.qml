@@ -27,7 +27,7 @@ Section
 			id: residualVsPredicted
 			name: "residualPlotResidualVsPredicted"
 			label: qsTr("Residuals vs. predicted")
-			info: qsTr("Plot residuals against fitted values on the regression scale, or fitted interval counts for count residuals.")
+			info: qsTr("Plot residuals against fitted values on the regression scale, or fitted interval event counts for count residuals.")
 		}
 		CheckBox
 		{
@@ -48,7 +48,7 @@ Section
 				{label: qsTr("Deviance"), value: "deviance"},
 				{label: qsTr("Randomized quantile"), value: "quantile"}
 			])
-			info: qsTr("Regression residuals use the package's log-scale least-squares regression. Response, Pearson, deviance and randomized quantile residuals use Poisson interval counts with means obtained from the fitted cumulative curve. Count residuals assume an NHPP, including for Duane. Set a seed under Advanced to reproduce randomized quantile residuals.")
+			info: qsTr("Regression residuals use the package's log-scale least-squares regression. Response, Pearson, deviance and randomized quantile residuals use Poisson interval event counts with means obtained from the fitted cumulative curve. Count residuals assume an NHPP, including for Duane. Set a seed under Advanced to reproduce randomized quantile residuals.")
 		}
 	}
 

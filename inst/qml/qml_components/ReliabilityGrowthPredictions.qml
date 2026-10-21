@@ -35,30 +35,30 @@ Section
 		{
 			id: cumulativeFailures
 			name: "predictionsOutcomeCumulativeFailures"
-			label: qsTr("Cumulative failures")
+			label: qsTr("Cumulative events")
 			checked: true
-			info: qsTr("Predict the expected cumulative number of failures since time zero.")
+			info: qsTr("Predict the expected cumulative number of events since time zero.")
 		}
 		CheckBox
 		{
 			id: failureIntensity
 			name: "predictionsOutcomeFailureIntensity"
-			label: qsTr("Failure intensity")
-			info: qsTr("Predict the instantaneous failure rate per unit time.")
+			label: qsTr("Event intensity")
+			info: qsTr("Predict the instantaneous event rate per unit time.")
 		}
 		CheckBox
 		{
 			id: cumulativeMtbf
 			name: "predictionsOutcomeCumulativeMtbf"
-			label: qsTr("Cumulative MTBF")
-			info: qsTr("Predict cumulative time divided by expected cumulative failures.")
+			label: qsTr("Cumulative mean time between events")
+			info: qsTr("Predict cumulative time divided by expected cumulative events. This is an average time per event up to the selected time.")
 		}
 		CheckBox
 		{
 			id: instantaneousMtbf
 			name: "predictionsOutcomeInstantaneousMtbf"
-			label: qsTr("Instantaneous MTBF")
-			info: qsTr("Predict the reciprocal of instantaneous failure intensity. This is a local rate-based measure, not the expected waiting time to the next failure.")
+			label: qsTr("Instantaneous mean time between events")
+			info: qsTr("Predict the reciprocal of instantaneous event intensity. This is a local rate-based measure, not the expected waiting time to the next event when the rate changes.")
 		}
 	}
 
@@ -155,7 +155,7 @@ Section
 			label: qsTr("Observed data")
 			checked: true
 			enabled: modelPlot.checked && (cumulativeFailures.checked || cumulativeMtbf.checked)
-			info: qsTr("Add observed cumulative failures or cumulative MTBF to the corresponding plots.")
+			info: qsTr("Add observed cumulative events or cumulative mean time between events to the corresponding plots.")
 		}
 		ColorPalette
 		{

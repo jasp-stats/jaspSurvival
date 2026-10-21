@@ -138,12 +138,13 @@
       label <- gettext("Time")
     } else if (type == "regression") {
       x <- as.numeric(stats::fitted(fit[["native"]][["model"]]))
-      label <- if (fit[["model"]] == "duane") gettext("Fitted Log Cumulative MTBF") else gettext("Fitted Log Cumulative Failures")
+      label <- if (fit[["model"]] == "duane") gettext("Fitted Log Cumulative Mean Time Between Events") else gettext("Fitted Log Cumulative Events")
     } else {
       x <- .sargIntervalMean(fit)
-      label <- gettext("Fitted Interval Failures")
+      label <- gettext("Fitted Interval Events")
     }
-    return(.saPlotCanvasPadding(.saResidualsPlot(x, residual, label, .sargResidualLabel(type))))
+    axisLabel <- paste(strwrap(label, width = 30L), collapse = "\n")
+    return(.saPlotCanvasPadding(.saResidualsPlot(x, residual, axisLabel, .sargResidualLabel(type))))
   })
   return()
 }

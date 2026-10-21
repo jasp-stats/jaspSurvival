@@ -50,16 +50,16 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
   if (nrow(dataset) == 0)
     .quitAnalysis(gettext("No observations are available."))
   if (any(!stats::complete.cases(dataset[variables])))
-    .quitAnalysis(gettext("Time, failure counts and subgroup variables cannot contain missing values. Complete the interval records rather than omitting them."))
+    .quitAnalysis(gettext("Time, event counts and subgroup variables cannot contain missing values. Complete the interval records rather than omitting them."))
   time <- dataset[[options[["time"]]]]
   if (any(!is.finite(time) | time <= 0))
     .quitAnalysis(gettext("All times must be finite and greater than zero."))
   if (options[["failures"]] != "") {
     counts <- dataset[[options[["failures"]]]]
     if (any(!is.finite(counts) | counts < 0 | counts != floor(counts)))
-      .quitAnalysis(gettext("Failure counts must be finite, non-negative integers."))
+      .quitAnalysis(gettext("Event counts must be finite, non-negative integers."))
     if (any(counts == 0))
-      .quitAnalysis(gettext("ReliaGrowR currently requires a positive failure count in every interval. Zero-count intervals cannot be removed because they contain exposure information."))
+      .quitAnalysis(gettext("ReliaGrowR currently requires a positive event count in every interval. Zero-count intervals cannot be removed because they contain exposure information."))
   }
   return()
 }

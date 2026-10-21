@@ -6,8 +6,8 @@
 .sargMeasureLabel <- function(measure) {
 
   return(switch(measure, survivalProbability = gettext("Survival Probability"), failureProbability = gettext("Failure Probability"),
-    cumulativeFailures = gettext("Cumulative Failures"), failureIntensity = gettext("Failure Intensity"),
-    cumulativeMtbf = gettext("Cumulative MTBF"), instantaneousMtbf = gettext("Instantaneous MTBF")))
+    cumulativeFailures = gettext("Cumulative Events"), failureIntensity = gettext("Event Intensity"),
+    cumulativeMtbf = gettext("Cumulative Mean Time Between Events"), instantaneousMtbf = gettext("Instantaneous Mean Time Between Events")))
 }
 
 .sargTimes <- function(record, options, plot = FALSE) {
@@ -247,7 +247,7 @@
       table$addFootnote(gettext("Duane probabilities assume its fitted growth curve is the cumulative mean of an NHPP."))
   }
   if (options[["predictionsDisplayConfidenceIntervals"]]) {
-    table$addFootnote(gettext("Intervals describe uncertainty in the fitted quantity, not variation in future failure counts."))
+    table$addFootnote(gettext("Intervals describe uncertainty in the fitted quantity, not variation in future event counts."))
     if (options[["model"]] == "piecewise" && any(measures %in% c("failureIntensity", "instantaneousMtbf")))
       table$addFootnote(gettext("Confidence intervals for rate-based measures are unavailable for piecewise models."))
   }

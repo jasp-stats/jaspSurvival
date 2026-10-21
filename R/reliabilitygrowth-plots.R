@@ -20,7 +20,8 @@
     if (jaspBase::isTryError(plot))
       output$setError(jaspBase::.extractErrorMessage(plot))
     else {
-      size <- .sapPredictionPlotSize(plot, options, 550, 320)
+      longLabel <- measure %in% c("cumulativeMtbf", "instantaneousMtbf")
+      size <- .sapPredictionPlotSize(plot, options, if (longLabel) 650 else 550, if (longLabel) 400 else 320)
       output$width  <- size[["width"]]
       output$height <- size[["height"]]
       output$plotObject <- plot
@@ -54,7 +55,8 @@
   forecast <- do.call(rbind, lapply(fits, function(fit) data.frame(time = max(fit[["time"]]), subgroup = fit[["label"]])))
   if (any(data[["forecast"]]))
     plot <- plot + ggplot2::geom_vline(data = forecast, ggplot2::aes(xintercept = time, colour = subgroup), linetype = "dashed", show.legend = FALSE)
-  plot <- plot + ggplot2::labs(x = gettext("Time"), y = .sargMeasureLabel(measure), colour = gettext("Subgroup"), fill = gettext("Subgroup"))
+  axisLabel <- paste(strwrap(.sargMeasureLabel(measure), width = 24L), collapse = "\n")
+  plot <- plot + ggplot2::labs(x = gettext("Time"), y = axisLabel, colour = gettext("Subgroup"), fill = gettext("Subgroup"))
   if (options[["predictionsXAxisTransformation"]] == "log")
     plot <- plot + ggplot2::scale_x_log10()
   if (options[["predictionsYAxisScale"]] == "log")

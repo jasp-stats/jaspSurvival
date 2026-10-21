@@ -58,9 +58,9 @@
   table <- .sargCreateTable(jaspResults, "dataSummaryTable", gettext("Data Summary"), "dataSummary", 0.5)
   .sargGroupColumn(table, options)
   table$addColumnInfo(name = "intervals", title = gettext("Intervals"), type = "integer")
-  table$addColumnInfo(name = "failures", title = gettext("Failures"), type = "integer")
+  table$addColumnInfo(name = "failures", title = gettext("Events"), type = "integer")
   table$addColumnInfo(name = "time", title = gettext("Follow-up Time"), type = "number")
-  table$addColumnInfo(name = "mtbf", title = gettext("Cumulative MTBF"), type = "number")
+  table$addColumnInfo(name = "mtbf", title = gettext("Cumulative Mean Time Between Events"), type = "number")
   table$setData(.saSafeRbind(lapply(fits, function(fit) data.frame(
     subgroup  = fit[["label"]],
     intervals = length(fit[["time"]]),
@@ -97,7 +97,7 @@
   })))
   table$addCitation("ReliaGrowR (0.7): Reliability Growth Analysis and Repairable Systems Modeling. https://doi.org/10.32614/CRAN.package.ReliaGrowR")
   table$addFootnote(if (.sargMethod(options) == "MLE")
-    gettext("Maximum likelihood uses interval failure counts. Log-likelihood includes count-factorial terms; BIC uses the number of intervals. Optimizer convergence status is not supplied by ReliaGrowR.") else
+    gettext("Maximum likelihood uses interval event counts. Log-likelihood includes count-factorial terms; BIC uses the number of intervals. Optimizer convergence status is not supplied by ReliaGrowR.") else
     gettext("Fit statistics refer to the log-scale regression likelihood and cannot be compared directly with NHPP maximum-likelihood statistics. The parameter count includes residual variance."))
   return()
 }
@@ -116,7 +116,7 @@
     .sapAddBoundColumns(table, options[["coefficientsConfidenceIntervalsLevel"]], "twoSided")
   table$setData(.saSafeRbind(lapply(fits, .sargCoefficientRows, level = options[["coefficientsConfidenceIntervalsLevel"]])))
   if (options[["model"]] == "piecewise")
-    table$addFootnote(gettext("Coefficients describe the segmented regression of log cumulative failures on log time. Change-point coefficients are reported as log times."))
+    table$addFootnote(gettext("Coefficients describe the segmented regression of log cumulative events on log time. Change-point coefficients are reported as log times."))
   if (.sargMethod(options) == "MLE")
     table$addFootnote(gettext("Maximum-likelihood intervals use a normal approximation; positive parameters use the log scale."))
   return()
@@ -132,7 +132,7 @@
   table$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
   table$addColumnInfo(name = "equation", title = gettext("Equation"), type = "string")
   table$setData(.saSafeRbind(lapply(fits, .sargEquationRows, options = options)))
-  table$addFootnote(gettext("M(t) is expected cumulative failures, m(t) is instantaneous failure intensity, and cumulative MTBF is t / M(t)."))
+  table$addFootnote(gettext("M(t) is expected cumulative events, m(t) is instantaneous event intensity, and t / M(t) is cumulative mean time between events."))
   return()
 }
 
@@ -195,7 +195,7 @@
   number <- function(x) vapply(x, .sapEquationNumber, character(1), decimals = options[["fittedModelEquationDecimals"]])
   estimates <- number(fit[["estimates"]])
   switch(fit[["model"]],
-    duane = paste0("MTBF(t) = ", estimates[1], " * t^(", estimates[2], ")"),
+    duane = paste0("t / M(t) = ", estimates[1], " * t^(", estimates[2], ")"),
     crowAmsaa = paste0("M(t) = ", estimates[1], " * t^(", estimates[2], ")"),
     logLinear = paste0("m(t) = exp(", estimates[1], " + (", estimates[2], ") * t)"),
     piecewise = {

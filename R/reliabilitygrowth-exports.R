@@ -4,8 +4,8 @@
   exportResidualsPearson    = list(type = "pearson", suffix = "PearsonResidual"),
   exportResidualsDeviance   = list(type = "deviance", suffix = "DevianceResidual"),
   exportResidualsQuantile   = list(type = "quantile", suffix = "QuantileResidual"),
-  exportFittedValuesCumulativeFailures = list(type = "cumulative", suffix = "CumulativeFailures"),
-  exportFittedValuesIntervalFailures   = list(type = "interval", suffix = "IntervalFailures")
+  exportFittedValuesCumulativeFailures = list(type = "cumulative", suffix = "CumulativeEvents"),
+  exportFittedValuesIntervalFailures   = list(type = "interval", suffix = "IntervalEvents")
 )
 .sargExportOptions <- names(.sargExportDefinitions)
 

@@ -4,7 +4,7 @@ Fit Duane, Crow–AMSAA (power-law NHPP), log-linear NHPP, or piecewise power-la
 
 ## Data
 
-Each row describes one observation interval. Assign **Time**, and choose cumulative interval endpoints or interval durations. Each independent sequence starts at zero. Keep rows in observation order. Assign **Failure Count** for counts within each interval; leaving it empty means one failure per interval. Counts are not cumulative.
+Each row describes one observation interval. Assign **Time**, and choose cumulative interval endpoints or interval durations. Each independent sequence starts at zero. Keep rows in observation order. Assign **Event Count** for counts within each interval; leaving it empty means one event per interval. Counts are not cumulative.
 
 The current ReliaGrowR engine requires positive counts in every interval. Zero-count intervals contain exposure information and must not be dropped to bypass this limitation. Missing interval records are not omitted automatically.
 
@@ -12,7 +12,7 @@ Use **Subgroup** for independent test sequences. A subgroup fit is not covariate
 
 ## Models and estimation
 
-Duane fits log cumulative MTBF against log time. Crow–AMSAA fits a power-law cumulative mean, M(t) = lambda × t^beta. Log-linear NHPP fits intensity m(t) = exp(a + b × t). Piecewise NHPP fits a segmented log–log regression. Starting change points initialize estimated locations; they are not fixed boundaries.
+Duane fits log cumulative mean time between events against log time. Crow–AMSAA fits a power-law cumulative mean, M(t) = lambda × t^beta. Log-linear NHPP fits intensity m(t) = exp(a + b × t). Piecewise NHPP fits a segmented log–log regression. Starting change points initialize estimated locations; they are not fixed boundaries.
 
 Maximum likelihood uses grouped interval counts, not an exact-event-time likelihood. MLE time is scaled internally and results are reported in the original units. Fits reaching known numerical bounds are rejected. ReliaGrowR does not return optimizer convergence status. Regression and NHPP likelihood fit statistics should not be compared directly.
 
@@ -28,7 +28,7 @@ Output follows the parametric order: data summary, model summary, coefficient es
 
 Calculations and parameter scales are unchanged. Growth covariance matrices use the reported coefficient scale, as stated in their footnote; the parametric survival covariance convention can differ. Model summaries retain the likelihood distinction between grouped-count maximum likelihood and log-scale least squares. AIC and BIC use the same three-decimal formatting as parametric survival.
 
-Fitted equations identify the selected model and its cumulative mean, intensity or cumulative MTBF. The shared equation formatter uses scientific notation when a nonzero coefficient would otherwise round to zero. Decimal-place settings affect equation display only, not fitted estimates or predictions.
+Fitted equations identify the selected model and its cumulative mean, intensity or cumulative mean time between events. The shared equation formatter uses scientific notation when a nonzero coefficient would otherwise round to zero. Decimal-place settings affect equation display only, not fitted estimates or predictions.
 
 ## Predictions
 
@@ -38,12 +38,12 @@ Choose **Outcome**, evaluation times under **Time**, and plot/table **Output**. 
 
 - **Survival probability:** event-free survival exp(-M(t)), the probability of no events between time zero and t under an NHPP.
 - **Failure probability:** 1 - exp(-M(t)), the probability of at least one event between time zero and t under an NHPP.
-- **Cumulative failures:** expected cumulative failures M(t).
-- **Failure intensity:** instantaneous failure rate m(t).
-- **Cumulative MTBF:** t / M(t).
-- **Instantaneous MTBF:** 1 / m(t), a local rate-based measure rather than expected waiting time to the next failure.
+- **Cumulative events:** expected cumulative events M(t).
+- **Event intensity:** instantaneous event rate m(t).
+- **Cumulative mean time between events:** t / M(t).
+- **Instantaneous mean time between events:** 1 / m(t), a local rate-based measure rather than expected waiting time to the next event.
 
-Failure intensity and cumulative failures are the recurrent-event analogues of hazard and cumulative hazard in parametric survival analysis. The latter is an expected count, not a failure probability. Neither MTBF outcome equals mean survival time.
+Event intensity and cumulative events are the recurrent-event analogues of hazard and cumulative hazard in parametric survival analysis. The latter is an expected count, not a failure probability. These time-between-events outcomes should not generally be interpreted as mean survival time.
 
 The probability outcomes transform ReliaGrowR's fitted cumulative mean; no additional model is fitted. Survival and failure probabilities sum to one. Their confidence intervals transform the cumulative-mean bounds, reversing their order for survival. For Duane, this interpretation additionally assumes its fitted growth curve is the cumulative mean of an NHPP. These are probabilities since time zero, not conditional probabilities of the next event after an arbitrary starting time.
 
@@ -53,7 +53,7 @@ In medical applications, survival probability means remaining event-free for the
 
 Tables support **Long** (times in rows) and **Wide** (times in column groups) formats. **Merge tables across measures** places selected outcomes together. Optional **Round time table values** rounds evaluation times before calculating table predictions; rounded times must remain positive. Plot evaluation times remain unrounded.
 
-Confidence intervals describe uncertainty in fitted quantities, not future count variability. Rate-based intervals are unavailable for piecewise models. Uncertainty is unavailable when covariance estimation is unreliable.
+Confidence intervals describe uncertainty in fitted quantities, not future event-count variability. Rate-based intervals are unavailable for piecewise models. Uncertainty is unavailable when covariance estimation is unreliable.
 
 ## Diagnostics
 
@@ -61,17 +61,17 @@ The Diagnostics layout follows parametric survival: **Residual Plots** on the le
 
 Choose residuals versus **time**, residuals versus **predicted**, or a residual **histogram**, with one plot per fitted subgroup. The **Type** selector offers:
 
-- **Regression:** the package's least-squares regression residuals, on the log cumulative MTBF scale for Duane and log cumulative failures scale for Crow–AMSAA and piecewise fits. Available for least squares only.
-- **Response:** observed minus fitted interval failures.
+- **Regression:** the package's least-squares regression residuals, on the log cumulative mean time between events scale for Duane and log cumulative events scale for Crow–AMSAA and piecewise fits. Available for least squares only.
+- **Response:** observed minus fitted interval events.
 - **Pearson:** response residual divided by the square root of the fitted interval mean.
 - **Deviance:** signed square root of the Poisson interval deviance.
 - **Randomized quantile:** standard normal quantiles obtained by randomizing within each observed count's Poisson probability jump.
 
-Count residuals assume an NHPP, including an NHPP interpretation of the Duane growth curve. Their fitted interval means are differences of the package's fitted cumulative failures. Residuals versus predicted uses fitted log regression values for Regression, and fitted interval counts for the other types. Residual plots use the same JASP construction as parametric survival, independently of prediction-plot settings.
+Count residuals assume an NHPP, including an NHPP interpretation of the Duane growth curve. Their fitted interval means are differences of the package's fitted cumulative events. Residuals versus predicted uses fitted log regression values for Regression, and fitted interval counts for the other types. Residual plots use the same JASP construction as parametric survival, independently of prediction-plot settings.
 
 ### Probability plots
 
-For grouped interval counts, **Normal (Q-Q)** compares ordered randomized quantile residuals with standard normal quantiles; **Uniform (P-P)** compares their cumulative probabilities with uniform plotting positions. Under the fitted NHPP they should approximately follow the identity line. One point represents one observation interval; counts are not expanded into invented failure times. These plots apply to all four models under their NHPP interpretation.
+For grouped interval counts, **Normal (Q-Q)** compares ordered randomized quantile residuals with standard normal quantiles; **Uniform (P-P)** compares their cumulative probabilities with uniform plotting positions. Under the fitted NHPP they should approximately follow the identity line. One point represents one observation interval; counts are not expanded into invented event times. These plots apply to all four models under their NHPP interpretation.
 
 These are count-model diagnostics, not Weibull or other lifetime probability-paper plots. The native ReliaGrowR Q-Q/P-P helpers do not provide the required grouped-count diagnostic, so these plots wrap the package's fitted interval means with the discrete probability-integral transform of Dunn and Smyth (1996).
 
@@ -81,7 +81,7 @@ Randomized quantile residuals are cached and shared by residual plots, probabili
 
 ## Export
 
-The column prefix appears above **Residuals** and **Fitted Values**, as in parametric survival. Select each desired residual type separately. Fitted cumulative failures and fitted interval failures can also be exported. For example, prefix `Growth` produces `Growth_PearsonResidual`, `Growth_QuantileResidual`, `Growth_CumulativeFailures` and `Growth_IntervalFailures`.
+The column prefix appears above **Residuals** and **Fitted Values**, as in parametric survival. Select each desired residual type separately. Fitted cumulative events and fitted interval events can also be exported. For example, prefix `Growth` produces `Growth_PearsonResidual`, `Growth_QuantileResidual`, `Growth_CumulativeEvents` and `Growth_IntervalEvents`.
 
 Exports preserve the original dataset row order, including interleaved subgroups. Failed subgroup fits or unavailable values produce missing entries; export calculation problems are reported. Regression residuals are unavailable for maximum likelihood. Count diagnostics require finite positive fitted interval means. Existing columns owned by another analysis or supplied by the user are not overwritten.
 

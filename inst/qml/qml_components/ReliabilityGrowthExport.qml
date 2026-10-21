@@ -35,7 +35,7 @@ Section
 		{
 			name: "exportResidualsResponse"
 			label: qsTr("Response")
-			info: qsTr("Export observed minus fitted interval failure counts.")
+			info: qsTr("Export observed minus fitted interval event counts.")
 		}
 		CheckBox
 		{
@@ -63,14 +63,14 @@ Section
 		CheckBox
 		{
 			name: "exportFittedValuesCumulativeFailures"
-			label: qsTr("Cumulative failures")
-			info: qsTr("Export fitted cumulative failures at each interval endpoint.")
+			label: qsTr("Cumulative events")
+			info: qsTr("Export fitted cumulative events at each interval endpoint.")
 		}
 		CheckBox
 		{
 			name: "exportFittedValuesIntervalFailures"
-			label: qsTr("Interval failures")
-			info: qsTr("Export expected failures within each observation interval, obtained by differencing the fitted cumulative mean.")
+			label: qsTr("Interval events")
+			info: qsTr("Export expected events within each observation interval, obtained by differencing the fitted cumulative mean.")
 		}
 	}
 }

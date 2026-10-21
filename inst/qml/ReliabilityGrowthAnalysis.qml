@@ -7,7 +7,7 @@ import "./qml_components" as SA
 Form
 {
 	id: form
-	info: qsTr("Model reliability growth from failure counts in successive observation intervals. Fit each independent test sequence separately using Subgroup.")
+	info: qsTr("Model reliability growth from event counts in successive observation intervals. Fit each independent test sequence separately using Subgroup.")
 
 	VariablesForm
 	{
@@ -25,10 +25,10 @@ Form
 		AssignedVariablesList
 		{
 			name: "failures"
-			title: qsTr("Failure Count (optional)")
+			title: qsTr("Event Count (optional)")
 			allowedColumns: ["scale"]
 			singleVariable: true
-			info: qsTr("Select the number of failures within each interval, not cumulative counts. Leave empty for one failure per interval. ReliaGrowR currently requires positive counts in every interval.")
+			info: qsTr("Select the number of events within each interval, not cumulative counts. Leave empty for one event per interval. ReliaGrowR currently requires positive counts in every interval.")
 		}
 		AssignedVariablesList
 		{
@@ -91,14 +91,14 @@ Form
 		modelSummaryInfo: qsTr("Show the reliability-growth model, estimation method, log-likelihood, parameter count, AIC and BIC for each independently fitted subgroup.")
 		coefficientsInfo: qsTr("Show reliability-growth parameter estimates and standard errors. Confidence intervals follow the model's estimation method.")
 		covarianceInfo: qsTr("Show the covariance matrix on the reported parameter scale, with one matrix per fitted subgroup.")
-		equationInfo: qsTr("Show the fitted cumulative-mean, failure-intensity or cumulative-MTBF equations. Small nonzero coefficients are displayed in scientific notation when needed.")
+		equationInfo: qsTr("Show fitted equations for cumulative events, event intensity or cumulative mean time between events. Small nonzero coefficients are displayed in scientific notation when needed.")
 		extraSummaryControls: [
 			CheckBox
 			{
 				name: "dataSummary"
 				label: qsTr("Data summary")
 				checked: true
-				info: qsTr("Show observation intervals, total failures, follow-up time and observed cumulative MTBF for each subgroup.")
+				info: qsTr("Show observation intervals, total events, follow-up time and observed cumulative mean time between events for each subgroup.")
 			}
 		]
 	}
