@@ -11,6 +11,7 @@
 * Recurrent event data summaries retain subgroups whose model fit fails.
 * Recurrent event predictions at one time display estimates and confidence bounds in plots.
 * Recurrent event 50% one-sided confidence bounds equal finite estimates when native bounds overflow.
+* Recurrent event logarithmic prediction plots report an informative error when no positive estimates remain.
 
 # jaspSurvival 0.98.0
 ## Added

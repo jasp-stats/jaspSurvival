@@ -36,6 +36,9 @@
     stop(paste(vapply(predictions[errors], function(x) gettextf("%1$s: %2$s", x[["label"]],
       jaspBase::.extractErrorMessage(x[["plot"]])), character(1)), collapse = "\n"))
   data <- do.call(rbind, lapply(predictions, `[[`, "plot"))
+  # Explicit subgroup-layer data require a local check before log-axis transformation.
+  if (options[["predictionsYAxisScale"]] == "log" && !any(data[["estimate"]] > 0))
+    stop(gettext("No finite predictions remain after the selected axis transformations. Choose a different scale or evaluation range."))
   data[["subgroup"]] <- factor(data[["subgroup"]], levels = vapply(fits, `[[`, character(1), "label"))
   singletonGroups <- names(which(vapply(split(data[["time"]], data[["subgroup"]], drop = TRUE),
     function(times) length(unique(times)) == 1L, logical(1))))
