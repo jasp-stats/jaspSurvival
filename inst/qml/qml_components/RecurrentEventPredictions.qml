@@ -36,7 +36,7 @@ Section
 			id: cumulativeEvents
 			name: "predictionsOutcomeCumulativeEvents"
 			label: qsTr("Cumulative events")
-			checked: true
+			checked: false
 			info: qsTr("Predict the expected cumulative number of events since time zero.")
 		}
 		CheckBox
