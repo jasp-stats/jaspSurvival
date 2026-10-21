@@ -1,5 +1,9 @@
 # jaspSurvival Changelog
 
+# jaspSurvival 0.98.1
+## Added
+* Growth analysis
+
 # jaspSurvival 0.98.0
 ## Added
 * Flexible prediction plots, including contours and heatmaps, and Long or Wide prediction tables.
