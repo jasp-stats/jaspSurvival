@@ -14,7 +14,7 @@ RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
   if (.sareReady(options))
     .sareCheckDataset(dataset, options)
   .sareFit(jaspResults, dataset, options)
-  .sareStatistics(jaspResults, options)
+  .sareStatistics(jaspResults, dataset, options)
   .sarePredictions(jaspResults, options)
   .sareDiagnostics(jaspResults, options)
   .sareExport(jaspResults, dataset, options)

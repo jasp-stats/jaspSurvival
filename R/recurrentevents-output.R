@@ -15,12 +15,12 @@
   return()
 }
 
-.sareStatistics <- function(jaspResults, options) {
+.sareStatistics <- function(jaspResults, dataset, options) {
 
   allFits <- .sareFits(jaspResults)
   fits <- .sareFits(jaspResults, valid = TRUE)
   if (options[["dataSummary"]])
-    .sareDataSummaryTable(jaspResults, options, fits)
+    .sareDataSummaryTable(jaspResults, dataset, options, allFits)
   if (options[["modelSummary"]] || any(vapply(allFits, function(fit) length(c(fit[["error"]], fit[["warnings"]])) > 0L, logical(1))))
     .sareSummaryTable(jaspResults, options, allFits)
   if (options[["coefficients"]])
@@ -38,7 +38,7 @@
   return()
 }
 
-.sareDataSummaryTable <- function(jaspResults, options, fits) {
+.sareDataSummaryTable <- function(jaspResults, dataset, options, fits) {
 
   if (!is.null(jaspResults[["dataSummaryTable"]]))
     return()
@@ -48,13 +48,19 @@
   table$addColumnInfo(name = "events", title = gettext("Events"), type = "integer")
   table$addColumnInfo(name = "time", title = gettext("Follow-up Time"), type = "number")
   table$addColumnInfo(name = "cumulativeMeanTimeBetweenEvents", title = gettext("Cumulative Mean Time Between Events"), type = "number")
-  table$setData(.saSafeRbind(lapply(fits, function(fit) data.frame(
-    subgroup                       = fit[["label"]],
-    intervals                      = length(fit[["time"]]),
-    events                         = sum(fit[["counts"]]),
-    time                           = max(fit[["time"]]),
-    cumulativeMeanTimeBetweenEvents = max(fit[["time"]]) / sum(fit[["counts"]])
-  ))))
+  table$setData(.saSafeRbind(lapply(fits, function(fit) {
+    data <- dataset[fit[["rows"]], , drop = FALSE]
+    events <- if (options[["eventCount"]] == "") nrow(data) else sum(data[[options[["eventCount"]]]])
+    time <- data[[options[["time"]]]]
+    followUp <- if (options[["timeType"]] == "interval") sum(time) else max(time)
+    data.frame(
+      subgroup                       = fit[["label"]],
+      intervals                      = nrow(data),
+      events                         = events,
+      time                           = followUp,
+      cumulativeMeanTimeBetweenEvents = followUp / events
+    )
+  })))
   return()
 }
 
