@@ -27,6 +27,12 @@
     .sareCoefficientsTable(jaspResults, options, fits)
   if (options[["coefficientsCovarianceMatrix"]])
     .sareCovarianceTables(jaspResults, options, fits)
+  if (options[["model"]] == "piecewise") {
+    if (options[["piecewiseSegmentEstimates"]])
+      .sareSegmentTable(jaspResults, options, fits)
+    if (options[["piecewiseChangePoints"]])
+      .sareChangePointTable(jaspResults, options, fits)
+  }
   if (options[["fittedModelEquation"]])
     .sareEquationsTable(jaspResults, options, fits)
   return()
@@ -109,12 +115,57 @@
   if (!is.null(jaspResults[["modelEquations"]]))
     return()
   table <- .sareCreateTable(jaspResults, "modelEquations", gettext("Fitted Model Equations"),
-    c("fittedModelEquation", "fittedModelEquationDecimals"), 2.2)
+    c("fittedModelEquation", "fittedModelEquationDecimals"), 2.4)
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
   table$addColumnInfo(name = "equation", title = gettext("Equation"), type = "string")
   table$setData(.saSafeRbind(lapply(fits, .sareEquationRows, options = options)))
   table$addFootnote(gettext("M(t) is expected cumulative events, m(t) is instantaneous event intensity, and t / M(t) is cumulative mean time between events."))
+  return()
+}
+
+.sareSegmentTable <- function(jaspResults, options, fits) {
+
+  if (!is.null(jaspResults[["segmentEstimatesTable"]]))
+    return()
+  table <- .sareCreateTable(jaspResults, "segmentEstimatesTable", gettext("Segment Estimates"), "piecewiseSegmentEstimates", 2.2)
+  .sareGroupColumn(table, options)
+  table$addColumnInfo(name = "segment", title = gettext("Segment"), type = "integer")
+  table$addColumnInfo(name = "slope", title = gettext("Estimate"), overtitle = gettext("Slope (\u03b2)"), type = "number")
+  table$addColumnInfo(name = "slopeSe", title = gettext("Standard Error"), overtitle = gettext("Slope (\u03b2)"), type = "number")
+  table$addColumnInfo(name = "growthRate", title = gettext("Growth Rate"), type = "number")
+  table$addColumnInfo(name = "scale", title = gettext("Scale (\u03bb)"), type = "number")
+  table$setData(.saSafeRbind(lapply(fits, function(fit) {
+    native <- fit[["native"]]
+    slopes <- native[["betas"]][["log_times"]][, "Est."]
+    standardErrors <- native[["betas_se"]]
+    if (!fit[["inferenceAvailable"]])
+      standardErrors[] <- NA_real_
+    data.frame(subgroup = c(fit[["label"]], rep(NA_character_, length(slopes) - 1L)),
+      segment = seq_along(slopes), slope = as.numeric(slopes), slopeSe = as.numeric(standardErrors),
+      growthRate = as.numeric(native[["growth_rate"]]), scale = as.numeric(native[["lambdas"]][, "Est."]))
+  })))
+  return()
+}
+
+.sareChangePointTable <- function(jaspResults, options, fits) {
+
+  if (!is.null(jaspResults[["changePointsTable"]]))
+    return()
+  table <- .sareCreateTable(jaspResults, "changePointsTable", gettext("Change Points"), "piecewiseChangePoints", 2.3)
+  .sareGroupColumn(table, options)
+  table$addColumnInfo(name = "changePoint", title = gettext("Change Point"), type = "integer")
+  table$addColumnInfo(name = "time", title = gettext("Time"), type = "number")
+  table$addColumnInfo(name = "logTimeSe", title = gettext("Standard Error (Log Time)"), type = "number")
+  table$setData(.saSafeRbind(lapply(fits, function(fit) {
+    # The fitted locations are authoritative when native breakpoints retain starting values.
+    times <- .sareBreakpoints(fit)
+    standardErrors <- fit[["native"]][["model"]][["psi"]][, "St.Err"]
+    if (!fit[["inferenceAvailable"]])
+      standardErrors[] <- NA_real_
+    data.frame(subgroup = c(fit[["label"]], rep(NA_character_, length(times) - 1L)),
+      changePoint = seq_along(times), time = as.numeric(times), logTimeSe = as.numeric(standardErrors))
+  })))
   return()
 }
 

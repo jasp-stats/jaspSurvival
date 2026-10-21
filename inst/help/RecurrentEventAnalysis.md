@@ -30,6 +30,8 @@ Output follows the parametric order: data summary, model summary, coefficient es
 
 Fitted equations identify the selected model and its cumulative mean, intensity or cumulative mean time between events. The shared equation formatter uses scientific notation when a nonzero coefficient would otherwise round to zero. Decimal-place settings affect equation display only, not fitted estimates or predictions.
 
+For piecewise models, **Segment estimates** reports ReliaGrowR's returned segment slopes (beta), their standard errors, growth rates and scales (lambda). Growth rates are the package's reported values, 1 - beta. **Change points** shows estimated times in the original **Time** units. Its standard-error column is explicitly on the native log-time scale; it is not a standard error in time units. These tables do not add confidence intervals or refit the model. Standard errors are omitted when fit inference is unreliable. The regression coefficients and covariance matrix retain their existing parameterization.
+
 ## Predictions
 
 Under **Advanced**, **Confidence interval > Bounds** selects **Two-sided**, **Lower**, or **Upper**, as in parametric survival. This applies to coefficient intervals, prediction intervals and probability-plot reference bounds. One-sided tables show the selected bound, and plots show it as a dashed curve. Two-sided intervals remain the default. Each output retains its own confidence level.
@@ -57,6 +59,12 @@ Tables support **Long** (times in rows) and **Wide** (times in column groups) fo
 
 Confidence intervals describe uncertainty in fitted quantities, not future event-count variability. Rate-based intervals are unavailable for piecewise models. Uncertainty is unavailable when covariance estimation is unreliable.
 
+### Nonparametric estimate (MCF): prerequisite
+
+The proposed **Nonparametric estimate** display option is deferred. `ReliaGrowR::mcf()` requires unit identifiers, exact event/censoring times with binary event indicators, and observation endpoints for each unit. Current **Time** and **Event Count** describe observation intervals; even a count of one does not establish an exact event time. **Subgroup** selects separate fitted sequences and does not supply unit histories within a subgroup.
+
+Before adding the overlay, the input interface must support exact-event records, unit IDs distinct from analysis subgroups, censoring or explicit follow-up endpoints, and units with no events. Observation windows must match the native function's common time-origin assumption, and the fitted curve and MCF must refer to the same per-unit scale. Those records can then be passed directly to `mcf()` and its returned estimates plotted. Grouped counts must never be expanded into invented event times, nor interval endpoints silently treated as event times. The existing **Observed data** overlay remains a cumulative count, not a nonparametric MCF.
+
 ## Diagnostics
 
 The Diagnostics layout follows parametric survival: **Residual Plots** on the left and **Probability plot** on the right. Numerical fitted values and residuals are available under **Export**, rather than as a diagnostic table.
@@ -76,6 +84,8 @@ Count residuals assume an NHPP, including an NHPP interpretation of the Duane gr
 For grouped interval counts, **Normal (Q-Q)** compares ordered randomized quantile residuals with standard normal quantiles; **Uniform (P-P)** compares their cumulative probabilities with uniform plotting positions. Under the fitted NHPP they should approximately follow the identity line. One point represents one observation interval; counts are not expanded into invented event times. These plots apply to all four models under their NHPP interpretation.
 
 These are count-model diagnostics, not Weibull or other lifetime probability-paper plots. The native ReliaGrowR Q-Q/P-P helpers do not provide the required grouped-count diagnostic, so these plots wrap the package's fitted interval means with the discrete probability-integral transform of Dunn and Smyth (1996).
+
+Native `gof()` statistics are not offered: their event-time transformation is not a goodness-of-fit test for the grouped interval-count input used here. The grouped-count residual and probability-plot diagnostics are retained.
 
 Controls mirror the applicable parametric probability-plot controls: empirical points and coordinates, reference line, subgroup overlays, plotting positions, grid, legend, palette and theme. A **Reference envelope** shows exploratory pointwise order-statistic bounds for the reference distribution, excluding uncertainty in the fitted parameters.
 

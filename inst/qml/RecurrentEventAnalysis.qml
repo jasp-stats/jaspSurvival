@@ -101,6 +101,27 @@ Form
 				info: qsTr("Show observation intervals, total events, follow-up time and observed cumulative mean time between events for each subgroup.")
 			}
 		]
+		extraStatisticsControls: [
+			Group
+			{
+				columns: 1
+				visible: model.value === "piecewise"
+				CheckBox
+				{
+					name: "piecewiseSegmentEstimates"
+					label: qsTr("Segment estimates")
+					checked: true
+					info: qsTr("Show segment slopes, their standard errors, growth rates and scales returned by ReliaGrowR.")
+				}
+				CheckBox
+				{
+					name: "piecewiseChangePoints"
+					label: qsTr("Change points")
+					checked: true
+					info: qsTr("Show estimated change-point times in the original time units and native standard errors on the log-time scale.")
+				}
+			}
+		]
 	}
 
 	SA.RecurrentEventPredictions { hasSubgroups: subgroup.count > 0 }
