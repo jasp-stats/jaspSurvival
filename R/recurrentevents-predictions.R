@@ -61,21 +61,26 @@
   return(exp(record[["native"]][["model"]][["psi"]][, "Est."]))
 }
 
-.sarePredict <- function(record, times, measure, level) {
+.sarePredict <- function(record, times, measure, level, direction) {
 
-  if (measure %in% c("survivalProbability", "failureProbability"))
-    return(.sareProbabilityPrediction(.sarePredict(record, times, "cumulativeEvents", level), measure))
+  if (measure %in% c("survivalProbability", "failureProbability")) {
+    meanDirection <- if (measure == "survivalProbability") switch(direction, twoSided = "twoSided", lower = "upper", upper = "lower") else direction
+    return(.sareProbabilityPrediction(.sarePredict(record, times, "cumulativeEvents", level, meanDirection), measure))
+  }
 
   native <- record[["native"]]
+  nativeLevel <- if (direction == "twoSided") level else abs(2 * level - 1)
+  # ReliaGrowR rejects a zero central level; a 50% one-sided bound is the estimate.
+  packageLevel <- if (nativeLevel == 0) level else nativeLevel
   # The package warns about evaluating inside the observed range; this is expected
   # for fitted curves. Other prediction warnings remain visible.
   prediction <- withCallingHandlers({
     if (record[["model"]] == "duane")
-      ReliaGrowR::predict_duane(native, times, conf_level = level)
+      ReliaGrowR::predict_duane(native, times, conf_level = packageLevel)
     else if (record[["model"]] == "piecewise")
-      ReliaGrowR::predict_rga(native, times, conf_level = level)
+      ReliaGrowR::predict_rga(native, times, conf_level = packageLevel)
     else
-      ReliaGrowR::predict_nhpp(native, times / record[["scale"]], conf_level = level)
+      ReliaGrowR::predict_nhpp(native, times / record[["scale"]], conf_level = packageLevel)
   }, warning = function(warning) {
     if (grepl("Hindcasting is allowed", conditionMessage(warning), fixed = TRUE))
       invokeRestart("muffleWarning")
@@ -119,13 +124,26 @@
     lower <- upper <- rep(NA_real_, length(times))
     if (!is.null(gradient) && record[["inferenceAvailable"]]) {
       variance <- rowSums((gradient %*% record[["covariance"]]) * gradient)
-      halfWidth <- .sareCritical(level, record[["df"]]) * sqrt(pmax(variance, 0))
+      halfWidth <- abs(.sareCritical(level, record[["df"]], direction)) * sqrt(pmax(variance, 0))
       lower <- exp(log(estimate) - halfWidth)
       upper <- exp(log(estimate) + halfWidth)
     }
   }
+  if (nativeLevel == 0) {
+    lower[is.finite(lower)] <- estimate[is.finite(lower)]
+    upper[is.finite(upper)] <- estimate[is.finite(upper)]
+  }
+  if (direction != "twoSided" && level < .5) {
+    newLower <- upper
+    upper <- lower
+    lower <- newLower
+  }
   if (!record[["inferenceAvailable"]])
     lower <- upper <- rep(NA_real_, length(times))
+  if (direction == "lower")
+    upper[] <- NA_real_
+  else if (direction == "upper")
+    lower[] <- NA_real_
   if (any(!is.finite(estimate) | estimate <= 0))
     stop(gettext("The model cannot provide finite positive predictions at these times. Reduce the prediction range or choose another model."))
   return(data.frame(time = times, estimate = as.numeric(estimate), lower = as.numeric(lower), upper = as.numeric(upper),
@@ -161,7 +179,8 @@
   predictions <- list()
   for (measure in .sareMeasures(options)) {
     predictions[[measure]] <- lapply(.sareFits(jaspResults, valid = TRUE), function(record) {
-      evaluate <- function(plot) .sarePredict(record, .sareTimes(record, options, plot), measure, options[["predictionsDisplayConfidenceIntervalsLevel"]])
+      evaluate <- function(plot) .sarePredict(record, .sareTimes(record, options, plot), measure,
+        options[["predictionsDisplayConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]])
       list(label = record[["label"]],
         table = if (options[["predictionsOutputTable"]]) try(evaluate(FALSE), silent = TRUE),
         plot  = if (options[["predictionsOutputPlot"]]) try(evaluate(TRUE), silent = TRUE))
@@ -258,7 +277,8 @@
 
 .sarePredictionTableColumns <- function(table, options, measures, times = NULL) {
 
-  specification <- list(levels = if (options[["predictionsDisplayConfidenceIntervals"]]) options[["predictionsDisplayConfidenceIntervalsLevel"]] else numeric(0), direction = "twoSided")
+  specification <- list(levels = if (options[["predictionsDisplayConfidenceIntervals"]]) options[["predictionsDisplayConfidenceIntervalsLevel"]] else numeric(0),
+    direction = options[["confidenceIntervalBounds"]])
   for (measure in measures) {
     prefix <- if (length(measures) > 1L) paste0(measure, ".") else ""
     title <- .sareMeasureLabel(measure)

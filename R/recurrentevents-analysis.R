@@ -5,7 +5,7 @@
 .sarePredictionOptions <- paste0("predictionsOutcome", c("SurvivalProbability", "FailureProbability", "CumulativeEvents", "EventIntensity", "CumulativeMeanTimeBetweenEvents", "InstantaneousMeanTimeBetweenEvents"))
 .sareTableDependencies <- c("predictionsOutputTableFormat", "predictionsMergeTablesAcrossMeasures", "predictionsRoundTimeTableValues")
 .sarePredictionDependencies <- c(.sareTimeDependencies, .sarePredictionOptions,
-  "predictionsDisplayConfidenceIntervals", "predictionsDisplayConfidenceIntervalsLevel")
+  "predictionsDisplayConfidenceIntervals", "predictionsDisplayConfidenceIntervalsLevel", "confidenceIntervalBounds")
 .sarePlotDependencies <- c("predictionsDisplayObservedData", "predictionsMergeSeriesAcrossSubgroups", "predictionsXAxisTransformation",
   "predictionsYAxisScale", "plotTheme", "plotLegend", "colorPalette")
 
@@ -217,7 +217,7 @@ RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
   return(fits)
 }
 
-.sareCritical <- function(level, df) {
+.sareCritical <- function(level, df, direction) {
 
-  return(if (is.finite(df)) stats::qt((1 + level) / 2, df) else .sapBoundCritical(level, "twoSided"))
+  return(if (is.finite(df)) stats::qt(if (direction == "twoSided") (1 + level) / 2 else level, df) else .sapBoundCritical(level, direction))
 }

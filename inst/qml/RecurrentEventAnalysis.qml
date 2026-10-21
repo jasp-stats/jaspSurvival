@@ -124,19 +124,39 @@ Form
 		columns: 2
 		Group
 		{
-			title: qsTr("Model Options")
-			visible: model.value === "piecewise"
-			CheckBox
+			columns: 1
+			Group
 			{
-				name: "piecewiseStartingBreakpoints"
-				label: qsTr("Starting change points")
-				info: qsTr("Provide initial locations for estimated change points. When unchecked, the package initializes one change point automatically. These locations are starting values, not fixed change points.")
-				TextField
+				title: qsTr("Confidence interval")
+				DropDown
 				{
-					name: "piecewiseStartingBreakpointsValues"
-					label: qsTr("Times")
-					fieldWidth: 180 * jaspTheme.uiScale
-					info: qsTr("Enter starting change-point times in the original time units, separated by commas.")
+					name: "confidenceIntervalBounds"
+					label: qsTr("Bounds")
+					startValue: "twoSided"
+					values: [
+						{label: qsTr("Two-sided"), value: "twoSided"},
+						{label: qsTr("Lower"), value: "lower"},
+						{label: qsTr("Upper"), value: "upper"}
+					]
+					info: qsTr("Choose two-sided confidence intervals or one-sided lower or upper bounds.")
+				}
+			}
+			Group
+			{
+				title: qsTr("Model Options")
+				visible: model.value === "piecewise"
+				CheckBox
+				{
+					name: "piecewiseStartingBreakpoints"
+					label: qsTr("Starting change points")
+					info: qsTr("Provide initial locations for estimated change points. When unchecked, the package initializes one change point automatically. These locations are starting values, not fixed change points.")
+					TextField
+					{
+						name: "piecewiseStartingBreakpointsValues"
+						label: qsTr("Times")
+						fieldWidth: 180 * jaspTheme.uiScale
+						info: qsTr("Enter starting change-point times in the original time units, separated by commas.")
+					}
 				}
 			}
 		}

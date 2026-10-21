@@ -32,6 +32,8 @@ Fitted equations identify the selected model and its cumulative mean, intensity 
 
 ## Predictions
 
+Under **Advanced**, **Confidence interval > Bounds** selects **Two-sided**, **Lower**, or **Upper**, as in parametric survival. This applies to coefficient intervals, prediction intervals and probability-plot reference bounds. One-sided tables show the selected bound, and plots show it as a dashed curve. Two-sided intervals remain the default. Each output retains its own confidence level.
+
 Choose **Outcome**, evaluation times under **Time**, and plot/table **Output**. No predictor assignments are needed. These controls follow the parametric survival Predictions layout.
 
 **Equal intervals** spans the first observed endpoint to maximum follow-up. **Sequence** provides From, Step and To fields; extend To beyond observed follow-up to forecast. **Custom (relative)** accepts percentages of each subgroup's maximum follow-up, including percentages above 100 for forecasting. **Custom (absolute)** accepts times in the original units; empty input uses 25%, 50% and 75% of follow-up. Evaluation times must be positive. A dashed vertical line marks the observed endpoint when forecasting; dotted lines mark estimated change points.

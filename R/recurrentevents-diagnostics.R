@@ -2,7 +2,7 @@
 .sareProbabilityDependencies <- c("probabilityPlot", "probabilityPlotCanvas", "probabilityPlotEmpiricalPoints",
   "probabilityPlotEmpiricalPointsCoordinates", "probabilityPlotReferenceLine", "probabilityPlotMergePlotsAcrossSubgroups",
   "probabilityPlotReferenceEnvelope", "probabilityPlotReferenceEnvelopeLevel", "probabilityPlotGrid",
-  "probabilityPlotPlottingPosition", "probabilityPlotLegend", "probabilityPlotColorPalette", "probabilityPlotTheme")
+  "probabilityPlotPlottingPosition", "probabilityPlotLegend", "probabilityPlotColorPalette", "probabilityPlotTheme", "confidenceIntervalBounds")
 
 .sareIntervalMean <- function(fit) {
 
@@ -156,11 +156,13 @@
   n <- length(residuals)
   probability <- .saProbabilityPlottingPositions(seq_len(n), n, options[["probabilityPlotPlottingPosition"]])
   transform <- if (options[["probabilityPlotCanvas"]] == "normal") stats::qnorm else identity
-  alpha <- (1 - options[["probabilityPlotReferenceEnvelopeLevel"]]) / 2
+  probabilities <- .sapBoundProbabilities(options[["probabilityPlotReferenceEnvelopeLevel"]], options[["confidenceIntervalBounds"]])
+  bounds <- list(lower = rep(NA_real_, n), upper = rep(NA_real_, n))
+  for (side in names(probabilities))
+    bounds[[side]] <- transform(stats::qbeta(probabilities[[side]], seq_len(n), n - seq_len(n) + 1))
   return(data.frame(theoretical = transform(probability), observed = if (options[["probabilityPlotCanvas"]] == "normal")
     sort(residuals) else sort(stats::pnorm(residuals)),
-    lower = transform(stats::qbeta(alpha, seq_len(n), n - seq_len(n) + 1)),
-    upper = transform(stats::qbeta(1 - alpha, seq_len(n), n - seq_len(n) + 1)), subgroup = fit[["label"]]))
+    lower = bounds[["lower"]], upper = bounds[["upper"]], subgroup = fit[["label"]]))
 }
 
 .sareProbabilityPlot <- function(jaspResults, options, fits, quantiles) {
@@ -184,9 +186,14 @@
   plot <- ggplot2::ggplot(data, ggplot2::aes(x = theoretical, y = observed, colour = subgroup, group = subgroup))
   if (!options[["probabilityPlotEmpiricalPoints"]] && !options[["probabilityPlotReferenceEnvelope"]])
     plot <- plot + ggplot2::geom_blank()
-  if (options[["probabilityPlotReferenceEnvelope"]])
-    plot <- plot + ggplot2::geom_ribbon(ggplot2::aes(ymin = lower, ymax = upper, fill = subgroup),
-      alpha = .15, colour = NA, show.legend = FALSE)
+  if (options[["probabilityPlotReferenceEnvelope"]]) {
+    if (options[["confidenceIntervalBounds"]] == "twoSided")
+      plot <- plot + ggplot2::geom_ribbon(ggplot2::aes(ymin = lower, ymax = upper, fill = subgroup),
+        alpha = .15, colour = NA, show.legend = FALSE)
+    else
+      plot <- .sapAddModelBoundLayer(plot, data, options[["probabilityPlotReferenceEnvelopeLevel"]], options[["confidenceIntervalBounds"]],
+        x = "theoretical", lower = "lower", upper = "upper", groups = "subgroup", color = "subgroup", fill = "subgroup", alpha = .15)
+  }
   if (options[["probabilityPlotReferenceLine"]])
     plot <- plot + ggplot2::geom_abline(slope = 1, intercept = 0, colour = "grey50", linetype = "dashed")
   if (options[["probabilityPlotEmpiricalPoints"]]) {
@@ -202,7 +209,8 @@
   plot <- plot + colourScale + fillScale
   uniform <- options[["probabilityPlotCanvas"]] == "uniform"
   plot <- plot + ggplot2::labs(x = if (uniform) gettext("Theoretical Probability") else gettext("Theoretical Normal Quantile"),
-    y = if (uniform) gettext("Observed Probability") else gettext("Observed Quantile Residual"), colour = gettext("Subgroup"), fill = gettext("Subgroup"))
+    y = if (uniform) gettext("Observed Probability") else gettext("Observed Quantile Residual"), colour = gettext("Subgroup"),
+    fill = if (options[["confidenceIntervalBounds"]] == "twoSided") gettext("Subgroup") else NULL, caption = NULL)
   if (uniform)
     plot <- plot + ggplot2::scale_x_continuous(limits = c(0, 1)) + ggplot2::scale_y_continuous(limits = c(0, 1))
   plot <- .sapProbabilityPlotAddTheme(plot, options)

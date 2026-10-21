@@ -39,9 +39,14 @@
   data <- do.call(rbind, lapply(predictions, `[[`, "plot"))
   data[["subgroup"]] <- factor(data[["subgroup"]], levels = vapply(fits, `[[`, character(1), "label"))
   plot <- ggplot2::ggplot(data, ggplot2::aes(x = time, y = estimate, colour = subgroup, group = subgroup))
-  if (options[["predictionsDisplayConfidenceIntervals"]])
-    plot <- plot + ggplot2::geom_ribbon(ggplot2::aes(ymin = lower, ymax = upper, fill = subgroup),
-      colour = NA, alpha = 0.15, na.rm = TRUE, show.legend = FALSE)
+  if (options[["predictionsDisplayConfidenceIntervals"]]) {
+    if (options[["confidenceIntervalBounds"]] == "twoSided")
+      plot <- plot + ggplot2::geom_ribbon(ggplot2::aes(ymin = lower, ymax = upper, fill = subgroup),
+        colour = NA, alpha = .15, na.rm = TRUE, show.legend = FALSE)
+    else
+      plot <- .sapAddModelBoundLayer(plot, data, options[["predictionsDisplayConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]],
+        x = "time", lower = "lower", upper = "upper", groups = "subgroup", color = "subgroup", fill = "subgroup", alpha = .15, na.rm = TRUE)
+  }
   plot <- plot + jaspGraphs::geom_line()
   if (options[["predictionsDisplayObservedData"]] && measure %in% c("cumulativeEvents", "cumulativeMeanTimeBetweenEvents")) {
     observed <- do.call(rbind, lapply(fits, function(fit) data.frame(time = fit[["time"]],
@@ -56,7 +61,8 @@
   if (any(data[["forecast"]]))
     plot <- plot + ggplot2::geom_vline(data = forecast, ggplot2::aes(xintercept = time, colour = subgroup), linetype = "dashed", show.legend = FALSE)
   axisLabel <- paste(strwrap(.sareMeasureLabel(measure), width = 24L), collapse = "\n")
-  plot <- plot + ggplot2::labs(x = gettext("Time"), y = axisLabel, colour = gettext("Subgroup"), fill = gettext("Subgroup"))
+  plot <- plot + ggplot2::labs(x = gettext("Time"), y = axisLabel, colour = gettext("Subgroup"),
+    fill = if (options[["confidenceIntervalBounds"]] == "twoSided") gettext("Subgroup") else NULL, caption = NULL)
   if (options[["predictionsXAxisTransformation"]] == "log")
     plot <- plot + ggplot2::scale_x_log10()
   if (options[["predictionsYAxisScale"]] == "log")

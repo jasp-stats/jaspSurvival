@@ -88,14 +88,15 @@
   if (!is.null(jaspResults[["coefficientsTable"]]))
     return()
   table <- .sareCreateTable(jaspResults, "coefficientsTable", gettext("Coefficients Summary"),
-    c("coefficients", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel"), 2)
+    c("coefficients", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel", "confidenceIntervalBounds"), 2)
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "parameter", title = "", type = "string")
   table$addColumnInfo(name = "estimate", title = gettext("Estimate"), type = "number")
   table$addColumnInfo(name = "se", title = gettext("Standard Error"), type = "number")
   if (options[["coefficientsConfidenceIntervals"]])
-    .sapAddBoundColumns(table, options[["coefficientsConfidenceIntervalsLevel"]], "twoSided")
-  table$setData(.saSafeRbind(lapply(fits, .sareCoefficientRows, level = options[["coefficientsConfidenceIntervalsLevel"]])))
+    .sapAddBoundColumns(table, options[["coefficientsConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]])
+  table$setData(.saSafeRbind(lapply(fits, .sareCoefficientRows, level = options[["coefficientsConfidenceIntervalsLevel"]],
+    direction = options[["confidenceIntervalBounds"]])))
   if (options[["model"]] == "piecewise")
     table$addFootnote(gettext("Coefficients describe the segmented regression of log cumulative events on log time. Change-point coefficients are reported as log times."))
   if (.sareMethod(options) == "MLE")
@@ -117,16 +118,20 @@
   return()
 }
 
-.sareCoefficientRows <- function(fit, level) {
+.sareCoefficientRows <- function(fit, level, direction) {
 
   estimates <- fit[["estimates"]]
   se <- if (fit[["inferenceAvailable"]]) sqrt(diag(fit[["covariance"]])) else rep(NA_real_, length(estimates))
-  halfWidth <- .sareCritical(level, fit[["df"]]) * se
+  halfWidth <- .sareCritical(level, fit[["df"]], direction) * se
   lower <- estimates - halfWidth
   upper <- estimates + halfWidth
   positive <- fit[["positive"]]
   lower[positive] <- exp(log(estimates[positive]) - halfWidth[positive] / estimates[positive])
   upper[positive] <- exp(log(estimates[positive]) + halfWidth[positive] / estimates[positive])
+  if (direction == "lower")
+    upper[] <- NA_real_
+  else if (direction == "upper")
+    lower[] <- NA_real_
   return(data.frame(subgroup = c(fit[["label"]], rep(NA_character_, length(estimates) - 1L)), parameter = names(estimates), estimate = as.numeric(estimates),
     se = as.numeric(se), lower = as.numeric(lower), upper = as.numeric(upper)))
 }
