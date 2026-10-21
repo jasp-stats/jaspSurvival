@@ -4,10 +4,10 @@ import JASP.Module
 Description
 {
 	title : 		qsTr("Survival")
-	description:	qsTr("Perform analyses of censored time to event data.")
+	description:	qsTr("Perform survival, lifetime, and recurrent-event analyses.")
 	icon:			"survival-analysis.svg"
 	hasWrappers: 	false
-	
+
 	GroupTitle
 	{
 		title:	qsTr("Classical")

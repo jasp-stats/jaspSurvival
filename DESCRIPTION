@@ -6,7 +6,7 @@ Date: 2020-10-15
 Author: JASP Team
 Website: jasp-stats.org
 Maintainer: JASP Team <info@jasp-stats.org>
-Description: Perform analyses of censored time to event data.
+Description: Perform survival, lifetime, and recurrent-event analyses.
 License: GPL (>= 2)
 Encoding: UTF-8
 Depends:

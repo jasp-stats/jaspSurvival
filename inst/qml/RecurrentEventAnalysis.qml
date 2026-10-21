@@ -97,7 +97,7 @@ Form
 			{
 				name: "dataSummary"
 				label: qsTr("Data summary")
-				checked: true
+				checked: false
 				info: qsTr("Show observation intervals, total events, follow-up time and observed cumulative mean time between events for each subgroup.")
 			}
 		]
