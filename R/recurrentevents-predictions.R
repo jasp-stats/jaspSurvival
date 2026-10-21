@@ -130,15 +130,15 @@
     }
   }
   if (nativeLevel == 0) {
-    lower[is.finite(lower)] <- estimate[is.finite(lower)]
-    upper[is.finite(upper)] <- estimate[is.finite(upper)]
+    lower <- upper <- estimate
   }
   if (direction != "twoSided" && level < .5) {
     newLower <- upper
     upper <- lower
     lower <- newLower
   }
-  if (!record[["inferenceAvailable"]])
+  if (!record[["inferenceAvailable"]] ||
+      (record[["model"]] == "piecewise" && measure %in% c("eventIntensity", "instantaneousMeanTimeBetweenEvents")))
     lower <- upper <- rep(NA_real_, length(times))
   if (direction == "lower")
     upper[] <- NA_real_
