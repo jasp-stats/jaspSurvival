@@ -13,7 +13,7 @@
   groups <- if (options[["predictionsMergeSeriesAcrossSubgroups"]]) list(seq_along(fits)) else as.list(seq_along(fits))
   for (i in seq_along(groups)) {
     indices <- groups[[i]]
-    output <- createJaspPlot(title = if (length(groups) == 1L) "" else fits[[indices]][["label"]], width = 440, height = 320)
+    output <- createJaspPlot(title = if (.sapHasSubgroups(options) && length(indices) == 1L) fits[[indices]][["label"]] else "", width = 440, height = 320)
     output$position <- i
     container[[paste0("plot", i)]] <- output
     plot <- try(.sarePredictionPlot(fits[indices], predictions[indices], measure, options), silent = TRUE)
@@ -38,16 +38,35 @@
       jaspBase::.extractErrorMessage(x[["plot"]])), character(1)), collapse = "\n"))
   data <- do.call(rbind, lapply(predictions, `[[`, "plot"))
   data[["subgroup"]] <- factor(data[["subgroup"]], levels = vapply(fits, `[[`, character(1), "label"))
+  singletonGroups <- names(which(vapply(split(data[["time"]], data[["subgroup"]], drop = TRUE),
+    function(times) length(unique(times)) == 1L, logical(1))))
+  singletonData <- data[data[["subgroup"]] %in% singletonGroups, , drop = FALSE]
+  curveData <- data[!data[["subgroup"]] %in% singletonGroups, , drop = FALSE]
   plot <- ggplot2::ggplot(data, ggplot2::aes(x = time, y = estimate, colour = subgroup, group = subgroup))
   if (options[["predictionsDisplayConfidenceIntervals"]]) {
-    if (options[["confidenceIntervalBounds"]] == "twoSided")
-      plot <- plot + ggplot2::geom_ribbon(ggplot2::aes(ymin = lower, ymax = upper, fill = subgroup),
-        colour = NA, alpha = .15, na.rm = TRUE, show.legend = FALSE)
-    else
-      plot <- .sapAddModelBoundLayer(plot, data, options[["predictionsDisplayConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]],
-        x = "time", lower = "lower", upper = "upper", groups = "subgroup", color = "subgroup", fill = "subgroup", alpha = .15, na.rm = TRUE)
+    if (nrow(curveData) > 0L) {
+      if (options[["confidenceIntervalBounds"]] == "twoSided")
+        plot <- plot + ggplot2::geom_ribbon(data = curveData, ggplot2::aes(ymin = lower, ymax = upper, fill = subgroup),
+          colour = NA, alpha = .15, na.rm = TRUE, show.legend = FALSE)
+      else
+        plot <- .sapAddModelBoundLayer(plot, curveData, options[["predictionsDisplayConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]],
+          x = "time", lower = "lower", upper = "upper", groups = "subgroup", color = "subgroup", fill = "subgroup", alpha = .15, na.rm = TRUE)
+    }
+    if (nrow(singletonData) > 0L) {
+      if (options[["confidenceIntervalBounds"]] == "twoSided")
+        plot <- plot + ggplot2::geom_linerange(data = singletonData, ggplot2::aes(ymin = lower, ymax = upper), na.rm = TRUE, show.legend = FALSE)
+      else {
+        bound <- options[["confidenceIntervalBounds"]]
+        plot <- plot + ggplot2::geom_segment(data = singletonData, ggplot2::aes(xend = time, yend = .data[[bound]]),
+          linetype = "dashed", na.rm = TRUE, show.legend = FALSE) +
+          ggplot2::geom_point(data = singletonData, ggplot2::aes(y = .data[[bound]]), shape = 95, size = 5, na.rm = TRUE, show.legend = FALSE)
+      }
+    }
   }
-  plot <- plot + jaspGraphs::geom_line()
+  if (nrow(curveData) > 0L)
+    plot <- plot + jaspGraphs::geom_line(data = curveData)
+  if (nrow(singletonData) > 0L)
+    plot <- plot + ggplot2::geom_point(data = singletonData, size = 1.8)
   if (options[["predictionsDisplayObservedData"]] && measure %in% c("cumulativeEvents", "cumulativeMeanTimeBetweenEvents")) {
     observed <- do.call(rbind, lapply(fits, function(fit) data.frame(time = fit[["time"]],
       estimate = if (measure == "cumulativeEvents") fit[["cumulativeCounts"]] else fit[["time"]] / fit[["cumulativeCounts"]],
