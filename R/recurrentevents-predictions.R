@@ -16,8 +16,6 @@
   grid <- options[["predictionsTimeGrid"]]
   if (grid == "customAbsolute") {
     times <- sort(unique(.sareNumbers(options[["predictionsTimeValues"]], message, max(record[["time"]]) * c(.25, .5, .75))))
-    if (length(times) == 0)
-      stop(message)
   } else if (grid == "customRelative") {
     percentages <- .sareNumbers(options[["predictionsTimePercentages"]],
       gettext("Enter positive percentages of maximum follow-up, separated by commas."))
@@ -25,7 +23,10 @@
       stop(gettext("Enter positive percentages of maximum follow-up, separated by commas."))
     times <- sort(unique(max(record[["time"]]) * percentages / 100))
   } else if (grid == "quantiles") {
-    times <- seq(min(record[["time"]]), max(record[["time"]]), length.out = options[["predictionsTimeIntervals"]] + 1L)
+    intervals <- options[["predictionsTimeIntervals"]]
+    if (intervals > 10000)
+      stop(gettext("Specify no more than 10,001 prediction times."))
+    times <- seq(min(record[["time"]]), max(record[["time"]]), length.out = intervals + 1L)
   } else if (grid == "sequence") {
     from <- .sareNumbers(options[["predictionsTimeFrom"]], message, min(record[["time"]]))
     to   <- .sareNumbers(options[["predictionsTimeTo"]], message, max(record[["time"]]))
@@ -45,11 +46,11 @@
   if (length(times) > 10001)
     stop(gettext("Specify no more than 10,001 prediction times."))
   if (plot && length(times) > 1) {
-    range <- range(times)
-    grid <- if (options[["predictionsXAxisTransformation"]] == "log")
-      exp(seq(log(range[1]), log(range[2]), length.out = 250)) else seq(range[1], range[2], length.out = 250)
-    times <- sort(unique(c(times, grid, .sareBreakpoints(record))))
-    times <- times[times >= range[1] & times <= range[2]]
+    timeRange <- range(times)
+    denseTimes <- if (options[["predictionsXAxisTransformation"]] == "log")
+      exp(seq(log(timeRange[1]), log(timeRange[2]), length.out = 250)) else seq(timeRange[1], timeRange[2], length.out = 250)
+    times <- sort(unique(c(times, denseTimes, .sareBreakpoints(record))))
+    times <- times[times >= timeRange[1] & times <= timeRange[2]]
   }
   return(unique(times))
 }
@@ -73,7 +74,7 @@
   # ReliaGrowR rejects a zero central level; a 50% one-sided bound is the estimate.
   packageLevel <- if (nativeLevel == 0) level else nativeLevel
   # The package warns about evaluating inside the observed range; this is expected
-  # for fitted curves. Other prediction warnings remain visible.
+  # for fitted curves. Non-hindcasting warnings are not suppressed.
   prediction <- withCallingHandlers({
     if (record[["model"]] == "duane")
       ReliaGrowR::predict_duane(native, times, conf_level = packageLevel)
@@ -196,10 +197,9 @@
     return()
   predictions <- .sarePredictionState(jaspResults, options)
   measures <- .sareMeasures(options)
-  for (measure in measures) {
-    if (options[["predictionsOutputPlot"]])
+  if (options[["predictionsOutputPlot"]])
+    for (measure in measures)
       .sarePredictionPlots(jaspResults, options, measure, predictions[[measure]])
-  }
   if (options[["predictionsOutputTable"]] && length(measures) > 0) {
     if (options[["predictionsMergeTablesAcrossMeasures"]])
       .sarePredictionTable(jaspResults, options, measures, predictions)
@@ -216,8 +216,7 @@
   if (!is.null(jaspResults[[key]]))
     return()
   table <- .sareCreateTable(jaspResults, key, if (merged) gettext("Predictions") else .sareMeasureLabel(measures),
-    c(.sarePredictionDependencies, .sareTableDependencies, "predictionsOutputTable"),
-    if (merged) 5 else 5 + match(measures, .sareMeasureNames) / 10)
+    c(.sarePredictionDependencies, .sareTableDependencies, "predictionsOutputTable"))
   .sareGroupColumn(table, options)
   errors <- character(0)
   forecast <- FALSE
@@ -267,6 +266,8 @@
   }
   if (options[["predictionsDisplayConfidenceIntervals"]]) {
     table$addFootnote(gettext("Intervals describe uncertainty in the fitted quantity, not variation in future event counts."))
+    if (.sareMethod(options) == "LS")
+      table$addFootnote(gettext("Confidence intervals use native regression approximations that do not account for dependence between cumulative observations."))
     if (options[["model"]] == "piecewise" && any(measures %in% c("eventIntensity", "instantaneousMeanTimeBetweenEvents")))
       table$addFootnote(gettext("Confidence intervals for rate-based measures are unavailable for piecewise models."))
   }

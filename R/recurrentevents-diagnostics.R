@@ -92,25 +92,24 @@
   quantiles <- if ((any(requested) && options[["residualPlotResidualType"]] == "quantile") || options[["probabilityPlot"]])
     .sareQuantileState(jaspResults, options, fits)
   for (i in which(requested))
-    .sareResidualPlots(jaspResults, options, fits, quantiles, c("time", "predicted", "histogram")[i], .sareResidualPlotOptions[i], 6 + i / 10)
+    .sareResidualPlots(jaspResults, options, fits, quantiles, c("time", "predicted", "histogram")[i], .sareResidualPlotOptions[i])
   if (options[["probabilityPlot"]])
     .sareProbabilityPlot(jaspResults, options, fits, quantiles)
   return()
 }
 
-.sareDiagnosticSection <- function(jaspResults, options, key, title, dependencies, position, fits, builder, width = 440, height = 320) {
+.sareDiagnosticSection <- function(jaspResults, options, key, title, dependencies, labels, builder, width = 440, height = 320) {
 
   if (!is.null(jaspResults[[key]]))
     return()
-  if (length(fits) == 1L && nzchar(fits[[1L]][["label"]]) && .sapHasSubgroups(options))
-    title <- gettextf("%1$s: %2$s", title, fits[[1L]][["label"]])
-  output <- if (length(fits) == 1L) createJaspPlot(title = title, width = width, height = height) else createJaspContainer(title = title)
+  if (length(labels) == 1L && nzchar(labels) && .sapHasSubgroups(options))
+    title <- gettextf("%1$s: %2$s", title, labels)
+  output <- if (length(labels) == 1L) createJaspPlot(title = title, width = width, height = height) else createJaspContainer(title = title)
   output$dependOn(c(.sareFitDependencies, dependencies))
-  output$position <- position
   jaspResults[[key]] <- output
-  for (i in seq_along(fits)) {
-    plot <- if (length(fits) == 1L) output else createJaspPlot(title = fits[[i]][["label"]], width = width, height = height)
-    if (length(fits) > 1L) {
+  for (i in seq_along(labels)) {
+    plot <- if (length(labels) == 1L) output else createJaspPlot(title = labels[i], width = width, height = height)
+    if (length(labels) > 1L) {
       plot$position <- i
       output[[paste0("plot", i)]] <- plot
     }
@@ -123,11 +122,11 @@
   return()
 }
 
-.sareResidualPlots <- function(jaspResults, options, fits, quantiles, kind, option, position) {
+.sareResidualPlots <- function(jaspResults, options, fits, quantiles, kind, option) {
 
   key <- switch(kind, time = "residualsVsTimePlot", predicted = "residualVsPredictedPlot", histogram = "residualHistogram")
   title <- switch(kind, time = gettext("Residuals vs. Time"), predicted = gettext("Residuals vs. Predicted"), histogram = gettext("Residual Histogram"))
-  .sareDiagnosticSection(jaspResults, options, key, title, c(option, "residualPlotResidualType"), position, fits, function(i) {
+  .sareDiagnosticSection(jaspResults, options, key, title, c(option, "residualPlotResidualType"), vapply(fits, `[[`, character(1), "label"), function(i) {
     fit <- fits[[i]]
     type <- options[["residualPlotResidualType"]]
     residual <- .sareResidualValue(fit, type, quantiles[[i]])
@@ -170,8 +169,8 @@
   if (!is.null(jaspResults[["probabilityPlot"]]))
     return()
   groups <- if (options[["probabilityPlotMergePlotsAcrossSubgroups"]]) list(seq_along(fits)) else as.list(seq_along(fits))
-  selected <- lapply(groups, function(indices) list(label = if (length(indices) == 1L) fits[[indices]][["label"]] else ""))
-  .sareDiagnosticSection(jaspResults, options, "probabilityPlot", gettext("Probability Plot"), .sareProbabilityDependencies, 6.4, selected, function(i) {
+  labels <- vapply(groups, function(indices) if (length(indices) == 1L) fits[[indices]][["label"]] else "", character(1))
+  .sareDiagnosticSection(jaspResults, options, "probabilityPlot", gettext("Probability Plot"), .sareProbabilityDependencies, labels, function(i) {
     indices <- groups[[i]]
     data <- do.call(rbind, lapply(indices, function(index) .sareProbabilityData(fits[[index]], quantiles[[index]], options)))
     return(.sareProbabilityFigure(data, options))

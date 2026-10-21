@@ -69,8 +69,11 @@ Section
 			id: predictionTime
 			enabled: predictionsRoot.predictionOutputSelected
 			fromPlaceholder: qsTr("First endpoint")
+			stepPlaceholder: qsTr("(To - From) / 10")
+			maximumIntervals: 10000
 			intervalsInfo: qsTr("Set the number of equal intervals between the first observed endpoint and maximum follow-up in each subgroup.")
 			fromInfo: qsTr("Set a positive first time in the sequence. Leave blank to use the first observed endpoint in each subgroup.")
+			stepInfo: qsTr("Set a positive time increment. Leave blank to use (To - From) / 10, or From when both endpoints are equal.")
 			toInfo: qsTr("Set the last prediction time. Use a time beyond observed follow-up to forecast. Leave blank to use the maximum follow-up in each subgroup.")
 			valuesInfo: qsTr("Enter positive prediction times separated by commas, in the original time units. Leave blank to use 25%, 50% and 75% of follow-up.")
 		}

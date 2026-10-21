@@ -2,7 +2,15 @@
 
 # jaspSurvival 0.98.1
 ## Added
-* Growth analysis
+* Recurrent event analysis
+
+## Changed
+* Prediction figures precede tables; outcomes follow the interface order.
+
+## Fixed
+* Recurrent event data summaries retain subgroups whose model fit fails.
+* Recurrent event predictions at one time display estimates and confidence bounds in plots.
+* Recurrent event 50% one-sided confidence bounds equal finite estimates when native bounds overflow.
 
 # jaspSurvival 0.98.0
 ## Added

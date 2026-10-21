@@ -1,8 +1,7 @@
-.sareCreateTable <- function(jaspResults, key, title, dependencies, position) {
+.sareCreateTable <- function(jaspResults, key, title, dependencies) {
 
   table <- createJaspTable(title = title)
   table$dependOn(c(.sareFitDependencies, dependencies))
-  table$position <- position
   table$showSpecifiedColumnsOnly <- TRUE
   jaspResults[[key]] <- table
   return(table)
@@ -42,20 +41,20 @@
 
   if (!is.null(jaspResults[["dataSummaryTable"]]))
     return()
-  table <- .sareCreateTable(jaspResults, "dataSummaryTable", gettext("Data Summary"), "dataSummary", 0.5)
+  table <- .sareCreateTable(jaspResults, "dataSummaryTable", gettext("Data Summary"), "dataSummary")
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "intervals", title = gettext("Intervals"), type = "integer")
   table$addColumnInfo(name = "events", title = gettext("Events"), type = "integer")
   table$addColumnInfo(name = "time", title = gettext("Follow-up Time"), type = "number")
   table$addColumnInfo(name = "cumulativeMeanTimeBetweenEvents", title = gettext("Cumulative Mean Time Between Events"), type = "number")
   table$setData(.saSafeRbind(lapply(fits, function(fit) {
-    data <- dataset[fit[["rows"]], , drop = FALSE]
-    events <- if (options[["eventCount"]] == "") nrow(data) else sum(data[[options[["eventCount"]]]])
-    time <- data[[options[["time"]]]]
+    rows     <- fit[["rows"]]
+    events   <- if (options[["eventCount"]] == "") length(rows) else sum(dataset[[options[["eventCount"]]]][rows])
+    time     <- dataset[[options[["time"]]]][rows]
     followUp <- if (options[["timeType"]] == "interval") sum(time) else max(time)
     data.frame(
       subgroup                       = fit[["label"]],
-      intervals                      = nrow(data),
+      intervals                      = length(rows),
       events                         = events,
       time                           = followUp,
       cumulativeMeanTimeBetweenEvents = followUp / events
@@ -68,7 +67,7 @@
 
   if (!is.null(jaspResults[["summaryTable"]]))
     return()
-  table <- .sareCreateTable(jaspResults, "summaryTable", gettext("Model Summary"), "modelSummary", 1)
+  table <- .sareCreateTable(jaspResults, "summaryTable", gettext("Model Summary"), "modelSummary")
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "logLik", title = gettext("Log Lik."), type = "number")
   table$addColumnInfo(name = "df", title = "df", type = "integer")
@@ -89,6 +88,8 @@
     )
   })))
   table$addCitation("ReliaGrowR (0.7): Reliability Growth Analysis and Repairable Systems Modeling. https://doi.org/10.32614/CRAN.package.ReliaGrowR")
+  if (.sareMethod(options) == "LS")
+    table$addFootnote(gettext("Log-likelihood, AIC and BIC refer to log-scale regression of cumulative quantities and cannot be compared with grouped-count maximum-likelihood values."))
   for (fit in fits)
     for (message in unique(c(fit[["error"]], fit[["warnings"]])))
       table$addFootnote(if (.sapHasSubgroups(options)) gettextf("%1$s: %2$s", fit[["label"]], message) else message)
@@ -100,7 +101,7 @@
   if (!is.null(jaspResults[["coefficientsTable"]]))
     return()
   table <- .sareCreateTable(jaspResults, "coefficientsTable", gettext("Coefficients Summary"),
-    c("coefficients", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel", "confidenceIntervalBounds"), 2)
+    c("coefficients", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel", "confidenceIntervalBounds"))
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "parameter", title = "", type = "string")
   table$addColumnInfo(name = "estimate", title = gettext("Estimate"), type = "number")
@@ -113,6 +114,8 @@
     table$addFootnote(gettext("Coefficients describe the segmented regression of log cumulative events on log time. Change-point coefficients are reported as log times."))
   if (.sareMethod(options) == "MLE")
     table$addFootnote(gettext("Maximum-likelihood intervals use a normal approximation; positive parameters use the log scale."))
+  else
+    table$addFootnote(gettext("Standard errors and confidence intervals use native regression approximations that do not account for dependence between cumulative observations."))
   return()
 }
 
@@ -121,7 +124,7 @@
   if (!is.null(jaspResults[["modelEquations"]]))
     return()
   table <- .sareCreateTable(jaspResults, "modelEquations", gettext("Fitted Model Equations"),
-    c("fittedModelEquation", "fittedModelEquationDecimals"), 2.4)
+    c("fittedModelEquation", "fittedModelEquationDecimals"))
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
   table$addColumnInfo(name = "equation", title = gettext("Equation"), type = "string")
@@ -134,7 +137,7 @@
 
   if (!is.null(jaspResults[["segmentEstimatesTable"]]))
     return()
-  table <- .sareCreateTable(jaspResults, "segmentEstimatesTable", gettext("Segment Estimates"), "piecewiseSegmentEstimates", 2.2)
+  table <- .sareCreateTable(jaspResults, "segmentEstimatesTable", gettext("Segment Estimates"), "piecewiseSegmentEstimates")
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "segment", title = gettext("Segment"), type = "integer")
   table$addColumnInfo(name = "slope", title = gettext("Estimate"), overtitle = gettext("Slope (\u03b2)"), type = "number")
@@ -158,7 +161,7 @@
 
   if (!is.null(jaspResults[["changePointsTable"]]))
     return()
-  table <- .sareCreateTable(jaspResults, "changePointsTable", gettext("Change Points"), "piecewiseChangePoints", 2.3)
+  table <- .sareCreateTable(jaspResults, "changePointsTable", gettext("Change Points"), "piecewiseChangePoints")
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "changePoint", title = gettext("Change Point"), type = "integer")
   table$addColumnInfo(name = "time", title = gettext("Time"), type = "number")
@@ -200,7 +203,6 @@
   title <- gettext("Coefficients Covariance Matrix")
   output <- if (length(fits) <= 1L) createJaspTable(title = title) else createJaspContainer(title = title)
   output$dependOn(c(.sareFitDependencies, "coefficientsCovarianceMatrix"))
-  output$position <- 2.1
   jaspResults[["covarianceMatrices"]] <- output
   if (!length(fits)) {
     output$showSpecifiedColumnsOnly <- TRUE

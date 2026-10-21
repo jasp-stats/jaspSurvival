@@ -9,7 +9,9 @@ Group
 {
 	id: timeOptions
 	property alias gridControl: timeGrid
+	property alias maximumIntervals: timeIntervals.max
 	property string fromPlaceholder: qsTr("0")
+	property string stepPlaceholder: qsTr("Maximum follow-up / 10")
 	property string gridInfo: qsTr("Choose how to specify prediction times: equal intervals, a sequence or custom values.")
 	property string intervalsInfo: qsTr("Set the number of equal intervals between zero and the maximum follow-up time.")
 	property string fromInfo: qsTr("Set the first time in the sequence. Leave blank to start at 0.")
@@ -36,6 +38,7 @@ Group
 	}
 	IntegerField
 	{
+		id: timeIntervals
 		name: "predictionsTimeIntervals"
 		label: qsTr("Intervals")
 		defaultValue: 10
@@ -66,7 +69,7 @@ Group
 			defaultValue: ""
 			inputType: "string"
 			parseDefaultValue: false
-			placeholderText: qsTr("Maximum follow-up / 10")
+			placeholderText: timeOptions.stepPlaceholder
 			fieldWidth: 50 * jaspTheme.uiScale
 			info: timeOptions.stepInfo
 		}

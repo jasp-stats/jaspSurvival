@@ -135,6 +135,7 @@ RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
   scale <- if (method == "MLE") max(time) else 1
   warnings <- character(0)
   native <- withCallingHandlers({
+    # Native Duane cumulatively sums its time argument, so pass interval durations.
     if (model == "duane")
       ReliaGrowR::duane(diff(c(0, time)), counts)
     else if (model == "piecewise")
@@ -146,6 +147,7 @@ RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
     invokeRestart("muffleWarning")
   })
 
+  # ReliaGrowR 0.7 uses these internal optimizer bounds; reject boundary solutions.
   if (method == "MLE" && model == "logLinear" &&
       (abs(native[["params"]][["b"]]) >= 5 - 1e-4 || abs(native[["params"]][["a"]]) >= 20 - 1e-4))
     stop(gettext("The log-linear estimate reached a numerical bound in ReliaGrowR. This fit cannot be reported reliably."))
@@ -200,6 +202,7 @@ RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
     beta   <- native[["params"]][["beta"]]
     lambda <- native[["params"]][["lambda"]] / scale^beta
     estimates <- c(lambda, beta)
+    # Native power-law covariance is ordered beta, lambda; report lambda, beta.
     jacobian <- rbind(c(-lambda * log(scale), scale^(-beta)), c(1, 0))
     covariance <- jacobian %*% native[["vcov"]] %*% t(jacobian)
     record[["positive"]] <- c(TRUE, TRUE)

@@ -24,9 +24,11 @@ Under **Advanced**, **Model Options** appears for the piecewise model and contai
 
 Statistics uses the same interface component as parametric survival. **Model summary** and **Data summary** appear on the left; **Coefficients**, their nested confidence-interval control, and **Coefficients covariance matrix** appear on the right. **Fitted model equation** retains the same decimal-place control. Model ranking, information-criterion weights and sequential comparisons are omitted because this analysis fits one selected model independently to each subgroup.
 
-Output follows the parametric order: data summary, model summary, coefficient estimates, covariance matrices and fitted equations. Coefficient tables show estimates, standard errors and optional two-sided confidence intervals, without predictor Wald tests. Repeated subgroup labels are suppressed within each coefficient or equation block. Covariance has one table per subgroup, with a single table when only one fit is available.
+Output follows the parametric order: data summary, model summary, coefficient estimates, covariance matrices and fitted equations. Coefficient tables show estimates, standard errors and optional two-sided or one-sided confidence intervals, without predictor Wald tests. Repeated subgroup labels are suppressed within each coefficient or equation block. Covariance has one table per subgroup, with a single table when only one fit is available.
 
 **Model summary** shows log-likelihood, parameter count, AIC and BIC. The model and estimation method are specified in the settings. Fit notices identify the affected subgroup; failed fits have blank statistics. If a fit notice needs reporting, the summary is shown even when its checkbox is unchecked. AIC and BIC use the same three-decimal formatting as parametric survival. Covariance matrices use the reported coefficient scale, as stated in their footnote; the parametric survival covariance convention can differ.
+
+For least squares, log-likelihood, AIC and BIC describe the log-scale regression of cumulative quantities. They cannot be compared with grouped-count maximum-likelihood values. The least-squares model degrees of freedom used by AIC and BIC include the residual variance. Standard errors and confidence intervals for coefficients and predictions use native regression approximations that do not account for dependence between cumulative observations.
 
 Fitted equations identify the selected model and its cumulative mean, intensity or cumulative mean time between events. The shared equation formatter uses scientific notation when a nonzero coefficient would otherwise round to zero. Decimal-place settings affect equation display only, not fitted estimates or predictions.
 
@@ -36,7 +38,7 @@ For piecewise models, **Segment estimates** reports ReliaGrowR's returned segmen
 
 Prediction figures appear before prediction tables. Within each output type, outcomes follow the order of the **Outcome** controls; merged tables use that order for their measure columns.
 
-Under **Advanced**, **Confidence interval > Bounds** selects **Two-sided**, **Lower**, or **Upper**, as in parametric survival. This applies to coefficient intervals, prediction intervals and probability-plot reference bounds. One-sided tables show the selected bound, and plots show it as a dashed curve. Two-sided intervals remain the default. Each output retains its own confidence level.
+Under **Advanced**, **Confidence interval > Bounds** selects **Two-sided**, **Lower**, or **Upper**, as in parametric survival. This applies to coefficient intervals, confidence intervals for predictions and probability-plot reference bounds. One-sided tables show the selected bound, and plots show it as a dashed curve. A prediction series evaluated at one time uses an estimate point with a vertical two-sided interval or a cap at the selected one-sided bound. Two-sided intervals remain the default. Each output retains its own confidence level.
 
 Choose **Outcome**, evaluation times under **Time**, and plot/table **Output**. No predictor assignments are needed. These controls follow the parametric survival Predictions layout.
 
@@ -57,7 +59,7 @@ In medical applications, survival probability means remaining event-free for the
 
 **Display** controls confidence intervals, legend, theme, observed data and colors. Axis controls select linear or logarithmic scales. **Merge series across: Subgroups** overlays independent subgroup curves.
 
-Tables support **Long** (times in rows) and **Wide** (times in column groups) formats. **Merge tables across measures** places selected outcomes together. Optional **Round time table values** rounds evaluation times before calculating table predictions; rounded times must remain positive. Plot evaluation times remain unrounded.
+Tables support **Long** (times in rows) and **Wide** (times in column groups) formats. Wide tables use the union of subgroup-specific evaluation times; cells are blank when a subgroup uses different times. Long format avoids a sparse wide layout. **Merge tables across measures** places selected outcomes together. Optional **Round time table values** rounds evaluation times before calculating table predictions; rounded times must remain positive. Plot evaluation times remain unrounded.
 
 Confidence intervals describe uncertainty in fitted quantities, not future event-count variability. Rate-based intervals are unavailable for piecewise models. Uncertainty is unavailable when covariance estimation is unreliable.
 
