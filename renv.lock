@@ -2184,7 +2184,7 @@
       "NeedsCompilation": "yes",
       "Author": "Joe Cheng [aut], Winston Chang [aut, cre], Posit, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>), Hector Corrada Bravo [ctb], Jeroen Ooms [ctb], Andrzej Krzemienski [cph] (optional.hpp), libuv project contributors [cph] (libuv library, see src/libuv/AUTHORS file), Joyent, Inc. and other Node contributors [cph] (libuv library, see src/libuv/AUTHORS file; and http-parser library, see src/http-parser/AUTHORS file), Niels Provos [cph] (libuv subcomponent: tree.h), Internet Systems Consortium, Inc. [cph] (libuv subcomponent: inet_pton and inet_ntop, contained in src/libuv/src/inet.c), Alexander Chemeris [cph] (libuv subcomponent: stdint-msvc2008.h (from msinttypes)), Google, Inc. [cph] (libuv subcomponent: pthread-fixes.c), Sony Mobile Communcations AB [cph] (libuv subcomponent: pthread-fixes.c), Berkeley Software Design Inc. [cph] (libuv subcomponent: android-ifaddrs.h, android-ifaddrs.c), Kenneth MacKay [cph] (libuv subcomponent: android-ifaddrs.h, android-ifaddrs.c), Emergya (Cloud4all, FP7/2007-2013, grant agreement no 289016) [cph] (libuv subcomponent: android-ifaddrs.h, android-ifaddrs.c), Steve Reid [aut] (SHA-1 implementation), James Brown [aut] (SHA-1 implementation), Bob Trower [aut] (base64 implementation), Alexander Peslyak [aut] (MD5 implementation), Trantor Standard Systems [cph] (base64 implementation), Igor Sysoev [cph] (http-parser)",
       "Maintainer": "Winston Chang <winston@posit.co>",
-      "Repository": "https://packagemanager.posit.co/cran/2026-04-22"
+      "Repository": "RSPM"
     },
     "httr": {
       "Package": "httr",
@@ -3299,7 +3299,7 @@
       "Source": "Repository",
       "Type": "Package",
       "Title": "An API Generator for R",
-      "Authors@R": "c( person(\"Barret\", \"Schloerke\", , \"barret@posit.co\", role = c(\"cre\", \"aut\"), comment = c(ORCID = \"0000-0001-9986-114X\")), person(\"Jeff\", \"Allen\", , \"cran@trestletech.com\", role = c(\"aut\", \"ccp\")), person(\"Bruno\", \"Tremblay\", , \"cran@neoxone.com\", role = \"ctb\"), person(\"Frans\", \"van Dunné\", , \"frans@ixpantia.com\", role = \"ctb\"), person(\"Sebastiaan\", \"Vandewoude\", , \"sebastiaanvandewoude@gmail.com\", role = \"ctb\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"), comment = c(ROR = \"03wc8by49\")) )",
+      "Authors@R": "c( person(\"Barret\", \"Schloerke\", , \"barret@posit.co\", role = c(\"cre\", \"aut\"), comment = c(ORCID = \"0000-0001-9986-114X\")), person(\"Jeff\", \"Allen\", , \"cran@trestletech.com\", role = c(\"aut\", \"ccp\")), person(\"Bruno\", \"Tremblay\", , \"cran@neoxone.com\", role = \"ctb\"), person(\"Frans\", \"van Dunn<U+00E9>\", , \"frans@ixpantia.com\", role = \"ctb\"), person(\"Sebastiaan\", \"Vandewoude\", , \"sebastiaanvandewoude@gmail.com\", role = \"ctb\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"), comment = c(ROR = \"03wc8by49\")) )",
       "Description": "Gives the ability to automatically generate and serve an HTTP API from R functions using the annotations in the R documentation around your functions.",
       "License": "MIT + file LICENSE",
       "URL": "https://www.rplumber.io, https://github.com/rstudio/plumber",
@@ -3355,9 +3355,9 @@
       "RoxygenNote": "7.3.3",
       "Collate": "'async.R' 'content-types.R' 'default-handlers.R' 'hookable.R' 'shared-secret-filter.R' 'parser-cookie.R' 'parse-body.R' 'parse-query.R' 'plumber.R' 'deprecated-R6.R' 'deprecated.R' 'digital-ocean.R' 'find-port.R' 'globals.R' 'includes.R' 'json.R' 'new-rstudio-project.R' 'openapi-spec.R' 'openapi-types.R' 'options_plumber.R' 'paths.R' 'plumb-block.R' 'plumb-globals.R' 'plumb.R' 'plumber-response.R' 'plumber-static.R' 'plumber-step.R' 'pr.R' 'pr_set.R' 'serializer.R' 'session-cookie.R' 'ui.R' 'utf8.R' 'utils-pipe.R' 'utils.R' 'validate_api_spec.R' 'zzz.R'",
       "NeedsCompilation": "no",
-      "Author": "Barret Schloerke [cre, aut] (ORCID: <https://orcid.org/0000-0001-9986-114X>), Jeff Allen [aut, ccp], Bruno Tremblay [ctb], Frans van Dunné [ctb], Sebastiaan Vandewoude [ctb], Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
+      "Author": "Barret Schloerke [cre, aut] (ORCID: <https://orcid.org/0000-0001-9986-114X>), Jeff Allen [aut, ccp], Bruno Tremblay [ctb], Frans van Dunn<U+00E9> [ctb], Sebastiaan Vandewoude [ctb], Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
       "Maintainer": "Barret Schloerke <barret@posit.co>",
-      "Repository": "CRAN"
+      "Repository": "RSPM"
     },
     "plyr": {
       "Package": "plyr",
@@ -4157,7 +4157,8 @@
       "NeedsCompilation": "yes",
       "Author": "Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>)",
       "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "statmod": {
       "Package": "statmod",
