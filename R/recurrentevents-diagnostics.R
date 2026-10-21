@@ -202,8 +202,7 @@
   plot <- plot + colourScale + fillScale
   uniform <- options[["probabilityPlotCanvas"]] == "uniform"
   plot <- plot + ggplot2::labs(x = if (uniform) gettext("Theoretical Probability") else gettext("Theoretical Normal Quantile"),
-    y = if (uniform) gettext("Observed Probability") else gettext("Observed Quantile Residual"), colour = gettext("Subgroup"), fill = gettext("Subgroup"),
-    caption = if (options[["probabilityPlotReferenceEnvelope"]]) gettext("Pointwise reference envelope; fitted-parameter uncertainty excluded.") else NULL)
+    y = if (uniform) gettext("Observed Probability") else gettext("Observed Quantile Residual"), colour = gettext("Subgroup"), fill = gettext("Subgroup"))
   if (uniform)
     plot <- plot + ggplot2::scale_x_continuous(limits = c(0, 1)) + ggplot2::scale_y_continuous(limits = c(0, 1))
   plot <- .sapProbabilityPlotAddTheme(plot, options)

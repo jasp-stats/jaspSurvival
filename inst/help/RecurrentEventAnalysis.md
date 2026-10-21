@@ -14,7 +14,7 @@ Use **Subgroup** for independent test sequences. A subgroup fit is not covariate
 
 Duane fits log cumulative mean time between events against log time. Crow–AMSAA fits a power-law cumulative mean, M(t) = lambda × t^beta. Log-linear NHPP fits intensity m(t) = exp(a + b × t). Piecewise NHPP fits a segmented log–log regression. Starting change points initialize estimated locations; they are not fixed boundaries.
 
-Maximum likelihood uses grouped interval counts, not an exact-event-time likelihood. MLE time is scaled internally and results are reported in the original units. Fits reaching known numerical bounds are rejected. ReliaGrowR does not return optimizer convergence status. Regression and NHPP likelihood fit statistics should not be compared directly.
+Maximum likelihood uses grouped interval counts, not an exact-event-time likelihood. MLE time is scaled internally and results are reported in the original units. Fits reaching known numerical bounds are rejected. Fit warnings and errors appear as notes to **Model summary**.
 
 The **Estimation** selector is enabled for Crow–AMSAA, which offers maximum likelihood and least squares. Other models display their single available method in a disabled selector.
 
@@ -26,7 +26,7 @@ Statistics uses the same interface component as parametric survival. **Model sum
 
 Output follows the parametric order: data summary, model summary, coefficient estimates, covariance matrices and fitted equations. Coefficient tables show estimates, standard errors and optional two-sided confidence intervals, without predictor Wald tests. Repeated subgroup labels are suppressed within each coefficient or equation block. Covariance has one table per subgroup, with a single table when only one fit is available.
 
-Calculations and parameter scales are unchanged. Covariance matrices use the reported coefficient scale, as stated in their footnote; the parametric survival covariance convention can differ. Model summaries retain the likelihood distinction between grouped-count maximum likelihood and log-scale least squares. AIC and BIC use the same three-decimal formatting as parametric survival.
+**Model summary** shows log-likelihood, parameter count, AIC and BIC. The model and estimation method are specified in the settings. Fit notices identify the affected subgroup; failed fits have blank statistics. If a fit notice needs reporting, the summary is shown even when its checkbox is unchecked. AIC and BIC use the same three-decimal formatting as parametric survival. Covariance matrices use the reported coefficient scale, as stated in their footnote; the parametric survival covariance convention can differ.
 
 Fitted equations identify the selected model and its cumulative mean, intensity or cumulative mean time between events. The shared equation formatter uses scientific notation when a nonzero coefficient would otherwise round to zero. Decimal-place settings affect equation display only, not fitted estimates or predictions.
 
@@ -75,7 +75,7 @@ For grouped interval counts, **Normal (Q-Q)** compares ordered randomized quanti
 
 These are count-model diagnostics, not Weibull or other lifetime probability-paper plots. The native ReliaGrowR Q-Q/P-P helpers do not provide the required grouped-count diagnostic, so these plots wrap the package's fitted interval means with the discrete probability-integral transform of Dunn and Smyth (1996).
 
-Controls mirror the applicable parametric probability-plot controls: empirical points and coordinates, reference line, subgroup overlays, plotting positions, grid, legend, palette and theme. A **Reference envelope** shows pointwise order-statistic bounds for the reference distribution, treating fitted parameters as known. It excludes parameter-estimation uncertainty and is an exploratory envelope, not a calibrated goodness-of-fit test.
+Controls mirror the applicable parametric probability-plot controls: empirical points and coordinates, reference line, subgroup overlays, plotting positions, grid, legend, palette and theme. A **Reference envelope** shows exploratory pointwise order-statistic bounds for the reference distribution, excluding uncertainty in the fitted parameters.
 
 Randomized quantile residuals are cached and shared by residual plots, probability plots and exports. Visual changes do not redraw the randomization. Use **Set seed** under **Advanced** to reproduce it across runs.
 

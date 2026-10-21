@@ -15,33 +15,14 @@
   return()
 }
 
-.sareMessages <- function(jaspResults, options) {
-
-  if (!is.null(jaspResults[["fitMessages"]]))
-    return()
-  fits <- .sareFits(jaspResults)
-  rows <- lapply(fits, function(fit) {
-    messages <- c(fit[["error"]], fit[["warnings"]])
-    if (length(messages) > 0)
-      data.frame(subgroup = fit[["label"]], message = messages)
-  })
-  data <- .saSafeRbind(rows)
-  if (is.null(data))
-    return()
-  table <- .sareCreateTable(jaspResults, "fitMessages", gettext("Model Fitting"), character(0), 0)
-  .sareGroupColumn(table, options)
-  table$addColumnInfo(name = "message", title = gettext("Message"), type = "string")
-  table$setData(data)
-  return()
-}
-
 .sareStatistics <- function(jaspResults, options) {
 
+  allFits <- .sareFits(jaspResults)
   fits <- .sareFits(jaspResults, valid = TRUE)
   if (options[["dataSummary"]])
     .sareDataSummaryTable(jaspResults, options, fits)
-  if (options[["modelSummary"]])
-    .sareSummaryTable(jaspResults, options, fits)
+  if (options[["modelSummary"]] || any(vapply(allFits, function(fit) length(c(fit[["error"]], fit[["warnings"]])) > 0L, logical(1))))
+    .sareSummaryTable(jaspResults, options, allFits)
   if (options[["coefficients"]])
     .sareCoefficientsTable(jaspResults, options, fits)
   if (options[["coefficientsCovarianceMatrix"]])
@@ -77,18 +58,18 @@
     return()
   table <- .sareCreateTable(jaspResults, "summaryTable", gettext("Model Summary"), "modelSummary", 1)
   .sareGroupColumn(table, options)
-  table$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
-  table$addColumnInfo(name = "method", title = gettext("Estimation"), type = "string")
   table$addColumnInfo(name = "logLik", title = gettext("Log Lik."), type = "number")
   table$addColumnInfo(name = "df", title = "df", type = "integer")
   table$addColumnInfo(name = "aic", title = gettext("AIC"), type = "number", format = "dp:3")
   table$addColumnInfo(name = "bic", title = gettext("BIC"), type = "number", format = "dp:3")
   table$setData(.saSafeRbind(lapply(fits, function(fit) {
+    if (!is.null(fit[["error"]]))
+      return(data.frame(subgroup = fit[["label"]]))
     native <- fit[["native"]]
     # Native grouped Poisson log likelihoods omit the count-factorial constant.
     constant <- if (fit[["method"]] == "MLE") sum(lgamma(fit[["counts"]] + 1)) else 0
     data.frame(
-      subgroup = fit[["label"]], model = .sareModelLabel(fit[["model"]]), method = fit[["method"]],
+      subgroup = fit[["label"]],
       logLik = native[["logLik"]] - constant,
       aic    = native[["AIC"]] + 2 * constant,
       bic    = native[["BIC"]] + 2 * constant,
@@ -96,9 +77,9 @@
     )
   })))
   table$addCitation("ReliaGrowR (0.7): Reliability Growth Analysis and Repairable Systems Modeling. https://doi.org/10.32614/CRAN.package.ReliaGrowR")
-  table$addFootnote(if (.sareMethod(options) == "MLE")
-    gettext("Maximum likelihood uses interval event counts. Log-likelihood includes count-factorial terms; BIC uses the number of intervals. Optimizer convergence status is not supplied by ReliaGrowR.") else
-    gettext("Fit statistics refer to the log-scale regression likelihood and cannot be compared directly with NHPP maximum-likelihood statistics. The parameter count includes residual variance."))
+  for (fit in fits)
+    for (message in unique(c(fit[["error"]], fit[["warnings"]])))
+      table$addFootnote(if (.sapHasSubgroups(options)) gettextf("%1$s: %2$s", fit[["label"]], message) else message)
   return()
 }
 

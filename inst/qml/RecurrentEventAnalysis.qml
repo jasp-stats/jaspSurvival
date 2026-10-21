@@ -88,7 +88,7 @@ Form
 	SA.ParametricStatistics
 	{
 		modelComparisonVisible: false
-		modelSummaryInfo: qsTr("Show the recurrent-event model, estimation method, log-likelihood, parameter count, AIC and BIC for each independently fitted subgroup.")
+		modelSummaryInfo: qsTr("Show log-likelihood, parameter count, AIC and BIC for each independently fitted subgroup. Fit warnings and errors appear as notes to this table.")
 		coefficientsInfo: qsTr("Show recurrent-event parameter estimates and standard errors. Confidence intervals follow the model's estimation method.")
 		covarianceInfo: qsTr("Show the covariance matrix on the reported parameter scale, with one matrix per fitted subgroup.")
 		equationInfo: qsTr("Show fitted equations for cumulative events, event intensity or cumulative mean time between events. Small nonzero coefficients are displayed in scientific notation when needed.")
