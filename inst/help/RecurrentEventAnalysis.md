@@ -22,11 +22,11 @@ Under **Advanced**, **Model Options** appears for the piecewise model and contai
 
 ## Statistics
 
-Statistics uses the same interface component as parametric survival. **Model summary** and the growth-specific **Data summary** appear on the left; **Coefficients**, their nested confidence-interval control, and **Coefficients covariance matrix** appear on the right. **Fitted model equation** retains the same decimal-place control. Model ranking, information-criterion weights and sequential comparisons are omitted because this analysis fits one selected model independently to each subgroup.
+Statistics uses the same interface component as parametric survival. **Model summary** and **Data summary** appear on the left; **Coefficients**, their nested confidence-interval control, and **Coefficients covariance matrix** appear on the right. **Fitted model equation** retains the same decimal-place control. Model ranking, information-criterion weights and sequential comparisons are omitted because this analysis fits one selected model independently to each subgroup.
 
 Output follows the parametric order: data summary, model summary, coefficient estimates, covariance matrices and fitted equations. Coefficient tables show estimates, standard errors and optional two-sided confidence intervals, without predictor Wald tests. Repeated subgroup labels are suppressed within each coefficient or equation block. Covariance has one table per subgroup, with a single table when only one fit is available.
 
-Calculations and parameter scales are unchanged. Growth covariance matrices use the reported coefficient scale, as stated in their footnote; the parametric survival covariance convention can differ. Model summaries retain the likelihood distinction between grouped-count maximum likelihood and log-scale least squares. AIC and BIC use the same three-decimal formatting as parametric survival.
+Calculations and parameter scales are unchanged. Covariance matrices use the reported coefficient scale, as stated in their footnote; the parametric survival covariance convention can differ. Model summaries retain the likelihood distinction between grouped-count maximum likelihood and log-scale least squares. AIC and BIC use the same three-decimal formatting as parametric survival.
 
 Fitted equations identify the selected model and its cumulative mean, intensity or cumulative mean time between events. The shared equation formatter uses scientific notation when a nonzero coefficient would otherwise round to zero. Decimal-place settings affect equation display only, not fitted estimates or predictions.
 
@@ -81,7 +81,7 @@ Randomized quantile residuals are cached and shared by residual plots, probabili
 
 ## Export
 
-The column prefix appears above **Residuals** and **Fitted Values**, as in parametric survival. Select each desired residual type separately. Fitted cumulative events and fitted interval events can also be exported. For example, prefix `Growth` produces `Growth_PearsonResidual`, `Growth_QuantileResidual`, `Growth_CumulativeEvents` and `Growth_IntervalEvents`.
+The column prefix appears above **Residuals** and **Fitted Values**, as in parametric survival. Select each desired residual type separately. Fitted cumulative events and fitted interval events can also be exported. For example, prefix `RecurrentEvents` produces `RecurrentEvents_PearsonResidual`, `RecurrentEvents_QuantileResidual`, `RecurrentEvents_CumulativeEvents` and `RecurrentEvents_IntervalEvents`.
 
 Exports preserve the original dataset row order, including interleaved subgroups. Failed subgroup fits or unavailable values produce missing entries; export calculation problems are reported. Regression residuals are unavailable for maximum likelihood. Count diagnostics require finite positive fitted interval means. Existing columns owned by another analysis or supplied by the user are not overwritten.
 

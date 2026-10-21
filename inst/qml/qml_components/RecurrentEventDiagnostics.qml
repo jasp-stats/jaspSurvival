@@ -52,7 +52,7 @@ Section
 		}
 	}
 
-	ReliabilityGrowthProbabilityPlot
+	RecurrentEventProbabilityPlot
 	{
 		id: probabilityPlot
 		hasSubgroups: diagnosticsRoot.hasSubgroups

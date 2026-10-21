@@ -1,14 +1,14 @@
-.sargPredictionPlots <- function(jaspResults, options, measure, predictions) {
+.sarePredictionPlots <- function(jaspResults, options, measure, predictions) {
 
   key <- paste0(measure, "Plot")
   if (!is.null(jaspResults[[key]]))
     return()
-  fits <- .sargFits(jaspResults, valid = TRUE)
+  fits <- .sareFits(jaspResults, valid = TRUE)
   if (length(fits) == 0)
     return()
-  container <- createJaspContainer(title = .sargMeasureLabel(measure))
-  container$dependOn(c(.sargFitDependencies, .sargPredictionDependencies, .sargPlotDependencies, "predictionsOutputPlot"))
-  container$position <- 5 + match(measure, .sargMeasureNames) / 10
+  container <- createJaspContainer(title = .sareMeasureLabel(measure))
+  container$dependOn(c(.sareFitDependencies, .sarePredictionDependencies, .sarePlotDependencies, "predictionsOutputPlot"))
+  container$position <- 5 + match(measure, .sareMeasureNames) / 10
   jaspResults[[key]] <- container
   groups <- if (options[["predictionsMergeSeriesAcrossSubgroups"]]) list(seq_along(fits)) else as.list(seq_along(fits))
   for (i in seq_along(groups)) {
@@ -16,11 +16,11 @@
     output <- createJaspPlot(title = if (length(groups) == 1L) "" else fits[[indices]][["label"]], width = 440, height = 320)
     output$position <- i
     container[[paste0("plot", i)]] <- output
-    plot <- try(.sargPredictionPlot(fits[indices], predictions[indices], measure, options), silent = TRUE)
+    plot <- try(.sarePredictionPlot(fits[indices], predictions[indices], measure, options), silent = TRUE)
     if (jaspBase::isTryError(plot))
       output$setError(jaspBase::.extractErrorMessage(plot))
     else {
-      longLabel <- measure %in% c("cumulativeMtbf", "instantaneousMtbf")
+      longLabel <- measure %in% c("cumulativeMeanTimeBetweenEvents", "instantaneousMeanTimeBetweenEvents")
       size <- .sapPredictionPlotSize(plot, options, if (longLabel) 650 else 550, if (longLabel) 400 else 320)
       output$width  <- size[["width"]]
       output$height <- size[["height"]]
@@ -30,7 +30,7 @@
   return()
 }
 
-.sargPredictionPlot <- function(fits, predictions, measure, options) {
+.sarePredictionPlot <- function(fits, predictions, measure, options) {
 
   errors <- vapply(predictions, function(x) jaspBase::isTryError(x[["plot"]]), logical(1))
   if (any(errors))
@@ -43,19 +43,19 @@
     plot <- plot + ggplot2::geom_ribbon(ggplot2::aes(ymin = lower, ymax = upper, fill = subgroup),
       colour = NA, alpha = 0.15, na.rm = TRUE, show.legend = FALSE)
   plot <- plot + jaspGraphs::geom_line()
-  if (options[["predictionsDisplayObservedData"]] && measure %in% c("cumulativeFailures", "cumulativeMtbf")) {
+  if (options[["predictionsDisplayObservedData"]] && measure %in% c("cumulativeEvents", "cumulativeMeanTimeBetweenEvents")) {
     observed <- do.call(rbind, lapply(fits, function(fit) data.frame(time = fit[["time"]],
-      estimate = if (measure == "cumulativeFailures") fit[["cumulativeCounts"]] else fit[["time"]] / fit[["cumulativeCounts"]],
+      estimate = if (measure == "cumulativeEvents") fit[["cumulativeCounts"]] else fit[["time"]] / fit[["cumulativeCounts"]],
       subgroup = fit[["label"]])))
     plot <- plot + ggplot2::geom_point(data = observed, size = 1.6)
   }
-  breaks <- unlist(lapply(fits, .sargBreakpoints))
+  breaks <- unlist(lapply(fits, .sareBreakpoints))
   if (length(breaks) > 0)
     plot <- plot + ggplot2::geom_vline(xintercept = breaks, linetype = "dotted", colour = "grey50")
   forecast <- do.call(rbind, lapply(fits, function(fit) data.frame(time = max(fit[["time"]]), subgroup = fit[["label"]])))
   if (any(data[["forecast"]]))
     plot <- plot + ggplot2::geom_vline(data = forecast, ggplot2::aes(xintercept = time, colour = subgroup), linetype = "dashed", show.legend = FALSE)
-  axisLabel <- paste(strwrap(.sargMeasureLabel(measure), width = 24L), collapse = "\n")
+  axisLabel <- paste(strwrap(.sareMeasureLabel(measure), width = 24L), collapse = "\n")
   plot <- plot + ggplot2::labs(x = gettext("Time"), y = axisLabel, colour = gettext("Subgroup"), fill = gettext("Subgroup"))
   if (options[["predictionsXAxisTransformation"]] == "log")
     plot <- plot + ggplot2::scale_x_log10()
@@ -63,11 +63,11 @@
     plot <- plot + ggplot2::scale_y_log10()
   else if (measure %in% c("survivalProbability", "failureProbability"))
     plot <- plot + ggplot2::scale_y_continuous(limits = c(0, 1), oob = scales::oob_keep)
-  plot <- .sargPlotStyle(plot, options, length(fits), probability = measure %in% c("survivalProbability", "failureProbability"))
+  plot <- .sarePlotStyle(plot, options, length(fits), probability = measure %in% c("survivalProbability", "failureProbability"))
   return(plot)
 }
 
-.sargPlotStyle <- function(plot, options, groups, probability = FALSE) {
+.sarePlotStyle <- function(plot, options, groups, probability = FALSE) {
 
   labels <- unique(as.character(plot$data[["subgroup"]]))
   colourScale <- jaspGraphs::scale_JASPcolor_discrete(palette = options[["colorPalette"]], limits = labels)

@@ -1,25 +1,25 @@
-.sargCreateTable <- function(jaspResults, key, title, dependencies, position) {
+.sareCreateTable <- function(jaspResults, key, title, dependencies, position) {
 
   table <- createJaspTable(title = title)
-  table$dependOn(c(.sargFitDependencies, dependencies))
+  table$dependOn(c(.sareFitDependencies, dependencies))
   table$position <- position
   table$showSpecifiedColumnsOnly <- TRUE
   jaspResults[[key]] <- table
   return(table)
 }
 
-.sargGroupColumn <- function(table, options) {
+.sareGroupColumn <- function(table, options) {
 
   if (.sapHasSubgroups(options))
     table$addColumnInfo(name = "subgroup", title = gettext("Subgroup"), type = "string")
   return()
 }
 
-.sargMessages <- function(jaspResults, options) {
+.sareMessages <- function(jaspResults, options) {
 
   if (!is.null(jaspResults[["fitMessages"]]))
     return()
-  fits <- .sargFits(jaspResults)
+  fits <- .sareFits(jaspResults)
   rows <- lapply(fits, function(fit) {
     messages <- c(fit[["error"]], fit[["warnings"]])
     if (length(messages) > 0)
@@ -28,55 +28,55 @@
   data <- .saSafeRbind(rows)
   if (is.null(data))
     return()
-  table <- .sargCreateTable(jaspResults, "fitMessages", gettext("Model Fitting"), character(0), 0)
-  .sargGroupColumn(table, options)
+  table <- .sareCreateTable(jaspResults, "fitMessages", gettext("Model Fitting"), character(0), 0)
+  .sareGroupColumn(table, options)
   table$addColumnInfo(name = "message", title = gettext("Message"), type = "string")
   table$setData(data)
   return()
 }
 
-.sargStatistics <- function(jaspResults, options) {
+.sareStatistics <- function(jaspResults, options) {
 
-  fits <- .sargFits(jaspResults, valid = TRUE)
+  fits <- .sareFits(jaspResults, valid = TRUE)
   if (options[["dataSummary"]])
-    .sargDataSummaryTable(jaspResults, options, fits)
+    .sareDataSummaryTable(jaspResults, options, fits)
   if (options[["modelSummary"]])
-    .sargSummaryTable(jaspResults, options, fits)
+    .sareSummaryTable(jaspResults, options, fits)
   if (options[["coefficients"]])
-    .sargCoefficientsTable(jaspResults, options, fits)
+    .sareCoefficientsTable(jaspResults, options, fits)
   if (options[["coefficientsCovarianceMatrix"]])
-    .sargCovarianceTables(jaspResults, options, fits)
+    .sareCovarianceTables(jaspResults, options, fits)
   if (options[["fittedModelEquation"]])
-    .sargEquationsTable(jaspResults, options, fits)
+    .sareEquationsTable(jaspResults, options, fits)
   return()
 }
 
-.sargDataSummaryTable <- function(jaspResults, options, fits) {
+.sareDataSummaryTable <- function(jaspResults, options, fits) {
 
   if (!is.null(jaspResults[["dataSummaryTable"]]))
     return()
-  table <- .sargCreateTable(jaspResults, "dataSummaryTable", gettext("Data Summary"), "dataSummary", 0.5)
-  .sargGroupColumn(table, options)
+  table <- .sareCreateTable(jaspResults, "dataSummaryTable", gettext("Data Summary"), "dataSummary", 0.5)
+  .sareGroupColumn(table, options)
   table$addColumnInfo(name = "intervals", title = gettext("Intervals"), type = "integer")
-  table$addColumnInfo(name = "failures", title = gettext("Events"), type = "integer")
+  table$addColumnInfo(name = "events", title = gettext("Events"), type = "integer")
   table$addColumnInfo(name = "time", title = gettext("Follow-up Time"), type = "number")
-  table$addColumnInfo(name = "mtbf", title = gettext("Cumulative Mean Time Between Events"), type = "number")
+  table$addColumnInfo(name = "cumulativeMeanTimeBetweenEvents", title = gettext("Cumulative Mean Time Between Events"), type = "number")
   table$setData(.saSafeRbind(lapply(fits, function(fit) data.frame(
-    subgroup  = fit[["label"]],
-    intervals = length(fit[["time"]]),
-    failures  = sum(fit[["counts"]]),
-    time      = max(fit[["time"]]),
-    mtbf      = max(fit[["time"]]) / sum(fit[["counts"]])
+    subgroup                       = fit[["label"]],
+    intervals                      = length(fit[["time"]]),
+    events                         = sum(fit[["counts"]]),
+    time                           = max(fit[["time"]]),
+    cumulativeMeanTimeBetweenEvents = max(fit[["time"]]) / sum(fit[["counts"]])
   ))))
   return()
 }
 
-.sargSummaryTable <- function(jaspResults, options, fits) {
+.sareSummaryTable <- function(jaspResults, options, fits) {
 
   if (!is.null(jaspResults[["summaryTable"]]))
     return()
-  table <- .sargCreateTable(jaspResults, "summaryTable", gettext("Model Summary"), "modelSummary", 1)
-  .sargGroupColumn(table, options)
+  table <- .sareCreateTable(jaspResults, "summaryTable", gettext("Model Summary"), "modelSummary", 1)
+  .sareGroupColumn(table, options)
   table$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
   table$addColumnInfo(name = "method", title = gettext("Estimation"), type = "string")
   table$addColumnInfo(name = "logLik", title = gettext("Log Lik."), type = "number")
@@ -88,7 +88,7 @@
     # Native grouped Poisson log likelihoods omit the count-factorial constant.
     constant <- if (fit[["method"]] == "MLE") sum(lgamma(fit[["counts"]] + 1)) else 0
     data.frame(
-      subgroup = fit[["label"]], model = .sargModelLabel(fit[["model"]]), method = fit[["method"]],
+      subgroup = fit[["label"]], model = .sareModelLabel(fit[["model"]]), method = fit[["method"]],
       logLik = native[["logLik"]] - constant,
       aic    = native[["AIC"]] + 2 * constant,
       bic    = native[["BIC"]] + 2 * constant,
@@ -96,51 +96,51 @@
     )
   })))
   table$addCitation("ReliaGrowR (0.7): Reliability Growth Analysis and Repairable Systems Modeling. https://doi.org/10.32614/CRAN.package.ReliaGrowR")
-  table$addFootnote(if (.sargMethod(options) == "MLE")
+  table$addFootnote(if (.sareMethod(options) == "MLE")
     gettext("Maximum likelihood uses interval event counts. Log-likelihood includes count-factorial terms; BIC uses the number of intervals. Optimizer convergence status is not supplied by ReliaGrowR.") else
     gettext("Fit statistics refer to the log-scale regression likelihood and cannot be compared directly with NHPP maximum-likelihood statistics. The parameter count includes residual variance."))
   return()
 }
 
-.sargCoefficientsTable <- function(jaspResults, options, fits) {
+.sareCoefficientsTable <- function(jaspResults, options, fits) {
 
   if (!is.null(jaspResults[["coefficientsTable"]]))
     return()
-  table <- .sargCreateTable(jaspResults, "coefficientsTable", gettext("Coefficients Summary"),
+  table <- .sareCreateTable(jaspResults, "coefficientsTable", gettext("Coefficients Summary"),
     c("coefficients", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel"), 2)
-  .sargGroupColumn(table, options)
+  .sareGroupColumn(table, options)
   table$addColumnInfo(name = "parameter", title = "", type = "string")
   table$addColumnInfo(name = "estimate", title = gettext("Estimate"), type = "number")
   table$addColumnInfo(name = "se", title = gettext("Standard Error"), type = "number")
   if (options[["coefficientsConfidenceIntervals"]])
     .sapAddBoundColumns(table, options[["coefficientsConfidenceIntervalsLevel"]], "twoSided")
-  table$setData(.saSafeRbind(lapply(fits, .sargCoefficientRows, level = options[["coefficientsConfidenceIntervalsLevel"]])))
+  table$setData(.saSafeRbind(lapply(fits, .sareCoefficientRows, level = options[["coefficientsConfidenceIntervalsLevel"]])))
   if (options[["model"]] == "piecewise")
     table$addFootnote(gettext("Coefficients describe the segmented regression of log cumulative events on log time. Change-point coefficients are reported as log times."))
-  if (.sargMethod(options) == "MLE")
+  if (.sareMethod(options) == "MLE")
     table$addFootnote(gettext("Maximum-likelihood intervals use a normal approximation; positive parameters use the log scale."))
   return()
 }
 
-.sargEquationsTable <- function(jaspResults, options, fits) {
+.sareEquationsTable <- function(jaspResults, options, fits) {
 
   if (!is.null(jaspResults[["modelEquations"]]))
     return()
-  table <- .sargCreateTable(jaspResults, "modelEquations", gettext("Fitted Model Equations"),
+  table <- .sareCreateTable(jaspResults, "modelEquations", gettext("Fitted Model Equations"),
     c("fittedModelEquation", "fittedModelEquationDecimals"), 2.2)
-  .sargGroupColumn(table, options)
+  .sareGroupColumn(table, options)
   table$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
   table$addColumnInfo(name = "equation", title = gettext("Equation"), type = "string")
-  table$setData(.saSafeRbind(lapply(fits, .sargEquationRows, options = options)))
+  table$setData(.saSafeRbind(lapply(fits, .sareEquationRows, options = options)))
   table$addFootnote(gettext("M(t) is expected cumulative events, m(t) is instantaneous event intensity, and t / M(t) is cumulative mean time between events."))
   return()
 }
 
-.sargCoefficientRows <- function(fit, level) {
+.sareCoefficientRows <- function(fit, level) {
 
   estimates <- fit[["estimates"]]
   se <- if (fit[["inferenceAvailable"]]) sqrt(diag(fit[["covariance"]])) else rep(NA_real_, length(estimates))
-  halfWidth <- .sargCritical(level, fit[["df"]]) * se
+  halfWidth <- .sareCritical(level, fit[["df"]]) * se
   lower <- estimates - halfWidth
   upper <- estimates + halfWidth
   positive <- fit[["positive"]]
@@ -150,13 +150,13 @@
     se = as.numeric(se), lower = as.numeric(lower), upper = as.numeric(upper)))
 }
 
-.sargCovarianceTables <- function(jaspResults, options, fits) {
+.sareCovarianceTables <- function(jaspResults, options, fits) {
 
   if (!is.null(jaspResults[["covarianceMatrices"]]))
     return()
   title <- gettext("Coefficients Covariance Matrix")
   output <- if (length(fits) <= 1L) createJaspTable(title = title) else createJaspContainer(title = title)
-  output$dependOn(c(.sargFitDependencies, "coefficientsCovarianceMatrix"))
+  output$dependOn(c(.sareFitDependencies, "coefficientsCovarianceMatrix"))
   output$position <- 2.1
   jaspResults[["covarianceMatrices"]] <- output
   if (!length(fits)) {
@@ -190,7 +190,7 @@
   return()
 }
 
-.sargEquation <- function(fit, options) {
+.sareEquation <- function(fit, options) {
 
   number <- function(x) vapply(x, .sapEquationNumber, character(1), decimals = options[["fittedModelEquationDecimals"]])
   estimates <- number(fit[["estimates"]])
@@ -201,16 +201,16 @@
     piecewise = {
       slopes <- fit[["native"]][["betas"]][["log_times"]][, "Est."]
       scales <- fit[["native"]][["lambdas"]][, "Est."]
-      breaks <- .sargBreakpoints(fit)
+      breaks <- .sareBreakpoints(fit)
       vapply(seq_along(slopes), function(i) gettextf("Segment %1$i: M(t) = %2$s * t^(%3$s); %4$s < t <= %5$s",
         i, number(scales[i]), number(slopes[i]), if (i == 1L) "0" else number(breaks[i - 1L]),
         if (i > length(breaks)) "Inf" else number(breaks[i])), character(1))
     })
 }
 
-.sargEquationRows <- function(fit, options) {
+.sareEquationRows <- function(fit, options) {
 
-  equations <- .sargEquation(fit, options)
+  equations <- .sareEquation(fit, options)
   return(data.frame(subgroup = c(fit[["label"]], rep(NA_character_, length(equations) - 1L)),
-    model = c(.sargModelLabel(fit[["model"]]), rep(NA_character_, length(equations) - 1L)), equation = equations))
+    model = c(.sareModelLabel(fit[["model"]]), rep(NA_character_, length(equations) - 1L)), equation = equations))
 }

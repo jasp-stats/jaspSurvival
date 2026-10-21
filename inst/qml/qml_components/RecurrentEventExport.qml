@@ -16,7 +16,7 @@ Section
 	{
 		name: "exportColumnPrefix"
 		label: qsTr("Column prefix")
-		defaultValue: "Growth"
+		defaultValue: "RecurrentEvents"
 		fieldWidth: 160 * jaspTheme.uiScale
 		Layout.columnSpan: 2
 		info: qsTr("Set a non-empty prefix for exported column names.")
@@ -62,13 +62,13 @@ Section
 		title: qsTr("Fitted Values")
 		CheckBox
 		{
-			name: "exportFittedValuesCumulativeFailures"
+			name: "exportFittedValuesCumulativeEvents"
 			label: qsTr("Cumulative events")
 			info: qsTr("Export fitted cumulative events at each interval endpoint.")
 		}
 		CheckBox
 		{
-			name: "exportFittedValuesIntervalFailures"
+			name: "exportFittedValuesIntervalEvents"
 			label: qsTr("Interval events")
 			info: qsTr("Export expected events within each observation interval, obtained by differencing the fitted cumulative mean.")
 		}

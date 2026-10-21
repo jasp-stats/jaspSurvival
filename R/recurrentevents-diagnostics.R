@@ -1,24 +1,24 @@
-.sargResidualPlotOptions <- c("residualPlotResidualVsTime", "residualPlotResidualVsPredicted", "residualPlotResidualHistogram")
-.sargProbabilityDependencies <- c("probabilityPlot", "probabilityPlotCanvas", "probabilityPlotEmpiricalPoints",
+.sareResidualPlotOptions <- c("residualPlotResidualVsTime", "residualPlotResidualVsPredicted", "residualPlotResidualHistogram")
+.sareProbabilityDependencies <- c("probabilityPlot", "probabilityPlotCanvas", "probabilityPlotEmpiricalPoints",
   "probabilityPlotEmpiricalPointsCoordinates", "probabilityPlotReferenceLine", "probabilityPlotMergePlotsAcrossSubgroups",
   "probabilityPlotReferenceEnvelope", "probabilityPlotReferenceEnvelopeLevel", "probabilityPlotGrid",
   "probabilityPlotPlottingPosition", "probabilityPlotLegend", "probabilityPlotColorPalette", "probabilityPlotTheme")
 
-.sargIntervalMean <- function(fit) {
+.sareIntervalMean <- function(fit) {
 
-  mean <- diff(c(0, .sargFittedCumulativeFailures(fit)))
+  mean <- diff(c(0, .sareFittedCumulativeEvents(fit)))
   if (any(!is.finite(mean) | mean <= 0))
     stop(gettext("The fitted curve does not give finite positive expected counts in every interval. Count residuals and probability diagnostics require a valid increasing NHPP cumulative mean."))
   return(mean)
 }
 
-.sargResidualLabel <- function(type) {
+.sareResidualLabel <- function(type) {
 
   return(switch(type, regression = gettext("Regression Residuals"), response = gettext("Response Residuals"),
     pearson = gettext("Pearson Residuals"), deviance = gettext("Deviance Residuals"), quantile = gettext("Randomized Quantile Residuals")))
 }
 
-.sargResidualValue <- function(fit, type, quantile = NULL) {
+.sareResidualValue <- function(fit, type, quantile = NULL) {
 
   if (type == "quantile") {
     if (jaspBase::isTryError(quantile))
@@ -30,17 +30,17 @@
       stop(gettext("Regression residuals are available only for least-squares fits. Choose another residual type."))
     return(as.numeric(stats::residuals(fit[["native"]][["model"]])))
   }
-  mean <- .sargIntervalMean(fit)
+  mean <- .sareIntervalMean(fit)
   observed <- fit[["counts"]]
   difference <- observed - mean
   return(switch(type,
     response = difference,
     pearson = difference / sqrt(mean),
-    deviance = .sargPoissonDeviance(observed, mean)
+    deviance = .sarePoissonDeviance(observed, mean)
   ))
 }
 
-.sargPoissonDeviance <- function(observed, mean) {
+.sarePoissonDeviance <- function(observed, mean) {
 
   deviance <- stats::poisson()[["dev.resids"]](observed, mean, rep(1, length(mean)))
   close <- observed > 0 & abs(mean - observed) < .01 * observed
@@ -53,7 +53,7 @@
   return(sign(observed - mean) * sqrt(pmax(0, deviance)))
 }
 
-.sargPoissonQuantiles <- function(observed, mean, uniform = stats::runif(length(observed))) {
+.sarePoissonQuantiles <- function(observed, mean, uniform = stats::runif(length(observed))) {
 
   # Dunn-Smyth randomization within each observed count's Poisson CDF jump.
   # Evaluate both tails in log space to retain extreme finite residuals.
@@ -69,43 +69,43 @@
   return(residual)
 }
 
-.sargQuantileState <- function(jaspResults, options, fits) {
+.sareQuantileState <- function(jaspResults, options, fits) {
 
   if (!is.null(jaspResults[["quantileResiduals"]]))
     return(jaspResults[["quantileResiduals"]]$object)
   state <- createJaspState()
-  state$dependOn(.sargFitDependencies)
+  state$dependOn(.sareFitDependencies)
   jaspResults[["quantileResiduals"]] <- state
   jaspBase::.setSeedJASP(options)
-  state$object <- lapply(fits, function(fit) try(.sargPoissonQuantiles(fit[["counts"]], .sargIntervalMean(fit)), silent = TRUE))
+  state$object <- lapply(fits, function(fit) try(.sarePoissonQuantiles(fit[["counts"]], .sareIntervalMean(fit)), silent = TRUE))
   return(state$object)
 }
 
-.sargDiagnostics <- function(jaspResults, options) {
+.sareDiagnostics <- function(jaspResults, options) {
 
-  requested <- vapply(.sargResidualPlotOptions, function(name) options[[name]], logical(1))
+  requested <- vapply(.sareResidualPlotOptions, function(name) options[[name]], logical(1))
   if (!any(requested) && !options[["probabilityPlot"]])
     return()
-  fits <- .sargFits(jaspResults, valid = TRUE)
+  fits <- .sareFits(jaspResults, valid = TRUE)
   if (!length(fits))
     return()
   quantiles <- if ((any(requested) && options[["residualPlotResidualType"]] == "quantile") || options[["probabilityPlot"]])
-    .sargQuantileState(jaspResults, options, fits)
+    .sareQuantileState(jaspResults, options, fits)
   for (i in which(requested))
-    .sargResidualPlots(jaspResults, options, fits, quantiles, c("time", "predicted", "histogram")[i], .sargResidualPlotOptions[i], 6 + i / 10)
+    .sareResidualPlots(jaspResults, options, fits, quantiles, c("time", "predicted", "histogram")[i], .sareResidualPlotOptions[i], 6 + i / 10)
   if (options[["probabilityPlot"]])
-    .sargProbabilityPlot(jaspResults, options, fits, quantiles)
+    .sareProbabilityPlot(jaspResults, options, fits, quantiles)
   return()
 }
 
-.sargDiagnosticSection <- function(jaspResults, options, key, title, dependencies, position, fits, builder, width = 440, height = 320) {
+.sareDiagnosticSection <- function(jaspResults, options, key, title, dependencies, position, fits, builder, width = 440, height = 320) {
 
   if (!is.null(jaspResults[[key]]))
     return()
   if (length(fits) == 1L && nzchar(fits[[1L]][["label"]]) && .sapHasSubgroups(options))
     title <- gettextf("%1$s: %2$s", title, fits[[1L]][["label"]])
   output <- if (length(fits) == 1L) createJaspPlot(title = title, width = width, height = height) else createJaspContainer(title = title)
-  output$dependOn(c(.sargFitDependencies, dependencies))
+  output$dependOn(c(.sareFitDependencies, dependencies))
   output$position <- position
   jaspResults[[key]] <- output
   for (i in seq_along(fits)) {
@@ -123,16 +123,16 @@
   return()
 }
 
-.sargResidualPlots <- function(jaspResults, options, fits, quantiles, kind, option, position) {
+.sareResidualPlots <- function(jaspResults, options, fits, quantiles, kind, option, position) {
 
   key <- switch(kind, time = "residualsVsTimePlot", predicted = "residualVsPredictedPlot", histogram = "residualHistogram")
   title <- switch(kind, time = gettext("Residuals vs. Time"), predicted = gettext("Residuals vs. Predicted"), histogram = gettext("Residual Histogram"))
-  .sargDiagnosticSection(jaspResults, options, key, title, c(option, "residualPlotResidualType"), position, fits, function(i) {
+  .sareDiagnosticSection(jaspResults, options, key, title, c(option, "residualPlotResidualType"), position, fits, function(i) {
     fit <- fits[[i]]
     type <- options[["residualPlotResidualType"]]
-    residual <- .sargResidualValue(fit, type, quantiles[[i]])
+    residual <- .sareResidualValue(fit, type, quantiles[[i]])
     if (kind == "histogram")
-      return(.saPlotCanvasPadding(jaspGraphs::jaspHistogram(residual, xName = .sargResidualLabel(type))))
+      return(.saPlotCanvasPadding(jaspGraphs::jaspHistogram(residual, xName = .sareResidualLabel(type))))
     if (kind == "time") {
       x <- fit[["time"]]
       label <- gettext("Time")
@@ -140,16 +140,16 @@
       x <- as.numeric(stats::fitted(fit[["native"]][["model"]]))
       label <- if (fit[["model"]] == "duane") gettext("Fitted Log Cumulative Mean Time Between Events") else gettext("Fitted Log Cumulative Events")
     } else {
-      x <- .sargIntervalMean(fit)
+      x <- .sareIntervalMean(fit)
       label <- gettext("Fitted Interval Events")
     }
     axisLabel <- paste(strwrap(label, width = 30L), collapse = "\n")
-    return(.saPlotCanvasPadding(.saResidualsPlot(x, residual, axisLabel, .sargResidualLabel(type))))
+    return(.saPlotCanvasPadding(.saResidualsPlot(x, residual, axisLabel, .sareResidualLabel(type))))
   })
   return()
 }
 
-.sargProbabilityData <- function(fit, residuals, options) {
+.sareProbabilityData <- function(fit, residuals, options) {
 
   if (jaspBase::isTryError(residuals))
     stop(jaspBase::.extractErrorMessage(residuals))
@@ -163,22 +163,22 @@
     upper = transform(stats::qbeta(1 - alpha, seq_len(n), n - seq_len(n) + 1)), subgroup = fit[["label"]]))
 }
 
-.sargProbabilityPlot <- function(jaspResults, options, fits, quantiles) {
+.sareProbabilityPlot <- function(jaspResults, options, fits, quantiles) {
 
   if (!is.null(jaspResults[["probabilityPlot"]]))
     return()
   groups <- if (options[["probabilityPlotMergePlotsAcrossSubgroups"]]) list(seq_along(fits)) else as.list(seq_along(fits))
   selected <- lapply(groups, function(indices) list(label = if (length(indices) == 1L) fits[[indices]][["label"]] else ""))
-  .sargDiagnosticSection(jaspResults, options, "probabilityPlot", gettext("Probability Plot"), .sargProbabilityDependencies, 6.4, selected, function(i) {
+  .sareDiagnosticSection(jaspResults, options, "probabilityPlot", gettext("Probability Plot"), .sareProbabilityDependencies, 6.4, selected, function(i) {
     indices <- groups[[i]]
-    data <- do.call(rbind, lapply(indices, function(index) .sargProbabilityData(fits[[index]], quantiles[[index]], options)))
-    return(.sargProbabilityFigure(data, options))
+    data <- do.call(rbind, lapply(indices, function(index) .sareProbabilityData(fits[[index]], quantiles[[index]], options)))
+    return(.sareProbabilityFigure(data, options))
   }, width = if (options[["probabilityPlotMergePlotsAcrossSubgroups"]] && length(fits) > 1L) 650 else 520, height = 420)
   jaspResults[["probabilityPlot"]]$addCitation("Dunn, P. K., & Smyth, G. K. (1996). Randomized quantile residuals. Journal of Computational and Graphical Statistics, 5(3), 236-244. https://doi.org/10.1080/10618600.1996.10474708")
   return()
 }
 
-.sargProbabilityFigure <- function(data, options) {
+.sareProbabilityFigure <- function(data, options) {
 
   data[["subgroup"]] <- factor(data[["subgroup"]], levels = unique(data[["subgroup"]]))
   plot <- ggplot2::ggplot(data, ggplot2::aes(x = theoretical, y = observed, colour = subgroup, group = subgroup))

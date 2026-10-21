@@ -7,7 +7,7 @@ import "./qml_components" as SA
 Form
 {
 	id: form
-	info: qsTr("Model reliability growth from event counts in successive observation intervals. Fit each independent test sequence separately using Subgroup.")
+	info: qsTr("Model recurrent events from event counts in successive observation intervals. Fit each independent test sequence separately using Subgroup.")
 
 	VariablesForm
 	{
@@ -24,7 +24,7 @@ Form
 		}
 		AssignedVariablesList
 		{
-			name: "failures"
+			name: "eventCount"
 			title: qsTr("Event Count (optional)")
 			allowedColumns: ["scale"]
 			singleVariable: true
@@ -54,7 +54,7 @@ Form
 				{label: qsTr("Log-linear NHPP"), value: "logLinear"},
 				{label: qsTr("Piecewise power-law NHPP"), value: "piecewise"}
 			]
-			info: qsTr("Choose the reliability-growth model. Crow–AMSAA is a power-law non-homogeneous Poisson process (NHPP).")
+			info: qsTr("Choose the recurrent-event model. Crow–AMSAA is a power-law non-homogeneous Poisson process (NHPP).")
 		}
 		DropDown
 		{
@@ -88,8 +88,8 @@ Form
 	SA.ParametricStatistics
 	{
 		modelComparisonVisible: false
-		modelSummaryInfo: qsTr("Show the reliability-growth model, estimation method, log-likelihood, parameter count, AIC and BIC for each independently fitted subgroup.")
-		coefficientsInfo: qsTr("Show reliability-growth parameter estimates and standard errors. Confidence intervals follow the model's estimation method.")
+		modelSummaryInfo: qsTr("Show the recurrent-event model, estimation method, log-likelihood, parameter count, AIC and BIC for each independently fitted subgroup.")
+		coefficientsInfo: qsTr("Show recurrent-event parameter estimates and standard errors. Confidence intervals follow the model's estimation method.")
 		covarianceInfo: qsTr("Show the covariance matrix on the reported parameter scale, with one matrix per fitted subgroup.")
 		equationInfo: qsTr("Show fitted equations for cumulative events, event intensity or cumulative mean time between events. Small nonzero coefficients are displayed in scientific notation when needed.")
 		extraSummaryControls: [
@@ -103,18 +103,18 @@ Form
 		]
 	}
 
-	SA.ReliabilityGrowthPredictions { hasSubgroups: subgroup.count > 0 }
+	SA.RecurrentEventPredictions { hasSubgroups: subgroup.count > 0 }
 
-	SA.ReliabilityGrowthDiagnostics
+	SA.RecurrentEventDiagnostics
 	{
 		id: diagnostics
 		leastSquares: estimationMethod.value === "ls"
 		hasSubgroups: subgroup.count > 0
 	}
 
-	SA.ReliabilityGrowthExport
+	SA.RecurrentEventExport
 	{
-		id: growthExport
+		id: eventExport
 		leastSquares: estimationMethod.value === "ls"
 	}
 
@@ -143,7 +143,7 @@ Form
 		SetSeed
 		{
 			title: qsTr("Reproducibility")
-			enabled: model.value === "piecewise" || diagnostics.quantileSelected || growthExport.quantileSelected
+			enabled: model.value === "piecewise" || diagnostics.quantileSelected || eventExport.quantileSelected
 		}
 	}
 }

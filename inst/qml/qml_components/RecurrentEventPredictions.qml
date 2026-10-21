@@ -8,7 +8,7 @@ Section
 	id: predictionsRoot
 	property bool hasSubgroups: false
 	readonly property bool outcomeSelected: outcomeCount > 0
-	readonly property int outcomeCount: Number(survivalProbability.checked) + Number(failureProbability.checked) + Number(cumulativeFailures.checked) + Number(failureIntensity.checked) + Number(cumulativeMtbf.checked) + Number(instantaneousMtbf.checked)
+	readonly property int outcomeCount: Number(survivalProbability.checked) + Number(failureProbability.checked) + Number(cumulativeEvents.checked) + Number(eventIntensity.checked) + Number(cumulativeMeanTimeBetweenEvents.checked) + Number(instantaneousMeanTimeBetweenEvents.checked)
 	readonly property bool predictionOutputSelected: outcomeSelected && (modelPlot.checked || modelTable.checked)
 	title: qsTr("Predictions")
 
@@ -33,30 +33,30 @@ Section
 		}
 		CheckBox
 		{
-			id: cumulativeFailures
-			name: "predictionsOutcomeCumulativeFailures"
+			id: cumulativeEvents
+			name: "predictionsOutcomeCumulativeEvents"
 			label: qsTr("Cumulative events")
 			checked: true
 			info: qsTr("Predict the expected cumulative number of events since time zero.")
 		}
 		CheckBox
 		{
-			id: failureIntensity
-			name: "predictionsOutcomeFailureIntensity"
+			id: eventIntensity
+			name: "predictionsOutcomeEventIntensity"
 			label: qsTr("Event intensity")
 			info: qsTr("Predict the instantaneous event rate per unit time.")
 		}
 		CheckBox
 		{
-			id: cumulativeMtbf
-			name: "predictionsOutcomeCumulativeMtbf"
+			id: cumulativeMeanTimeBetweenEvents
+			name: "predictionsOutcomeCumulativeMeanTimeBetweenEvents"
 			label: qsTr("Cumulative mean time between events")
 			info: qsTr("Predict cumulative time divided by expected cumulative events. This is an average time per event up to the selected time.")
 		}
 		CheckBox
 		{
-			id: instantaneousMtbf
-			name: "predictionsOutcomeInstantaneousMtbf"
+			id: instantaneousMeanTimeBetweenEvents
+			name: "predictionsOutcomeInstantaneousMeanTimeBetweenEvents"
 			label: qsTr("Instantaneous mean time between events")
 			info: qsTr("Predict the reciprocal of instantaneous event intensity. This is a local rate-based measure, not the expected waiting time to the next event when the rate changes.")
 		}
@@ -154,7 +154,7 @@ Section
 			name: "predictionsDisplayObservedData"
 			label: qsTr("Observed data")
 			checked: true
-			enabled: modelPlot.checked && (cumulativeFailures.checked || cumulativeMtbf.checked)
+			enabled: modelPlot.checked && (cumulativeEvents.checked || cumulativeMeanTimeBetweenEvents.checked)
 			info: qsTr("Add observed cumulative events or cumulative mean time between events to the corresponding plots.")
 		}
 		ColorPalette

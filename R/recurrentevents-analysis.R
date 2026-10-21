@@ -1,40 +1,40 @@
-.sargFitDependencies <- c("time", "failures", "subgroup", "timeType", "model", "estimationMethod",
+.sareFitDependencies <- c("time", "eventCount", "subgroup", "timeType", "model", "estimationMethod",
   "piecewiseStartingBreakpoints", "piecewiseStartingBreakpointsValues", "setSeed", "seed")
-.sargTimeDependencies <- paste0("predictionsTime", c("Grid", "Intervals", "From", "To", "Step", "Values", "Percentages"))
-.sargMeasureNames <- c("survivalProbability", "failureProbability", "cumulativeFailures", "failureIntensity", "cumulativeMtbf", "instantaneousMtbf")
-.sargPredictionOptions <- paste0("predictionsOutcome", c("SurvivalProbability", "FailureProbability", "CumulativeFailures", "FailureIntensity", "CumulativeMtbf", "InstantaneousMtbf"))
-.sargTableDependencies <- c("predictionsOutputTableFormat", "predictionsMergeTablesAcrossMeasures", "predictionsRoundTimeTableValues")
-.sargPredictionDependencies <- c(.sargTimeDependencies, .sargPredictionOptions,
+.sareTimeDependencies <- paste0("predictionsTime", c("Grid", "Intervals", "From", "To", "Step", "Values", "Percentages"))
+.sareMeasureNames <- c("survivalProbability", "failureProbability", "cumulativeEvents", "eventIntensity", "cumulativeMeanTimeBetweenEvents", "instantaneousMeanTimeBetweenEvents")
+.sarePredictionOptions <- paste0("predictionsOutcome", c("SurvivalProbability", "FailureProbability", "CumulativeEvents", "EventIntensity", "CumulativeMeanTimeBetweenEvents", "InstantaneousMeanTimeBetweenEvents"))
+.sareTableDependencies <- c("predictionsOutputTableFormat", "predictionsMergeTablesAcrossMeasures", "predictionsRoundTimeTableValues")
+.sarePredictionDependencies <- c(.sareTimeDependencies, .sarePredictionOptions,
   "predictionsDisplayConfidenceIntervals", "predictionsDisplayConfidenceIntervalsLevel")
-.sargPlotDependencies <- c("predictionsDisplayObservedData", "predictionsMergeSeriesAcrossSubgroups", "predictionsXAxisTransformation",
+.sarePlotDependencies <- c("predictionsDisplayObservedData", "predictionsMergeSeriesAcrossSubgroups", "predictionsXAxisTransformation",
   "predictionsYAxisScale", "plotTheme", "plotLegend", "colorPalette")
 
-ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
+RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
 
-  if (.sargReady(options))
-    .sargCheckDataset(dataset, options)
-  .sargFit(jaspResults, dataset, options)
-  .sargMessages(jaspResults, options)
-  .sargStatistics(jaspResults, options)
-  .sargPredictions(jaspResults, options)
-  .sargDiagnostics(jaspResults, options)
-  .sargExport(jaspResults, dataset, options)
+  if (.sareReady(options))
+    .sareCheckDataset(dataset, options)
+  .sareFit(jaspResults, dataset, options)
+  .sareMessages(jaspResults, options)
+  .sareStatistics(jaspResults, options)
+  .sarePredictions(jaspResults, options)
+  .sareDiagnostics(jaspResults, options)
+  .sareExport(jaspResults, dataset, options)
 
   return()
 }
 
-.sargReady <- function(options) {
+.sareReady <- function(options) {
 
   return(options[["time"]] != "")
 }
 
-.sargModelLabel <- function(model) {
+.sareModelLabel <- function(model) {
 
   return(switch(model, duane = gettext("Duane"), crowAmsaa = gettext("Crow\u2013AMSAA"),
     logLinear = gettext("Log-linear NHPP"), piecewise = gettext("Piecewise power-law NHPP")))
 }
 
-.sargMethod <- function(options) {
+.sareMethod <- function(options) {
 
   if (options[["model"]] %in% c("duane", "piecewise"))
     return("LS")
@@ -43,9 +43,9 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
   return(if (options[["estimationMethod"]] == "mle") "MLE" else "LS")
 }
 
-.sargCheckDataset <- function(dataset, options) {
+.sareCheckDataset <- function(dataset, options) {
 
-  variables <- unique(c(options[["time"]], options[["failures"]], unlist(options[["subgroup"]])))
+  variables <- unique(c(options[["time"]], options[["eventCount"]], unlist(options[["subgroup"]])))
   variables <- variables[variables != ""]
   if (nrow(dataset) == 0)
     .quitAnalysis(gettext("No observations are available."))
@@ -54,8 +54,8 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
   time <- dataset[[options[["time"]]]]
   if (any(!is.finite(time) | time <= 0))
     .quitAnalysis(gettext("All times must be finite and greater than zero."))
-  if (options[["failures"]] != "") {
-    counts <- dataset[[options[["failures"]]]]
+  if (options[["eventCount"]] != "") {
+    counts <- dataset[[options[["eventCount"]]]]
     if (any(!is.finite(counts) | counts < 0 | counts != floor(counts)))
       .quitAnalysis(gettext("Event counts must be finite, non-negative integers."))
     if (any(counts == 0))
@@ -64,7 +64,7 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
   return()
 }
 
-.sargNumbers <- function(text, message, empty = numeric(0)) {
+.sareNumbers <- function(text, message, empty = numeric(0)) {
 
   if (!nzchar(trimws(text)))
     return(empty)
@@ -75,15 +75,15 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
   return(numbers)
 }
 
-.sargFit <- function(jaspResults, dataset, options) {
+.sareFit <- function(jaspResults, dataset, options) {
 
   if (!is.null(jaspResults[["fit"]]))
     return()
   state <- createJaspState()
-  state$dependOn(.sargFitDependencies)
+  state$dependOn(.sareFitDependencies)
   jaspResults[["fit"]] <- state
   state$object <- list()
-  if (!.sargReady(options))
+  if (!.sareReady(options))
     return()
 
   hasSubgroups <- .sapHasSubgroups(options)
@@ -92,7 +92,7 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
   fits <- lapply(seq_along(groups), function(index) {
     rows <- groups[[index]]
     label <- if (hasSubgroups) names(groups)[index] else gettext("Full dataset")
-    result <- try(.sargFitModel(dataset[rows, , drop = FALSE], options), silent = TRUE)
+    result <- try(.sareFitModel(dataset[rows, , drop = FALSE], options), silent = TRUE)
     if (jaspBase::isTryError(result))
       result <- list(error = jaspBase::.extractErrorMessage(result))
     result[["label"]] <- label
@@ -103,10 +103,10 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
   return()
 }
 
-.sargFitModel <- function(dataset, options) {
+.sareFitModel <- function(dataset, options) {
 
   time   <- dataset[[options[["time"]]]]
-  counts <- if (options[["failures"]] == "") rep(1, length(time)) else dataset[[options[["failures"]]]]
+  counts <- if (options[["eventCount"]] == "") rep(1, length(time)) else dataset[[options[["eventCount"]]]]
   if (length(time) < 3)
     stop(gettext("At least three observation intervals are required in each subgroup."))
   if (options[["timeType"]] == "interval")
@@ -115,12 +115,12 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
     stop(gettext("Cumulative interval endpoints must be strictly increasing within each subgroup. Order the rows by time or choose Interval durations."))
 
   model  <- options[["model"]]
-  method <- .sargMethod(options)
+  method <- .sareMethod(options)
   breaks <- NULL
   if (model == "piecewise") {
     jaspBase::.setSeedJASP(options)
     if (options[["piecewiseStartingBreakpoints"]]) {
-      breaks <- .sargNumbers(options[["piecewiseStartingBreakpointsValues"]],
+      breaks <- .sareNumbers(options[["piecewiseStartingBreakpointsValues"]],
         gettext("Enter positive starting change-point times separated by commas."))
       if (length(breaks) == 0 || any(breaks <= min(time) | breaks >= max(time)) || anyDuplicated(breaks))
         stop(gettext("Starting change points must be distinct and lie strictly between the first and last observed endpoints."))
@@ -152,7 +152,7 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
 
   record <- list(native = native, model = model, method = method, scale = scale, time = time,
     counts = counts, cumulativeCounts = cumsum(counts), warnings = unique(warnings))
-  record <- .sargParameters(record)
+  record <- .sareParameters(record)
   fitted <- native[[if (model == "duane") "Fitted_Values" else "fitted_values"]]
   if (any(!is.finite(record[["estimates"]])) || any(!is.finite(fitted)))
     stop(gettext("The model returned non-finite estimates. The fit cannot be reported."))
@@ -164,7 +164,7 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
   return(record)
 }
 
-.sargParameters <- function(record) {
+.sareParameters <- function(record) {
 
   native <- record[["native"]]
   model  <- record[["model"]]
@@ -210,7 +210,7 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
   return(record)
 }
 
-.sargFits <- function(jaspResults, valid = FALSE) {
+.sareFits <- function(jaspResults, valid = FALSE) {
 
   fits <- jaspResults[["fit"]]$object
   if (valid)
@@ -218,7 +218,7 @@ ReliabilityGrowthAnalysis <- function(jaspResults, dataset, options) {
   return(fits)
 }
 
-.sargCritical <- function(level, df) {
+.sareCritical <- function(level, df) {
 
   return(if (is.finite(df)) stats::qt((1 + level) / 2, df) else .sapBoundCritical(level, "twoSided"))
 }

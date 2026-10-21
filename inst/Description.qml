@@ -46,7 +46,7 @@ Description
 	{
 		menu:			qsTr("Recurrent Events")
 		title:			qsTr("Recurrent Event Analysis")
-		func:			"ReliabilityGrowthAnalysis"
+		func:			"RecurrentEventAnalysis"
 	}
 
 }
