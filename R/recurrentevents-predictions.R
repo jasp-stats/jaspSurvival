@@ -196,15 +196,15 @@
     return()
   predictions <- .sarePredictionState(jaspResults, options)
   measures <- .sareMeasures(options)
+  for (measure in measures) {
+    if (options[["predictionsOutputPlot"]])
+      .sarePredictionPlots(jaspResults, options, measure, predictions[[measure]])
+  }
   if (options[["predictionsOutputTable"]] && length(measures) > 0) {
     if (options[["predictionsMergeTablesAcrossMeasures"]])
       .sarePredictionTable(jaspResults, options, measures, predictions)
     else
       for (measure in measures) .sarePredictionTable(jaspResults, options, measure, predictions)
-  }
-  for (measure in measures) {
-    if (options[["predictionsOutputPlot"]])
-      .sarePredictionPlots(jaspResults, options, measure, predictions[[measure]])
   }
   return()
 }
@@ -217,7 +217,7 @@
     return()
   table <- .sareCreateTable(jaspResults, key, if (merged) gettext("Predictions") else .sareMeasureLabel(measures),
     c(.sarePredictionDependencies, .sareTableDependencies, "predictionsOutputTable"),
-    if (merged) 4 else 4 + match(measures, .sareMeasureNames) / 10)
+    if (merged) 5 else 5 + match(measures, .sareMeasureNames) / 10)
   .sareGroupColumn(table, options)
   errors <- character(0)
   forecast <- FALSE

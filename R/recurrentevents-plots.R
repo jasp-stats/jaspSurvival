@@ -8,7 +8,7 @@
     return()
   container <- createJaspContainer(title = .sareMeasureLabel(measure))
   container$dependOn(c(.sareFitDependencies, .sarePredictionDependencies, .sarePlotDependencies, "predictionsOutputPlot"))
-  container$position <- 5 + match(measure, .sareMeasureNames) / 10
+  container$position <- 4 + match(measure, .sareMeasureNames) / 10
   jaspResults[[key]] <- container
   groups <- if (options[["predictionsMergeSeriesAcrossSubgroups"]]) list(seq_along(fits)) else as.list(seq_along(fits))
   for (i in seq_along(groups)) {

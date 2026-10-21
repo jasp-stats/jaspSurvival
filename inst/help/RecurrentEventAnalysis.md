@@ -34,6 +34,8 @@ For piecewise models, **Segment estimates** reports ReliaGrowR's returned segmen
 
 ## Predictions
 
+Prediction figures appear before prediction tables. Within each output type, outcomes follow the order of the **Outcome** controls; merged tables use that order for their measure columns.
+
 Under **Advanced**, **Confidence interval > Bounds** selects **Two-sided**, **Lower**, or **Upper**, as in parametric survival. This applies to coefficient intervals, prediction intervals and probability-plot reference bounds. One-sided tables show the selected bound, and plots show it as a dashed curve. Two-sided intervals remain the default. Each output retains its own confidence level.
 
 Choose **Outcome**, evaluation times under **Time**, and plot/table **Output**. No predictor assignments are needed. These controls follow the parametric survival Predictions layout.

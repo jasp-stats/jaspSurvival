@@ -18,6 +18,10 @@ RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
   .sarePredictions(jaspResults, options)
   .sareDiagnostics(jaspResults, options)
   .sareExport(jaspResults, dataset, options)
+  .saOrderOutputs(jaspResults, c("dataSummaryTable", "summaryTable", "coefficientsTable", "covarianceMatrices",
+    "segmentEstimatesTable", "changePointsTable", "modelEquations", paste0(.sareMeasureNames, "Plot"),
+    "predictionsTable", paste0(.sareMeasureNames, "Table"), "residualsVsTimePlot", "residualVsPredictedPlot",
+    "residualHistogram", "probabilityPlot", "exportColumns"))
 
   return()
 }
