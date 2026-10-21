@@ -1,4 +1,4 @@
-# Reliability Growth Analysis
+# Recurrent Event Analysis
 
 Fit Duane, Crow–AMSAA (power-law NHPP), log-linear NHPP, or piecewise power-law NHPP models using ReliaGrowR.
 
