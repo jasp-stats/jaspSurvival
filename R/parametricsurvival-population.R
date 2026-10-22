@@ -40,12 +40,11 @@
       c(list(time), as.list(as.data.frame(parameters)), fit[["aux"]], list(lower.tail = lowerTail, log.p = TRUE))
     ))
   components    <- if ("shape" %in% colnames(parameters)) 1L else sum(grepl("^shape[0-9]+$", colnames(parameters)))
-  probabilities <- .sapmStickBreaking(
-    if (components > 1L) parameters[, paste0("v", seq_len(components - 1L)), drop = FALSE],
-    nrow(parameters)
-  )
-  logs          <- matrix(NA_real_, nrow(parameters), components)
-  componentLogs <- logs
+  if (components > 1L) {
+    probabilities <- .sapmStickBreaking(parameters[, paste0("v", seq_len(components - 1L)), drop = FALSE], nrow(parameters))
+    logs          <- matrix(NA_real_, nrow(parameters), components)
+    componentLogs <- logs
+  }
   for (k in seq_len(components)) {
     suffix <- if ("shape" %in% colnames(parameters)) "" else k
     shape  <- parameters[, paste0("shape", suffix)]
@@ -57,6 +56,8 @@
     logPower <- shape[tail] * (log(time[tail]) - log(scale[tail]))
     power    <- exp(logPower)
     values[tail] <- if (lowerTail) ifelse(power == 0, logPower, log(-expm1(-power))) else -power
+    if (components == 1L)
+      return(values)
     componentLogs[, k] <- values
     componentLogs[probabilities[, k] == 0, k] <- 0
     logs[, k] <- log(probabilities[, k]) + values

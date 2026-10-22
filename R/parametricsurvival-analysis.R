@@ -68,7 +68,7 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
       jaspResults[[key]] <- NULL
   }
   if (options[["censoringSummary"]])
-    .saCensoringSummaryTable(jaspResults, dataset, options, weighted = TRUE)
+    .saCensoringSummaryTable(jaspResults, dataset, options)
 
   # Share draws across all outputs, then release transient storage on exit.
   options[["simulationContext"]] <- .sapSimulationContext(jaspResults, options)

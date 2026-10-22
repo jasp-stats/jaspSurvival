@@ -262,7 +262,9 @@
     gettextf("%1$s averaged over the fitting population", jaspBase::decodeColNames(variable)) else if
     (variable %in% .sapPredictionMarginalFactors(fit, options, setdiff(.sapPredictionUsedVariables(options), variable)))
       gettextf("%1$s averaged equally over its factor levels (design average)", jaspBase::decodeColNames(variable)) else
-    gettextf("%1$s = %2$s", jaspBase::decodeColNames(variable), as.character(reference[[variable]][1L]))
+    gettextf("%1$s = %2$s", jaspBase::decodeColNames(variable),
+      if (is.factor(reference[[variable]])) as.character(reference[[variable]][1L]) else
+        format(signif(reference[[variable]][1L], 6L), trim = TRUE))
   attr(point, "predictionWarnings") <- c(attr(bounds, "predictionWarnings"),
     gettextf("Reference: %1$s; line and panel predictors are held fixed.", referenceLabel),
     if (measure == "timeRatio") gettext("Time ratio = current/reference lifetime. Values above 1 indicate longer survival.") else
