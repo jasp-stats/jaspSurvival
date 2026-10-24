@@ -628,11 +628,11 @@
       ))
     else if (jaspBase::isTryError(fit[[i]]))
       errors <- c(errors, gettextf(
-        "%1$s model %2$s%3$s failed with the following message: %4$s.",
+        "%1$s model %2$s%3$s failed with the following message: %4$s",
         distribution = attr(fit[[i]], "distribution"),
         model        = attr(fit[[i]], "modelTitle"),
         subgroup     = if (.sapHasSubgroups(options)) paste0(" (", attr(fit[[i]], "subgroupLabel"), ")") else "",
-        error        = fit[[i]]
+        error        = jaspBase::.extractErrorMessage(fit[[i]])
       ))
   }
 

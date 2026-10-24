@@ -161,8 +161,16 @@
     decomposition <- qr(design[, free, drop = FALSE])
     if (decomposition[["rank"]] < length(free)) {
       redundant <- free[decomposition[["pivot"]][seq.int(decomposition[["rank"]] + 1L, length(free))]]
-      stop(gettextf("The equation for %1$s in component %2$i contains dependent predictors (%3$s). Remove redundant predictors or fix their coefficients.",
-        equation[["parameter"]], equation[["component"]], paste(jaspBase::decodeColNames(columns[redundant]), collapse = ", ")))
+      terms <- paste(jaspBase::decodeColNames(colnames(equation[["matrix"]])[redundant]), collapse = ", ")
+      if (all(colSums(abs(design[, redundant, drop = FALSE])) == 0))
+        stop(gettextf(
+          "The equation for %1$s in component %2$i cannot be estimated. The following predictor terms are zero for every observation used to fit the model: %3$s. This can happen when a factor level or a combination of factor levels has no observations after missing-value exclusions or subgroup selection. The coefficients of these terms cannot be estimated from the available data.",
+          equation[["parameter"]], equation[["component"]], terms
+        ))
+      stop(gettextf(
+        "The equation for %1$s in component %2$i cannot be estimated because the following predictor terms are linear combinations of other terms: %3$s. Their coefficients cannot be estimated separately from the other predictors.",
+        equation[["parameter"]], equation[["component"]], terms
+      ))
     }
   }
   return(fullDeficient)
