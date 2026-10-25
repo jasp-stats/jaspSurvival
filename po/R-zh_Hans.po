@@ -9,7 +9,7 @@ msgstr ""
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/jasp/jaspsurvival-r/zh_Hans/>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"PO-Revision-Date: 2026-10-25 12:51+0000\n"
+"PO-Revision-Date: 2026-10-26 13:51+0000\n"
 "X-Generator: Weblate 2026.11.dev0\n"
 
 msgctxt "Description|"
@@ -940,7 +940,7 @@ msgstr "生存时间"
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Table"
-msgstr "表"
+msgstr "表格"
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Include a table with the predicted survival estimates."
@@ -2265,7 +2265,7 @@ msgstr "比例风险"
 
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Table"
-msgstr "表"
+msgstr "表格"
 
 msgctxt "SemiParametricSurvivalAnalysis|"
 msgid "Provide a table to test the proportional hazards assumption."
