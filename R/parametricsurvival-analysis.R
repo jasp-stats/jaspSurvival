@@ -115,9 +115,11 @@ ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, sta
   .saExportColumns(jaspResults, options, additional = customExports, informationChanged = informationChanged)
 
   predictionPlots <- c("survivalTimePlot", "medianSurvivalTimePlot", "meanSurvivalTimePlot",
+    "timeRatioPlot", "timeRatioMedianSurvivalTimePlot", "timeRatioMeanSurvivalTimePlot",
     "relativeSurvivalTimePlot", "relativeMedianSurvivalTimePlot", "relativeMeanSurvivalTimePlot",
     "survivalProbabilityPlot", "failureProbabilityPlot", "hazardPlot", "cumulativeHazardPlot", "restrictedMeanSurvivalTimePlot")
   predictionTables <- c("survivalTimeTable", "medianSurvivalTimeTable", "meanSurvivalTimeTable",
+    "timeRatioTable", "timeRatioMedianSurvivalTimeTable", "timeRatioMeanSurvivalTimeTable",
     "relativeSurvivalTimeTable", "relativeMedianSurvivalTimeTable", "relativeMeanSurvivalTimeTable",
     "survivalProbabilityTable", "failureProbabilityTable", "hazardTable", "cumHazardTable", "rmstTable", "lifeTimeTable")
   .saOrderOutputs(jaspResults, c("censoringSummaryTable", "fitErrors", "summaryTable", "sequentialModelComparisonTable",
