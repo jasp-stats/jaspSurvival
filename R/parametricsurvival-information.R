@@ -1,5 +1,5 @@
-# Refit saved dfns closures after stable mixture h/H and Weibull density updates.
-.sapInformationPolicyVersion <- "native-design-standardization-5"
+# Refit saved models after normalizing scalar native Hessians.
+.sapInformationPolicyVersion <- "native-design-standardization-6"
 
 .sapInformationRecord <- function(fit, method, outcome, provenance) {
 

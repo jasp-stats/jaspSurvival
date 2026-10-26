@@ -54,6 +54,55 @@ test_that("Fixed Weibull shape equals an independently fitted exponential model"
   expect_equal(fit[["loglik"]], -1156.099, tolerance = 1e-6)
 })
 
+test_that("Single free parameter inference agrees with native and analytic references", {
+  case <- .parametricReviewCase()
+  options <- case$options
+  model <- case$model
+  model[["components"]] <- list()
+  options[["restrictParameters"]] <- TRUE
+  options[["restrictParametersValues"]] <- list(list(restriction = list("weibull:1"), shape = "1", scale = ""))
+  fit <- jaspSurvival:::.sapFitModel(case$data, options, "weibull", model, 1L)
+  events <- sum(case$data[["event"]])
+  scale <- sum(case$data[["time"]]) / events
+  expect_equal(unname(fit[["res"]]["scale", "est"]), scale, tolerance = 1e-5)
+  expect_equal(unname(fit[["res"]]["scale", "se"]), scale / sqrt(events), tolerance = 1e-5)
+  expect_equal(unname(fit[["res"]]["scale", 2:3]), scale * exp(c(-1, 1) * stats::qnorm(.975) / sqrt(events)), tolerance = 1e-5)
+  expect_true(all(is.na(fit[["res"]]["shape", -1L])))
+  expect_null(attr(fit, "inferenceUnavailable", exact = TRUE))
+  predictions <- jaspSurvival:::.sapSummaryPredictions(fit, t = c(100, 500), ci = TRUE, B = 256L, seed = 1L)
+  expect_true(all(is.finite(unlist(predictions[[1L]][c("lcl", "ucl")]))))
+
+  options[["restrictParametersValues"]][[1L]][["shape"]] <- ""
+  options[["restrictParametersValues"]][[1L]][["scale"]] <- "400"
+  fit <- jaspSurvival:::.sapFitModel(case$data, options, "weibull", model, 1L)
+  reference <- flexsurv::flexsurvreg(survival::Surv(time, event) ~ 1, data = case$data,
+    dist = "weibull", inits = c(1, 400), fixedpars = 2L)
+  expect_equal(unname(fit[["res"]]["shape", ]), unname(reference[["res"]]["shape", ]), tolerance = 1e-5)
+  expect_true(all(is.na(fit[["res"]]["scale", -1L])))
+
+  options[["restrictParameters"]] <- FALSE
+  fit <- jaspSurvival:::.sapFitModel(case$data, options, "exp", model, 1L)
+  expect_equal(unname(fit[["res"]]["rate", "se"]), 1 / (scale * sqrt(events)), tolerance = 1e-5)
+  expect_null(attr(fit, "inferenceUnavailable", exact = TRUE))
+})
+
+test_that("Probability plots omit the missing confidence interval note", {
+  case <- .parametricReviewCase()
+  options <- case$options
+  options[["probabilityPlotStratifyBy"]] <- FALSE
+  options[["probabilityPlotConfidenceIntervals"]] <- TRUE
+  fit <- jaspSurvival:::.sapFitModel(case$data, options, "weibull", case$model, 1L)
+  fit <- jaspSurvival:::.sapNativeUnavailableInference(fit, "Unavailable covariance for regression test")
+  plotData <- jaspSurvival:::.sapProbabilityPlotData(list(fit), options)
+  note <- gettext("Some confidence intervals could not be evaluated and are shown as missing.")
+  expect_true(nrow(plotData[["curveData"]]) > 0L)
+  expect_true(all(is.na(plotData[["curveData"]][c("lCi", "uCi")])))
+  expect_true(note %in% attr(plotData[["curveData"]], "predictionWarnings"))
+  expect_false(note %in% plotData[["notes"]])
+  plot <- jaspSurvival:::.sapCreateProbabilityPlot(list(fit), options)
+  expect_false(any(grepl(note, plot$labels$caption, fixed = TRUE)))
+})
+
 test_that("One-sided coefficient limits use the requested normal tail", {
   case <- .parametricReviewCase()
   fit <- jaspSurvival:::.sapFitModel(case$data, case$options, "weibull", case$model, 1L)

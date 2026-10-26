@@ -213,6 +213,9 @@
         return(failed)
       })
     .sapmCheckFinalPoint(fit, unname(point[["res"]][, "est"]), point[["loglik"]])
+    # Native analytic Hessians can simplify to a scalar with one free parameter.
+    if (fit[["npars"]] == 1L && is.numeric(fit[["opt"]][["hessian"]]) && length(fit[["opt"]][["hessian"]]) == 1L)
+      fit[["opt"]][["hessian"]] <- matrix(fit[["opt"]][["hessian"]], 1L, 1L)
     if (is.null(provenance[["nativeCondition"]]))
       provenance["nativeH"] <- list(fit[["opt"]][["hessian"]])
     if (is.null(attr(fit, "inferenceUnavailable", exact = TRUE))) {

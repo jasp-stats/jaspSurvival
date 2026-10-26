@@ -22,10 +22,10 @@
 
   # Saved plots must redraw when their definition or layout options change.
   definition <- jaspResults[["probabilityPlotDefinition"]]
-  if (is.null(definition) || !identical(definition$object, 6L)) {
+  if (is.null(definition) || !identical(definition$object, 7L)) {
     definition <- createJaspState()
     definition$dependOn(c("probabilityPlotStratifyBy", "probabilityPlotStratifyByVariables"))
-    definition$object <- 6L
+    definition$object <- 7L
     jaspResults[["probabilityPlotDefinition"]] <- definition
     jaspResults[["probabilityPlot"]] <- NULL
   }
@@ -221,6 +221,7 @@
 
   notes <- unique(c(unlist(lapply(displayDatasets, attr, "probabilityPlotWarnings"), use.names = FALSE),
     attr(curveData, "predictionWarnings")))
+  notes <- setdiff(notes, gettext("Some confidence intervals could not be evaluated and are shown as missing."))
   return(list(empiricalData = empiricalData, curveData = curveData, censoringData = censoringData,
     observedTimeRange = observedTimeRange, adjusted = adjusted, notes = notes))
 }
