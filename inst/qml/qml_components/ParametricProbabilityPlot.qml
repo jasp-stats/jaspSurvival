@@ -28,24 +28,34 @@ CheckBox
 	id:	probabilityRoot
 	property bool rightCensoring:	false
 	property bool mergeDistributionsAvailable:	false
-	property bool categoricalLevelsPossible:	false
+	property var analysisForm
+	property var modelPredictors: []
+	property var covariateNames: []
+	property var factorNames: []
+	property bool predictorSourcesReady: false
+	readonly property var selectedStratifiers: stratificationSelector.selectedStratifiers
+	readonly property bool continuousStrata: stratificationSelector.continuousStrata
+	readonly property bool strataPossible: stratificationSelector.strataPossible
 	property bool subgroupsAvailable:	false
 	property bool mergeComponentsActive:	false
 	property alias extraMergeControls:	mergeExtras.content
 	readonly property bool subgroupsMerged: probabilityPlotMergePlotsAcrossSubgroups.checked && probabilityPlotMergePlotsAcrossSubgroups.enabled
-	readonly property bool legendPaletteAvailable: (probabilityPlotFittedCurve.checked && ((probabilityPlotMergePlotsAcrossDistributions.checked && probabilityPlotMergePlotsAcrossDistributions.enabled) || mergeComponentsActive || (probabilityPlotMergePlotsAcrossFactors.checked && probabilityPlotMergePlotsAcrossFactors.enabled) || subgroupsMerged)) || (((probabilityPlotMergePlotsAcrossFactors.checked && probabilityPlotMergePlotsAcrossFactors.enabled) || subgroupsMerged) && (probabilityPlotEmpiricalPoints.checked || (probabilityPlotCensoringEvents.checked && probabilityPlotCensoringEvents.enabled)))
+	readonly property bool plotsMerged: (probabilityPlotMergePlotsAcrossStrata.checked && probabilityPlotMergePlotsAcrossStrata.enabled) ||
+		subgroupsMerged || (probabilityPlotMergePlotsAcrossDistributions.checked && probabilityPlotMergePlotsAcrossDistributions.enabled) || mergeComponentsActive
+	readonly property bool legendPaletteAvailable: plotsMerged && (probabilityPlotFittedCurve.checked ||
+		probabilityPlotEmpiricalPoints.checked || (probabilityPlotCensoringEvents.checked && probabilityPlotCensoringEvents.enabled))
 
 	name:		"probabilityPlot"
 	label:		qsTr("Probability plot")
 	enabled:	probabilityRoot.rightCensoring
-	info: qsTr("Create a model-based probability plot to assess how well the selected parametric distribution describes the observed failure times. Only available when Censoring Type is set to Right.")
+	info: qsTr("Compare observed failure times with the fitted distribution to assess model fit. Available for right-censored data.")
 
 	DropDown
 	{
 		name:		"probabilityPlotCanvas"
 		label:		qsTr("Canvas")
 		startValue:	"weibull"
-		info: qsTr("Select the probability-paper scale. A distribution matching the selected canvas appears approximately as a straight line. The exponential canvas uses linear time and cumulative-hazard probability scaling; the other canvases use log time.")
+		info: qsTr("Choose the reference distribution for the probability plot's axes.")
 		values:
 		[
 			{ label: qsTr("Weibull"),		value: "weibull"},
@@ -55,17 +65,29 @@ CheckBox
 		]
 	}
 
+	ParametricObservedStrata
+	{
+		id: stratificationSelector
+		prefix: "probabilityPlot"
+		analysisForm: probabilityRoot.analysisForm
+		modelPredictors: probabilityRoot.modelPredictors
+		covariateNames: probabilityRoot.covariateNames
+		factorNames: probabilityRoot.factorNames
+		predictorSourcesReady: probabilityRoot.predictorSourcesReady
+		info: qsTr("Show separate groups of observed data for the selected predictors.")
+	}
+
 	CheckBox
 	{
 		name:		"probabilityPlotEmpiricalPoints"
 		id:			probabilityPlotEmpiricalPoints
 		label:		qsTr("Empirical points")
 		checked:	true
-		info: qsTr("Plot empirical failure probability points based on the observed failure times.")
+		info: qsTr("Show points representing the observed failure probabilities.")
 
 		CheckBox
 		{
-			name:		"probabilityPlotPointCoordinates"
+			name:		"probabilityPlotEmpiricalPointsCoordinates"
 			label:		qsTr("Coordinates")
 			checked:	false
 			info: qsTr("Display the time and failure probability next to each empirical point.")
@@ -107,22 +129,22 @@ CheckBox
 
 		CheckBox
 		{
-			name:		"probabilityPlotMergePlotsAcrossFactors"
-			id:			probabilityPlotMergePlotsAcrossFactors
-			label:		qsTr("Factors")
-			checked:	true
-			enabled:	probabilityRoot.categoricalLevelsPossible
-			info: qsTr("When checked, combine observed combinations of fitted factors in one plot. When unchecked, show a separate plot for each combination. In both cases, predictions use the unweighted mean model design (including interaction terms) within each combination.")
-		}
-
-		CheckBox
-		{
 			name:		"probabilityPlotMergePlotsAcrossSubgroups"
 			id:			probabilityPlotMergePlotsAcrossSubgroups
 			label:		qsTr("Subgroups")
 			checked:	false
 			enabled:	probabilityRoot.subgroupsAvailable
-			info: qsTr("Overlay the separately fitted subgroup curves in one plot, retaining separate observed data for each subgroup.")
+			info: qsTr("Overlay probability plots for separately fitted subgroups.")
+		}
+
+		CheckBox
+		{
+			name:		"probabilityPlotMergePlotsAcrossStrata"
+			id:			probabilityPlotMergePlotsAcrossStrata
+			label:		qsTr("Strata")
+			checked:	true
+			enabled:	stratificationSelector.checked && probabilityRoot.modelPredictors.length > 0
+			info: qsTr("Overlay the observed groups in one probability plot, or show each group in a separate plot.")
 		}
 
 		Group
@@ -134,7 +156,7 @@ CheckBox
 
 	CheckBox
 	{
-		name:				"probabilityPlotConfidenceInterval"
+		name:				"probabilityPlotConfidenceIntervals"
 		label:				qsTr("Confidence intervals")
 		checked:			true
 		childrenOnSameRow:	true
@@ -142,7 +164,7 @@ CheckBox
 
 		CIField
 		{
-			name:			"probabilityPlotConfidenceIntervalLevel"
+			name:			"probabilityPlotConfidenceIntervalsLevel"
 			defaultValue:	90
 			info: qsTr("Set the confidence level for the probability plot confidence intervals.")
 		}
@@ -178,7 +200,7 @@ CheckBox
 		name:		"probabilityPlotRankAdjustment"
 		label:		qsTr("Rank adjustment")
 		startValue:	"johnson"
-		info: qsTr("Select the rank adjustment method for right-censored observations. The Kaplan-Meier adjustment follows the WeibullR/Minitab convention, including the final-failure adjustment used to keep points finite on probability paper.")
+		info: qsTr("Choose how to adjust the ranks of observations when some survival times are censored.")
 		values:
 		[
 			{ label: qsTr("Johnson"),		value: "johnson"},
@@ -188,7 +210,7 @@ CheckBox
 
 	DropDown
 	{
-		name:		"probabilityPlotTiesHandler"
+		name:		"probabilityPlotTies"
 		label:		qsTr("Ties")
 		startValue:	"none"
 		info: qsTr("Select how tied failure times are handled when computing empirical plotting positions.")
@@ -208,7 +230,7 @@ CheckBox
 		label:		qsTr("Legend")
 		startValue:	"right"
 		enabled:	probabilityRoot.legendPaletteAvailable
-		info: qsTr("Choose the legend position for probability plots with multiple fitted curves or factor levels.")
+		info: qsTr("Choose the legend position for the probability plot.")
 		values:
 		[
 			{ label: qsTr("Bottom"),	value: "bottom"},
@@ -223,7 +245,7 @@ CheckBox
 	{
 		name:		"probabilityPlotColorPalette"
 		enabled:	probabilityRoot.legendPaletteAvailable
-		info: qsTr("Customize the color palette used in probability plots with multiple fitted curves or factor levels.")
+		info: qsTr("Choose the colours used in the probability plot.")
 	}
 
 	DropDown

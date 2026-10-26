@@ -1,0 +1,201 @@
+pragma Translator: "ParametricSurvivalAnalysis"
+
+import QtQuick
+import QtQuick.Layouts
+import JASP.Controls
+import JASP
+
+ParametricRestrictionSlots
+{
+	id: restrictions
+	property var selector
+	property real rowSpacing: 4 * jaspTheme.uiScale
+	property bool addBorder: true
+	property alias itemRectangle: frame
+	readonly property real distributionWidth: 190 * jaspTheme.uiScale
+	readonly property real componentWidth: 60 * jaspTheme.uiScale
+	readonly property var activeFamilies: ["all", "bestAic", "bestBic"].indexOf(selector.value) >= 0 ?
+		selector.selectedFamilies.map(function(family) { return family.value; }) : [selector.value]
+	name: "restrictParametersValues"
+	optionKey: "restriction"
+	visible: selector.parametersRestricted
+	enabled: selector.parametersRestricted
+	Layout.columnSpan: form.columns
+	Layout.fillWidth: true
+	implicitWidth: rows.childrenRect.width + 2 * jaspTheme.contentMargin
+	implicitHeight: rows.height + 2 * jaspTheme.contentMargin
+	preferredWidth: parent.width
+	preferredHeight: implicitHeight
+	background: frame
+	innerControl: rows
+	shouldStealHover: false
+
+	Component.onCompleted:
+	{
+		let keys = [];
+		for (let family of selector.familyChoices)
+			for (let k = 1; k <= 4; k++)
+				keys.push(family.value + ":" + k);
+		restrictionKeys = keys;
+	}
+
+	Rectangle
+	{
+		id: frame
+		anchors.fill: parent
+		color: jaspTheme.controlBackgroundColor
+		border.width: restrictions.addBorder ? 1 : 0
+		border.color: jaspTheme.borderColor
+		radius: jaspTheme.borderRadius
+	}
+	Column
+	{
+		id: rows
+		width: parent.width - 2 * jaspTheme.contentMargin
+		x: jaspTheme.contentMargin
+		y: jaspTheme.contentMargin
+		spacing: restrictions.rowSpacing
+		RowLayout
+		{
+			spacing: 8 * jaspTheme.uiScale
+			Label
+			{
+				text: qsTr("Distribution")
+				Layout.preferredWidth: restrictions.distributionWidth
+			}
+			Label
+			{
+				text: qsTr("Component")
+				visible: restrictions.selector.mixture
+				Layout.preferredWidth: restrictions.componentWidth
+			}
+			Label { text: qsTr("Parameters") }
+		}
+		Repeater
+		{
+			model: restrictions.model
+			delegate: ParametricRestrictionRow
+			{
+				rowComponentItem: model.rowComponent
+				visible: rowComponentItem && restrictions.activeFamilies.indexOf(rowComponentItem.distribution) >= 0 && rowComponentItem.component <= restrictions.selector.componentCount
+			}
+		}
+	}
+	rowComponent: RowLayout
+	{
+		id: restrictionRow
+		readonly property var specification: rowValue.split(":")
+		readonly property string distribution: specification[0]
+		readonly property int component: Number(specification[1])
+		readonly property string distributionLabel: listView.selector.familyChoices.find(function(family) {
+			return family.value === restrictionRow.distribution;
+		}).label
+		readonly property bool mixture: listView.selector.mixture
+		spacing: 8 * jaspTheme.uiScale
+		Group
+		{
+			name: "distributionColumn"
+			Layout.preferredWidth: listView.distributionWidth
+			Label
+			{
+				text: restrictionRow.component === 1 ? restrictionRow.distributionLabel : ""
+			}
+		}
+		Group
+		{
+			name: "componentColumn"
+			visible: restrictionRow.mixture
+			Layout.preferredWidth: visible ? listView.componentWidth : 0
+			Label
+			{
+				text: restrictionRow.component
+				visible: restrictionRow.mixture
+			}
+		}
+		Group
+		{
+			name: "parametersColumn"
+			RowLayout
+			{
+				spacing: 8 * jaspTheme.uiScale
+
+				ParametricFixedParameter
+				{
+					name: "rate"
+					label: qsTr("rate")
+					visible: ["exponential", "gamma", "gompertz"].indexOf(restrictionRow.distribution) >= 0
+				}
+				ParametricFixedParameter
+				{
+					name: "shape"
+					label: qsTr("shape")
+					visible: ["gamma", "gompertz", "logLogistic", "weibull", "generalizedGammaOriginal"].indexOf(restrictionRow.distribution) >= 0
+					positive: restrictionRow.distribution !== "gompertz"
+				}
+				ParametricFixedParameter
+				{
+					name: "scale"
+					label: qsTr("scale")
+					visible: ["logLogistic", "weibull", "generalizedGammaOriginal"].indexOf(restrictionRow.distribution) >= 0
+				}
+				ParametricFixedParameter
+				{
+					name: "meanlog"
+					label: qsTr("meanlog")
+					visible: restrictionRow.distribution === "logNormal"
+					positive: false
+				}
+				ParametricFixedParameter
+				{
+					name: "sdlog"
+					label: qsTr("sdlog")
+					visible: restrictionRow.distribution === "logNormal"
+				}
+				ParametricFixedParameter
+				{
+					name: "mu"
+					label: "mu"
+					visible: ["generalizedF", "generalizedGamma", "generalizedFOriginal"].indexOf(restrictionRow.distribution) >= 0
+					positive: false
+				}
+				ParametricFixedParameter
+				{
+					name: "sigma"
+					label: "sigma"
+					visible: ["generalizedF", "generalizedGamma", "generalizedFOriginal"].indexOf(restrictionRow.distribution) >= 0
+				}
+				ParametricFixedParameter
+				{
+					name: "Q"
+					label: "Q"
+					visible: ["generalizedF", "generalizedGamma"].indexOf(restrictionRow.distribution) >= 0
+					positive: false
+				}
+				ParametricFixedParameter
+				{
+					name: "P"
+					label: "P"
+					visible: restrictionRow.distribution === "generalizedF"
+				}
+				ParametricFixedParameter
+				{
+					name: "k"
+					label: "k"
+					visible: restrictionRow.distribution === "generalizedGammaOriginal"
+				}
+				ParametricFixedParameter
+				{
+					name: "s1"
+					label: "s1"
+					visible: restrictionRow.distribution === "generalizedFOriginal"
+				}
+				ParametricFixedParameter
+				{
+					name: "s2"
+					label: "s2"
+					visible: restrictionRow.distribution === "generalizedFOriginal"
+				}
+			}
+		}
+	}
+}

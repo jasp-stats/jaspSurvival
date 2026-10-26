@@ -14,7 +14,7 @@ Section
 
 	title:		qsTr("Export")
 	columns:	2
-	info: qsTr("Export model-derived values for each observation to the dataset. Exports follow the displayed model selection. When multiple models are displayed, column names include distribution, model, subgroup, and (for mixtures) component-count identifiers. Observations excluded from a model receive missing values.")
+	info: qsTr("Add residuals, fitted values or mixture classifications from the displayed models as new columns in the dataset.")
 
 	TextField
 	{
@@ -23,7 +23,7 @@ Section
 		defaultValue:	""
 		fieldWidth:		160 * jaspTheme.uiScale
 		Layout.columnSpan: 2
-		info: qsTr("Optional custom prefix prepended to every exported column name, before any automatic model identifier.")
+		info: qsTr("Set a prefix for the names of exported columns.")
 	}
 
 	Group
@@ -35,7 +35,7 @@ Section
 			visible:	exportRoot.cox
 			name:		"exportResidualsMartingale"
 			label:		qsTr("Martingale")
-			info: qsTr("Export the event indicator minus the fitted cumulative hazard for each observation.")
+			info: qsTr("Export martingale residuals for each observation.")
 		}
 
 		CheckBox
@@ -52,7 +52,7 @@ Section
 			name:		"exportResidualsResponse"
 			label:		qsTr("Response")
 			enabled:	!exportRoot.intervalCensoring
-			info: qsTr("Export observed time minus fitted mean survival time. Censored times are treated as observed times. Unavailable for interval-censored data.")
+			info: qsTr("Export observed minus predicted mean survival time, treating censored times as observed. Unavailable for interval-censored data.")
 		}
 
 		CheckBox
@@ -60,7 +60,7 @@ Section
 			name:		"exportResidualsCoxSnell"
 			label:		qsTr("Cox-Snell")
 			enabled:	!exportRoot.intervalCensoring
-			info: qsTr("Export the fitted cumulative hazard at each observation's time. For counting-process data, it is conditional on survival to the entry time. Unavailable for interval-censored data.")
+			info: qsTr("Export Cox-Snell residuals. For counting-process data, these are conditional on survival to entry. Unavailable for interval-censored data.")
 		}
 	}
 
@@ -71,33 +71,33 @@ Section
 		CheckBox
 		{
 			visible:	exportRoot.cox
-			name:		"exportFittedRisk"
+			name:		"exportFittedValuesRelativeRisk"
 			label:		qsTr("Relative risk")
-			info: qsTr("Export the fitted relative risk, centered at the mean covariate values within each stratum.")
+			info: qsTr("Export the fitted relative risk, centered at mean covariate values within each stratum.")
 		}
 
 		CheckBox
 		{
 			visible:	exportRoot.cox
-			name:		"exportFittedLinearPredictor"
+			name:		"exportFittedValuesLinearPredictor"
 			label:		qsTr("Linear predictor")
-			info: qsTr("Export the fitted log relative risk, centered at the mean covariate values within each stratum.")
+			info: qsTr("Export the fitted log relative risk, centered at mean covariate values within each stratum.")
 		}
 
 		CheckBox
 		{
 			visible:	!exportRoot.cox
-			name:	"exportFittedMean"
+			name:	"exportFittedValuesMeanSurvivalTime"
 			label:	qsTr("Mean survival time")
-			info: qsTr("Export the fitted mean survival time at each observation's covariate values.")
+			info: qsTr("Export the fitted mean survival time for each observation.")
 		}
 
 		CheckBox
 		{
 			visible:	!exportRoot.cox
-			name:	"exportFittedMedian"
+			name:	"exportFittedValuesMedianSurvivalTime"
 			label:	qsTr("Median survival time")
-			info: qsTr("Export the fitted median survival time at each observation's covariate values.")
+			info: qsTr("Export the fitted median survival time for each observation.")
 		}
 	}
 
@@ -108,16 +108,16 @@ Section
 
 		CheckBox
 		{
-			name:	"exportMixtureProbabilities"
+			name:	"exportMixtureClassificationComponentProbabilities"
 			label:	qsTr("Component probabilities")
-			info: qsTr("Export one posterior membership probability per mixture component, conditional on the observed survival or censoring information.")
+			info: qsTr("Export the estimated probability that each observation belongs to each mixture component.")
 		}
 
 		CheckBox
 		{
-			name:	"exportMixtureClassification"
+			name:	"exportMixtureClassificationComponentIndex"
 			label:	qsTr("Component index")
-			info: qsTr("Export the index of the component with the highest posterior membership probability. Ties are assigned to the first component.")
+			info: qsTr("Export the most likely mixture component for each observation.")
 		}
 	}
 }

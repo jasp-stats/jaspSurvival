@@ -55,7 +55,7 @@ test_that("Membership probabilities require valid distinct values", {
 
 test_that("Equal-sized groups and tail partitions can be selected independently", {
   options <- jaspTools::analysisOptions("ParametricMixtureSurvivalAnalysis")
-  for (name in c("mixtureStartKmeans", "mixtureStartSplit", "mixtureStartRandom"))
+  for (name in c("mixtureStartingValuesKMeans", "mixtureStartingValuesSplitOfThePreviousSolution", "mixtureStartingValuesRandom"))
     options[[name]] <- FALSE
   options[["mixtureStartMembershipProbabilities"]] <- "0.95"
   family <- jaspSurvival:::.sapmFamily("weibull")
@@ -64,7 +64,7 @@ test_that("Equal-sized groups and tail partitions can be selected independently"
   options[["mixtureStartTails"]] <- FALSE
   equal <- jaspSurvival:::.sapmStarts(options, family, survObject, survObject, 2, NULL)
   expect_identical(vapply(equal, `[[`, character(1), "name"), "quantiles")
-  options[["mixtureStartQuantiles"]] <- FALSE
+  options[["mixtureStartingValuesQuantiles"]] <- FALSE
   options[["mixtureStartTails"]] <- TRUE
   tails <- jaspSurvival:::.sapmStarts(options, family, survObject, survObject, 2, NULL)
   expect_identical(vapply(tails, `[[`, character(1), "name"), c("tails1", "tails2"))
@@ -99,8 +99,8 @@ test_that("Default sharper starts recover the compact component in the lung exam
   options <- jaspTools::analysisOptions(jaspFile)[[1]]
   options[["mixtureStartTails"]] <- TRUE
   options[["mixtureStartMembershipProbabilities"]] <- "0.95, 0.99"
-  for (name in c("survivalProbabilityPlot", "probabilityPlot", "mixtureComponentPlot",
-                 "survivalProbabilityTable", "mixtureComponentsTable", "mixtureClassificationTable"))
+  for (name in c("predictionsOutputPlot", "probabilityPlot", "mixtureComponentPlot",
+                 "predictionsOutputTable", "mixtureMeanAndMedian", "mixtureClassification"))
     options[[name]] <- FALSE
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
   encoded <- jaspTools:::encodeOptionsAndDataset(options, dataset)

@@ -35,7 +35,7 @@ Group
 
 	CheckBox
 	{
-		name:		"includeFullDatasetInSubgroupAnalysis"
+		name:		"outputFormattingIncludeFullDatasetInSubgroupAnalysis"
 		text:		qsTr("Include full dataset in subgroup analysis")
 		enabled:	hasSubgroup
 		checked:	false
@@ -44,7 +44,7 @@ Group
 
 	CheckBox
 	{
-		name:		"compareModelsAcrossDistributions"
+		name:		"outputFormattingCompareModelsAcrossDistributions"
 		text:		qsTr("Compare models across distributions")
 		enabled:	(selectedDistribution === "all" || selectedDistribution === "bestAic" || selectedDistribution === "bestBic") && multipleModels
 		checked:	true
@@ -59,7 +59,7 @@ Group
 
 	CheckBox
 	{
-		name:		"alwaysDisplayModelInformation"
+		name:		"outputFormattingAlwaysDisplayModelInformation"
 		text:		qsTr("Always display model information")
 		checked:	false
 		info: mixture ? qsTranslate("ParametricMixtureSurvivalAnalysis", "Always display model information (distribution, number of components, and model name) in output tables.") : qsTr("Always display model information (distribution and model name) in output tables.")

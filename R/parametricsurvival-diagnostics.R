@@ -20,13 +20,13 @@
 
   specifications <- list(
     list(option = "residualPlotResidualVsTime", name = "residualsVsTimePlot", title = gettext("Residuals vs. Time"),
-         builder = .sapResidualsVsTimePlotFun, position = 5.1),
+      builder = .sapResidualsVsTimePlotFun, position = 5.1),
     list(option = "residualPlotResidualVsPredictors", name = "residualsVsPredictorsPlot", title = gettext("Residuals vs. Predictors"),
-         builder = .sapResidualsVsPredictorsPlotFun, position = 5.2),
+      builder = .sapResidualsVsPredictorsPlotFun, position = 5.2),
     list(option = "residualPlotResidualVsPredicted", name = "residualVsPredictedPlot", title = gettext("Residuals vs. Predicted"),
-         builder = .sapResidualsVsPredictedPlotFun, position = 5.3),
+      builder = .sapResidualsVsPredictedPlotFun, position = 5.3),
     list(option = "residualPlotResidualHistogram", name = "residualHistogram", title = gettext("Residual Histogram"),
-         builder = .sapResidualHistogramPlotFun, position = 5.4)
+      builder = .sapResidualHistogramPlotFun, position = 5.4)
   )
   requested <- Filter(function(specification) {
     options[[specification[["option"]]]] && is.null(jaspResults[[specification[["name"]]]]) &&
@@ -68,10 +68,11 @@
     return(tempPlot)
   }
 
-  tempPlot$plotObject <- try(.saResidualsPlot(time, res, gettext("Time"), .saResidualsPlotName(options)))
+  tempPlot$plotObject <- try(.saPlotCanvasPadding(.saResidualsPlot(time, res, gettext("Time"), .saResidualsPlotName(options))))
 
   return(tempPlot)
 }
+
 .sapResidualsVsPredictorsPlotFun <- function(fit, options) {
 
   residualPlotResidualVsPredictors <- createJaspContainer()
@@ -80,11 +81,28 @@
     return(residualPlotResidualVsPredictors)
 
   # extract the dataset and compute residuals
-  predictorsFit <- model.matrix(fit)
+  predictorsFit  <- model.matrix(fit)
+  equationLabels <- NULL
+  specification  <- attr(fit, "equations")
+  hasAncillary   <- !is.null(specification) && any(vapply(specification[["equations"]], function(equation)
+    equation[["parameter"]] != .sapmFamily(attr(fit, "family"))[["location"]] && length(equation[["slopeIndices"]]) > 0L, logical(1)))
+  if (hasAncillary) {
+    equations      <- specification[["equations"]][vapply(specification[["equations"]], function(equation) equation[["component"]] == 1L, logical(1))]
+    indices        <- unlist(lapply(equations, function(equation) equation[["slopeIndices"]]), use.names = FALSE)
+    predictorsFit  <- predictorsFit[, match(indices, fit[["covpars"]]), drop = FALSE]
+    equationLabels <- .sapCoefficientLabels(fit)[indices]
+  }
   # the predictors of mixture models are repeated for the location parameter of each component
-  if (!is.null(attr(fit, "mixture")))
+  if (!hasAncillary && !is.null(attr(fit, "mixture")))
     predictorsFit <- predictorsFit[, fit[["mx"]][[fit[["dlist"]][["location"]]]], drop = FALSE]
-  predictorsFit <- .saResidualsPredictors(predictorsFit, stats::model.frame(fit), options[["factors"]])
+  if (!hasAncillary)
+    predictorsFit <- .saResidualsPredictors(predictorsFit, stats::model.frame(fit), options[["factors"]])
+  if (!hasAncillary && !is.null(specification)) {
+    location      <- specification[["equations"]][[1L]]
+    factorColumns <- .sapFactorDesignColumns(fit, location, colnames(predictorsFit))
+    for (column in factorColumns)
+      predictorsFit[, column] <- factor(predictorsFit[, column])
+  }
   res <- .sapResiduals(fit, options)
   if (jaspBase::isTryError(res)) {
     residualPlotResidualVsPredictors$setError(conditionMessage(attr(res, "condition")))
@@ -92,18 +110,21 @@
   }
 
   for (i in seq_len(ncol(predictorsFit))) {
-    tempPredictorName <- .saTermNames(colnames(predictorsFit)[i], variables = c(options[["covariates"]], options[["factors"]]))
+    tempPredictorName <- if (hasAncillary) equationLabels[i] else .sapTransformationNames(colnames(predictorsFit)[i], fit)
+    if (tempPredictorName == colnames(predictorsFit)[i])
+      tempPredictorName <- .saTermNames(tempPredictorName, variables = c(options[["covariates"]], options[["factors"]]))
     residualPlotResidualVsPredictors[[paste0("residualPlotResidualVsPredictors", i)]] <- createJaspPlot(
-      plot         = .saResidualsPlot(x = predictorsFit[,i], y = res, xlab = tempPredictorName, ylab = .saResidualsPlotName(options)),
-      title        = gettextf("Residuals vs. %1$s", tempPredictorName),
-      position     = i,
-      width        = 450,
-      height       = 320
+      plot     = .saPlotCanvasPadding(.saResidualsPlot(x = predictorsFit[,i], y = res, xlab = tempPredictorName, ylab = .saResidualsPlotName(options))),
+      title    = gettextf("Residuals vs. %1$s", tempPredictorName),
+      position = i,
+      width    = 450,
+      height   = 320
     )
   }
 
   return(residualPlotResidualVsPredictors)
 }
+
 .sapResidualsVsPredictedPlotFun  <- function(fit, options) {
 
   tempPlot <- createJaspPlot()
@@ -112,8 +133,8 @@
     return(tempPlot)
 
   # extract the dataset and compute residuals
-  pred    <- try(unlist(predict(fit)))
-  res     <- .sapResiduals(fit, options)
+  pred <- try(stats::predict(fit, newdata = attr(fit, "dataset"))[[".pred_time"]])
+  res  <- .sapResiduals(fit, options)
   if (jaspBase::isTryError(res)) {
     tempPlot$setError(conditionMessage(attr(res, "condition")))
     return(tempPlot)
@@ -124,10 +145,11 @@
     return(tempPlot)
   }
 
-  tempPlot$plotObject <- try(.saResidualsPlot(pred, res, gettext("Predicted Time"), .saResidualsPlotName(options)))
+  tempPlot$plotObject <- try(.saPlotCanvasPadding(.saResidualsPlot(pred, res, gettext("Predicted Time"), .saResidualsPlotName(options))))
 
   return(tempPlot)
 }
+
 .sapResidualHistogramPlotFun     <- function(fit, options) {
 
   tempPlot <- createJaspPlot()
@@ -142,10 +164,12 @@
     return(tempPlot)
   }
 
-  tempPlot$plotObject <- try(jaspGraphs::jaspHistogram(res, xName =.saResidualsPlotName(options)))
+  res <- rep(res, .sapCaseWeights(attr(fit, "dataset"), options))
+  tempPlot$plotObject <- try(.saPlotCanvasPadding(jaspGraphs::jaspHistogram(res, xName =.saResidualsPlotName(options))))
 
   return(tempPlot)
 }
+
 .sapResiduals <- function(fit, options) {
 
   # flexsurv cannot compute Cox-Snell residuals from interval-censored outcomes.
@@ -154,10 +178,35 @@
     if (options[["censoringType"]] == "interval" && options[["residualPlotResidualType"]] == "coxSnell")
       stop(gettext("Cox-Snell residuals are not available for interval-censored data."), call. = FALSE)
 
-    residuals(fit, type = switch(
+    .sapResidualValues(fit, type = switch(
       options[["residualPlotResidualType"]],
       "response" = "response",
       "coxSnell" = "coxsnell"
     ))
   }, silent = TRUE))
+}
+
+.sapResidualValues <- function(fit, type) {
+
+  equations <- c(list(attr(fit, "modelTerms")), attr(fit, "modelTerms")[["ancillaryEquations"]])
+  survival  <- stats::model.frame(fit, orig = TRUE)[[1L]]
+  counting  <- "start" %in% colnames(survival)
+  # Native response residuals use the first column, which is entry time for counting data.
+  if (!counting && all(lengths(.sapModelTransformations(attr(fit, "modelTerms"))) == 0L) &&
+    all(vapply(equations, function(equation) length(equation[["factorContrasts"]]) == 0L, logical(1))))
+    return(stats::residuals(fit, type = type))
+
+  dataset <- attr(fit, "dataset")
+  if (type == "response") {
+    mean <- stats::predict(fit, newdata = dataset, type = "response")[[".pred_time"]]
+    time <- survival[, if (counting) "stop" else 1L]
+    return(unname(time) - mean)
+  }
+
+  # Supply raw stresses explicitly: the native model frame contains the
+  # transformed columns, which cannot reconstruct their original inputs.
+  time  <- survival[, if (counting) "stop" else "time"]
+  start <- if (counting) survival[, "start"] else 0
+  return(summary(fit, type = "cumhaz", t = time, start = start, newdata = dataset,
+    cross = FALSE, ci = FALSE, se = FALSE, tidy = TRUE)[["est"]])
 }

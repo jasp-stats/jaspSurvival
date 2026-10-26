@@ -17,7 +17,6 @@
 
 The module supports censoring summaries, group comparisons, model fit statistics, coefficient and hazard ratio estimates, diagnostic plots, and predictions for survival time, survival probability, hazard, cumulative hazard, and restricted mean survival time.
 
-
 ## R Packages
 
 <img src='https://www.r-project.org/logo/Rlogo.svg' width='100' height='78' align='right'/>

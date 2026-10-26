@@ -25,15 +25,32 @@ import JASP
 
 Group
 {
-
-	IntegerField
+	Group
 	{
-		name:			"confidenceIntervalSimulationDraws"
-		label:			qsTr("Confidence interval simulation draws")
-		defaultValue:	10000
-		min:			100
-		max:			1000000
-		info: qsTr("Set the number of parameter draws used to simulate confidence intervals for prediction tables and all model-based plot bands. More draws improve precision at a higher computational cost.")
+		title:	qsTr("Confidence interval")
+
+		DropDown
+		{
+			name:	"confidenceIntervalBounds"
+			label:	qsTr("Bounds")
+			startValue:	"twoSided"
+			values: [
+				{label: qsTr("Two-sided"), value: "twoSided"},
+				{label: qsTr("Lower"), value: "lower"},
+				{label: qsTr("Upper"), value: "upper"}
+			]
+			info:	qsTr("Choose two-sided confidence intervals or one-sided lower or upper bounds.")
+		}
+
+		IntegerField
+		{
+			name:			"confidenceIntervalSimulationDraws"
+			label:			qsTr("Simulation draws")
+			defaultValue:	10000
+			min:			100
+			max:			1000000
+			info: qsTr("Set the number of simulations used for confidence intervals. More simulations improve precision but take longer.")
+		}
 	}
 
 	SetSeed {}
