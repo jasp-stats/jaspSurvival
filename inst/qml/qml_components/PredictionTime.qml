@@ -9,6 +9,7 @@ Group
 {
 	id: timeOptions
 	property alias gridControl: timeGrid
+	readonly property bool gridInitialized: timeGrid.initialized
 	property alias maximumIntervals: timeIntervals.max
 	property string fromPlaceholder: qsTr("0")
 	property string stepPlaceholder: qsTr("Maximum follow-up / 10")
@@ -18,7 +19,6 @@ Group
 	property string stepInfo: qsTr("Set the time increment. Leave blank to use the default increment.")
 	property string toInfo: qsTr("Set the last time in the sequence. Leave blank to use the maximum follow-up time.")
 	property string valuesInfo: qsTr("Enter non-negative prediction times, separated by commas. Leave blank to use the default times.")
-	signal gridInitializedChanged()
 	title: qsTr("Time")
 
 	DropDown
@@ -27,7 +27,6 @@ Group
 		name: "predictionsTimeGrid"
 		label: qsTr("Grid")
 		startValue: "quantiles"
-		onInitializedChanged: timeOptions.gridInitializedChanged()
 		values: [
 			{label: qsTr("Equal intervals"), value: "quantiles"},
 			{label: qsTr("Sequence"), value: "sequence"},

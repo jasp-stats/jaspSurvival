@@ -279,10 +279,10 @@
     )
     if (!hasDistribution)
       geomCall[["color"]] <- "black"
-    if (!hasLevel)
+    if (!hasLevel) {
       geomCall[["shape"]] <- 21
-    if (!hasLevel)
       geomCall[["fill"]] <- "white"
+    }
     plot <- plot + do.call(ggplot2::geom_point, geomCall)
 
     if (options[["probabilityPlotEmpiricalPointsCoordinates"]]) {

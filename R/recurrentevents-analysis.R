@@ -39,11 +39,11 @@ RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
 
 .sareMethod <- function(options) {
 
-  if (options[["model"]] %in% c("duane", "piecewise"))
-    return("LS")
-  if (options[["model"]] == "logLinear")
-    return("MLE")
-  return(if (options[["estimationMethod"]] == "mle") "MLE" else "LS")
+  return(switch(options[["model"]],
+    duane     = "LS",
+    piecewise = "LS",
+    logLinear = "MLE",
+    crowAmsaa = if (options[["estimationMethod"]] == "mle") "MLE" else "LS"))
 }
 
 .sareCheckDataset <- function(dataset, options) {
@@ -226,5 +226,6 @@ RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
 
 .sareCritical <- function(level, df, direction) {
 
-  return(if (is.finite(df)) stats::qt(if (direction == "twoSided") (1 + level) / 2 else level, df) else .sapBoundCritical(level, direction))
+  probability <- if (direction == "twoSided") (1 + level) / 2 else level
+  return(if (is.finite(df)) stats::qt(probability, df) else stats::qnorm(probability))
 }
