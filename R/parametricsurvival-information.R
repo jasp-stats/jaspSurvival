@@ -1,5 +1,5 @@
-# Refit saved models after normalizing scalar native Hessians.
-.sapInformationPolicyVersion <- "native-design-standardization-6"
+# Refit saved models after adding Gompertz time-unit standardization.
+.sapInformationPolicyVersion <- "native-design-standardization-7"
 
 .sapInformationRecord <- function(fit, method, outcome, provenance) {
 

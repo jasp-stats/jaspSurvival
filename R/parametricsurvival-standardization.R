@@ -2,6 +2,7 @@
 # threshold. In raw units that can change a valid inverse dramatically. Scaling
 # optim steps alone cannot fix that conversion: fit the realized design columns
 # themselves, then map the native point and complete covariance exactly once.
+# Gompertz also needs a well-scaled time unit for its identity-linked shape.
 .sapNativeBounds <- function(fitCall, free, name) {
 
   value <- fitCall[[name]]
@@ -16,7 +17,8 @@
 
 .sapNativeStandardization <- function(fitCall, schema, carrier) {
 
-  if (is.null(schema) || carrier[["npars"]] == 0L || length(carrier[["covpars"]]) == 0L)
+  gompertz <- identical(carrier[["dlist"]][["name"]], "gompertz")
+  if (is.null(schema) || carrier[["npars"]] == 0L || (length(carrier[["covpars"]]) == 0L && !gompertz))
     return(NULL)
   parameterNames <- rownames(carrier[["res.t"]])
   n             <- length(parameterNames)
@@ -27,6 +29,7 @@
   dimnames(J)   <- dimnames(G) <- list(parameterNames, parameterNames)
   centers       <- stats::setNames(rep(0, n), parameterNames)
   scales        <- stats::setNames(rep(1, n), parameterNames)
+  offset        <- stats::setNames(rep(0, n), parameterNames)
   original      <- schema[["fit"]]
   dataset       <- fitCall[["data"]]
   weights       <- original[["data"]][["m"]][["(weights)"]]
@@ -91,28 +94,52 @@
     formula[[3L]] <- stats::reformulate(synthetic)[[2L]]
     formulas[[native]] <- formula
   }
-  if (all(centers == 0 & scales == 1))
+  timeScale <- 1
+  if (gompertz) {
+    response <- stats::model.response(original[["data"]][["m"]])
+    timeColumns <- seq_len(ncol(response) - 1L)
+    times <- as.numeric(response[, timeColumns, drop = FALSE])
+    timeScale <- max(abs(times[is.finite(times)]))
+    if (timeScale == 0)
+      timeScale <- 1
+    response[, timeColumns] <- response[, timeColumns, drop = FALSE] / timeScale
+    responseName <- ".jaspNativeTimeResponse"
+    while (responseName %in% names(dataset))
+      responseName <- paste0(responseName, "_")
+    dataset[[responseName]] <- response
+    shape <- c(match("shape", parameterNames), schema[["specification"]][["equations"]][["shape"]][["slopeIndices"]])
+    # t* = t/c implies shape* = c*shape and log(rate*) = log(rate)+log(c).
+    # Shape regression coefficients use the identity link and scale as well.
+    J[, shape] <- J[, shape, drop = FALSE] / timeScale
+    G[shape, ] <- G[shape, , drop = FALSE] * timeScale
+    scales[shape] <- scales[shape] * timeScale
+    offset[match("rate", parameterNames)] <- -log(timeScale)
+  }
+  if (all(centers == 0 & scales == 1) && timeScale == 1)
     return(NULL)
   location <- carrier[["dlist"]][["location"]]
   scaledCall[["formula"]] <- formulas[[location]]
   if (is.null(scaledCall[["formula"]]))
     scaledCall[["formula"]] <- fitCall[["formula"]]
+  if (gompertz)
+    scaledCall[["formula"]][[2L]] <- as.name(responseName)
   scaledCall[["anc"]] <- lapply(formulas[setdiff(names(formulas), location)], function(formula) formula[-2L])
   scaledCall[["data"]] <- dataset
   beta  <- carrier[["res.t"]][, "est"]
   for (name in c("lower", "upper"))
     if (length(fitCall[[name]]) > 0L)
-      scaledCall[[name]] <- .sapNativeBounds(fitCall, free, name) * scales[free]
+      scaledCall[[name]] <- (.sapNativeBounds(fitCall, free, name) - offset[free]) * scales[free]
   scaledCall[["control"]][["parscale"]] <- rep(1, length(free))
-  return(list(call = scaledCall, J = J, G = G, centers = centers, scales = scales,
+  return(list(call = scaledCall, J = J, G = G, centers = centers, scales = scales, offset = offset, timeScale = timeScale,
     free = free, fixed = fitCall[["fixedpars"]], fixedValues = beta[fitCall[["fixedpars"]]]))
 }
 
-.sapNativeInitials <- function(linkPoint, metadata, G = NULL) {
+.sapNativeInitials <- function(linkPoint, metadata, G = NULL, offset = NULL) {
 
   if (!is.numeric(linkPoint) || length(linkPoint) != nrow(metadata[["res.t"]]) || any(!is.finite(linkPoint)))
     stop(gettext("The selected native link point is unavailable or does not match the fitted coefficient layout."))
-  gamma <- if (is.null(G)) linkPoint else as.vector(G %*% linkPoint)
+  gamma <- if (is.null(offset)) linkPoint else linkPoint - offset
+  gamma <- if (is.null(G)) gamma else as.vector(G %*% gamma)
   inits <- gamma
   for (i in metadata[["basepars"]])
     inits[i] <- metadata[["dlist"]][["inv.transforms"]][[i]](gamma[i])
@@ -241,7 +268,7 @@
   # The full point map includes the known fixed-coordinate offset. Covariance
   # uses Jff alone, because fixed coordinates carry no uncertainty; G is built
   # explicitly from means/scales rather than solving an ill-conditioned J.
-  beta <- as.vector(standardization[["J"]] %*% selected[["res.t"]][, "est"])
+  beta <- as.vector(standardization[["J"]] %*% selected[["res.t"]][, "est"]) + standardization[["offset"]]
   beta[standardization[["fixed"]]] <- standardization[["fixedValues"]]
   carrier[["res.t"]][, ] <- NA_real_
   carrier[["res.t"]][, "est"] <- beta
@@ -284,6 +311,18 @@
   # log/inverse-log pairs. Fixed inference stays missing on both reporting scales.
   carrier[["res"]][standardization[["fixed"]], "est"] <- attr(standardization, "originalFixedNatural")
   carrier[["coefficients"]] <- stats::setNames(beta, names)
+  if (standardization[["timeScale"]] != 1) {
+    events <- carrier[["data"]][["Y"]][, "status"] == 1
+    weights <- carrier[["data"]][["m"]][["(weights)"]]
+    # Only exact failures contribute a time-density Jacobian; censoring and
+    # truncation terms are probabilities, including counting-process entry.
+    correction <- sum(weights * events) * log(standardization[["timeScale"]])
+    selected[["loglik"]] <- selected[["loglik"]] - correction
+    selected[["logliki"]] <- selected[["logliki"]] - events * log(standardization[["timeScale"]])
+    selected[["AIC"]] <- selected[["AIC"]] + 2 * correction
+    selected[["BIC"]] <- selected[["BIC"]] + 2 * correction
+    carrier[["opt"]][["value"]] <- selected[["opt"]][["value"]] + correction
+  }
   for (field in c("loglik", "logliki", "AIC", "BIC", "cl"))
     carrier[[field]] <- selected[[field]]
   if (!is.null(unavailable))
@@ -304,7 +343,8 @@
   carrier <- NULL
   hasDesign <- !is.null(schema) && length(schema[["fit"]][["covpars"]]) > 0L &&
     length(fitCall[["fixedpars"]]) < nrow(schema[["fit"]][["res.t"]])
-  if (hasDesign || (!is.null(selectedPoint) && is.null(schema))) {
+  hasTimeScale <- !is.null(schema) && identical(schema[["fit"]][["dlist"]][["name"]], "gompertz")
+  if (hasDesign || hasTimeScale || (!is.null(selectedPoint) && is.null(schema))) {
     carrierCall <- fitCall
     carrierCall[["method"]] <- "BFGS"
     carrierCall[["lower"]] <- carrierCall[["upper"]] <- NULL
@@ -323,7 +363,8 @@
     # transformed point to initialize this separate finalization.
     linkPoint <- if (is.null(selectedPoint)) metadata[["res.t"]][, "est"] else selectedPoint
     nativeCall[["inits"]] <- .sapNativeInitials(linkPoint, metadata,
-      if (is.null(standardization)) NULL else standardization[["G"]])
+      if (is.null(standardization)) NULL else standardization[["G"]],
+      if (is.null(standardization)) NULL else standardization[["offset"]])
   }
   if (is.null(nativeCall[["method"]]))
     nativeCall[["method"]] <- "BFGS"
@@ -347,6 +388,8 @@
     provenance[["G"]] <- standardization[["G"]]
     provenance[["centers"]] <- standardization[["centers"]]
     provenance[["scales"]] <- standardization[["scales"]]
+    provenance[["offset"]] <- standardization[["offset"]]
+    provenance[["timeScale"]] <- standardization[["timeScale"]]
     provenance[["fixed"]] <- standardization[["fixed"]]
     provenance[["originalFixedValues"]] <- standardization[["fixedValues"]]
     provenance[["coordinates"]] <- "standardizedDesign"

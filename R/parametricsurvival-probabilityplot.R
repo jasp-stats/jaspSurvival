@@ -22,10 +22,10 @@
 
   # Saved plots must redraw when their definition or layout options change.
   definition <- jaspResults[["probabilityPlotDefinition"]]
-  if (is.null(definition) || !identical(definition$object, 7L)) {
+  if (is.null(definition) || !identical(definition$object, 8L)) {
     definition <- createJaspState()
     definition$dependOn(c("probabilityPlotStratifyBy", "probabilityPlotStratifyByVariables"))
-    definition$object <- 7L
+    definition$object <- 8L
     jaspResults[["probabilityPlotDefinition"]] <- definition
     jaspResults[["probabilityPlot"]] <- NULL
   }
@@ -234,7 +234,6 @@
   censoringData <- data[["censoringData"]]
 
   hasDistribution        <- length(unique(stats::na.omit(c(curveData[["Distribution"]], empiricalData[["Distribution"]], censoringData[["Distribution"]])))) > 1
-  empiricalDistributions <- hasDistribution
   levelLabels            <- sort(unique(stats::na.omit(c(curveData[["Level"]], empiricalData[["Level"]], censoringData[["Level"]]))))
   hasLevel               <- length(levelLabels) > 1
   hasGroup               <- nrow(curveData) > 0 && length(unique(stats::na.omit(curveData[["Group"]]))) > 1
@@ -270,18 +269,18 @@
 
   if (nrow(empiricalData) > 0 && options[["probabilityPlotEmpiricalPoints"]]) {
     aesCall <- list(x = as.name("time"), y = as.name("probability"), fill = if (hasLevel) as.name("Level"),
-      shape = if (empiricalDistributions) as.name("Distribution"),
-      color = if (empiricalDistributions) if (hasLevel) as.name("Level") else as.name("Distribution"))
+      shape = if (hasLevel) as.name("Level"),
+      color = if (hasDistribution) if (hasLevel) as.name("Level") else as.name("Distribution"))
     geomCall <- list(
       data    = empiricalData,
       mapping = do.call(ggplot2::aes, aesCall[!vapply(aesCall, is.null, logical(1))]),
       size    = 2.1,
       stroke  = 0.6
     )
-    if (!empiricalDistributions) {
+    if (!hasDistribution)
       geomCall[["color"]] <- "black"
+    if (!hasLevel)
       geomCall[["shape"]] <- 21
-    }
     if (!hasLevel)
       geomCall[["fill"]] <- "white"
     plot <- plot + do.call(ggplot2::geom_point, geomCall)
@@ -306,9 +305,9 @@
       do.call(jaspGraphs::scale_JASPcolor_discrete, scaleCall) +
       do.call(jaspGraphs::scale_JASPfill_discrete, scaleCall)
   }
-  if (empiricalDistributions)
-    plot <- plot + ggplot2::scale_shape_manual(values = rep_len(c(1, 2, 0, 5, 6, 3, 4, 7, 8, 9),
-      length(unique(empiricalData[["Distribution"]]))))
+  if (hasLevel && nrow(empiricalData) > 0)
+    plot <- plot + ggplot2::scale_shape_manual(limits = levelLabels,
+      values = rep_len(c(21, 24, 22, 23, 25, 3, 4, 7, 8, 9), length(levelLabels)))
 
   plot <- .sapProbabilityPlotAddAxes(plot, empiricalData, curveData, censoringData, options, data[["observedTimeRange"]], hasLevel,
     hasDistribution, axisSetup)
