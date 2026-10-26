@@ -22,10 +22,10 @@
 
   # Saved plots must redraw when their definition or layout options change.
   definition <- jaspResults[["probabilityPlotDefinition"]]
-  if (is.null(definition) || !identical(definition$object, 9L)) {
+  if (is.null(definition) || !identical(definition$object, 10L)) {
     definition <- createJaspState()
     definition$dependOn(c("probabilityPlotStratifyBy", "probabilityPlotStratifyByVariables"))
-    definition$object <- 9L
+    definition$object <- 10L
     jaspResults[["probabilityPlotDefinition"]] <- definition
     jaspResults[["probabilityPlot"]] <- NULL
   }
@@ -311,10 +311,11 @@
   if (separateLevels && nrow(empiricalData) > 0)
     plot <- plot + ggplot2::scale_shape_manual(limits = levelLabels,
       values = rep_len(c(21, 24, 22, 23, 25, 3, 4, 7, 8, 9), length(levelLabels)))
-  if (hasDistribution)
+  if (hasSeries && nrow(curveData) > 0)
     plot <- plot + ggplot2::guides(fill = "none",
-      colour = ggplot2::guide_legend(override.aes = list(shape = NA, linetype = 1)),
-      shape = ggplot2::guide_legend(override.aes = list(colour = "grey30", fill = "white")))
+      colour = ggplot2::guide_legend(override.aes = list(shape = NA, linetype = 1)))
+  if (separateLevels)
+    plot <- plot + ggplot2::guides(shape = ggplot2::guide_legend(override.aes = list(colour = "grey30", fill = "white")))
 
   plot <- .sapProbabilityPlotAddAxes(plot, empiricalData, curveData, censoringData, options, data[["observedTimeRange"]], hasLevel,
     hasDistribution, axisSetup)
