@@ -4,16 +4,9 @@
 ## Added
 * Recurrent event analysis
 
-## Changed
-* Prediction figures precede tables; outcomes follow the interface order.
-
 ## Fixed
 * Parametric models retain standard errors and confidence intervals when only one parameter is estimated.
-* Probability plots omit the note about unavailable confidence intervals.
-* Recurrent event data summaries retain subgroups whose model fit fails.
-* Recurrent event predictions at one time display estimates and confidence bounds in plots.
-* Recurrent event 50% one-sided confidence bounds equal finite estimates when native bounds overflow.
-* Recurrent event logarithmic prediction plots report an informative error when no positive estimates remain.
+* Prediction figures precede tables; outcomes follow the interface order.
 
 # jaspSurvival 0.98.0
 ## Added
