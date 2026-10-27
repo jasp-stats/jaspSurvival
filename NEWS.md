@@ -7,6 +7,7 @@
 ## Fixed
 * Parametric models retain standard errors and confidence intervals when only one parameter is estimated.
 * Prediction figures precede tables; outcomes follow the interface order.
+* Small plotting improvements.
 
 # jaspSurvival 0.98.0
 ## Added
