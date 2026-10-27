@@ -666,7 +666,8 @@
     oob          = scales::oob_keep
   )
   if (options[["probabilityPlotTheme"]] == "jasp") {
-    yScaleCall[["breaks"]] <- setdiff(yScaleCall[["breaks"]], 0.995)
+    # Larger JASP-theme labels crowd near 100%; drop the 98% and 99.5% ticks.
+    yScaleCall[["breaks"]] <- setdiff(yScaleCall[["breaks"]], c(0.98, 0.995))
     yScaleCall[["minor_breaks"]] <- setdiff(yScaleCall[["minor_breaks"]], 0.995)
   }
 
