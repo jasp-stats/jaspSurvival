@@ -116,7 +116,7 @@
   if (options[["model"]] == "piecewise")
     table$addFootnote(gettext("Coefficients describe the segmented regression of log cumulative events on log time. Change-point coefficients are reported as log times."))
   if (.sareMethod(options) == "MLE")
-    table$addFootnote(gettext("Maximum-likelihood intervals use a normal approximation; positive parameters use the log scale."))
+    table$addFootnote(gettext("Confidence intervals are based on normal approximation."))
   else
     table$addFootnote(gettext("Standard errors and confidence intervals use native regression approximations that do not account for dependence between cumulative observations."))
   return()

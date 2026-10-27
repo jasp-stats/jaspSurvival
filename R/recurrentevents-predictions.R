@@ -265,7 +265,6 @@
       table$addFootnote(gettext("Duane probabilities assume its fitted growth curve is the cumulative mean of an NHPP."))
   }
   if (options[["predictionsDisplayConfidenceIntervals"]]) {
-    table$addFootnote(gettext("Intervals describe uncertainty in the fitted quantity, not variation in future event counts."))
     if (.sareMethod(options) == "LS")
       table$addFootnote(gettext("Confidence intervals use native regression approximations that do not account for dependence between cumulative observations."))
     if (options[["model"]] == "piecewise" && any(measures %in% c("eventIntensity", "instantaneousMeanTimeBetweenEvents")))
