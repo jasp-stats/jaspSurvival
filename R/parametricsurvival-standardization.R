@@ -96,22 +96,24 @@
   }
   timeScale <- 1
   if (gompertz) {
-    response <- stats::model.response(original[["data"]][["m"]])
+    response    <- stats::model.response(original[["data"]][["m"]])
     timeColumns <- seq_len(ncol(response) - 1L)
-    times <- as.numeric(response[, timeColumns, drop = FALSE])
-    timeScale <- max(abs(times[is.finite(times)]))
+    times       <- as.numeric(response[, timeColumns, drop = FALSE])
+    timeScale   <- max(abs(times[is.finite(times)]))
     if (timeScale == 0)
       timeScale <- 1
     response[, timeColumns] <- response[, timeColumns, drop = FALSE] / timeScale
+
     responseName <- ".jaspNativeTimeResponse"
     while (responseName %in% names(dataset))
       responseName <- paste0(responseName, "_")
     dataset[[responseName]] <- response
-    shape <- c(match("shape", parameterNames), schema[["specification"]][["equations"]][["shape"]][["slopeIndices"]])
+
     # t* = t/c implies shape* = c*shape and log(rate*) = log(rate)+log(c).
     # Shape regression coefficients use the identity link and scale as well.
-    J[, shape] <- J[, shape, drop = FALSE] / timeScale
-    G[shape, ] <- G[shape, , drop = FALSE] * timeScale
+    shape         <- c(match("shape", parameterNames), schema[["specification"]][["equations"]][["shape"]][["slopeIndices"]])
+    J[, shape]    <- J[, shape, drop = FALSE] / timeScale
+    G[shape, ]    <- G[shape, , drop = FALSE] * timeScale
     scales[shape] <- scales[shape] * timeScale
     offset[match("rate", parameterNames)] <- -log(timeScale)
   }
@@ -130,8 +132,18 @@
     if (length(fitCall[[name]]) > 0L)
       scaledCall[[name]] <- (.sapNativeBounds(fitCall, free, name) - offset[free]) * scales[free]
   scaledCall[["control"]][["parscale"]] <- rep(1, length(free))
-  return(list(call = scaledCall, J = J, G = G, centers = centers, scales = scales, offset = offset, timeScale = timeScale,
-    free = free, fixed = fitCall[["fixedpars"]], fixedValues = beta[fitCall[["fixedpars"]]]))
+  return(list(
+    call        = scaledCall,
+    J           = J,
+    G           = G,
+    centers     = centers,
+    scales      = scales,
+    offset      = offset,
+    timeScale   = timeScale,
+    free        = free,
+    fixed       = fitCall[["fixedpars"]],
+    fixedValues = beta[fitCall[["fixedpars"]]]
+  ))
 }
 
 .sapNativeInitials <- function(linkPoint, metadata, G = NULL, offset = NULL) {
@@ -312,15 +324,15 @@
   carrier[["res"]][standardization[["fixed"]], "est"] <- attr(standardization, "originalFixedNatural")
   carrier[["coefficients"]] <- stats::setNames(beta, names)
   if (standardization[["timeScale"]] != 1) {
-    events <- carrier[["data"]][["Y"]][, "status"] == 1
+    events  <- carrier[["data"]][["Y"]][, "status"] == 1
     weights <- carrier[["data"]][["m"]][["(weights)"]]
     # Only exact failures contribute a time-density Jacobian; censoring and
     # truncation terms are probabilities, including counting-process entry.
-    correction <- sum(weights * events) * log(standardization[["timeScale"]])
-    selected[["loglik"]] <- selected[["loglik"]] - correction
-    selected[["logliki"]] <- selected[["logliki"]] - events * log(standardization[["timeScale"]])
-    selected[["AIC"]] <- selected[["AIC"]] + 2 * correction
-    selected[["BIC"]] <- selected[["BIC"]] + 2 * correction
+    correction                  <- sum(weights * events) * log(standardization[["timeScale"]])
+    selected[["loglik"]]        <- selected[["loglik"]] - correction
+    selected[["logliki"]]       <- selected[["logliki"]] - events * log(standardization[["timeScale"]])
+    selected[["AIC"]]           <- selected[["AIC"]] + 2 * correction
+    selected[["BIC"]]           <- selected[["BIC"]] + 2 * correction
     carrier[["opt"]][["value"]] <- selected[["opt"]][["value"]] + correction
   }
   for (field in c("loglik", "logliki", "AIC", "BIC", "cl"))
@@ -341,7 +353,7 @@
   # point; only its standardized native baseline needs to be representable.
   standardization <- NULL
   carrier <- NULL
-  hasDesign <- !is.null(schema) && length(schema[["fit"]][["covpars"]]) > 0L &&
+  hasDesign    <- !is.null(schema) && length(schema[["fit"]][["covpars"]]) > 0L &&
     length(fitCall[["fixedpars"]]) < nrow(schema[["fit"]][["res.t"]])
   hasTimeScale <- !is.null(schema) && identical(schema[["fit"]][["dlist"]][["name"]], "gompertz")
   if (hasDesign || hasTimeScale || (!is.null(selectedPoint) && is.null(schema))) {
@@ -362,9 +374,12 @@
     # log an underflowed/overflowed natural report or require the metadata seed's
     # transformed point to initialize this separate finalization.
     linkPoint <- if (is.null(selectedPoint)) metadata[["res.t"]][, "est"] else selectedPoint
-    nativeCall[["inits"]] <- .sapNativeInitials(linkPoint, metadata,
-      if (is.null(standardization)) NULL else standardization[["G"]],
-      if (is.null(standardization)) NULL else standardization[["offset"]])
+    nativeCall[["inits"]] <- .sapNativeInitials(
+      linkPoint = linkPoint,
+      metadata  = metadata,
+      G         = if (is.null(standardization)) NULL else standardization[["G"]],
+      offset    = if (is.null(standardization)) NULL else standardization[["offset"]]
+    )
   }
   if (is.null(nativeCall[["method"]]))
     nativeCall[["method"]] <- "BFGS"
@@ -383,16 +398,16 @@
     if (length(suppliedFixed) > 0L)
       originalFixed[match(names(suppliedFixed), rownames(carrier[["res"]])[fixed])] <- suppliedFixed
     attr(standardization, "originalFixedNatural") <- originalFixed
-    provenance[["standardizedPoint"]] <- fit[["res.t"]][, "est"]
-    provenance[["J"]] <- standardization[["J"]]
-    provenance[["G"]] <- standardization[["G"]]
-    provenance[["centers"]] <- standardization[["centers"]]
-    provenance[["scales"]] <- standardization[["scales"]]
-    provenance[["offset"]] <- standardization[["offset"]]
-    provenance[["timeScale"]] <- standardization[["timeScale"]]
-    provenance[["fixed"]] <- standardization[["fixed"]]
+    provenance[["standardizedPoint"]]   <- fit[["res.t"]][, "est"]
+    provenance[["J"]]                   <- standardization[["J"]]
+    provenance[["G"]]                   <- standardization[["G"]]
+    provenance[["centers"]]             <- standardization[["centers"]]
+    provenance[["scales"]]              <- standardization[["scales"]]
+    provenance[["offset"]]              <- standardization[["offset"]]
+    provenance[["timeScale"]]           <- standardization[["timeScale"]]
+    provenance[["fixed"]]               <- standardization[["fixed"]]
     provenance[["originalFixedValues"]] <- standardization[["fixedValues"]]
-    provenance[["coordinates"]] <- "standardizedDesign"
+    provenance[["coordinates"]]         <- "standardizedDesign"
     fit <- .sapNativeOriginalFit(carrier, fit, standardization)
   } else
     provenance[["coordinates"]] <- "originalDesign"

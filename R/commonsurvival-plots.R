@@ -1,12 +1,13 @@
 .saProbabilityPlottingPositions <- function(rank, n, method) {
 
   # Adjusted lifetime ranks may be fractional; count diagnostics use 1, ..., n.
-  return(switch(method,
-    median = stats::qbeta(0.5, rank, n - rank + 1),
-    benard = (rank - 0.3) / (n + 0.4),
-    hazen  = (rank - 0.5) / n,
-    mean   = rank / (n + 1),
-    blom   = (rank - 0.375) / (n + 0.25),
+  return(switch(
+    method,
+    "median" = stats::qbeta(0.5, rank, n - rank + 1),
+    "benard" = (rank - 0.3) / (n + 0.4),
+    "hazen"  = (rank - 0.5) / n,
+    "mean"   = rank / (n + 1),
+    "blom"   = (rank - 0.375) / (n + 0.25),
     stats::qbeta(0.5, rank, n - rank + 1)
   ))
 }

@@ -1,24 +1,35 @@
 .sareMeasures <- function(options) {
 
-  return(names(.sareMeasureOptions)[vapply(.sareMeasureOptions, function(option) options[[option]], logical(1))])
+  selected <- vapply(.sareMeasureOptions, function(option) options[[option]], logical(1))
+
+  return(names(.sareMeasureOptions)[selected])
 }
 
 .sareMeasureLabel <- function(measure) {
 
-  return(switch(measure, survivalProbability = gettext("Survival Probability"), failureProbability = gettext("Failure Probability"),
-    cumulativeEvents = gettext("Cumulative Events"), eventIntensity = gettext("Event Intensity"),
-    cumulativeMeanTimeBetweenEvents = gettext("Cumulative Mean Time Between Events"), instantaneousMeanTimeBetweenEvents = gettext("Instantaneous Mean Time Between Events")))
+  return(switch(
+    measure,
+    "survivalProbability"                = gettext("Survival Probability"),
+    "failureProbability"                 = gettext("Failure Probability"),
+    "cumulativeEvents"                   = gettext("Cumulative Events"),
+    "eventIntensity"                     = gettext("Event Intensity"),
+    "cumulativeMeanTimeBetweenEvents"    = gettext("Cumulative Mean Time Between Events"),
+    "instantaneousMeanTimeBetweenEvents" = gettext("Instantaneous Mean Time Between Events")
+  ))
 }
 
 .sareTimes <- function(record, options, plot = FALSE) {
 
   message <- gettext("Prediction times must be positive finite numbers. Enter numbers separated by commas.")
-  grid <- options[["predictionsTimeGrid"]]
+  grid    <- options[["predictionsTimeGrid"]]
+
   if (grid == "customAbsolute") {
     times <- sort(unique(.sareNumbers(options[["predictionsTimeValues"]], message, max(record[["time"]]) * c(.25, .5, .75))))
   } else if (grid == "customRelative") {
-    percentages <- .sareNumbers(options[["predictionsTimePercentages"]],
-      gettext("Enter positive percentages of maximum follow-up, separated by commas."))
+    percentages <- .sareNumbers(
+      options[["predictionsTimePercentages"]],
+      gettext("Enter positive percentages of maximum follow-up, separated by commas.")
+    )
     if (length(percentages) == 0)
       stop(gettext("Enter positive percentages of maximum follow-up, separated by commas."))
     times <- sort(unique(max(record[["time"]]) * percentages / 100))
@@ -29,15 +40,19 @@
     times <- seq(min(record[["time"]]), max(record[["time"]]), length.out = intervals + 1L)
   } else if (grid == "sequence") {
     from <- .sareNumbers(options[["predictionsTimeFrom"]], message, min(record[["time"]]))
-    to   <- .sareNumbers(options[["predictionsTimeTo"]], message, max(record[["time"]]))
+    to   <- .sareNumbers(options[["predictionsTimeTo"]],   message, max(record[["time"]]))
     if (length(from) != 1 || length(to) != 1 || from > to)
       stop(gettext("From and To must each contain one positive time, with From less than or equal to To."))
-    step <- .sareNumbers(options[["predictionsTimeStep"]], gettext("Step must contain one positive finite number."),
-      if (from == to) from else (to - from) / 10)
+    step <- .sareNumbers(
+      options[["predictionsTimeStep"]],
+      gettext("Step must contain one positive finite number."),
+      if (from == to) from else (to - from) / 10
+    )
     if (length(step) != 1 || (to - from) / step > 10000)
       stop(gettext("Specify one positive step producing no more than 10,001 prediction times."))
     times <- seq(from, to, by = step)
   }
+
   if (!plot && grid %in% c("quantiles", "sequence") && options[["predictionsRoundTimeTableValues"]]) {
     times <- unique(round(times))
     if (any(times <= 0))
@@ -45,13 +60,17 @@
   }
   if (length(times) > 10001)
     stop(gettext("Specify no more than 10,001 prediction times."))
+
   if (plot && length(times) > 1) {
-    timeRange <- range(times)
+    timeRange  <- range(times)
     denseTimes <- if (options[["predictionsXAxisTransformation"]] == "log")
-      exp(seq(log(timeRange[1]), log(timeRange[2]), length.out = 250)) else seq(timeRange[1], timeRange[2], length.out = 250)
+      exp(seq(log(timeRange[1]), log(timeRange[2]), length.out = 250))
+    else
+      seq(timeRange[1], timeRange[2], length.out = 250)
     times <- sort(unique(c(times, denseTimes, .sareBreakpoints(record))))
     times <- times[times >= timeRange[1] & times <= timeRange[2]]
   }
+
   return(unique(times))
 }
 
@@ -59,17 +78,26 @@
 
   if (record[["model"]] != "piecewise")
     return(numeric(0))
+
   return(exp(record[["native"]][["model"]][["psi"]][, "Est."]))
 }
 
 .sarePredict <- function(record, times, measure, level, direction) {
 
   if (measure %in% c("survivalProbability", "failureProbability")) {
-    meanDirection <- if (measure == "survivalProbability") switch(direction, twoSided = "twoSided", lower = "upper", upper = "lower") else direction
+    meanDirection <- if (measure == "survivalProbability")
+      switch(
+        direction,
+        "twoSided" = "twoSided",
+        "lower"    = "upper",
+        "upper"    = "lower"
+      )
+    else
+      direction
     return(.sareProbabilityPrediction(.sarePredict(record, times, "cumulativeEvents", level, meanDirection), measure))
   }
 
-  native <- record[["native"]]
+  native      <- record[["native"]]
   nativeLevel <- if (direction == "twoSided") level else abs(2 * level - 1)
   # ReliaGrowR rejects a zero central level; a 50% one-sided bound is the estimate.
   packageLevel <- if (nativeLevel == 0) level else nativeLevel
@@ -86,6 +114,7 @@
     if (grepl("Hindcasting is allowed", conditionMessage(warning), fixed = TRUE))
       invokeRestart("muffleWarning")
   })
+
   if (record[["model"]] == "duane") {
     mean  <- times / prediction[["mtbf"]]
     lower <- times / prediction[["upper_bounds"]]
@@ -122,21 +151,21 @@
       gradient  <- cbind(1 / coefficients[1], 1 / coefficients[2] + log(times))
     }
     estimate <- if (measure == "eventIntensity") intensity else 1 / intensity
-    lower <- upper <- rep(NA_real_, length(times))
+    lower    <- upper <- rep(NA_real_, length(times))
     if (!is.null(gradient) && record[["inferenceAvailable"]]) {
-      variance <- rowSums((gradient %*% record[["covariance"]]) * gradient)
+      variance  <- rowSums((gradient %*% record[["covariance"]]) * gradient)
       halfWidth <- abs(.sareCritical(level, record[["df"]], direction)) * sqrt(pmax(variance, 0))
-      lower <- exp(log(estimate) - halfWidth)
-      upper <- exp(log(estimate) + halfWidth)
+      lower     <- exp(log(estimate) - halfWidth)
+      upper     <- exp(log(estimate) + halfWidth)
     }
   }
-  if (nativeLevel == 0) {
+
+  if (nativeLevel == 0)
     lower <- upper <- estimate
-  }
   if (direction != "twoSided" && level < .5) {
     newLower <- upper
-    upper <- lower
-    lower <- newLower
+    upper    <- lower
+    lower    <- newLower
   }
   if (!record[["inferenceAvailable"]] ||
       (record[["model"]] == "piecewise" && measure %in% c("eventIntensity", "instantaneousMeanTimeBetweenEvents")))
@@ -147,8 +176,15 @@
     lower[] <- NA_real_
   if (any(!is.finite(estimate) | estimate <= 0))
     stop(gettext("The model cannot provide finite positive predictions at these times. Reduce the prediction range or choose another model."))
-  return(data.frame(time = times, estimate = as.numeric(estimate), lower = as.numeric(lower), upper = as.numeric(upper),
-    subgroup = record[["label"]], forecast = times > max(record[["time"]])))
+
+  return(data.frame(
+    time     = times,
+    estimate = as.numeric(estimate),
+    lower    = as.numeric(lower),
+    upper    = as.numeric(upper),
+    subgroup = record[["label"]],
+    forecast = times > max(record[["time"]])
+  ))
 }
 
 .sareProbabilityPrediction <- function(prediction, measure) {
@@ -161,33 +197,47 @@
     # expm1 preserves small probabilities lost by subtracting exp(-M) from one.
     prediction[columns] <- lapply(prediction[columns], function(value) -expm1(-value))
   }
+
   return(prediction)
 }
 
 .sareFittedCumulativeEvents <- function(record) {
 
-  return(if (record[["model"]] == "duane") record[["time"]] / record[["native"]][["Fitted_Values"]] else record[["native"]][["fitted_values"]])
+  if (record[["model"]] == "duane")
+    return(record[["time"]] / record[["native"]][["Fitted_Values"]])
+
+  return(record[["native"]][["fitted_values"]])
 }
 
 .sarePredictionState <- function(jaspResults, options) {
 
   if (!is.null(jaspResults[["predictions"]]))
     return(jaspResults[["predictions"]]$object)
+
   state <- createJaspState()
   state$dependOn(c(.sareFitDependencies, .sarePredictionDependencies, "predictionsXAxisTransformation",
     "predictionsOutputPlot", "predictionsOutputTable", "predictionsRoundTimeTableValues"))
   jaspResults[["predictions"]] <- state
+
   predictions <- list()
   for (measure in .sareMeasures(options)) {
     predictions[[measure]] <- lapply(.sareFits(jaspResults, valid = TRUE), function(record) {
-      evaluate <- function(plot) .sarePredict(record, .sareTimes(record, options, plot), measure,
-        options[["predictionsDisplayConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]])
-      list(label = record[["label"]],
+      evaluate <- function(plot) .sarePredict(
+        record    = record,
+        times     = .sareTimes(record, options, plot),
+        measure   = measure,
+        level     = options[["predictionsDisplayConfidenceIntervalsLevel"]],
+        direction = options[["confidenceIntervalBounds"]]
+      )
+      return(list(
+        label = record[["label"]],
         table = if (options[["predictionsOutputTable"]]) try(evaluate(FALSE), silent = TRUE),
-        plot  = if (options[["predictionsOutputPlot"]]) try(evaluate(TRUE), silent = TRUE))
+        plot  = if (options[["predictionsOutputPlot"]]) try(evaluate(TRUE), silent = TRUE)
+      ))
     })
   }
   state$object <- predictions
+
   return(predictions)
 }
 
@@ -195,34 +245,47 @@
 
   if (!options[["predictionsOutputPlot"]] && !options[["predictionsOutputTable"]])
     return()
+
   predictions <- .sarePredictionState(jaspResults, options)
-  measures <- .sareMeasures(options)
-  if (options[["predictionsOutputPlot"]])
+  measures    <- .sareMeasures(options)
+
+  if (options[["predictionsOutputPlot"]]) {
     for (measure in measures)
       .sarePredictionPlots(jaspResults, options, measure, predictions[[measure]])
-  if (options[["predictionsOutputTable"]] && length(measures) > 0) {
-    if (options[["predictionsMergeTablesAcrossMeasures"]])
-      .sarePredictionTable(jaspResults, options, measures, predictions)
-    else
-      for (measure in measures) .sarePredictionTable(jaspResults, options, measure, predictions)
   }
+
+  if (options[["predictionsOutputTable"]] && length(measures) > 0) {
+    if (options[["predictionsMergeTablesAcrossMeasures"]]) {
+      .sarePredictionTable(jaspResults, options, measures, predictions)
+    } else {
+      for (measure in measures)
+        .sarePredictionTable(jaspResults, options, measure, predictions)
+    }
+  }
+
   return()
 }
 
 .sarePredictionTable <- function(jaspResults, options, measures, predictions) {
 
   merged <- length(measures) > 1L
-  key <- if (merged) "predictionsTable" else paste0(measures, "Table")
+  key    <- if (merged) "predictionsTable" else paste0(measures, "Table")
   if (!is.null(jaspResults[[key]]))
     return()
-  table <- .sareCreateTable(jaspResults, key, if (merged) gettext("Predictions") else .sareMeasureLabel(measures),
-    c(.sarePredictionDependencies, "predictionsOutputTable", "predictionsOutputTableFormat", "predictionsMergeTablesAcrossMeasures",
-      "predictionsRoundTimeTableValues"),
-    300 + if (merged) 0 else match(measures, names(.sareMeasureOptions)))
+
+  table <- .sareCreateTable(
+    jaspResults  = jaspResults,
+    key          = key,
+    title        = if (merged) gettext("Predictions") else .sareMeasureLabel(measures),
+    dependencies = c(.sarePredictionDependencies, "predictionsOutputTable", "predictionsOutputTableFormat",
+      "predictionsMergeTablesAcrossMeasures", "predictionsRoundTimeTableValues"),
+    position     = 300 + if (merged) 0 else match(measures, names(.sareMeasureOptions))
+  )
   .sareGroupColumn(table, options)
-  errors <- character(0)
+
+  errors   <- character(0)
   forecast <- FALSE
-  data <- list()
+  data     <- list()
   for (measure in measures) {
     rows <- list()
     for (prediction in predictions[[measure]]) {
@@ -230,8 +293,8 @@
         errors <- c(errors, gettextf("%1$s: %2$s", prediction[["label"]], jaspBase::.extractErrorMessage(prediction[["table"]])))
         next
       }
-      frame <- prediction[["table"]]
-      forecast <- forecast || any(frame[["forecast"]])
+      frame               <- prediction[["table"]]
+      forecast            <- forecast || any(frame[["forecast"]])
       frame[["forecast"]] <- NULL
       if (merged)
         names(frame)[match(c("estimate", "lower", "upper"), names(frame))] <- paste0(measure, ".", c("estimate", "lower", "upper"))
@@ -239,28 +302,34 @@
     }
     data[[measure]] <- .saSafeRbind(rows)
   }
-  data <- Filter(Negate(is.null), data)
-  wide <- options[["predictionsOutputTableFormat"]] == "wide"
-  data <- if (length(data) > 0) Reduce(function(x, y) merge(x, y, by = c("subgroup", "time"), all = TRUE, sort = FALSE), data)
+
+  data  <- Filter(Negate(is.null), data)
+  wide  <- options[["predictionsOutputTableFormat"]] == "wide"
+  data  <- if (length(data) > 0) Reduce(function(x, y) merge(x, y, by = c("subgroup", "time"), all = TRUE, sort = FALSE), data)
   times <- if (wide && !is.null(data)) sort(unique(data[["time"]]))
+
   if (!wide)
     table$addColumnInfo(name = "time", title = gettext("Time"), type = "number")
   .sarePredictionTableColumns(table, options, measures, times)
+
   if (!is.null(data)) {
     labels <- vapply(.sareFits(jaspResults, valid = TRUE), `[[`, character(1), "label")
-    data <- data[order(match(data[["subgroup"]], labels), data[["time"]]), , drop = FALSE]
-    if (wide)
+    data   <- data[order(match(data[["subgroup"]], labels), data[["time"]]), , drop = FALSE]
+    if (wide) {
       data <- .sarePredictionWideData(data, measures, times)
-    else {
-      bounds <- grep("(lower|upper)$", names(data))
+    } else {
+      bounds              <- grep("(lower|upper)$", names(data))
       names(data)[bounds] <- paste0(names(data)[bounds], "1")
     }
     table$setData(data)
   }
-  if (length(errors) > 0 && is.null(data))
+
+  if (length(errors) > 0 && is.null(data)) {
     table$setError(paste(errors, collapse = "\n"))
-  else
-    for (error in errors) table$addFootnote(error)
+  } else {
+    for (error in errors)
+      table$addFootnote(error)
+  }
   if (any(measures %in% c("survivalProbability", "failureProbability"))) {
     table$addFootnote(gettext("Probabilities assume an NHPP: survival is no events and failure is at least one event since time zero."))
     if (options[["model"]] == "duane")
@@ -274,39 +343,52 @@
   }
   if (forecast)
     table$addFootnote(gettext("Predictions beyond observed follow-up extrapolate the fitted trend."))
+
   return()
 }
 
 .sarePredictionTableColumns <- function(table, options, measures, times = NULL) {
 
-  specification <- list(levels = if (options[["predictionsDisplayConfidenceIntervals"]]) options[["predictionsDisplayConfidenceIntervalsLevel"]] else numeric(0),
-    direction = options[["confidenceIntervalBounds"]])
+  specification <- list(
+    levels    = if (options[["predictionsDisplayConfidenceIntervals"]]) options[["predictionsDisplayConfidenceIntervalsLevel"]] else numeric(0),
+    direction = options[["confidenceIntervalBounds"]]
+  )
+
   for (measure in measures) {
     prefix <- if (length(measures) > 1L) paste0(measure, ".") else ""
-    title <- .sareMeasureLabel(measure)
+    title  <- .sareMeasureLabel(measure)
     if (is.null(times)) {
       .sapPredictionTableColumns(table, specification, title, prefix)
     } else {
       for (i in seq_along(times))
-        .sapPredictionTableColumns(table, specification,
-          .sapPredictionTableEvaluationTitle(title, "time", times[i]), paste0(prefix, "at", i, "."))
+        .sapPredictionTableColumns(
+          table         = table,
+          specification = specification,
+          label         = .sapPredictionTableEvaluationTitle(title, "time", times[i]),
+          prefix        = paste0(prefix, "at", i, ".")
+        )
     }
   }
+
   return()
 }
 
 .sarePredictionWideData <- function(data, measures, times) {
 
   labels <- unique(data[["subgroup"]])
-  wide <- data.frame(subgroup = labels)
+  wide   <- data.frame(subgroup = labels)
+
   for (measure in measures) {
     prefix <- if (length(measures) > 1L) paste0(measure, ".") else ""
     for (i in seq_along(times)) {
-      rows <- data[data[["time"]] == times[i], , drop = FALSE]
+      rows     <- data[data[["time"]] == times[i], , drop = FALSE]
       selected <- match(labels, rows[["subgroup"]])
-      for (field in c("estimate", "lower", "upper"))
-        wide[[paste0(prefix, "at", i, ".", if (field == "estimate") "estimate" else paste0(field, "1"))]] <- rows[[paste0(prefix, field)]][selected]
+      for (field in c("estimate", "lower", "upper")) {
+        column         <- paste0(prefix, "at", i, ".", if (field == "estimate") "estimate" else paste0(field, "1"))
+        wide[[column]] <- rows[[paste0(prefix, field)]][selected]
+      }
     }
   }
+
   return(wide)
 }
