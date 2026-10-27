@@ -73,20 +73,7 @@
   table$addColumnInfo(name = "df", title = "df", type = "integer")
   table$addColumnInfo(name = "aic", title = gettext("AIC"), type = "number", format = "dp:3")
   table$addColumnInfo(name = "bic", title = gettext("BIC"), type = "number", format = "dp:3")
-  table$setData(.saSafeRbind(lapply(fits, function(fit) {
-    if (!is.null(fit[["error"]]))
-      return(data.frame(subgroup = fit[["label"]]))
-    native <- fit[["native"]]
-    # Native grouped Poisson log likelihoods omit the count-factorial constant.
-    constant <- if (fit[["method"]] == "MLE") sum(lgamma(fit[["counts"]] + 1)) else 0
-    data.frame(
-      subgroup = fit[["label"]],
-      logLik = native[["logLik"]] - constant,
-      aic    = native[["AIC"]] + 2 * constant,
-      bic    = native[["BIC"]] + 2 * constant,
-      df     = if (fit[["method"]] == "MLE") 2 else attr(stats::logLik(native[["model"]]), "df")
-    )
-  })))
+  table$setData(.saSafeRbind(lapply(fits, .sareSummaryRow)))
   table$addCitation("ReliaGrowR (0.7): Reliability Growth Analysis and Repairable Systems Modeling. https://doi.org/10.32614/CRAN.package.ReliaGrowR")
   if (.sareMethod(options) == "LS")
     table$addFootnote(gettext("Log-likelihood, AIC and BIC refer to log-scale regression of cumulative quantities and cannot be compared with grouped-count maximum-likelihood values."))
@@ -94,6 +81,22 @@
     for (message in unique(c(fit[["error"]], fit[["warnings"]])))
       table$addFootnote(if (.sapHasSubgroups(options)) gettextf("%1$s: %2$s", fit[["label"]], message) else message)
   return()
+}
+
+.sareSummaryRow <- function(fit) {
+
+  if (!is.null(fit[["error"]]))
+    return(data.frame(subgroup = fit[["label"]]))
+  native <- fit[["native"]]
+  # Native grouped Poisson log likelihoods omit the count-factorial constant.
+  constant <- if (fit[["method"]] == "MLE") sum(lgamma(fit[["counts"]] + 1)) else 0
+  return(data.frame(
+    subgroup = fit[["label"]],
+    logLik   = native[["logLik"]] - constant,
+    aic      = native[["AIC"]] + 2 * constant,
+    bic      = native[["BIC"]] + 2 * constant,
+    df       = if (fit[["method"]] == "MLE") 2 else attr(stats::logLik(native[["model"]]), "df")
+  ))
 }
 
 .sareCoefficientsTable <- function(jaspResults, options, fits) {
