@@ -141,7 +141,7 @@ RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
     else if (model == "piecewise")
       ReliaGrowR::rga(time, counts, times_type = "cumulative_failure_times", model_type = "Piecewise NHPP", breaks = breaks, method = "LS")
     else
-      ReliaGrowR::nhpp(time / scale, counts, model_type = if (model == "logLinear") "Log-Linear" else "Power Law", method = method)
+      .sareNhpp(time / scale, counts, model, method)
   }, warning = function(warning) {
     warnings <<- c(warnings, conditionMessage(warning))
     invokeRestart("muffleWarning")
@@ -167,6 +167,21 @@ RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
   if (!record[["inferenceAvailable"]])
     record[["warnings"]] <- c(record[["warnings"]], gettext("The covariance matrix is singular or not positive definite. Standard errors and confidence intervals are unavailable."))
   return(record)
+}
+
+.sareNhpp <- function(time, counts, model, method) {
+
+  return(tryCatch(
+    ReliaGrowR::nhpp(time, counts, model_type = if (model == "logLinear") "Log-Linear" else "Power Law", method = method),
+    error = function(error) {
+      # ReliaGrowR 0.7 differentiates the power law numerically with steps that cross
+      # beta = 0 once beta is near zero, so optim fails before reaching its beta bound.
+      call <- conditionCall(error)
+      if (method == "MLE" && model == "crowAmsaa" && is.call(call) && identical(call[[1L]], quote(stats::optim)))
+        stop(gettext("The power-law fit did not converge. ReliaGrowR's optimizer fails when beta is close to zero, which happens when nearly all events occur early in follow-up. Consider the log-linear model or least-squares estimation."), call. = FALSE)
+      stop(error)
+    }
+  ))
 }
 
 .sareParameters <- function(record) {
