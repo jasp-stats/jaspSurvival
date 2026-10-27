@@ -1,9 +1,3 @@
-.sareResidualPlotOptions <- c("residualPlotResidualVsTime", "residualPlotResidualVsPredicted", "residualPlotResidualHistogram")
-.sareProbabilityDependencies <- c("probabilityPlot", "probabilityPlotCanvas", "probabilityPlotEmpiricalPoints",
-  "probabilityPlotEmpiricalPointsCoordinates", "probabilityPlotReferenceLine", "probabilityPlotMergePlotsAcrossSubgroups",
-  "probabilityPlotReferenceEnvelope", "probabilityPlotReferenceEnvelopeLevel", "probabilityPlotGrid",
-  "probabilityPlotPlottingPosition", "probabilityPlotLegend", "probabilityPlotColorPalette", "probabilityPlotTheme", "confidenceIntervalBounds")
-
 .sareIntervalMean <- function(fit) {
 
   mean <- diff(c(0, .sareFittedCumulativeEvents(fit)))
@@ -83,7 +77,9 @@
 
 .sareDiagnostics <- function(jaspResults, options) {
 
-  requested <- vapply(.sareResidualPlotOptions, function(name) options[[name]], logical(1))
+  residualOptions <- c(time = "residualPlotResidualVsTime", predicted = "residualPlotResidualVsPredicted",
+    histogram = "residualPlotResidualHistogram")
+  requested <- vapply(residualOptions, function(name) options[[name]], logical(1))
   if (!any(requested) && !options[["probabilityPlot"]])
     return()
   fits <- .sareFits(jaspResults, valid = TRUE)
@@ -91,14 +87,14 @@
     return()
   quantiles <- if ((any(requested) && options[["residualPlotResidualType"]] == "quantile") || options[["probabilityPlot"]])
     .sareQuantileState(jaspResults, options, fits)
-  for (i in which(requested))
-    .sareResidualPlots(jaspResults, options, fits, quantiles, c("time", "predicted", "histogram")[i], .sareResidualPlotOptions[i])
+  for (kind in names(residualOptions)[requested])
+    .sareResidualPlots(jaspResults, options, fits, quantiles, kind, residualOptions[[kind]])
   if (options[["probabilityPlot"]])
     .sareProbabilityPlot(jaspResults, options, fits, quantiles)
   return()
 }
 
-.sareDiagnosticSection <- function(jaspResults, options, key, title, dependencies, labels, builder, width = 440, height = 320) {
+.sareDiagnosticSection <- function(jaspResults, options, key, title, dependencies, position, labels, builder, width = 440, height = 320) {
 
   if (!is.null(jaspResults[[key]]))
     return()
@@ -106,6 +102,7 @@
     title <- gettextf("%1$s: %2$s", title, labels)
   output <- if (length(labels) == 1L) createJaspPlot(title = title, width = width, height = height) else createJaspContainer(title = title)
   output$dependOn(c(.sareFitDependencies, dependencies))
+  output$position <- position
   jaspResults[[key]] <- output
   for (i in seq_along(labels)) {
     plot <- if (length(labels) == 1L) output else createJaspPlot(title = labels[i], width = width, height = height)
@@ -126,7 +123,9 @@
 
   key <- switch(kind, time = "residualsVsTimePlot", predicted = "residualVsPredictedPlot", histogram = "residualHistogram")
   title <- switch(kind, time = gettext("Residuals vs. Time"), predicted = gettext("Residuals vs. Predicted"), histogram = gettext("Residual Histogram"))
-  .sareDiagnosticSection(jaspResults, options, key, title, c(option, "residualPlotResidualType"), vapply(fits, `[[`, character(1), "label"), function(i) {
+  position <- switch(kind, time = 401, predicted = 402, histogram = 403)
+  .sareDiagnosticSection(jaspResults, options, key, title, c(option, "residualPlotResidualType"), position,
+    vapply(fits, `[[`, character(1), "label"), function(i) {
     fit <- fits[[i]]
     type <- options[["residualPlotResidualType"]]
     residual <- .sareResidualValue(fit, type, quantiles[[i]])
@@ -170,7 +169,11 @@
     return()
   groups <- if (options[["probabilityPlotMergePlotsAcrossSubgroups"]]) list(seq_along(fits)) else as.list(seq_along(fits))
   labels <- vapply(groups, function(indices) if (length(indices) == 1L) fits[[indices]][["label"]] else "", character(1))
-  .sareDiagnosticSection(jaspResults, options, "probabilityPlot", gettext("Probability Plot"), .sareProbabilityDependencies, labels, function(i) {
+  dependencies <- c("probabilityPlot", "probabilityPlotCanvas", "probabilityPlotEmpiricalPoints",
+    "probabilityPlotEmpiricalPointsCoordinates", "probabilityPlotReferenceLine", "probabilityPlotMergePlotsAcrossSubgroups",
+    "probabilityPlotReferenceEnvelope", "probabilityPlotReferenceEnvelopeLevel", "probabilityPlotGrid",
+    "probabilityPlotPlottingPosition", "probabilityPlotLegend", "probabilityPlotColorPalette", "probabilityPlotTheme", "confidenceIntervalBounds")
+  .sareDiagnosticSection(jaspResults, options, "probabilityPlot", gettext("Probability Plot"), dependencies, 404, labels, function(i) {
     indices <- groups[[i]]
     data <- do.call(rbind, lapply(indices, function(index) .sareProbabilityData(fits[[index]], quantiles[[index]], options)))
     return(.sareProbabilityFigure(data, options))

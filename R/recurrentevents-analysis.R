@@ -1,14 +1,3 @@
-.sareFitDependencies <- c("time", "eventCount", "subgroup", "timeType", "model", "estimationMethod",
-  "piecewiseStartingBreakpoints", "piecewiseStartingBreakpointsValues", "setSeed", "seed")
-.sareTimeDependencies <- paste0("predictionsTime", c("Grid", "Intervals", "From", "To", "Step", "Values", "Percentages"))
-.sareMeasureNames <- c("survivalProbability", "failureProbability", "cumulativeEvents", "eventIntensity", "cumulativeMeanTimeBetweenEvents", "instantaneousMeanTimeBetweenEvents")
-.sarePredictionOptions <- paste0("predictionsOutcome", c("SurvivalProbability", "FailureProbability", "CumulativeEvents", "EventIntensity", "CumulativeMeanTimeBetweenEvents", "InstantaneousMeanTimeBetweenEvents"))
-.sareTableDependencies <- c("predictionsOutputTableFormat", "predictionsMergeTablesAcrossMeasures", "predictionsRoundTimeTableValues")
-.sarePredictionDependencies <- c(.sareTimeDependencies, .sarePredictionOptions,
-  "predictionsDisplayConfidenceIntervals", "predictionsDisplayConfidenceIntervalsLevel", "confidenceIntervalBounds")
-.sarePlotDependencies <- c("predictionsDisplayObservedData", "predictionsMergeSeriesAcrossSubgroups", "predictionsXAxisTransformation",
-  "predictionsYAxisScale", "plotTheme", "plotLegend", "colorPalette")
-
 RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
 
   if (.sareReady(options))
@@ -18,13 +7,25 @@ RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
   .sarePredictions(jaspResults, options)
   .sareDiagnostics(jaspResults, options)
   .sareExport(jaspResults, dataset, options)
-  .saOrderOutputs(jaspResults, c("dataSummaryTable", "summaryTable", "coefficientsTable", "covarianceMatrices",
-    "segmentEstimatesTable", "changePointsTable", "modelEquations", paste0(.sareMeasureNames, "Plot"),
-    "predictionsTable", paste0(.sareMeasureNames, "Table"), "residualsVsTimePlot", "residualVsPredictedPlot",
-    "residualHistogram", "probabilityPlot", "exportColumns"))
 
   return()
 }
+
+# Output positions: 1xx statistics, 2xx prediction plots, 3xx prediction tables, 4xx diagnostics, 5xx exports.
+.sareFitDependencies <- c("time", "eventCount", "subgroup", "timeType", "model", "estimationMethod",
+  "piecewiseStartingBreakpoints", "piecewiseStartingBreakpointsValues", "setSeed", "seed")
+# Prediction measures in interface order; the order also sets their output positions.
+.sareMeasureOptions <- c(
+  survivalProbability                = "predictionsOutcomeSurvivalProbability",
+  failureProbability                 = "predictionsOutcomeFailureProbability",
+  cumulativeEvents                   = "predictionsOutcomeCumulativeEvents",
+  eventIntensity                     = "predictionsOutcomeEventIntensity",
+  cumulativeMeanTimeBetweenEvents    = "predictionsOutcomeCumulativeMeanTimeBetweenEvents",
+  instantaneousMeanTimeBetweenEvents = "predictionsOutcomeInstantaneousMeanTimeBetweenEvents"
+)
+.sarePredictionDependencies <- c(unname(.sareMeasureOptions),
+  paste0("predictionsTime", c("Grid", "Intervals", "From", "To", "Step", "Values", "Percentages")),
+  "predictionsDisplayConfidenceIntervals", "predictionsDisplayConfidenceIntervalsLevel", "confidenceIntervalBounds")
 
 .sareReady <- function(options) {
 

@@ -57,6 +57,7 @@
   container <- createJaspContainer()
   dependencies <- c(.sareFitDependencies, .sareExportOptions, "exportColumnPrefix")
   container$dependOn(dependencies)
+  container$position <- 501
   jaspResults[["exportColumns"]] <- container
   for (key in names(records[["columns"]])) {
     record <- records[["columns"]][[key]]

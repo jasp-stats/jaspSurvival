@@ -249,7 +249,7 @@
     title          = gettext("Fitted Model Equations"),
     dependencies   = c(.sapGetDependencies(options), .sapSelectedOutputDependencies,
       "fittedModelEquation", "fittedModelEquationDecimals"),
-    position       = 2.2
+    position       = 106
   )
   return()
 }

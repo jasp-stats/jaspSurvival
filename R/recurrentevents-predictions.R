@@ -1,6 +1,6 @@
 .sareMeasures <- function(options) {
 
-  return(.sareMeasureNames[vapply(.sarePredictionOptions, function(key) options[[key]], logical(1))])
+  return(names(.sareMeasureOptions)[vapply(.sareMeasureOptions, function(option) options[[option]], logical(1))])
 }
 
 .sareMeasureLabel <- function(measure) {
@@ -216,7 +216,9 @@
   if (!is.null(jaspResults[[key]]))
     return()
   table <- .sareCreateTable(jaspResults, key, if (merged) gettext("Predictions") else .sareMeasureLabel(measures),
-    c(.sarePredictionDependencies, .sareTableDependencies, "predictionsOutputTable"))
+    c(.sarePredictionDependencies, "predictionsOutputTable", "predictionsOutputTableFormat", "predictionsMergeTablesAcrossMeasures",
+      "predictionsRoundTimeTableValues"),
+    300 + if (merged) 0 else match(measures, names(.sareMeasureOptions)))
   .sareGroupColumn(table, options)
   errors <- character(0)
   forecast <- FALSE

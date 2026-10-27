@@ -1,7 +1,8 @@
-.sareCreateTable <- function(jaspResults, key, title, dependencies) {
+.sareCreateTable <- function(jaspResults, key, title, dependencies, position) {
 
   table <- createJaspTable(title = title)
   table$dependOn(c(.sareFitDependencies, dependencies))
+  table$position <- position
   table$showSpecifiedColumnsOnly <- TRUE
   jaspResults[[key]] <- table
   return(table)
@@ -41,7 +42,7 @@
 
   if (!is.null(jaspResults[["dataSummaryTable"]]))
     return()
-  table <- .sareCreateTable(jaspResults, "dataSummaryTable", gettext("Data Summary"), "dataSummary")
+  table <- .sareCreateTable(jaspResults, "dataSummaryTable", gettext("Data Summary"), "dataSummary", 101)
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "intervals", title = gettext("Intervals"), type = "integer")
   table$addColumnInfo(name = "events", title = gettext("Events"), type = "integer")
@@ -67,12 +68,12 @@
 
   if (!is.null(jaspResults[["summaryTable"]]))
     return()
-  table <- .sareCreateTable(jaspResults, "summaryTable", gettext("Model Summary"), "modelSummary")
+  table <- .sareCreateTable(jaspResults, "summaryTable", gettext("Model Summary"), "modelSummary", 102)
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "logLik", title = gettext("Log Lik."), type = "number")
   table$addColumnInfo(name = "df", title = "df", type = "integer")
-  table$addColumnInfo(name = "aic", title = gettext("AIC"), type = "number", format = "dp:3")
-  table$addColumnInfo(name = "bic", title = gettext("BIC"), type = "number", format = "dp:3")
+  table$addColumnInfo(name = "aic", title = gettext("AIC"), type = "number")
+  table$addColumnInfo(name = "bic", title = gettext("BIC"), type = "number")
   table$setData(.saSafeRbind(lapply(fits, .sareSummaryRow)))
   table$addCitation("ReliaGrowR (0.7): Reliability Growth Analysis and Repairable Systems Modeling. https://doi.org/10.32614/CRAN.package.ReliaGrowR")
   if (.sareMethod(options) == "LS")
@@ -104,7 +105,7 @@
   if (!is.null(jaspResults[["coefficientsTable"]]))
     return()
   table <- .sareCreateTable(jaspResults, "coefficientsTable", gettext("Coefficients Summary"),
-    c("coefficients", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel", "confidenceIntervalBounds"))
+    c("coefficients", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel", "confidenceIntervalBounds"), 103)
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "parameter", title = "", type = "string")
   table$addColumnInfo(name = "estimate", title = gettext("Estimate"), type = "number")
@@ -127,7 +128,7 @@
   if (!is.null(jaspResults[["modelEquations"]]))
     return()
   table <- .sareCreateTable(jaspResults, "modelEquations", gettext("Fitted Model Equations"),
-    c("fittedModelEquation", "fittedModelEquationDecimals"))
+    c("fittedModelEquation", "fittedModelEquationDecimals"), 107)
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "model", title = gettext("Model"), type = "string")
   table$addColumnInfo(name = "equation", title = gettext("Equation"), type = "string")
@@ -140,7 +141,7 @@
 
   if (!is.null(jaspResults[["segmentEstimatesTable"]]))
     return()
-  table <- .sareCreateTable(jaspResults, "segmentEstimatesTable", gettext("Segment Estimates"), "piecewiseSegmentEstimates")
+  table <- .sareCreateTable(jaspResults, "segmentEstimatesTable", gettext("Segment Estimates"), "piecewiseSegmentEstimates", 105)
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "segment", title = gettext("Segment"), type = "integer")
   table$addColumnInfo(name = "slope", title = gettext("Estimate"), overtitle = gettext("Slope (\u03b2)"), type = "number")
@@ -164,7 +165,7 @@
 
   if (!is.null(jaspResults[["changePointsTable"]]))
     return()
-  table <- .sareCreateTable(jaspResults, "changePointsTable", gettext("Change Points"), "piecewiseChangePoints")
+  table <- .sareCreateTable(jaspResults, "changePointsTable", gettext("Change Points"), "piecewiseChangePoints", 106)
   .sareGroupColumn(table, options)
   table$addColumnInfo(name = "changePoint", title = gettext("Change Point"), type = "integer")
   table$addColumnInfo(name = "time", title = gettext("Time"), type = "number")
@@ -206,6 +207,7 @@
   title <- gettext("Coefficients Covariance Matrix")
   output <- if (length(fits) <= 1L) createJaspTable(title = title) else createJaspContainer(title = title)
   output$dependOn(c(.sareFitDependencies, "coefficientsCovarianceMatrix"))
+  output$position <- 104
   jaspResults[["covarianceMatrices"]] <- output
   if (!length(fits)) {
     output$showSpecifiedColumnsOnly <- TRUE

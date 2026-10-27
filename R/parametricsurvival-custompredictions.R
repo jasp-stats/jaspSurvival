@@ -29,7 +29,7 @@
   dependencies <- c(.sapGetDependencies(options), .sapSelectedOutputDependencies, .sapSimulationDependencies, .sapCustomPredictionDependencies)
   container    <- createJaspContainer(title = gettext("Predictions"))
   container$dependOn(dependencies)
-  container$position <- 3
+  container$position <- 401
   jaspResults[["customPredictionsResult"]] <- container
   if (!.saSurvivalReady(options)) {
     table <- createJaspTable(title = gettext("Predictions"))

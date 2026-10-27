@@ -63,7 +63,7 @@
     name           = "probabilityPlot",
     title          = gettext("Probability Plot"),
     dependencies   = outputDependencies,
-    position       = 5.5
+    position       = 506
   )
 
   return()

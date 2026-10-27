@@ -3,17 +3,6 @@
 # - make "lifeTableStepsTo" correspond to the maximum time
 # - make "lifeTableStepsSize" correspond to the maxiumum time/10
 
-.saOrderOutputs <- function(jaspResults, keys) {
-
-  # JASP positions are integers; also reorder retained outputs after option changes.
-  for (i in seq_along(keys)) {
-    output <- jaspResults[[keys[i]]]
-    if (!is.null(output) && output$position != i)
-      output$position <- i
-  }
-  return()
-}
-
 .saSurvivalReady      <- function(options) {
 
   ready <- switch(
