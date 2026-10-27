@@ -85,14 +85,19 @@ Form
 		}
 	}
 
-	SA.ParametricStatistics
+	Section
 	{
-		modelComparisonVisible: false
-		modelSummaryInfo: qsTr("Show log-likelihood, parameter count, AIC and BIC for each independently fitted subgroup. Fit warnings and errors appear as notes to this table.")
-		coefficientsInfo: qsTr("Show recurrent-event parameter estimates and standard errors. Confidence intervals follow the model's estimation method.")
-		covarianceInfo: qsTr("Show the covariance matrix on the reported parameter scale, with one matrix per fitted subgroup.")
-		equationInfo: qsTr("Show fitted equations for cumulative events, event intensity or cumulative mean time between events. Small nonzero coefficients are displayed in scientific notation when needed.")
-		extraSummaryControls: [
+		title: qsTr("Statistics")
+
+		Group
+		{
+			CheckBox
+			{
+				name: "modelSummary"
+				label: qsTr("Model summary")
+				checked: true
+				info: qsTr("Include a table with information about the model fit.")
+			}
 			CheckBox
 			{
 				name: "dataSummary"
@@ -100,11 +105,39 @@ Form
 				checked: false
 				info: qsTr("Show observation intervals, total events, follow-up time and observed cumulative mean time between events for each subgroup.")
 			}
-		]
-		extraStatisticsControls: [
+		}
+
+		Group
+		{
+			CheckBox
+			{
+				name: "coefficients"
+				label: qsTr("Coefficients")
+				checked: true
+				info: qsTr("Include a table with coefficient estimates.")
+				CheckBox
+				{
+					name: "coefficientsConfidenceIntervals"
+					label: qsTr("Confidence intervals")
+					checked: true
+					childrenOnSameRow: true
+					info: qsTr("Include confidence intervals for the coefficients.")
+					CIField
+					{
+						name: "coefficientsConfidenceIntervalsLevel"
+						info: qsTr("Set the confidence level for the confidence intervals.")
+					}
+				}
+			}
+			CheckBox
+			{
+				name: "coefficientsCovarianceMatrix"
+				label: qsTr("Coefficients covariance matrix")
+				checked: false
+				info: qsTr("Include a table with the covariance matrix of the coefficient estimates.")
+			}
 			Group
 			{
-				columns: 1
 				visible: model.value === "piecewise"
 				CheckBox
 				{
@@ -121,7 +154,24 @@ Form
 					info: qsTr("Show estimated change-point times in the original time units and native standard errors on the log-time scale.")
 				}
 			}
-		]
+		}
+
+		CheckBox
+		{
+			name: "fittedModelEquation"
+			label: qsTr("Fitted model equation")
+			checked: false
+			info: qsTr("Show the fitted model equations in a table.")
+			IntegerField
+			{
+				name: "fittedModelEquationDecimals"
+				label: qsTr("Decimals")
+				defaultValue: 3
+				min: 0
+				max: 15
+				info: qsTr("Set the number of decimal places displayed in the fitted equations.")
+			}
+		}
 	}
 
 	SA.RecurrentEventPredictions { hasSubgroups: subgroup.count > 0 }

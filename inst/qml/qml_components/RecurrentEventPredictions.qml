@@ -64,18 +64,95 @@ Section
 
 	Group
 	{
-		PredictionTime
+		Group
 		{
-			id: predictionTime
+			title: qsTr("Time")
 			enabled: predictionsRoot.predictionOutputSelected
-			fromPlaceholder: qsTr("First endpoint")
-			stepPlaceholder: qsTr("(To - From) / 10")
-			maximumIntervals: 10000
-			intervalsInfo: qsTr("Set the number of equal intervals between the first observed endpoint and maximum follow-up in each subgroup.")
-			fromInfo: qsTr("Set a positive first time in the sequence. Leave blank to use the first observed endpoint in each subgroup.")
-			stepInfo: qsTr("Set a positive time increment. Leave blank to use (To - From) / 10, or From when both endpoints are equal.")
-			toInfo: qsTr("Set the last prediction time. Use a time beyond observed follow-up to forecast. Leave blank to use the maximum follow-up in each subgroup.")
-			valuesInfo: qsTr("Enter positive prediction times separated by commas, in the original time units. Leave blank to use 25%, 50% and 75% of follow-up.")
+			DropDown
+			{
+				id: timeGrid
+				name: "predictionsTimeGrid"
+				label: qsTr("Grid")
+				startValue: "quantiles"
+				values: [
+					{label: qsTr("Equal intervals"), value: "quantiles"},
+					{label: qsTr("Sequence"), value: "sequence"},
+					{label: qsTr("Custom (relative)"), value: "customRelative"},
+					{label: qsTr("Custom (absolute)"), value: "customAbsolute"}
+				]
+				info: qsTr("Choose how to specify prediction times: equal intervals, a sequence or custom values.")
+			}
+			IntegerField
+			{
+				name: "predictionsTimeIntervals"
+				label: qsTr("Intervals")
+				defaultValue: 10
+				min: 1
+				max: 10000
+				visible: timeGrid.value === "quantiles"
+				info: qsTr("Set the number of equal intervals between the first observed endpoint and maximum follow-up in each subgroup.")
+			}
+			Group
+			{
+				columns: 3
+				alignFields: false
+				visible: timeGrid.value === "sequence"
+				FormulaField
+				{
+					name: "predictionsTimeFrom"
+					label: qsTr("From")
+					defaultValue: ""
+					inputType: "string"
+					parseDefaultValue: false
+					placeholderText: qsTr("First endpoint")
+					fieldWidth: 50 * jaspTheme.uiScale
+					info: qsTr("Set a positive first time in the sequence. Leave blank to use the first observed endpoint in each subgroup.")
+				}
+				FormulaField
+				{
+					name: "predictionsTimeStep"
+					label: qsTr("Step")
+					defaultValue: ""
+					inputType: "string"
+					parseDefaultValue: false
+					placeholderText: qsTr("(To - From) / 10")
+					fieldWidth: 50 * jaspTheme.uiScale
+					info: qsTr("Set a positive time increment. Leave blank to use (To - From) / 10, or From when both endpoints are equal.")
+				}
+				FormulaField
+				{
+					name: "predictionsTimeTo"
+					label: qsTr("To")
+					defaultValue: ""
+					inputType: "string"
+					parseDefaultValue: false
+					placeholderText: qsTr("Maximum follow-up")
+					fieldWidth: 50 * jaspTheme.uiScale
+					info: qsTr("Set the last prediction time. Use a time beyond observed follow-up to forecast. Leave blank to use the maximum follow-up in each subgroup.")
+				}
+			}
+			FormulaField
+			{
+				name: "predictionsTimePercentages"
+				label: qsTr("Percentages")
+				defaultValue: "25, 50, 75"
+				inputType: "string"
+				parseDefaultValue: false
+				fieldWidth: 150 * jaspTheme.uiScale
+				visible: timeGrid.value === "customRelative"
+				info: qsTr("Enter prediction times as percentages of the maximum follow-up time, separated by commas.")
+			}
+			FormulaField
+			{
+				name: "predictionsTimeValues"
+				label: qsTr("Values")
+				inputType: "string"
+				parseDefaultValue: false
+				placeholderText: qsTr("25%, 50%, 75% of follow-up")
+				fieldWidth: 180 * jaspTheme.uiScale
+				visible: timeGrid.value === "customAbsolute"
+				info: qsTr("Enter positive prediction times separated by commas, in the original time units. Leave blank to use 25%, 50% and 75% of follow-up.")
+			}
 		}
 		Group
 		{
@@ -147,10 +224,37 @@ Section
 				info: qsTr("Set the confidence level for the confidence intervals.")
 			}
 		}
-		PredictionPlotAppearance
+		DropDown
 		{
-			legendAvailable: modelPlot.checked && predictionsRoot.outcomeSelected
-			plotsAvailable: modelPlot.checked && predictionsRoot.outcomeSelected
+			name: "plotLegend"
+			label: qsTr("Legend")
+			startValue: "right"
+			enabled: modelPlot.checked && predictionsRoot.outcomeSelected
+			values: [
+				{label: qsTr("Bottom"), value: "bottom"},
+				{label: qsTr("Right"), value: "right"},
+				{label: qsTr("Left"), value: "left"},
+				{label: qsTr("Top"), value: "top"},
+				{label: qsTr("None"), value: "none"}
+			]
+			info: qsTr("Choose the legend position for prediction plots.")
+		}
+		DropDown
+		{
+			name: "plotTheme"
+			label: qsTr("Theme")
+			startValue: "jasp"
+			enabled: modelPlot.checked && predictionsRoot.outcomeSelected
+			values: [
+				{label: "JASP", value: "jasp"},
+				{label: qsTr("White background"), value: "whiteBackground"},
+				{label: qsTr("Light"), value: "light"},
+				{label: qsTr("Minimal"), value: "minimal"},
+				{label: "APA", value: "apa"},
+				{label: "pubr", value: "pubr"},
+				{label: qsTr("Detailed"), value: "detailed"}
+			]
+			info: qsTr("Choose the theme for prediction plots.")
 		}
 		CheckBox
 		{
@@ -196,7 +300,7 @@ Section
 			name: "predictionsRoundTimeTableValues"
 			label: qsTr("Round time table values")
 			checked: false
-			visible: predictionTime.gridControl.value === "quantiles" || predictionTime.gridControl.value === "sequence"
+			visible: timeGrid.value === "quantiles" || timeGrid.value === "sequence"
 			enabled: modelTable.checked && predictionsRoot.outcomeSelected
 			info: qsTr("Round evaluation times in tables to the nearest integer. Rounded times must remain positive.")
 		}

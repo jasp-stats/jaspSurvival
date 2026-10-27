@@ -28,81 +28,63 @@ Section
 	id:	statisticsRoot
 	property bool multipleResults:	false
 	property bool multipleModels:	false
-	property bool modelComparisonVisible:	true
-	property string modelSummaryInfo:	qsTr("Include a table with information about the model fit.")
-	property string coefficientsInfo:	qsTr("Include a table with coefficient estimates.")
-	property string covarianceInfo:	qsTr("Include a table with the covariance matrix of the coefficient estimates.")
-	property string equationInfo:	qsTr("Show the fitted model equations in a table.")
-	property alias extraSummaryControls:	summaryExtras.content
 	property alias extraStatisticsControls:	statisticsExtras.content
 
 	title: qsTr("Statistics")
 
-	Group
+	CheckBox
 	{
+		label:		qsTr("Model summary")
+		name:		"modelSummary"
+		checked:	true
+		info: qsTr("Include a table with information about the model fit.")
+
 		CheckBox
 		{
-			label:		qsTr("Model summary")
-			name:		"modelSummary"
-			checked:	true
-			info: statisticsRoot.modelSummaryInfo
+			name:		"modelSummaryRankModels"
+			label:		qsTr("Rank models")
+			enabled:	statisticsRoot.multipleResults
+			info: qsTr("Rank models based on the selected criterion.")
 
-			CheckBox
+			RadioButtonGroup
 			{
-				name:		"modelSummaryRankModels"
-				label:		qsTr("Rank models")
-				visible:	statisticsRoot.modelComparisonVisible
-				enabled:	statisticsRoot.multipleResults
-				info: qsTr("Rank models based on the selected criterion.")
+				name:		"modelSummaryRankModelsBy"
 
-				RadioButtonGroup
+				RadioButton
 				{
-					name:		"modelSummaryRankModelsBy"
-
-					RadioButton
-					{
-						label:		qsTr("AIC")
-						value:		"aic"
-						checked:	true
-					}
-
-					RadioButton
-					{
-						label:		qsTr("BIC")
-						value:		"bic"
-					}
-
-					RadioButton
-					{
-						label:		qsTr("Log lik.")
-						value:		"logLik"
-					}
+					label:		qsTr("AIC")
+					value:		"aic"
+					checked:	true
 				}
-			}
 
-			CheckBox
-			{
-				name:		"modelSummaryAicWeights"
-				label:		qsTr("AIC weights")
-				visible:	statisticsRoot.modelComparisonVisible
-				enabled:	statisticsRoot.multipleResults
-				info: qsTr("Include AIC weights in the model summary.")
-			}
+				RadioButton
+				{
+					label:		qsTr("BIC")
+					value:		"bic"
+				}
 
-			CheckBox
-			{
-				name:		"modelSummaryBicWeights"
-				label:		qsTr("BIC weights")
-				visible:	statisticsRoot.modelComparisonVisible
-				enabled:	statisticsRoot.multipleResults
-				info: qsTr("Include BIC weights in the model summary.")
+				RadioButton
+				{
+					label:		qsTr("Log lik.")
+					value:		"logLik"
+				}
 			}
 		}
 
-		Group
+		CheckBox
 		{
-			id:		summaryExtras
-			visible:	hasChildren
+			name:		"modelSummaryAicWeights"
+			label:		qsTr("AIC weights")
+			enabled:	statisticsRoot.multipleResults
+			info: qsTr("Include AIC weights in the model summary.")
+		}
+
+		CheckBox
+		{
+			name:		"modelSummaryBicWeights"
+			label:		qsTr("BIC weights")
+			enabled:	statisticsRoot.multipleResults
+			info: qsTr("Include BIC weights in the model summary.")
 		}
 	}
 
@@ -113,7 +95,7 @@ Section
 			label:		qsTr("Coefficients")
 			name:		"coefficients"
 			checked:	true
-			info: statisticsRoot.coefficientsInfo
+			info: qsTr("Include a table with coefficient estimates.")
 
 			CheckBox
 			{
@@ -136,7 +118,7 @@ Section
 			label:		qsTr("Coefficients covariance matrix")
 			name:		"coefficientsCovarianceMatrix"
 			checked:	false
-			info: statisticsRoot.covarianceInfo
+			info: qsTr("Include a table with the covariance matrix of the coefficient estimates.")
 		}
 
 		Group
@@ -151,7 +133,7 @@ Section
 		name:	"fittedModelEquation"
 		label:	qsTr("Fitted model equation")
 		checked:	false
-		info:	statisticsRoot.equationInfo
+		info:	qsTr("Show the fitted model equations in a table.")
 
 		IntegerField
 		{
@@ -169,7 +151,6 @@ Section
 		label:		qsTr("Sequential model comparison")
 		name:		"sequentialModelComparison"
 		checked:	false
-		visible:	statisticsRoot.modelComparisonVisible
 		enabled:	statisticsRoot.multipleModels
 		info: qsTr("Include a table with the results of the sequential model comparison.")
 	}

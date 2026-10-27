@@ -100,7 +100,6 @@ Form
 	{
 		multipleModels:		models.modelCount > 1
 		multipleResults:	distribution.value === "all" || (multipleComponentsSelected && mixtureMaximumComponents.value > 1) || models.modelCount > 1
-		modelSummaryInfo:	qsTr("Show a table summarizing model fit.")
 
 		extraStatisticsControls: [
 			Group
@@ -142,13 +141,6 @@ Form
 		subgroupsAvailable:	variables.subgroupCount > 0
 		extraPlotSelected:	mixtureComponentPlot.checked || densityPlot.checked
 		componentPlotSelected: mixtureComponentPlot.checked
-		quantileStepsInfo: qsTr("Choose how to specify lifetime percentiles: equal intervals, a sequence or custom values.")
-		quantileNumberInfo: qsTr("Set the number of equal intervals between 0 and 100.")
-		lifeTimeStepsInfo: qsTr("Choose how to specify prediction times: equal intervals, a sequence or custom values.")
-		lifeTimeSizeInfo: qsTr("Set the time increment for the sequence. Leave blank to use the default increment.")
-		lifeTimeCustomInfo: qsTr("Enter non-negative prediction times, separated by commas. Leave blank to use the default times.")
-
-
 	}
 
 	Section
@@ -160,7 +152,6 @@ Form
 			SA.ParametricResidualPlots
 			{
 				rightCensoring:	censoring.rightCensoring
-				residualVsPredictedLabel:	qsTr("Residuals vs. predicted time")
 			}
 
 			SA.ParametricDensityPlot

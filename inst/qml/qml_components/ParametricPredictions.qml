@@ -26,7 +26,6 @@ import JASP
 Section
 {
 	id: predictionsRoot
-	readonly property var timeGrid: predictionTime.gridControl
 	property var analysisForm
 	property bool mixture: false
 	property bool rightCensoring: false
@@ -74,11 +73,6 @@ Section
 	readonly property bool predictionIntervalAvailable: survivalTime.checked && (variableInput ?
 		lifetimeSummarySelected && predictionOutputSelected && !timeAxis && predictorView :
 		modelPlot.checked && scalarLifetimeSelected)
-	property string quantileStepsInfo: qsTr("Choose how to specify lifetime percentiles: equal intervals, a sequence or custom values.")
-	property string quantileNumberInfo: qsTr("Set the number of equal intervals between 0 and 100.")
-	property string lifeTimeStepsInfo: qsTr("Choose how to specify prediction times: equal intervals, a sequence or custom values.")
-	property string lifeTimeSizeInfo: qsTr("Set the time increment. Leave blank to use the default increment.")
-	property string lifeTimeCustomInfo: qsTr("Enter non-negative prediction times, separated by commas. Leave blank to use the default times.")
 	title: qsTr("Predictions")
 
 	property var previousFullTimeGrid: null
@@ -275,7 +269,7 @@ Section
 						name:		"predictionsLifetimePercentilesGrid"
 						id:			percentileGrid
 						label:		qsTr("Grid")
-						info: predictionsRoot.quantileStepsInfo
+						info: qsTr("Choose how to specify lifetime percentiles: equal intervals, a sequence or custom values.")
 						startValue: "quantiles"
 						onInitializedChanged: predictionsRoot.queueGridDefaultsSync()
 						values:
@@ -292,7 +286,7 @@ Section
 						defaultValue:	10
 						min:			1
 						visible:		percentileGrid.value === "quantiles"
-						info: predictionsRoot.quantileNumberInfo
+						info: qsTr("Set the number of equal intervals between 0 and 100.")
 					}
 					Group
 					{
@@ -348,15 +342,100 @@ Section
 					}
 				}
 			}
-			PredictionTime
+			Group
 			{
-				id: predictionTime
 				title: predictionsRoot.timeValuesTitle
 				enabled: (predictionsRoot.timeMeasuresSelected && predictionsRoot.predictionOutputSelected) || predictionsRoot.componentPlotSelected
-				gridInfo: predictionsRoot.lifeTimeStepsInfo
-				stepInfo: predictionsRoot.lifeTimeSizeInfo
-				valuesInfo: predictionsRoot.lifeTimeCustomInfo
-				onGridInitializedChanged: predictionsRoot.queueGridDefaultsSync()
+				DropDown
+				{
+					name:		"predictionsTimeGrid"
+					id:			timeGrid
+					label:		qsTr("Grid")
+					info: 		qsTr("Choose how to specify prediction times: equal intervals, a sequence or custom values.")
+					startValue: "quantiles"
+					onInitializedChanged: predictionsRoot.queueGridDefaultsSync()
+					values:
+					[
+					{ label: qsTr("Equal intervals"),	value: "quantiles"	},
+					{ label: qsTr("Sequence"),			value: "sequence"	},
+					{ label: qsTr("Custom (relative)"),	value: "customRelative" },
+					{ label: qsTr("Custom (absolute)"),	value: "customAbsolute" }
+					]
+				}
+				IntegerField
+				{
+					name:			"predictionsTimeIntervals"
+					label:			qsTr("Intervals")
+					defaultValue:	10
+					min:			1
+					visible:		timeGrid.value === "quantiles"
+					info: qsTr("Set the number of equal intervals between zero and the maximum follow-up time.")
+				}
+				Group
+				{
+					columns: 3
+					alignFields: false
+					visible: timeGrid.value === "sequence"
+
+					FormulaField
+					{
+						name:			"predictionsTimeFrom"
+						id:				predictionsLifeTimeStepsFrom
+						label:			qsTr("From")
+						defaultValue: 	""
+						inputType: 		"string"
+						parseDefaultValue: false
+						placeholderText: qsTr("0")
+						fieldWidth:		50 * jaspTheme.uiScale
+						info: qsTr("Set the first time in the sequence. Leave blank to start at 0.")
+					}
+					FormulaField
+					{
+						name:			"predictionsTimeStep"
+						id:				predictionsLifeTimeStepsSize
+						label:			qsTr("Step")
+						defaultValue: 	""
+						inputType: 		"string"
+						parseDefaultValue: false
+						placeholderText: qsTr("Maximum follow-up / 10")
+						fieldWidth:		50 * jaspTheme.uiScale
+						info: qsTr("Set the time increment. Leave blank to use the default increment.")
+					}
+					FormulaField
+					{
+						name:			"predictionsTimeTo"
+						id:				predictionsLifeTimeStepsTo
+						label:			qsTr("To")
+						defaultValue: 	""
+						inputType: 		"string"
+						parseDefaultValue: false
+						placeholderText: qsTr("Maximum follow-up")
+						fieldWidth:		50 * jaspTheme.uiScale
+						info: qsTr("Set the last time in the sequence. Leave blank to use the maximum follow-up time.")
+					}
+				}
+				FormulaField
+				{
+					name: "predictionsTimePercentages"
+					label: qsTr("Percentages")
+					defaultValue: "25, 50, 75"
+					inputType: "string"
+					parseDefaultValue: false
+					fieldWidth: 150 * jaspTheme.uiScale
+					visible: timeGrid.value === "customRelative"
+					info: qsTr("Enter prediction times as percentages of the maximum follow-up time, separated by commas.")
+				}
+				FormulaField
+				{
+					name:			"predictionsTimeValues"
+					label:			qsTr("Values")
+					visible:		timeGrid.value === "customAbsolute"
+					inputType: "string"
+					parseDefaultValue: false
+					placeholderText: qsTr("25%, 50%, 75% of follow-up")
+					fieldWidth: 180 * jaspTheme.uiScale
+					info: qsTr("Enter non-negative prediction times, separated by commas. Leave blank to use the default times.")
+				}
 			}
 		}
 
@@ -834,10 +913,39 @@ Section
 			enabled: predictionsRoot.predictorPlotSelected && !predictionsRoot.timeAxis && predictionsRoot.axisVariables.length > 1
 			info: qsTr("Combine the plots for the selected predictors in one figure.")
 		}
-		PredictionPlotAppearance
+		DropDown
 		{
-			legendAvailable: predictionsRoot.legendPaletteAvailable
-			plotsAvailable: predictionsRoot.plotSelected
+			name:		"plotLegend"
+			label:		qsTr("Legend")
+			startValue:	"right"
+			enabled:	predictionsRoot.legendPaletteAvailable
+			info: qsTr("Choose the legend position for prediction plots.")
+			values:
+			[
+			{ label: qsTr("Bottom"),	value: "bottom" },
+			{ label: qsTr("Right"),		value: "right"	},
+			{ label: qsTr("Left"),		value: "left"	},
+			{ label: qsTr("Top"),		value: "top"	},
+			{ label: qsTr("None"),		value: "none"	}
+			]
+		}
+		DropDown
+		{
+			name:		"plotTheme"
+			label:		qsTr("Theme")
+			startValue:	"jasp"
+			enabled:	predictionsRoot.plotSelected
+			info: qsTr("Choose the theme for prediction plots.")
+			values:
+			[
+			{ label: "JASP",					value: "jasp"				},
+			{ label: qsTr("White background"),	value: "whiteBackground"	},
+			{ label: qsTr("Light"),				value: "light"				},
+			{ label: qsTr("Minimal")	,		value: "minimal"			},
+			{ label: "APA",						value: "apa"				},
+			{ label: "pubr",					value: "pubr"				},
+			{ label: qsTr("Detailed"),			value: "detailed"			}
+			]
 		}
 		CheckBox
 		{
