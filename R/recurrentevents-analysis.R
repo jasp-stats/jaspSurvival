@@ -19,6 +19,7 @@ RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
 )
 # Prediction measures in interface order; the order also sets their output positions.
 .sareMeasureOptions <- c(
+  missionReliability                 = "predictionsOutcomeMissionReliability",
   survivalProbability                = "predictionsOutcomeSurvivalProbability",
   failureProbability                 = "predictionsOutcomeFailureProbability",
   cumulativeEvents                   = "predictionsOutcomeCumulativeEvents",
@@ -28,6 +29,7 @@ RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
 )
 .sarePredictionDependencies <- c(
   unname(.sareMeasureOptions),
+  "predictionsMissionDuration",
   paste0("predictionsTime", c("Grid", "Intervals", "From", "To", "Step", "Values", "Percentages")),
   "predictionsDisplayConfidenceIntervals", "predictionsDisplayConfidenceIntervalsLevel", "confidenceIntervalBounds"
 )

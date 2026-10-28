@@ -231,6 +231,23 @@
   return()
 }
 
+.sareCoefficientLabels <- function(fit) {
+
+  labels <- names(fit[["estimates"]])
+  if (fit[["model"]] != "piecewise")
+    return(labels)
+
+  labels[labels == "(Intercept)"] <- gettext("Intercept")
+  labels[labels == "log_times"]   <- gettext("Slope (segment 1)")
+
+  changes <- grep("^U[0-9]+\\.log_times$", labels)
+  labels[changes] <- gettextf("Slope change (change point %1$s)", sub("^U([0-9]+)\\.log_times$", "\\1", labels[changes]))
+  points <- grep("^psi[0-9]+\\.log_times$", labels)
+  labels[points] <- gettextf("Change point %1$s (log time)", sub("^psi([0-9]+)\\.log_times$", "\\1", labels[points]))
+
+  return(labels)
+}
+
 .sareCoefficientRows <- function(fit, level, direction) {
 
   estimates <- fit[["estimates"]]
@@ -249,7 +266,7 @@
 
   return(data.frame(
     subgroup  = c(fit[["label"]], rep(NA_character_, length(estimates) - 1L)),
-    parameter = names(estimates),
+    parameter = .sareCoefficientLabels(fit),
     estimate  = as.numeric(estimates),
     se        = as.numeric(se),
     lower     = as.numeric(lower),
@@ -284,7 +301,7 @@
 
     table$showSpecifiedColumnsOnly <- TRUE
     table$addColumnInfo(name = "parameter", title = "", type = "string")
-    parameters <- names(fit[["estimates"]])
+    parameters <- .sareCoefficientLabels(fit)
     for (j in seq_along(parameters))
       table$addColumnInfo(name = paste0("p", j), title = parameters[j], type = "number")
 

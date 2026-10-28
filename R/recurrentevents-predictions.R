@@ -9,6 +9,7 @@
 
   return(switch(
     measure,
+    "missionReliability"                 = gettext("Mission Reliability"),
     "survivalProbability"                = gettext("Survival Probability"),
     "failureProbability"                 = gettext("Failure Probability"),
     "cumulativeEvents"                   = gettext("Cumulative Events"),
@@ -82,7 +83,10 @@
   return(exp(record[["native"]][["model"]][["psi"]][, "Est."]))
 }
 
-.sarePredict <- function(record, times, measure, level, direction) {
+.sarePredict <- function(record, times, measure, level, direction, missionDuration = NULL) {
+
+  if (measure == "missionReliability")
+    return(.sareMissionPrediction(record, times, missionDuration, level, direction))
 
   if (measure %in% c("survivalProbability", "failureProbability")) {
     meanDirection <- if (measure == "survivalProbability")
@@ -187,6 +191,77 @@
   ))
 }
 
+.sareCumulativeGradient <- function(record, times) {
+
+  coefficients <- record[["estimates"]]
+  logTime      <- log(times)
+  model        <- record[["model"]]
+
+  if (model == "piecewise") {
+    points <- record[["native"]][["model"]][["psi"]][, "Est."]
+    changes <- coefficients[grep("^U[0-9]+\\.log_times$", names(coefficients))]
+    hinges <- outer(logTime, points, function(x, point) pmax(x - point, 0))
+    logMean <- coefficients[["(Intercept)"]] + coefficients[["log_times"]] * logTime + as.vector(hinges %*% changes)
+    gradient <- cbind(1, logTime, hinges, -sweep(outer(logTime, points, `>`), 2, changes, `*`))
+  } else if (model == "logLinear") {
+    a <- coefficients[1]
+    b <- coefficients[2]
+    z <- b * times
+    mean <- if (b == 0) exp(a) * times else exp(a) * expm1(z) / b
+    derivative <- exp(a) * times^2 * (.5 + z / 3 + z^2 / 8 + z^3 / 30)
+    away <- abs(z) >= 1e-4
+    derivative[away] <- exp(a) * (exp(z[away]) * (z[away] - 1) + 1) / b^2
+    return(list(logMean = log(mean), gradient = cbind(mean, derivative)))
+  } else if (model == "duane") {
+    logMean <- (1 - coefficients[2]) * logTime - log(coefficients[1])
+    gradient <- cbind(-1 / coefficients[1], -logTime)
+  } else {
+    logMean <- log(coefficients[1]) + coefficients[2] * logTime
+    gradient <- cbind(1 / coefficients[1], logTime)
+  }
+
+  return(list(logMean = logMean, gradient = exp(logMean) * gradient))
+}
+
+.sareMissionPrediction <- function(record, times, duration, level, direction) {
+
+  end <- times + duration
+  if (any(!is.finite(end) | end <= times))
+    stop(gettext("The mission endpoints cannot be represented at these times. Adjust the duration or prediction range."))
+
+  if (record[["model"]] == "piecewise") {
+    breaks <- .sareBreakpoints(record)
+    slopes <- record[["native"]][["betas"]][["log_times"]][, "Est."]
+    for (i in seq_along(slopes)) {
+      from <- if (i == 1L) 0 else breaks[i - 1L]
+      to   <- if (i > length(breaks)) Inf else breaks[i]
+      if (slopes[i] <= 0 && any(times < to & end > from))
+        stop(gettext("Mission reliability requires a positive event rate throughout each mission. Choose another model or prediction range."))
+    }
+  }
+
+  startMean <- .sareCumulativeGradient(record, times)
+  endMean   <- .sareCumulativeGradient(record, end)
+  # Preserve small increments and include covariance between both endpoints.
+  increment <- exp(startMean[["logMean"]]) * expm1(endMean[["logMean"]] - startMean[["logMean"]])
+  if (any(!is.finite(increment) | increment <= 0))
+    stop(gettext("The model cannot provide finite positive expected event counts over these missions. Adjust the duration or prediction range."))
+
+  lower <- upper <- rep(NA_real_, length(times))
+  if (record[["inferenceAvailable"]]) {
+    gradient <- (endMean[["gradient"]] - startMean[["gradient"]]) / increment
+    variance <- rowSums((gradient %*% record[["covariance"]]) * gradient)
+    halfWidth <- .sareCritical(level, record[["df"]], direction) * sqrt(pmax(variance, 0))
+    lower <- exp(-exp(log(increment) + halfWidth))
+    upper <- exp(-exp(log(increment) - halfWidth))
+  }
+  if (direction == "lower") upper[] <- NA_real_
+  if (direction == "upper") lower[] <- NA_real_
+
+  return(data.frame(time = times, estimate = exp(-increment), lower = lower, upper = upper,
+    subgroup = record[["label"]], forecast = end > max(record[["time"]])))
+}
+
 .sareProbabilityPrediction <- function(prediction, measure) {
 
   columns <- c("estimate", "lower", "upper")
@@ -227,7 +302,8 @@
         times     = .sareTimes(record, options, plot),
         measure   = measure,
         level     = options[["predictionsDisplayConfidenceIntervalsLevel"]],
-        direction = options[["confidenceIntervalBounds"]]
+        direction = options[["confidenceIntervalBounds"]],
+        missionDuration = options[["predictionsMissionDuration"]]
       )
       return(list(
         label = record[["label"]],
@@ -309,7 +385,7 @@
   times <- if (wide && !is.null(data)) sort(unique(data[["time"]]))
 
   if (!wide)
-    table$addColumnInfo(name = "time", title = gettext("Time"), type = "number")
+    table$addColumnInfo(name = "time", title = if (identical(measures, "missionReliability")) gettext("Mission Start Time") else gettext("Time"), type = "number")
   .sarePredictionTableColumns(table, options, measures, times)
 
   if (!is.null(data)) {
@@ -330,12 +406,17 @@
     for (error in errors)
       table$addFootnote(error)
   }
-  if (any(measures %in% c("survivalProbability", "failureProbability"))) {
-    table$addFootnote(gettext("Probabilities assume an NHPP: survival is no events and failure is at least one event since time zero."))
+  if ("missionReliability" %in% measures)
+    table$addFootnote(gettextf("Mission reliability is the probability of no events during a mission of duration %1$s starting at each listed time, assuming an NHPP.", options[["predictionsMissionDuration"]]))
+  if (any(measures %in% c("survivalProbability", "failureProbability", "missionReliability"))) {
+    if (any(measures %in% c("survivalProbability", "failureProbability")))
+      table$addFootnote(gettext("Probabilities assume an NHPP: survival is no events and failure is at least one event since time zero."))
     if (options[["model"]] == "duane")
       table$addFootnote(gettext("Duane probabilities assume its fitted growth curve is the cumulative mean of an NHPP."))
   }
   if (options[["predictionsDisplayConfidenceIntervals"]]) {
+    if ("missionReliability" %in% measures)
+      table$addFootnote(gettext("Mission-reliability confidence intervals use a delta-method approximation accounting for covariance between the cumulative means at mission start and end."))
     if (.sareMethod(options) == "LS")
       table$addFootnote(gettext("Confidence intervals use native regression approximations that do not account for dependence between cumulative observations."))
     if (options[["model"]] == "piecewise" && any(measures %in% c("eventIntensity", "instantaneousMeanTimeBetweenEvents")))

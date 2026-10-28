@@ -138,7 +138,11 @@
     plot <- plot + ggplot2::geom_vline(xintercept = breaks, linetype = "dotted", colour = "grey50")
 
   if (any(data[["forecast"]])) {
-    forecast <- do.call(rbind, lapply(fits, function(fit) data.frame(time = max(fit[["time"]]), subgroup = fit[["label"]])))
+    forecast <- do.call(rbind, lapply(fits, function(fit) data.frame(
+      time = max(fit[["time"]]) - if (measure == "missionReliability") options[["predictionsMissionDuration"]] else 0,
+      subgroup = fit[["label"]])))
+    if (measure == "missionReliability")
+      forecast <- forecast[forecast[["time"]] >= min(data[["time"]]) & forecast[["time"]] <= max(data[["time"]]), , drop = FALSE]
     plot     <- plot + ggplot2::geom_vline(
       data        = forecast,
       mapping     = ggplot2::aes(xintercept = time, colour = subgroup),
@@ -148,14 +152,14 @@
   }
 
   plot <- plot + ggplot2::labs(
-    x       = gettext("Time"),
+    x       = if (measure == "missionReliability") gettext("Mission start time") else gettext("Time"),
     y       = paste(strwrap(.sareMeasureLabel(measure), width = 24L), collapse = "\n"),
     colour  = gettext("Subgroup"),
     fill    = if (options[["confidenceIntervalBounds"]] == "twoSided") gettext("Subgroup") else NULL,
     caption = NULL
   )
 
-  probability <- measure %in% c("survivalProbability", "failureProbability")
+  probability <- measure %in% c("survivalProbability", "failureProbability", "missionReliability")
   if (options[["predictionsXAxisTransformation"]] == "log")
     plot <- plot + ggplot2::scale_x_log10()
   if (options[["predictionsYAxisScale"]] == "log")

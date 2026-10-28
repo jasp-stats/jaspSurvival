@@ -8,13 +8,20 @@ Section
 	id: predictionsRoot
 	property bool hasSubgroups: false
 	readonly property bool outcomeSelected: outcomeCount > 0
-	readonly property int outcomeCount: Number(survivalProbability.checked) + Number(failureProbability.checked) + Number(cumulativeEvents.checked) + Number(eventIntensity.checked) + Number(cumulativeMeanTimeBetweenEvents.checked) + Number(instantaneousMeanTimeBetweenEvents.checked)
+	readonly property int outcomeCount: Number(missionReliability.checked) + Number(survivalProbability.checked) + Number(failureProbability.checked) + Number(cumulativeEvents.checked) + Number(eventIntensity.checked) + Number(cumulativeMeanTimeBetweenEvents.checked) + Number(instantaneousMeanTimeBetweenEvents.checked)
 	readonly property bool predictionOutputSelected: outcomeSelected && (modelPlot.checked || modelTable.checked)
 	title: qsTr("Predictions")
 
 	Group
 	{
 		title: qsTr("Outcome")
+		CheckBox
+		{
+			id: missionReliability
+			name: "predictionsOutcomeMissionReliability"
+			label: qsTr("Mission reliability")
+			info: qsTr("Predict the probability of no events during a mission starting at each selected time: exp(-(M(t + d) - M(t))), where d is the mission duration. This assumes an NHPP, including for the Duane growth curve.")
+		}
 		CheckBox
 		{
 			id: survivalProbability
@@ -152,6 +159,16 @@ Section
 				fieldWidth: 180 * jaspTheme.uiScale
 				visible: timeGrid.value === "customAbsolute"
 				info: qsTr("Enter positive prediction times separated by commas, in the original time units. Leave blank to use 25%, 50% and 75% of follow-up.")
+			}
+			DoubleField
+			{
+				name: "predictionsMissionDuration"
+				label: qsTr("Mission duration")
+				defaultValue: 1
+				min: 0
+				inclusive: JASP.MaxOnly
+				enabled: missionReliability.checked
+				info: qsTr("Set a positive mission duration in the original time units. The time grid specifies mission start times.")
 			}
 		}
 		Group
