@@ -49,6 +49,7 @@
 <polyline points='82.24,92.69 710.04,92.69 ' style='stroke-width: 0.43; stroke: #EBEBEB; stroke-linecap: butt;' />
 <polyline points='82.24,89.09 710.04,89.09 ' style='stroke-width: 0.43; stroke: #EBEBEB; stroke-linecap: butt;' />
 <polyline points='82.24,84.80 710.04,84.80 ' style='stroke-width: 0.43; stroke: #EBEBEB; stroke-linecap: butt;' />
+<polyline points='82.24,79.32 710.04,79.32 ' style='stroke-width: 0.43; stroke: #EBEBEB; stroke-linecap: butt;' />
 <polyline points='337.29,515.93 337.29,28.68 ' style='stroke-width: 0.43; stroke: #EBEBEB; stroke-linecap: butt;' />
 <polyline points='414.28,515.93 414.28,28.68 ' style='stroke-width: 0.43; stroke: #EBEBEB; stroke-linecap: butt;' />
 <polyline points='522.79,515.93 522.79,28.68 ' style='stroke-width: 0.43; stroke: #EBEBEB; stroke-linecap: butt;' />
@@ -70,9 +71,7 @@
 <polyline points='82.24,123.82 710.04,123.82 ' style='stroke-width: 0.64; stroke: #D9D9D9; stroke-linecap: butt;' />
 <polyline points='82.24,105.88 710.04,105.88 ' style='stroke-width: 0.64; stroke: #D9D9D9; stroke-linecap: butt;' />
 <polyline points='82.24,92.69 710.04,92.69 ' style='stroke-width: 0.64; stroke: #D9D9D9; stroke-linecap: butt;' />
-<polyline points='82.24,79.32 710.04,79.32 ' style='stroke-width: 0.64; stroke: #D9D9D9; stroke-linecap: butt;' />
 <polyline points='82.24,71.14 710.04,71.14 ' style='stroke-width: 0.64; stroke: #D9D9D9; stroke-linecap: butt;' />
-<polyline points='82.24,64.12 710.04,64.12 ' style='stroke-width: 0.64; stroke: #D9D9D9; stroke-linecap: butt;' />
 <polyline points='82.24,50.83 710.04,50.83 ' style='stroke-width: 0.64; stroke: #D9D9D9; stroke-linecap: butt;' />
 <polyline points='228.78,515.93 228.78,28.68 ' style='stroke-width: 0.64; stroke: #D9D9D9; stroke-linecap: butt;' />
 <polyline points='474.00,515.93 474.00,28.68 ' style='stroke-width: 0.64; stroke: #D9D9D9; stroke-linecap: butt;' />
@@ -116,9 +115,7 @@
 <text x='66.76' y='128.03' text-anchor='end' style='font-size: 12.24px; font-family: sans;' textLength='34.70px' lengthAdjust='spacingAndGlyphs'>   80%</text>
 <text x='66.76' y='110.09' text-anchor='end' style='font-size: 12.24px; font-family: sans;' textLength='34.70px' lengthAdjust='spacingAndGlyphs'>   90%</text>
 <text x='66.76' y='96.90' text-anchor='end' style='font-size: 12.24px; font-family: sans;' textLength='34.70px' lengthAdjust='spacingAndGlyphs'>   95%</text>
-<text x='66.76' y='83.53' text-anchor='end' style='font-size: 12.24px; font-family: sans;' textLength='34.70px' lengthAdjust='spacingAndGlyphs'>   98%</text>
 <text x='66.76' y='75.35' text-anchor='end' style='font-size: 12.24px; font-family: sans;' textLength='34.70px' lengthAdjust='spacingAndGlyphs'>   99%</text>
-<text x='66.76' y='68.33' text-anchor='end' style='font-size: 12.24px; font-family: sans;' textLength='38.11px' lengthAdjust='spacingAndGlyphs'> 99.5%</text>
 <text x='66.76' y='55.04' text-anchor='end' style='font-size: 12.24px; font-family: sans;' textLength='38.11px' lengthAdjust='spacingAndGlyphs'> 99.9%</text>
 <polyline points='73.73,493.78 82.24,493.78 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
 <polyline points='73.73,413.03 82.24,413.03 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
@@ -135,9 +132,7 @@
 <polyline points='73.73,123.82 82.24,123.82 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
 <polyline points='73.73,105.88 82.24,105.88 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
 <polyline points='73.73,92.69 82.24,92.69 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
-<polyline points='73.73,79.32 82.24,79.32 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
 <polyline points='73.73,71.14 82.24,71.14 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
-<polyline points='73.73,64.12 82.24,64.12 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
 <polyline points='73.73,50.83 82.24,50.83 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
 <polyline points='82.24,515.93 710.04,515.93 ' style='stroke-width: 0.00; stroke: none; stroke-linecap: butt;' />
 <polyline points='228.78,524.43 228.78,515.93 ' style='stroke-width: 0.64; stroke-linecap: butt;' />

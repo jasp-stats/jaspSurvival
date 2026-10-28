@@ -28,7 +28,6 @@ Section
 	id:	statisticsRoot
 	property bool multipleResults:	false
 	property bool multipleModels:	false
-	property string modelSummaryInfo:	qsTr("Include a table with information about the model fit.")
 	property alias extraStatisticsControls:	statisticsExtras.content
 
 	title: qsTr("Statistics")
@@ -38,7 +37,7 @@ Section
 		label:		qsTr("Model summary")
 		name:		"modelSummary"
 		checked:	true
-		info: statisticsRoot.modelSummaryInfo
+		info: qsTr("Include a table with information about the model fit.")
 
 		CheckBox
 		{

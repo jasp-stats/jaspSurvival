@@ -39,7 +39,7 @@
     name           = "mixtureComponentsTable",
     title          = gettext("Component Mean and Median"),
     dependencies   = outputDependencies,
-    position       = 2.2
+    position       = 107
   )
 
   return()
@@ -66,7 +66,7 @@
     name           = "mixtureClassificationTable",
     title          = gettext("Mixture Classification"),
     dependencies   = outputDependencies,
-    position       = 2.3
+    position       = 108
   )
 
   return()
@@ -94,7 +94,7 @@
     name           = "mixtureDiagnosticsTable",
     title          = gettext("Estimation Diagnostics"),
     dependencies   = outputDependencies,
-    position       = 2.4
+    position       = 109
   )
 
   return()
@@ -129,7 +129,7 @@
     name           = "mixtureComponentPlot",
     title          = gettext("Mixture Components"),
     dependencies   = outputDependencies,
-    position       = 5.6
+    position       = 507
   )
 
   return()

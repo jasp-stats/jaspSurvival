@@ -36,7 +36,7 @@
 
   table <- createJaspTable(title = gettext("Model fitting"))
   table$dependOn(c(.sapGetDependencies(options), "outputFormattingCompareModelsAcrossDistributions", "modelSummary"))
-  table$position <- 1
+  table$position <- 101
   jaspResults[["fitErrors"]] <- table
   .saFillMessageTable(table, messages)
 
@@ -66,7 +66,7 @@
     name           = "summaryTable",
     title          = gettext("Model Summary"),
     dependencies   = outputDependencies,
-    position       = 1
+    position       = 102
   )
 
   return()
@@ -92,7 +92,7 @@
     name           = "sequentialModelComparisonTable",
     title          = gettext("Sequential Model Comparison"),
     dependencies   = outputDependencies,
-    position       = 1.1
+    position       = 103
   )
 
   return()
@@ -119,7 +119,7 @@
     name           = "coefficientsTable",
     title          = gettext("Coefficients Summary"),
     dependencies   = outputDependencies,
-    position       = 2
+    position       = 104
   )
 
   return()
@@ -148,7 +148,7 @@
     name           = "coefficientsCovarianceMatrixTable",
     title          = gettext("Coefficients Covariance Matrix"),
     dependencies   = outputDependencies,
-    position       = 2.1
+    position       = 105
   )
 
   return()

@@ -26,7 +26,7 @@
     name           = "densityPlot",
     title          = gettext("Density Plot"),
     dependencies   = dependencies,
-    position       = 5.45
+    position       = 505
   )
 
   return()

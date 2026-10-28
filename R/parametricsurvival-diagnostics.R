@@ -20,13 +20,13 @@
 
   specifications <- list(
     list(option = "residualPlotResidualVsTime", name = "residualsVsTimePlot", title = gettext("Residuals vs. Time"),
-      builder = .sapResidualsVsTimePlotFun, position = 5.1),
+      builder = .sapResidualsVsTimePlotFun, position = 501),
     list(option = "residualPlotResidualVsPredictors", name = "residualsVsPredictorsPlot", title = gettext("Residuals vs. Predictors"),
-      builder = .sapResidualsVsPredictorsPlotFun, position = 5.2),
+      builder = .sapResidualsVsPredictorsPlotFun, position = 502),
     list(option = "residualPlotResidualVsPredicted", name = "residualVsPredictedPlot", title = gettext("Residuals vs. Predicted"),
-      builder = .sapResidualsVsPredictedPlotFun, position = 5.3),
+      builder = .sapResidualsVsPredictedPlotFun, position = 503),
     list(option = "residualPlotResidualHistogram", name = "residualHistogram", title = gettext("Residual Histogram"),
-      builder = .sapResidualHistogramPlotFun, position = 5.4)
+      builder = .sapResidualHistogramPlotFun, position = 504)
   )
   requested <- Filter(function(specification) {
     options[[specification[["option"]]]] && is.null(jaspResults[[specification[["name"]]]]) &&

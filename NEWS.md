@@ -1,5 +1,14 @@
 # jaspSurvival Changelog
 
+# jaspSurvival 0.98.1
+## Added
+* Recurrent event analysis
+
+## Fixed
+* Parametric models retain standard errors and confidence intervals when only one parameter is estimated.
+* Prediction figures precede tables; outcomes follow the interface order.
+* Small plotting improvements.
+
 # jaspSurvival 0.98.0
 ## Added
 * Flexible prediction plots, including contours and heatmaps, and Long or Wide prediction tables.

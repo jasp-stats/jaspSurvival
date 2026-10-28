@@ -27,7 +27,6 @@ Group
 {
 	id:	residualsRoot
 	property bool rightCensoring:	false
-	property string residualVsPredictedLabel:	qsTr("Residuals vs. predicted survival")
 
 	title: qsTr("Residual Plots")
 
@@ -49,7 +48,7 @@ Group
 	CheckBox
 	{
 		name:		"residualPlotResidualVsPredicted"
-		label:		residualsRoot.residualVsPredictedLabel
+		label:		qsTr("Residuals vs. predicted time")
 		info: qsTr("Plot residuals versus predicted mean survival times.")
 	}
 

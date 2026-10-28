@@ -1,0 +1,359 @@
+.sareCreateTable <- function(jaspResults, key, title, dependencies, position) {
+
+  table <- createJaspTable(title = title)
+  table$dependOn(c(.sareFitDependencies, dependencies))
+  table$position                 <- position
+  table$showSpecifiedColumnsOnly <- TRUE
+  jaspResults[[key]] <- table
+
+  return(table)
+}
+
+.sareGroupColumn <- function(table, options) {
+
+  if (.sapHasSubgroups(options))
+    table$addColumnInfo(name = "subgroup", title = gettext("Subgroup"), type = "string")
+
+  return()
+}
+
+.sareStatistics <- function(jaspResults, dataset, options) {
+
+  allFits   <- .sareFits(jaspResults)
+  fits      <- .sareFits(jaspResults, valid = TRUE)
+  fitIssues <- any(vapply(allFits, function(fit) length(c(fit[["error"]], fit[["warnings"]])) > 0L, logical(1)))
+
+  if (options[["dataSummary"]])
+    .sareDataSummaryTable(jaspResults, dataset, options, allFits)
+  if (options[["modelSummary"]] || fitIssues)
+    .sareSummaryTable(jaspResults, options, allFits)
+  if (options[["coefficients"]])
+    .sareCoefficientsTable(jaspResults, options, fits)
+  if (options[["coefficientsCovarianceMatrix"]])
+    .sareCovarianceTables(jaspResults, options, fits)
+  if (options[["model"]] == "piecewise") {
+    if (options[["piecewiseSegmentEstimates"]])
+      .sareSegmentTable(jaspResults, options, fits)
+    if (options[["piecewiseChangePoints"]])
+      .sareChangePointTable(jaspResults, options, fits)
+  }
+  if (options[["fittedModelEquation"]])
+    .sareEquationsTable(jaspResults, options, fits)
+
+  return()
+}
+
+.sareDataSummaryTable <- function(jaspResults, dataset, options, fits) {
+
+  if (!is.null(jaspResults[["dataSummaryTable"]]))
+    return()
+
+  table <- .sareCreateTable(jaspResults, "dataSummaryTable", gettext("Data Summary"), "dataSummary", 101)
+  .sareGroupColumn(table, options)
+  table$addColumnInfo(name = "intervals",                       title = gettext("Intervals"),                           type = "integer")
+  table$addColumnInfo(name = "events",                          title = gettext("Events"),                              type = "integer")
+  table$addColumnInfo(name = "time",                            title = gettext("Follow-up Time"),                      type = "number")
+  table$addColumnInfo(name = "cumulativeMeanTimeBetweenEvents", title = gettext("Cumulative Mean Time Between Events"), type = "number")
+
+  table$setData(.saSafeRbind(lapply(fits, function(fit) {
+    rows     <- fit[["rows"]]
+    events   <- if (options[["eventCount"]] == "") length(rows) else sum(dataset[[options[["eventCount"]]]][rows])
+    time     <- dataset[[options[["time"]]]][rows]
+    followUp <- if (options[["timeType"]] == "interval") sum(time) else max(time)
+    return(data.frame(
+      subgroup                        = fit[["label"]],
+      intervals                       = length(rows),
+      events                          = events,
+      time                            = followUp,
+      cumulativeMeanTimeBetweenEvents = followUp / events
+    ))
+  })))
+
+  return()
+}
+
+.sareSummaryTable <- function(jaspResults, options, fits) {
+
+  if (!is.null(jaspResults[["summaryTable"]]))
+    return()
+
+  table <- .sareCreateTable(jaspResults, "summaryTable", gettext("Model Summary"), "modelSummary", 102)
+  .sareGroupColumn(table, options)
+  table$addColumnInfo(name = "logLik", title = gettext("Log Lik."), type = "number")
+  table$addColumnInfo(name = "df",     title = "df",                type = "integer")
+  table$addColumnInfo(name = "aic",    title = gettext("AIC"),      type = "number")
+  table$addColumnInfo(name = "bic",    title = gettext("BIC"),      type = "number")
+  table$setData(.saSafeRbind(lapply(fits, .sareSummaryRow)))
+  table$addCitation("ReliaGrowR (0.7): Reliability Growth Analysis and Repairable Systems Modeling. https://doi.org/10.32614/CRAN.package.ReliaGrowR")
+
+  if (.sareMethod(options) == "LS")
+    table$addFootnote(gettext("Log-likelihood, AIC and BIC refer to log-scale regression of cumulative quantities and cannot be compared with grouped-count maximum-likelihood values."))
+  for (fit in fits) {
+    for (message in unique(c(fit[["error"]], fit[["warnings"]])))
+      table$addFootnote(if (.sapHasSubgroups(options)) gettextf("%1$s: %2$s", fit[["label"]], message) else message)
+  }
+
+  return()
+}
+
+.sareSummaryRow <- function(fit) {
+
+  if (!is.null(fit[["error"]]))
+    return(data.frame(subgroup = fit[["label"]]))
+
+  native <- fit[["native"]]
+  # Native grouped Poisson log likelihoods omit the count-factorial constant.
+  constant <- if (fit[["method"]] == "MLE") sum(lgamma(fit[["counts"]] + 1)) else 0
+
+  return(data.frame(
+    subgroup = fit[["label"]],
+    logLik   = native[["logLik"]] - constant,
+    aic      = native[["AIC"]] + 2 * constant,
+    bic      = native[["BIC"]] + 2 * constant,
+    df       = if (fit[["method"]] == "MLE") 2 else attr(stats::logLik(native[["model"]]), "df")
+  ))
+}
+
+.sareCoefficientsTable <- function(jaspResults, options, fits) {
+
+  if (!is.null(jaspResults[["coefficientsTable"]]))
+    return()
+
+  table <- .sareCreateTable(
+    jaspResults  = jaspResults,
+    key          = "coefficientsTable",
+    title        = gettext("Coefficients Summary"),
+    dependencies = c("coefficients", "coefficientsConfidenceIntervals", "coefficientsConfidenceIntervalsLevel", "confidenceIntervalBounds"),
+    position     = 103
+  )
+  .sareGroupColumn(table, options)
+  table$addColumnInfo(name = "parameter", title = "",                        type = "string")
+  table$addColumnInfo(name = "estimate",  title = gettext("Estimate"),       type = "number")
+  table$addColumnInfo(name = "se",        title = gettext("Standard Error"), type = "number")
+  if (options[["coefficientsConfidenceIntervals"]])
+    .sapAddBoundColumns(table, options[["coefficientsConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]])
+
+  table$setData(.saSafeRbind(lapply(
+    fits,
+    .sareCoefficientRows,
+    level     = options[["coefficientsConfidenceIntervalsLevel"]],
+    direction = options[["confidenceIntervalBounds"]]
+  )))
+
+  if (options[["model"]] == "piecewise")
+    table$addFootnote(gettext("Coefficients describe the segmented regression of log cumulative events on log time. Change-point coefficients are reported as log times."))
+  if (.sareMethod(options) == "MLE")
+    table$addFootnote(gettext("Confidence intervals are based on normal approximation."))
+  else
+    table$addFootnote(gettext("Standard errors and confidence intervals use native regression approximations that do not account for dependence between cumulative observations."))
+
+  return()
+}
+
+.sareEquationsTable <- function(jaspResults, options, fits) {
+
+  if (!is.null(jaspResults[["modelEquations"]]))
+    return()
+
+  table <- .sareCreateTable(
+    jaspResults  = jaspResults,
+    key          = "modelEquations",
+    title        = gettext("Fitted Model Equations"),
+    dependencies = c("fittedModelEquation", "fittedModelEquationDecimals"),
+    position     = 107
+  )
+  .sareGroupColumn(table, options)
+  table$addColumnInfo(name = "model",    title = gettext("Model"),    type = "string")
+  table$addColumnInfo(name = "equation", title = gettext("Equation"), type = "string")
+  table$setData(.saSafeRbind(lapply(fits, .sareEquationRows, options = options)))
+  table$addFootnote(gettext("M(t) is expected cumulative events, m(t) is instantaneous event intensity, and t / M(t) is cumulative mean time between events."))
+
+  return()
+}
+
+.sareSegmentTable <- function(jaspResults, options, fits) {
+
+  if (!is.null(jaspResults[["segmentEstimatesTable"]]))
+    return()
+
+  table <- .sareCreateTable(jaspResults, "segmentEstimatesTable", gettext("Segment Estimates"), "piecewiseSegmentEstimates", 105)
+  .sareGroupColumn(table, options)
+  table$addColumnInfo(name = "segment",    title = gettext("Segment"),                                            type = "integer")
+  table$addColumnInfo(name = "slope",      title = gettext("Estimate"),       overtitle = gettext("Slope (β)"), type = "number")
+  table$addColumnInfo(name = "slopeSe",    title = gettext("Standard Error"), overtitle = gettext("Slope (β)"), type = "number")
+  table$addColumnInfo(name = "growthRate", title = gettext("Growth Rate"),                                        type = "number")
+  table$addColumnInfo(name = "scale",      title = gettext("Scale (λ)"),                                     type = "number")
+
+  table$setData(.saSafeRbind(lapply(fits, function(fit) {
+    native         <- fit[["native"]]
+    slopes         <- native[["betas"]][["log_times"]][, "Est."]
+    standardErrors <- native[["betas_se"]]
+    if (!fit[["inferenceAvailable"]])
+      standardErrors[] <- NA_real_
+    return(data.frame(
+      subgroup   = c(fit[["label"]], rep(NA_character_, length(slopes) - 1L)),
+      segment    = seq_along(slopes),
+      slope      = as.numeric(slopes),
+      slopeSe    = as.numeric(standardErrors),
+      growthRate = as.numeric(native[["growth_rate"]]),
+      scale      = as.numeric(native[["lambdas"]][, "Est."])
+    ))
+  })))
+
+  return()
+}
+
+.sareChangePointTable <- function(jaspResults, options, fits) {
+
+  if (!is.null(jaspResults[["changePointsTable"]]))
+    return()
+
+  table <- .sareCreateTable(jaspResults, "changePointsTable", gettext("Change Points"), "piecewiseChangePoints", 106)
+  .sareGroupColumn(table, options)
+  table$addColumnInfo(name = "changePoint", title = gettext("Change Point"),              type = "integer")
+  table$addColumnInfo(name = "time",        title = gettext("Time"),                      type = "number")
+  table$addColumnInfo(name = "logTimeSe",   title = gettext("Standard Error (Log Time)"), type = "number")
+
+  table$setData(.saSafeRbind(lapply(fits, function(fit) {
+    # The fitted locations are authoritative when native breakpoints retain starting values.
+    times          <- .sareBreakpoints(fit)
+    standardErrors <- fit[["native"]][["model"]][["psi"]][, "St.Err"]
+    if (!fit[["inferenceAvailable"]])
+      standardErrors[] <- NA_real_
+    return(data.frame(
+      subgroup    = c(fit[["label"]], rep(NA_character_, length(times) - 1L)),
+      changePoint = seq_along(times),
+      time        = as.numeric(times),
+      logTimeSe   = as.numeric(standardErrors)
+    ))
+  })))
+
+  return()
+}
+
+.sareCoefficientLabels <- function(fit) {
+
+  labels <- names(fit[["estimates"]])
+  if (fit[["model"]] != "piecewise")
+    return(labels)
+
+  labels[labels == "(Intercept)"] <- gettext("Intercept")
+  labels[labels == "log_times"]   <- gettext("Slope (segment 1)")
+
+  changes <- grep("^U[0-9]+\\.log_times$", labels)
+  labels[changes] <- gettextf("Slope change (change point %1$s)", sub("^U([0-9]+)\\.log_times$", "\\1", labels[changes]))
+  points <- grep("^psi[0-9]+\\.log_times$", labels)
+  labels[points] <- gettextf("Change point %1$s (log time)", sub("^psi([0-9]+)\\.log_times$", "\\1", labels[points]))
+
+  return(labels)
+}
+
+.sareCoefficientRows <- function(fit, level, direction) {
+
+  estimates <- fit[["estimates"]]
+  positive  <- fit[["positive"]]
+  se        <- if (fit[["inferenceAvailable"]]) sqrt(diag(fit[["covariance"]])) else rep(NA_real_, length(estimates))
+  halfWidth <- .sareCritical(level, fit[["df"]], direction) * se
+  lower     <- estimates - halfWidth
+  upper     <- estimates + halfWidth
+
+  lower[positive] <- exp(log(estimates[positive]) - halfWidth[positive] / estimates[positive])
+  upper[positive] <- exp(log(estimates[positive]) + halfWidth[positive] / estimates[positive])
+  if (direction == "lower")
+    upper[] <- NA_real_
+  else if (direction == "upper")
+    lower[] <- NA_real_
+
+  return(data.frame(
+    subgroup  = c(fit[["label"]], rep(NA_character_, length(estimates) - 1L)),
+    parameter = .sareCoefficientLabels(fit),
+    estimate  = as.numeric(estimates),
+    se        = as.numeric(se),
+    lower     = as.numeric(lower),
+    upper     = as.numeric(upper)
+  ))
+}
+
+.sareCovarianceTables <- function(jaspResults, options, fits) {
+
+  if (!is.null(jaspResults[["covarianceMatrices"]]))
+    return()
+
+  title  <- gettext("Coefficients Covariance Matrix")
+  output <- if (length(fits) <= 1L) createJaspTable(title = title) else createJaspContainer(title = title)
+  output$dependOn(c(.sareFitDependencies, "coefficientsCovarianceMatrix"))
+  output$position <- 104
+  jaspResults[["covarianceMatrices"]] <- output
+
+  if (!length(fits)) {
+    output$showSpecifiedColumnsOnly <- TRUE
+    output$addColumnInfo(name = "parameter", title = "", type = "string")
+    return()
+  }
+
+  for (i in seq_along(fits)) {
+    fit   <- fits[[i]]
+    table <- if (length(fits) == 1L) output else createJaspTable(title = fit[["label"]])
+    if (length(fits) > 1L) {
+      table$position <- i
+      output[[paste0("group", i)]] <- table
+    }
+
+    table$showSpecifiedColumnsOnly <- TRUE
+    table$addColumnInfo(name = "parameter", title = "", type = "string")
+    parameters <- .sareCoefficientLabels(fit)
+    for (j in seq_along(parameters))
+      table$addColumnInfo(name = paste0("p", j), title = parameters[j], type = "number")
+
+    if (!fit[["inferenceAvailable"]]) {
+      table$setError(gettext("A reliable covariance matrix is unavailable."))
+      next
+    }
+
+    values        <- as.data.frame(fit[["covariance"]])
+    names(values) <- paste0("p", seq_along(parameters))
+    table$setData(cbind(data.frame(parameter = parameters), values))
+    if (length(fits) == 1L && .sapHasSubgroups(options))
+      table$addFootnote(gettextf("Subgroup: %1$s", fit[["label"]]))
+    table$addFootnote(gettext("The covariance matrix uses the same reported parameter scale as the coefficient estimates."))
+  }
+
+  return()
+}
+
+.sareEquation <- function(fit, options) {
+
+  number    <- function(x) vapply(x, .sapEquationNumber, character(1), decimals = options[["fittedModelEquationDecimals"]])
+  estimates <- number(fit[["estimates"]])
+
+  return(switch(
+    fit[["model"]],
+    "duane"     = paste0("t / M(t) = ", estimates[1], " * t^(", estimates[2], ")"),
+    "crowAmsaa" = paste0("M(t) = ", estimates[1], " * t^(", estimates[2], ")"),
+    "logLinear" = paste0("m(t) = exp(", estimates[1], " + (", estimates[2], ") * t)"),
+    "piecewise" = {
+      slopes <- fit[["native"]][["betas"]][["log_times"]][, "Est."]
+      scales <- fit[["native"]][["lambdas"]][, "Est."]
+      breaks <- .sareBreakpoints(fit)
+      vapply(seq_along(slopes), function(i) gettextf(
+        "Segment %1$i: M(t) = %2$s * t^(%3$s); %4$s < t <= %5$s",
+        i,
+        number(scales[i]),
+        number(slopes[i]),
+        if (i == 1L) "0" else number(breaks[i - 1L]),
+        if (i > length(breaks)) "Inf" else number(breaks[i])
+      ), character(1))
+    }
+  ))
+}
+
+.sareEquationRows <- function(fit, options) {
+
+  equations <- .sareEquation(fit, options)
+
+  return(data.frame(
+    subgroup = c(fit[["label"]], rep(NA_character_, length(equations) - 1L)),
+    model    = c(.sareModelLabel(fit[["model"]]), rep(NA_character_, length(equations) - 1L)),
+    equation = equations
+  ))
+}

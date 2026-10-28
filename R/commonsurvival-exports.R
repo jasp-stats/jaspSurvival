@@ -21,7 +21,7 @@
   dependencies <- c(.saspDependencies, "exportColumnPrefix", exportOptions)
   container    <- createJaspContainer()
   container$dependOn(dependencies)
-  container$position <- 10
+  container$position <- 601
   jaspResults[["exportColumns"]] <- container
 
   prepared <- .saExportRecords(list(jaspResults[["fit"]]$object), options, .saspExportValues)
@@ -130,7 +130,7 @@
   if (is.null(container)) {
     container <- createJaspContainer()
     container$dependOn(dependencies)
-    container$position <- 6
+    container$position <- 601
     jaspResults[["exportColumns"]] <- container
   }
   for (record in columns) {

@@ -73,11 +73,6 @@ Section
 	readonly property bool predictionIntervalAvailable: survivalTime.checked && (variableInput ?
 		lifetimeSummarySelected && predictionOutputSelected && !timeAxis && predictorView :
 		modelPlot.checked && scalarLifetimeSelected)
-	property string quantileStepsInfo: qsTr("Choose how to specify lifetime percentiles: equal intervals, a sequence or custom values.")
-	property string quantileNumberInfo: qsTr("Set the number of equal intervals between 0 and 100.")
-	property string lifeTimeStepsInfo: qsTr("Choose how to specify prediction times: equal intervals, a sequence or custom values.")
-	property string lifeTimeSizeInfo: qsTr("Set the time increment. Leave blank to use the default increment.")
-	property string lifeTimeCustomInfo: qsTr("Enter non-negative prediction times, separated by commas. Leave blank to use the default times.")
 	title: qsTr("Predictions")
 
 	property var previousFullTimeGrid: null
@@ -274,7 +269,7 @@ Section
 						name:		"predictionsLifetimePercentilesGrid"
 						id:			percentileGrid
 						label:		qsTr("Grid")
-						info: predictionsRoot.quantileStepsInfo
+						info: qsTr("Choose how to specify lifetime percentiles: equal intervals, a sequence or custom values.")
 						startValue: "quantiles"
 						onInitializedChanged: predictionsRoot.queueGridDefaultsSync()
 						values:
@@ -291,7 +286,7 @@ Section
 						defaultValue:	10
 						min:			1
 						visible:		percentileGrid.value === "quantiles"
-						info: predictionsRoot.quantileNumberInfo
+						info: qsTr("Set the number of equal intervals between 0 and 100.")
 					}
 					Group
 					{
@@ -356,7 +351,7 @@ Section
 					name:		"predictionsTimeGrid"
 					id:			timeGrid
 					label:		qsTr("Grid")
-					info: 		predictionsRoot.lifeTimeStepsInfo
+					info: 		qsTr("Choose how to specify prediction times: equal intervals, a sequence or custom values.")
 					startValue: "quantiles"
 					onInitializedChanged: predictionsRoot.queueGridDefaultsSync()
 					values:
@@ -439,7 +434,7 @@ Section
 					parseDefaultValue: false
 					placeholderText: qsTr("25%, 50%, 75% of follow-up")
 					fieldWidth: 180 * jaspTheme.uiScale
-					info: predictionsRoot.lifeTimeCustomInfo
+					info: qsTr("Enter non-negative prediction times, separated by commas. Leave blank to use the default times.")
 				}
 			}
 		}

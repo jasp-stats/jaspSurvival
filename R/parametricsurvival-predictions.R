@@ -52,22 +52,22 @@
 
   specification <- switch(measure,
     "survivalTime" = list(type = "quantile", table = "survivalTimeTable", plot = "survivalTimePlot",
-      title = gettext("Predicted Survival Time"), position = c(3.11, 3.01)),
+      title = gettext("Predicted Survival Time"), position = c(310, 210)),
     "relativeSurvivalTime" = list(type = "quantile", table = "relativeSurvivalTimeTable", plot = "relativeSurvivalTimePlot",
-      title = gettext("Acceleration Factor"), position = c(3.12, 3.02)),
+      title = gettext("Acceleration Factor"), position = c(330, 230)),
     "timeRatio" = list(type = "quantile", table = "timeRatioTable", plot = "timeRatioPlot",
-      title = gettext("Time Ratio"), position = c(3.115, 3.015)),
+      title = gettext("Time Ratio"), position = c(320, 220)),
     "survivalProbability" = list(type = "survival", table = "survivalProbabilityTable", plot = "survivalProbabilityPlot",
       title    = gettext("Predicted Survival Probability"),
-      position = c(3.13, 3.03)),
+      position = c(340, 240)),
     "failureProbability" = list(type = "survival", table = "failureProbabilityTable", plot = "failureProbabilityPlot",
-      title = gettext("Predicted Failure Probability"), position = c(3.14, 3.04)),
+      title = gettext("Predicted Failure Probability"), position = c(350, 250)),
     "hazard" = list(type = "hazard", table = "hazardTable", plot = "hazardPlot",
-      title = gettext("Predicted Hazard"), position = c(3.15, 3.05)),
+      title = gettext("Predicted Hazard"), position = c(360, 260)),
     "cumulativeHazard" = list(type = "cumhaz", table = "cumHazardTable", plot = "cumulativeHazardPlot",
-      title = gettext("Predicted Cumulative Hazard"), position = c(3.16, 3.06)),
+      title = gettext("Predicted Cumulative Hazard"), position = c(370, 270)),
     "restrictedMeanSurvivalTime" = list(type = "rmst", table = "rmstTable", plot = "restrictedMeanSurvivalTimePlot",
-      title = gettext("Predicted Restricted Mean Survival Time"), position = c(3.17, 3.07))
+      title = gettext("Predicted Restricted Mean Survival Time"), position = c(380, 280))
   )
   if (measure %in% c("survivalTime", "timeRatio", "relativeSurvivalTime") && summary != "quantile") {
     specification[["type"]] <- summary
@@ -79,7 +79,7 @@
     specification[["table"]] <- paste0(prefix, "Table")
     specification[["plot"]] <- paste0(prefix, "Plot")
     specification[["title"]] <- .sapPredictionTitle(summary, options, measure)
-    specification[["position"]] <- specification[["position"]] + if (summary == "median") .001 else .002
+    specification[["position"]] <- specification[["position"]] + if (summary == "median") 1 else 2
   }
   name <- specification[[if (plot) "plot" else "table"]]
   if (!is.null(jaspResults[[name]]))
@@ -179,7 +179,7 @@
     name           = "lifeTimeTable",
     title          = gettext("Life Time Table"),
     dependencies   = outputDependencies,
-    position       = 3.13
+    position       = 390
   )
 
   return()

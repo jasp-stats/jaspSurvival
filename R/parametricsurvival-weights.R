@@ -68,8 +68,11 @@
 .sapFrequencyInitials <- function(fitCall, distribution) {
 
   weights <- fitCall[["weights"]]
-  if (is.null(weights) || all(weights == 1))
-    return(NULL)
+  if (is.null(weights) || all(weights == 1)) {
+    if (distribution != "gompertz")
+      return(NULL)
+    weights <- rep(1, nrow(fitCall[["data"]]))
+  }
   response <- stats::model.response(stats::model.frame(fitCall[["formula"]], fitCall[["data"]]))
   counting <- attr(response, "type") == "counting"
   if (!counting && !distribution %in% c("gamma", "gengamma", "genf", "genf.orig", "gengamma.orig", "gompertz"))
@@ -88,7 +91,15 @@
     genf          = c(meanLog, sdLog, 0, 1),
     genf.orig     = c(meanLog, sdLog, 1, 1),
     gengamma.orig = c(1, meanTime, 1),
-    gompertz      = c(.001, 1 / meanTime),
+    gompertz      = {
+      initial <- c(.001, 1 / meanTime)
+      maximum <- max(time)
+      # flexsurv subtracts the CDF from one for censored likelihoods. Retain
+      # native starts unless that subtraction loses the entire upper tail.
+      if (flexsurv::pgompertz(maximum, shape = initial[1L], rate = initial[2L]) == 1)
+        initial <- rep(1 / maximum, 2L)
+      initial
+    },
     exp           = 1 / meanTime,
     weibull       = c(1.64 / sdLog^2, exp(meanLog + .572)),
     lnorm         = c(meanLog, sdLog),

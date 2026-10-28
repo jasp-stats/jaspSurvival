@@ -22,10 +22,10 @@
 
   # Saved plots must redraw when their definition or layout options change.
   definition <- jaspResults[["probabilityPlotDefinition"]]
-  if (is.null(definition) || !identical(definition$object, 6L)) {
+  if (is.null(definition) || !identical(definition$object, 10L)) {
     definition <- createJaspState()
     definition$dependOn(c("probabilityPlotStratifyBy", "probabilityPlotStratifyByVariables"))
-    definition$object <- 6L
+    definition$object <- 10L
     jaspResults[["probabilityPlotDefinition"]] <- definition
     jaspResults[["probabilityPlot"]] <- NULL
   }
@@ -63,7 +63,7 @@
     name           = "probabilityPlot",
     title          = gettext("Probability Plot"),
     dependencies   = outputDependencies,
-    position       = 5.5
+    position       = 506
   )
 
   return()
@@ -221,6 +221,7 @@
 
   notes <- unique(c(unlist(lapply(displayDatasets, attr, "probabilityPlotWarnings"), use.names = FALSE),
     attr(curveData, "predictionWarnings")))
+  notes <- setdiff(notes, gettext("Some confidence intervals could not be evaluated and are shown as missing."))
   return(list(empiricalData = empiricalData, curveData = curveData, censoringData = censoringData,
     observedTimeRange = observedTimeRange, adjusted = adjusted, notes = notes))
 }
@@ -233,11 +234,12 @@
   censoringData <- data[["censoringData"]]
 
   hasDistribution        <- length(unique(stats::na.omit(c(curveData[["Distribution"]], empiricalData[["Distribution"]], censoringData[["Distribution"]])))) > 1
-  empiricalDistributions <- hasDistribution
   levelLabels            <- sort(unique(stats::na.omit(c(curveData[["Level"]], empiricalData[["Level"]], censoringData[["Level"]]))))
   hasLevel               <- length(levelLabels) > 1
   hasGroup               <- nrow(curveData) > 0 && length(unique(stats::na.omit(curveData[["Group"]]))) > 1
   hasSeries              <- hasDistribution || hasLevel
+  colorVariable          <- if (hasDistribution) "Distribution" else if (hasLevel) "Level"
+  separateLevels         <- hasDistribution && hasLevel
 
   if (!hasSeries) {
     options[["probabilityPlotLegend"]]       <- "none"
@@ -247,18 +249,32 @@
   plot <- ggplot2::ggplot()
 
   if (nrow(curveData) > 0 && options[["probabilityPlotConfidenceIntervals"]])
-    plot <- .sapAddModelBoundLayer(plot, curveData, options[["probabilityPlotConfidenceIntervalsLevel"]], options[["confidenceIntervalBounds"]],
-      x               = "time", groups = "Group", color = if (hasLevel) "Level" else if (hasDistribution) "Distribution",
-      fill            = if (hasLevel) "Level" else if (hasDistribution) "Distribution", defaultFill = "grey60", alpha = .22,
-      twoSidedMapping = list(x = as.name("time"), ymin = as.name("lCi"), ymax = as.name("uCi"),
-        fill = if (hasLevel) as.name("Level") else if (hasDistribution) as.name("Distribution"), group = if (hasGroup) as.name("Group")))
+    plot <- .sapAddModelBoundLayer(
+      plot            = plot,
+      data            = curveData,
+      level           = options[["probabilityPlotConfidenceIntervalsLevel"]],
+      direction       = options[["confidenceIntervalBounds"]],
+      x               = "time",
+      groups          = "Group",
+      color           = colorVariable,
+      fill            = colorVariable,
+      defaultFill     = "grey60",
+      alpha           = .22,
+      twoSidedMapping = list(
+        x     = as.name("time"),
+        ymin  = as.name("lCi"),
+        ymax  = as.name("uCi"),
+        fill  = if (hasSeries) as.name(colorVariable),
+        group = if (hasGroup) as.name("Group")
+      )
+    )
 
   if (nrow(curveData) > 0) {
     aesCall <- list(
       x        = as.name("time"),
       y        = as.name("probability"),
-      color    = if (hasLevel) as.name("Level") else if (hasDistribution) as.name("Distribution"),
-      linetype = if (hasDistribution && hasLevel) as.name("Distribution"),
+      color    = if (hasSeries) as.name(colorVariable),
+      linetype = if (separateLevels) as.name("Level"),
       group    = if (hasGroup) as.name("Group")
     )
     geomCall <- list(mapping = do.call(ggplot2::aes, aesCall[!vapply(aesCall, is.null, logical(1))]), data = curveData)
@@ -268,19 +284,24 @@
   }
 
   if (nrow(empiricalData) > 0 && options[["probabilityPlotEmpiricalPoints"]]) {
-    aesCall <- list(x = as.name("time"), y = as.name("probability"), fill = if (hasLevel) as.name("Level"),
-      shape = if (empiricalDistributions) as.name("Distribution"),
-      color = if (empiricalDistributions) if (hasLevel) as.name("Level") else as.name("Distribution"))
-    geomCall <- list(
-      data    = empiricalData,
-      mapping = do.call(ggplot2::aes, aesCall[!vapply(aesCall, is.null, logical(1))]),
-      size    = 2.1,
-      stroke  = 0.6
+    aesCall <- list(
+      x     = as.name("time"),
+      y     = as.name("probability"),
+      fill  = if (hasLevel) as.name(colorVariable),
+      shape = if (separateLevels) as.name("Level"),
+      color = if (hasDistribution) as.name("Distribution")
     )
-    if (!empiricalDistributions) {
+    geomCall <- list(
+      data        = empiricalData,
+      mapping     = do.call(ggplot2::aes, aesCall[!vapply(aesCall, is.null, logical(1))]),
+      size        = 2.1,
+      stroke      = 0.6,
+      show.legend = if (hasDistribution) c(colour = FALSE, fill = FALSE, shape = separateLevels) else TRUE
+    )
+    if (!hasDistribution)
       geomCall[["color"]] <- "black"
+    if (!separateLevels)
       geomCall[["shape"]] <- 21
-    }
     if (!hasLevel)
       geomCall[["fill"]] <- "white"
     plot <- plot + do.call(ggplot2::geom_point, geomCall)
@@ -299,15 +320,24 @@
 
   if (hasSeries) {
     scaleCall <- list(palette = options[["probabilityPlotColorPalette"]])
-    if (hasLevel)
+    if (hasLevel && !hasDistribution)
       scaleCall[["limits"]] <- levelLabels
     plot <- plot +
       do.call(jaspGraphs::scale_JASPcolor_discrete, scaleCall) +
       do.call(jaspGraphs::scale_JASPfill_discrete, scaleCall)
   }
-  if (empiricalDistributions)
-    plot <- plot + ggplot2::scale_shape_manual(values = rep_len(c(1, 2, 0, 5, 6, 3, 4, 7, 8, 9),
-      length(unique(empiricalData[["Distribution"]]))))
+  if (separateLevels && nrow(empiricalData) > 0)
+    plot <- plot + ggplot2::scale_shape_manual(
+      limits = levelLabels,
+      values = rep_len(c(21, 24, 22, 23, 25, 3, 4, 7, 8, 9), length(levelLabels))
+    )
+  if (hasSeries && nrow(curveData) > 0)
+    plot <- plot + ggplot2::guides(
+      fill   = "none",
+      colour = ggplot2::guide_legend(override.aes = list(shape = NA, linetype = 1))
+    )
+  if (separateLevels)
+    plot <- plot + ggplot2::guides(shape = ggplot2::guide_legend(override.aes = list(colour = "grey30", fill = "white")))
 
   plot <- .sapProbabilityPlotAddAxes(plot, empiricalData, curveData, censoringData, options, data[["observedTimeRange"]], hasLevel,
     hasDistribution, axisSetup)
@@ -428,16 +458,10 @@
 
   rankData <- .sapProbabilityPlotHandleTies(rankData, options[["probabilityPlotTies"]])
 
-  probability <- switch(
-    options[["probabilityPlotPlottingPosition"]],
-    "median"      = stats::qbeta(0.5, rankData[["adjustedRank"]], n - rankData[["adjustedRank"]] + 1),
-    "benard"      = (rankData[["adjustedRank"]] - 0.3) / (n + 0.4),
-    "hazen"       = (rankData[["adjustedRank"]] - 0.5) / n,
-    "mean"        = rankData[["adjustedRank"]] / (n + 1),
-    "kaplanMeier" = .sapProbabilityPlotKaplanMeierPlottingPosition(rankData[["adjustedRank"]], n),
-    "blom"        = (rankData[["adjustedRank"]] - 0.375) / (n + 0.25),
-    stats::qbeta(0.5, rankData[["adjustedRank"]], n - rankData[["adjustedRank"]] + 1)
-  )
+  if (options[["probabilityPlotPlottingPosition"]] == "kaplanMeier")
+    probability <- .sapProbabilityPlotKaplanMeierPlottingPosition(rankData[["adjustedRank"]], n)
+  else
+    probability <- .saProbabilityPlottingPositions(rankData[["adjustedRank"]], n, options[["probabilityPlotPlottingPosition"]])
 
   out <- data.frame(time = rankData[["time"]], probability = probability)
   rownames(out) <- NULL
@@ -664,6 +688,11 @@
     limits       = axisSetup[["probabilityRange"]],
     oob          = scales::oob_keep
   )
+  if (options[["probabilityPlotTheme"]] == "jasp") {
+    # Larger JASP-theme labels crowd near 100%; drop the 98% and 99.5% ticks.
+    yScaleCall[["breaks"]]       <- setdiff(yScaleCall[["breaks"]], c(0.98, 0.995))
+    yScaleCall[["minor_breaks"]] <- setdiff(yScaleCall[["minor_breaks"]], 0.995)
+  }
 
   if (detailed) {
     xScaleCall[["sec.axis"]] <- ggplot2::dup_axis(name = NULL, labels = .sapProbabilityPlotTimeLabel)
@@ -726,13 +755,14 @@
   if (is.null(censoringData) || nrow(censoringData) == 0)
     return(plot)
 
-  aesCall  <- list(x = as.name("time"), color = if (hasLevel) as.name("Level") else if (hasDistribution) as.name("Distribution"))
+  aesCall  <- list(x = as.name("time"), color = if (hasDistribution) as.name("Distribution") else if (hasLevel) as.name("Level"))
   geomCall <- list(
-    data    = censoringData,
-    mapping = do.call(ggplot2::aes, aesCall[!vapply(aesCall, is.null, logical(1))]),
-    sides   = "b",
-    alpha   = 0.5,
-    size    = 0.5
+    data        = censoringData,
+    mapping     = do.call(ggplot2::aes, aesCall[!vapply(aesCall, is.null, logical(1))]),
+    sides       = "b",
+    alpha       = 0.5,
+    size        = 0.5,
+    show.legend = FALSE
   )
   if (!hasLevel && !hasDistribution)
     geomCall[["color"]] <- "darkblue"

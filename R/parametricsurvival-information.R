@@ -1,5 +1,5 @@
-# Refit saved dfns closures after stable mixture h/H and Weibull density updates.
-.sapInformationPolicyVersion <- "native-design-standardization-5"
+# Refit saved models after adding Gompertz time-unit standardization.
+.sapInformationPolicyVersion <- "native-design-standardization-7"
 
 .sapInformationRecord <- function(fit, method, outcome, provenance) {
 
