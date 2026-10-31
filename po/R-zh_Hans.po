@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "POT-Creation-Date: 2026-10-31 05:54\n"
-"PO-Revision-Date: 2026-10-26 13:51+0000\n"
+"PO-Revision-Date: 2026-10-31 07:52+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/jasp/jaspsurvival-r/zh_Hans/>\n"
@@ -61,7 +61,6 @@ msgstr "区间终点"
 msgid "Censoring Summary"
 msgstr "删失汇总"
 
-#, fuzzy
 msgid "Subgroup"
 msgstr "子组"
 
@@ -72,7 +71,6 @@ msgstr "计数"
 msgid "%1$s: non-finite values were exported as missing."
 msgstr ""
 
-#, fuzzy
 msgid "Export"
 msgstr "导出"
 
@@ -111,7 +109,6 @@ msgstr "Cox-Snell"
 msgid "Component %1$i probability"
 msgstr "成分概率"
 
-#, fuzzy
 msgid "Component index"
 msgstr "成分索引"
 
@@ -134,11 +131,9 @@ msgstr "线性预测值"
 msgid "Full dataset"
 msgstr ""
 
-#, fuzzy
 msgid "Response"
 msgstr "响应"
 
-#, fuzzy
 msgid "Cox-Snell"
 msgstr "Cox-Snell"
 
@@ -188,7 +183,6 @@ msgstr "Kaplan-Meier"
 msgid "%s%% CI"
 msgstr ""
 
-#, fuzzy
 msgid "Strata"
 msgstr "分层"
 
@@ -233,15 +227,12 @@ msgstr ""
 msgid "At least one strata needs to be specified"
 msgstr ""
 
-#, fuzzy
 msgid "Log-rank (Mantel-Haenszel)"
 msgstr "Log-Rank（Mantel-Haenszel）"
 
-#, fuzzy
 msgid "Peto and Peto"
 msgstr "Peto 与 Peto"
 
-#, fuzzy
 msgid "Flemming-Harrington"
 msgstr "Fleming-Harrington"
 
@@ -256,7 +247,6 @@ msgstr ""
 msgid "At Risk"
 msgstr "风险"
 
-#, fuzzy
 msgid "Survival"
 msgstr "生存分析"
 
@@ -361,7 +351,6 @@ msgstr ""
 msgid "Component Mean and Median"
 msgstr "均值和中位数"
 
-#, fuzzy
 msgid "Mixture Classification"
 msgstr "混合分类"
 
@@ -410,11 +399,9 @@ msgstr ""
 msgid "Mixing probability"
 msgstr "失败概率"
 
-#, fuzzy
 msgid "Mean"
 msgstr "均值"
 
-#, fuzzy
 msgid "Median"
 msgstr "中位数"
 
@@ -440,15 +427,12 @@ msgid ""
 "close to 1 indicate low uncertainty in the assignments)."
 msgstr ""
 
-#, fuzzy
 msgid "Distribution"
 msgstr "分布"
 
-#, fuzzy
 msgid "Model"
 msgstr "模型"
 
-#, fuzzy
 msgid "Components"
 msgstr "成分"
 
@@ -552,7 +536,6 @@ msgstr ""
 msgid "mixing probability"
 msgstr "失败概率"
 
-#, fuzzy
 msgid "Survival Probability"
 msgstr "生存概率"
 
@@ -560,19 +543,15 @@ msgstr "生存概率"
 msgid "Failure Probability"
 msgstr "失败概率"
 
-#, fuzzy
 msgid "Density"
 msgstr "密度"
 
-#, fuzzy
 msgid "Hazard"
 msgstr "风险率"
 
-#, fuzzy
 msgid "Cumulative Hazard"
 msgstr "累积风险"
 
-#, fuzzy
 msgid "Restricted Mean Survival Time"
 msgstr "限制平均生存时间"
 
@@ -607,7 +586,6 @@ msgstr "拟合值"
 msgid "Component 1"
 msgstr "成分"
 
-#, fuzzy
 msgid "Mixture"
 msgstr "混合"
 
@@ -789,7 +767,6 @@ msgstr ""
 msgid "Prediction row %1$i: '%2$s' requires one finite numeric value%3$s."
 msgstr ""
 
-#, fuzzy
 msgid "Predictions"
 msgstr "预测"
 
@@ -864,7 +841,6 @@ msgid ""
 "Some confidence bounds are infinite or exceed numerical range (%1$s; %2$s)."
 msgstr ""
 
-#, fuzzy
 msgid "Survival Time"
 msgstr "生存时间"
 
@@ -1224,7 +1200,6 @@ msgstr ""
 msgid "log-logistic"
 msgstr "对数 Logistic"
 
-#, fuzzy
 msgid "Weibull"
 msgstr "威布尔"
 
@@ -1273,7 +1248,6 @@ msgstr ""
 msgid "Event"
 msgstr ""
 
-#, fuzzy
 msgid "Kaplan-Meier"
 msgstr "Kaplan-Meier"
 
@@ -1375,11 +1349,9 @@ msgstr "系数"
 msgid "Coefficients Covariance Matrix"
 msgstr "系数协方差矩阵"
 
-#, fuzzy
 msgid "AIC"
 msgstr "AIC"
 
-#, fuzzy
 msgid "BIC"
 msgstr "BIC"
 
@@ -1391,7 +1363,6 @@ msgstr "AIC 权重"
 msgid "BIC Weight"
 msgstr "BIC 权重"
 
-#, fuzzy
 msgid "Rank"
 msgstr "Rank函数"
 
@@ -2080,15 +2051,12 @@ msgstr ""
 msgid "The model failed with the following message: %1$s."
 msgstr ""
 
-#, fuzzy
 msgid "Likelihood ratio"
 msgstr "似然比"
 
-#, fuzzy
 msgid "Wald"
 msgstr "Wald"
 
-#, fuzzy
 msgid "Score"
 msgstr "Score"
 
@@ -2185,7 +2153,6 @@ msgstr "比例风险"
 msgid "Beta(t)"
 msgstr ""
 
-#, fuzzy
 msgid "Residual Plots"
 msgstr "残差图"
 
