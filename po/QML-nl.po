@@ -13,10 +13,6 @@ msgid "Survival"
 msgstr "Survival"
 
 msgctxt "Description|"
-msgid "Perform analyses of censored time to event data."
-msgstr "Voer analyses uit van gecensureerde tijd-tot-gebeurtenisgegevens."
-
-msgctxt "Description|"
 msgid "Classical"
 msgstr "Klassiek"
 
@@ -185,14 +181,6 @@ msgid "Steps type"
 msgstr "Staptype"
 
 msgctxt "NonParametricSurvivalAnalysis|"
-msgid ""
-"Select the method to define intervals for the life table: Default, "
-"Quantiles, or Fixed size. Quantiles uses empirical quantiles of the observed "
-"times, including censored times, after frequency weights are applied; these "
-"are not quantiles of the estimated survival distribution."
-msgstr ""
-
-msgctxt "NonParametricSurvivalAnalysis|"
 msgid "Default"
 msgstr "Standaard"
 
@@ -254,37 +242,6 @@ msgstr ""
 "Stel de eindtijd voor intervallen in wanneer Vaste grootte-stappen worden "
 "gebruikt."
 
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Add continuous variables as covariates to include them in the mixture model. "
-"The covariates affect the location parameter of each component with separate "
-"coefficients."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Add categorical variables as factors to include them in the mixture model. "
-"The factors affect the location parameter of each component with separate "
-"coefficients."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Select right-censored data, counting-process data with entry and exit times, "
-"or interval-censored data (including left-censored observations)."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Choose the parametric distribution of the mixture components (all components "
-"come from the same distribution). All fits and display results for all "
-"'Selected parametric families' in the 'Advanced' section. 'Best AIC' and "
-"'Best BIC' fit all `Selected parametric families` in the Advanced section "
-"and display the results only for a parametric family with the lowest AIC/"
-"BIC. Families without a closed-form weighted fit (gamma, Gompertz, and the "
-"generalized families) are considerably slower to estimate."
-msgstr ""
-
 #, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "All"
@@ -306,35 +263,6 @@ msgid "Components"
 msgstr "Componenten"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Choose the number of mixture components. 'All' fits and displays results for "
-"one up to the maximum number of components set in the 'Advanced' section. "
-"'Best AIC' and 'Best BIC' fit the same models and display the results only "
-"for the number of components with the lowest AIC/BIC. A fixed number of "
-"components is not limited by the maximum number of components."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Select the model to interpret. Defaults to the last specified model. "
-"Alternatives are 'All' which produces results for all of the specified "
-"models or 'Best' which produces results for the best fitting model based on "
-"either AIC or BIC. The selection proceeds within each subgroup from the "
-"distribution to the number of components to the model: 'Best' keeps the "
-"level of the best fitting model across all remaining distributions, numbers "
-"of components, and models, and 'All' selects separately within each of its "
-"levels (e.g., all distributions with the best number of components and the "
-"best model within each distribution)."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Include a table with information about the model fit. The BIC uses the "
-"number of observations (including censored observations and weighted by the "
-"case weights) as the sample size."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Mixture"
 msgstr ""
 
@@ -343,78 +271,13 @@ msgid "Mean and median"
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Include a table with the mean and the median lifetime of each mixture "
-"component. They correspond to the reference level of factors and zero value "
-"of covariates. The mixing probabilities and the parameters of the components "
-"are reported in the coefficients summary. Components are ordered by their "
-"median lifetime."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Classification"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Include a table with the number and proportion of observations assigned to "
-"each component based on their highest posterior probability, the mean "
-"posterior probability of the assigned observations, and the relative entropy "
-"of the classification."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Select the quantiles at which survival times are predicted: evenly spaced "
-"Quantiles, a Sequence, or Custom probabilities."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Specify the number of quantiles of the predicted survival when using "
-"Quantiles as the steps type."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Select the time points for prediction tables: Equal spacing, a Sequence, or "
-"Custom times. Time plots place unrounded points adaptively within the "
-"selected range."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Define the time increment when using Sequence steps. Leaving this blank uses "
-"one tenth of the selected time range."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid "Specify custom time points for predictions."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Merge the plots for survival time across the numbers of components into a "
-"single plot. Only available when all numbers of components are displayed and "
-"no model selection is being performed."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Merge the plots for survival probabilities, hazard, cumulative hazard, and "
-"restricted mean survival across the numbers of components into a single "
-"plot. Only available when all numbers of components are displayed and no "
-"model selection is being performed."
 msgstr ""
 
 #, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Diagnostics"
 msgstr "Diagnostiek"
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid "Residuals vs. predicted time"
-msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Estimation diagnostics"
@@ -428,15 +291,6 @@ msgstr ""
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Type"
 msgstr "Type"
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Select the displayed function: the survival probability of the mixture and "
-"of each component, the failure probability of the mixture and of each "
-"component, the density of the mixture and the weighted density of each "
-"component (which sum to the mixture density), or the hazard of the mixture "
-"and of each component."
-msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Survival probability"
@@ -455,17 +309,6 @@ msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Hazard"
 msgstr "Hazard"
 
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid "Observed data"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Merge the probability plots across the numbers of components into a single "
-"plot. Only available when all numbers of components are displayed and no "
-"model selection is being performed."
-msgstr ""
-
 #, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Advanced"
@@ -473,19 +316,6 @@ msgstr "Geavanceerd"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Constrain minimum spread"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Fit by constrained maximum likelihood with a minimum standard deviation of "
-"the natural logarithm of survival time in every component, including one-"
-"component models. Available for log-normal, Weibull, log-logistic, and gamma "
-"distributions; other distributions are deselected. Checkbox choices made in "
-"Selected Parametric Distributions before turning the constraint on are "
-"restored when it is turned off again, provided the analysis form has not "
-"been reloaded. When the bound is active, point estimates remain available "
-"but standard errors, confidence intervals, covariance estimates, and regular "
-"inferential tests are not reported."
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
@@ -497,44 +327,11 @@ msgid "Absolute"
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Set the minimum log-time standard deviation relative to an unconstrained one-"
-"component fit of the same distribution, or as an absolute value. The "
-"reference fit uses the same data, predictors, censoring, and weights and is "
-"computed separately for each model and subgroup."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Minimum log-time SD"
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Set a positive percentage of the unconstrained one-component model's log-"
-"time standard deviation as the minimum for every component. The default is "
-"1%. For models with predictors, the reference is the conditional "
-"distribution's log-time standard deviation. For delayed entry, it refers to "
-"the distribution before conditioning on entry."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Set a positive lower bound, up to 100, on the standard deviation of the "
-"natural logarithm of survival time. Choose a minimum justified by the "
-"application and check sensitivity to other values; 0.1 is an editable "
-"preset, not a universal recommendation. The bound is unchanged when the "
-"units of survival time change. For delayed entry, it bounds the component "
-"distribution before conditioning on entry."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Maximum components"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Set the maximum number of components fitted when 'All', 'Best AIC', or 'Best "
-"BIC' is selected as the number of components."
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
@@ -543,12 +340,6 @@ msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "K-means"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Start from a k-means clustering of the log survival times. The likelihood is "
-"maximized directly from this starting value."
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
@@ -573,12 +364,6 @@ msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Compare models across components"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Compare models across the numbers of components. This option is only "
-"available when multiple models and numbers of components are specified."
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
@@ -646,30 +431,12 @@ msgid "Covariates"
 msgstr "Covariaten"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Add continuous variables as covariates to include them in the parametric "
-"survival model."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Factors"
 msgstr "Factoren"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Add categorical variables as factors to include them in the parametric "
-"survival model."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Weights"
 msgstr "Gewichten"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select a variable for case weights, weighting each observation accordingly "
-"in the model."
-msgstr ""
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Subgroup"
@@ -678,12 +445,6 @@ msgstr "Subgroep"
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Censoring Type"
 msgstr "Censuurtype"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select right-censored data, counting-process data with delayed entry, or "
-"interval-censored data."
-msgstr ""
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Right"
@@ -717,15 +478,6 @@ msgstr ""
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Distribution"
 msgstr "Verdeling"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Choose the parametric distribution for the analysis. All fits and display "
-"results for all 'Selected parametric families' in the 'Advanced' section. "
-"'Best AIC' and 'Best BIC' fit all `Selected parametric families` in the "
-"Advanced section and display the results only for a parametric family with "
-"the lowest AIC/BIC."
-msgstr ""
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Exponential"
@@ -788,18 +540,6 @@ msgid "Interpret model"
 msgstr "Model interpreteren"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the model to interpret. Defaults to the last specified model. "
-"Alternatives are 'All' which produces results for all of the specified "
-"models or 'Best' which produces results for the best fitting model based on "
-"either AIC or BIC. If distribution and model selection is specified "
-"simultanously, the best model within the best performing distribution is "
-"going to be selected. If model selection is specified while all "
-"distributions are selected, the best model within each distribution is going "
-"to be selected."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Diagnostics"
 msgstr "Diagnostiek"
 
@@ -846,61 +586,16 @@ msgid ""
 msgstr ""
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the probabilities at which survival times are predicted: Quantiles, "
-"Sequence, or Custom."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Specify the number of predicted survival-time quantiles when using Quantiles "
-"as the steps type."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the time points for prediction tables: Equal spacing, Sequence, or "
-"Custom. Equal spacing uses evenly spaced times up to the maximum observed "
-"time. Time plots place points adaptively within the selected range."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Set the time increment when using Sequence steps. Leaving this blank uses "
-"one tenth of the selected time range."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Specify custom steps of the life time."
-msgstr "Geef aangepaste stappen van de levensduur op."
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Predictions"
 msgstr "Voorspellingen"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Survival Time"
-msgstr "Overlevingstijd"
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Table"
 msgstr "Tabel"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with the predicted survival estimates."
-msgstr "Neem een tabel op met de voorspelde survival-schattingen."
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Plot"
 msgstr "Plot"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a plot with the predicted survival estimates."
-msgstr "Neem een plot op met de voorspelde survival-schattingen."
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Steps type"
-msgstr "Staptype"
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Quantiles"
@@ -923,51 +618,8 @@ msgid "From"
 msgstr "Van"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Set the starting quantile of the predicted survival when using Sequence "
-"steps."
-msgstr ""
-"Stel het startkwantiel van de voorspelde survival in wanneer Reeks-stappen "
-"worden gebruikt."
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Size"
-msgstr "Grootte"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Define the size of each quantile of the predicted survival when using "
-"Sequence steps."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "To"
 msgstr "Tot"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Set the ending quantile of the predicted survival when using Sequence steps."
-msgstr ""
-"Stel het eindkwantiel van de voorspelde survival in wanneer Reeks-stappen "
-"worden gebruikt."
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Steps"
-msgstr "Stappen"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Specify custom steps of the predicted survival."
-msgstr "Geef aangepaste stappen van de voorspelde survival op."
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Merge the plots for survival probability across distributions into a single "
-"plot. Only available when no model selection is being performed."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Options"
-msgstr "Opties"
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Confidence intervals"
@@ -987,12 +639,6 @@ msgid "Legend"
 msgstr "Legenda"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Choose the position of the legend on prediction plots with multiple "
-"displayed curves."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Bottom"
 msgstr "Onder"
 
@@ -1009,20 +655,8 @@ msgid "None"
 msgstr "Geen"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Customize the color palette used in prediction plots with multiple displayed "
-"curves."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Theme"
 msgstr "Thema"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the theme for prediction plots. The detailed theme works only for "
-"'Survival probabilities' plots."
-msgstr ""
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "White background"
@@ -1041,69 +675,23 @@ msgid "Detailed"
 msgstr "Gedetailleerd"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Survival Probability"
-msgstr "Overlevingskans"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with the predicted survival probabilities."
-msgstr "Neem een tabel op met de voorspelde overlevingskansen."
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a plot with the predicted survival probabilities."
-msgstr "Neem een plot op met de voorspelde overlevingskansen."
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Kaplan-Meier"
 msgstr "Kaplan-Meier"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Show a Kaplan-Meier curve in the plot. Only available when Censoring Type is "
-"set to Right."
-msgstr ""
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Censoring events"
 msgstr "Censureer-gebeurtenissen"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Show censoring events as rug marks in the plot. Only available when "
-"Censoring Type is set to Right."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "X-axis transformation"
 msgstr "X-as-transformatie"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Select the transformation for the x-axis of the plot"
-msgstr "Selecteer de transformatie voor de x-as van de plot"
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Log"
 msgstr "Log"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Y-axis transformation"
-msgstr "Y-as-transformatie"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Select the transformation for the y-axis of the plot"
-msgstr "Selecteer de transformatie voor de y-as van de plot"
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Log(-log(1-p))"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "As failure probability"
-msgstr "Als faalkans"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Transform the output from survival probability to failure probability (i.e., "
-"1 - Survival Probability)."
 msgstr ""
 
 msgctxt "ParametricSurvivalAnalysis|"
@@ -1111,120 +699,20 @@ msgid "Hazard"
 msgstr "Hazard"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with the predicted hazard estimates."
-msgstr "Neem een tabel op met de voorspelde hazard-schattingen."
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a plot with the predicted hazard estimates."
-msgstr "Neem een plot op met de voorspelde hazard-schattingen."
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Cumulative Hazard"
-msgstr "Cumulatieve hazard"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with the predicted cumulative hazard estimates."
-msgstr "Neem een tabel op met de voorspelde cumulatieve hazard-schattingen."
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a plot with the predicted cumulative hazard estimates."
-msgstr "Neem een plot op met de voorspelde cumulatieve hazard-schattingen."
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Restricted Mean Survival Time"
-msgstr "Beperkte gemiddelde overlevingstijd"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a table with the restricted mean survival time estimates."
-msgstr ""
-"Neem een tabel op met de schattingen van de beperkte gemiddelde "
-"overlevingstijd."
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Include a plot with the restricted mean survival time estimates."
-msgstr ""
-"Neem een plot op met de schattingen van de beperkte gemiddelde "
-"overlevingstijd."
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Equal spacing"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Specify the number of time points when using Equal spacing as the steps type."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Set the starting time when using Sequence steps."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Set the ending time when using Sequence steps. Leaving this blank uses the "
-"maximum observed time."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Round steps"
-msgstr "Stappen afronden"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Round table time points to the nearest integer when using Equal spacing or "
-"Sequence steps. Time plots use unrounded points placed adaptively within the "
-"selected range."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Merge tables across measures"
 msgstr "Tabellen over maten samenvoegen"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Merge the tables for survival time, survival probabilities, hazard, "
-"cumulative hazard, and restricted mean survival time into a single table."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Merge the plots for survival time, survival probabilities, hazard, "
-"cumulative hazard, and restricted mean survival across distributions into a "
-"single plot. Only available when no model selection is being performed."
-msgstr ""
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Probability plot"
 msgstr "Kansplot"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Create a model-based probability plot to assess how well the selected "
-"parametric distribution describes the observed failure times. Only available "
-"when Censoring Type is set to Right."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Canvas"
 msgstr "Canvas"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the probability-paper scale. A distribution matching the selected "
-"canvas appears approximately as a straight line. The exponential canvas uses "
-"linear time and cumulative-hazard probability scaling; the other canvases "
-"use log time."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Empirical points"
 msgstr "Empirische punten"
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Plot empirical failure probability points based on the observed failure "
-"times."
-msgstr "Plot empirische faalkanspunten op basis van de waargenomen faaltijden."
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Coordinates"
@@ -1307,17 +795,6 @@ msgid "Rank adjustment"
 msgstr "Rangcorrectie"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select the rank adjustment method for right-censored observations. The "
-"Kaplan-Meier adjustment follows the WeibullR/Minitab convention, including "
-"the final-failure adjustment used to keep points finite on probability paper."
-msgstr ""
-"Selecteer de rangcorrectiemethode voor rechtsgecensureerde observaties. "
-"DeKaplan-Meier-correctie volgt de WeibullR/Minitab-conventie, inclusief "
-"delaatstefalen-correctie die wordt gebruikt om punten op kanspapier eindig "
-"tehouden."
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Johnson"
 msgstr "Johnson"
 
@@ -1344,24 +821,8 @@ msgid "Sequential"
 msgstr "Sequentieel"
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Choose the legend position for probability plots with multiple fitted curves "
-"or factor levels."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Customize the color palette used in probability plots with multiple fitted "
-"curves or factor levels."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Select the theme for the probability plot's appearance."
 msgstr "Selecteer het thema voor het uiterlijk van de kansplot."
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Residuals vs. predicted survival"
-msgstr "Residuen vs. voorspelde survival"
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Residual Plots"
@@ -1499,22 +960,7 @@ msgid "Export"
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Export model-derived values for each observation to the dataset. Exports "
-"follow the displayed model selection. When multiple models are displayed, "
-"column names include distribution, model, subgroup, and (for mixtures) "
-"component-count identifiers. Observations excluded from a model receive "
-"missing values."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Column prefix"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Optional custom prefix prepended to every exported column name, before any "
-"automatic model identifier."
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
@@ -1525,12 +971,6 @@ msgstr ""
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Martingale"
 msgstr "Martingale"
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Export the event indicator minus the fitted cumulative hazard for each "
-"observation."
-msgstr ""
 
 #, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
@@ -1547,23 +987,10 @@ msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Response"
 msgstr "Respons"
 
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Export observed time minus fitted mean survival time. Censored times are "
-"treated as observed times. Unavailable for interval-censored data."
-msgstr ""
-
 #, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Cox-Snell"
 msgstr "Cox-Snell"
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Export the fitted cumulative hazard at each observation's time. For counting-"
-"process data, it is conditional on survival to the entry time. Unavailable "
-"for interval-censored data."
-msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Fitted Values"
@@ -1574,19 +1001,7 @@ msgid "Relative risk"
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Export the fitted relative risk, centered at the mean covariate values "
-"within each stratum."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Linear predictor"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Export the fitted log relative risk, centered at the mean covariate values "
-"within each stratum."
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
@@ -1594,18 +1009,7 @@ msgid "Mean survival time"
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Export the fitted mean survival time at each observation's covariate values."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Median survival time"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Export the fitted median survival time at each observation's covariate "
-"values."
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
@@ -1617,19 +1021,7 @@ msgid "Component probabilities"
 msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Export one posterior membership probability per mixture component, "
-"conditional on the observed survival or censoring information."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Component index"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Export the index of the component with the highest posterior membership "
-"probability. Ties are assigned to the first component."
 msgstr ""
 
 msgctxt "SurvivalPlot|"
@@ -2340,26 +1732,10 @@ msgid ""
 "maximum."
 msgstr ""
 
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Include a plot with the fitted mixture and its components. Densities are "
-"averaged over the observed predictor values, separately for each factor "
-"combination unless plots are merged. Other plot types use the combined "
-"prediction convention: observed levels for models with categorical "
-"predictors only, or the pooled unweighted mean model design for models with "
-"numeric predictors."
-msgstr ""
-
 #, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "X-axis transformation"
 msgstr "X-as-transformatie"
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Select the transformation for the x-axis of the component plot. With Log "
-"selected, density curves and histogram bins are computed for log time."
-msgstr ""
 
 #, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
@@ -2370,68 +1746,6 @@ msgstr "Geen"
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Log"
 msgstr "Log"
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid "Merge plots across factors"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"For density plots, average the mixture and its weighted component densities "
-"over the observed predictor values, using the proportions of observations in "
-"each factor combination and any case weights. When unchecked, show a "
-"separate plot for each observed factor combination, averaging over its "
-"observed covariate values."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Overlay a histogram of the observed time distribution on the fitted "
-"densities, using the same observations as the curves: each factor "
-"combination separately, or the pooled sample when plots are merged. For "
-"right-censored data, bin probabilities are estimated with Kaplan-Meier and "
-"any unobserved tail probability is retained."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid "Bin width type"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Select the rule for histogram bin widths. With Log selected, the rule is "
-"applied to log time. Select Manual to specify the number of bins."
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid "Sturges"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid "Scott"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid "Doane"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid "Freedman-Diaconis"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid "Manual"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid "Number of bins"
-msgstr ""
-
-msgctxt "ParametricMixtureSurvivalAnalysis|"
-msgid ""
-"Specify the target number of histogram bins. Bin boundaries are rounded to "
-"convenient values, as in Descriptive Statistics."
-msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid ""
@@ -2513,42 +1827,2503 @@ msgid "Distributions"
 msgstr ""
 
 msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"When checked, combine observed combinations of fitted factors in one plot. "
-"When unchecked, show a separate plot for each combination. In both cases, "
-"predictions use the unweighted mean model design (including interaction "
-"terms) within each combination."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
 msgid "Subgroups"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Overlay the separately fitted subgroup curves in one plot, retaining "
-"separate observed data for each subgroup."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid "Confidence interval simulation draws"
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Set the number of parameter draws used to simulate confidence intervals for "
-"prediction tables and all model-based plot bands. More draws improve "
-"precision at a higher computational cost."
-msgstr ""
-
-msgctxt "ParametricSurvivalAnalysis|"
-msgid ""
-"Select one or more factors for subgroup analysis. Separate models are fitted "
-"for each observed combination of their levels."
 msgstr ""
 
 msgctxt "Upgrades|"
 msgid ""
 "Parametric survival models now always include an intercept. Results may "
 "change if this saved analysis previously excluded the intercept."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Perform survival, lifetime, and recurrent-event analyses."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Recurrent Events"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Recurrent Event Analysis"
+msgstr ""
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Choose Default, Quantiles or Fixed size intervals. Quantiles uses frequency-"
+"weighted observed times, including censored times, rather than the estimated "
+"survival distribution."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Choose the number of mixture components, or compare several numbers using "
+"All, Best AIC or Best BIC. Set the maximum in Advanced."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Show the baseline mean and median lifetime of each mixture component."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Summarize the assignment of observations to mixture components and the "
+"quality of the classification."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Show the mixture and each component's survival measures. Density curves are "
+"weighted by the mixing proportions and sum to the mixture density."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Choose the measure to display in the component plot."
+msgstr ""
+
+#, fuzzy
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Cumulative hazard"
+msgstr "Cumulatieve hazard"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Restricted mean survival time"
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Choose the transformation for the x-axis of the component plot."
+msgstr ""
+
+#, fuzzy
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Y-axis transformation"
+msgstr "Y-as-transformatie"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Linear"
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Display the selected measure on a linear or logarithmic y-axis."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Merge Plots Across"
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Distributions"
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Overlay the component plots for the selected distributions."
+msgstr ""
+
+#, fuzzy
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Legend"
+msgstr "Legenda"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Choose the legend position for the component plot, or hide the legend."
+msgstr ""
+
+#, fuzzy
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Bottom"
+msgstr "Onder"
+
+#, fuzzy
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Right"
+msgstr "Rechts"
+
+#, fuzzy
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Left"
+msgstr "Links"
+
+#, fuzzy
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Top"
+msgstr "Boven"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Overlay probability plots for different numbers of mixture components."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set a minimum baseline spread for each mixture component. Uncertainty "
+"estimates are unavailable when an estimated spread reaches the bound."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Express the minimum spread relative to a one-component model, or as an "
+"absolute value."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set the minimum log-time standard deviation as a percentage of that in a one-"
+"component model."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set the minimum standard deviation of log survival time. Choose an "
+"application-specific bound and check sensitivity; 0.1 is only a preset."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set the maximum number of components to compare when All, Best AIC or Best "
+"BIC is selected."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Use k-means clustering of log survival times to obtain starting values."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Compare models across different numbers of mixture components."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Advanced specification"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set coefficient restrictions, transformations and factor contrasts for this "
+"parameter's models."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Specify whether the data are right-censored, interval-censored or include "
+"delayed entry."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify whether the data are right-censored, interval-censored or include "
+"delayed entry."
+msgstr ""
+
+#, fuzzy
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Transformation"
+msgstr "Transformatie"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Linear"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the transformation for the heatmap colour scale."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the lower colour limit in the outcome's original units. Leave blank for "
+"an automatic limit."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the upper colour limit in the outcome's original units. Leave blank for "
+"an automatic limit."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Model variables"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "X-axis"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the numeric predictor for the horizontal contour axis."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Y-axis"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the numeric predictor for the vertical contour axis."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Separate lines"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Draw separate contour lines for the levels or groups of the selected "
+"predictors."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Separate plots"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Create separate contour plots for the levels or groups of the selected "
+"predictors."
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Density plot"
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid ""
+"Compare the fitted distribution of survival times with the observed data."
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Observed data"
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid ""
+"Add a histogram of the observed survival times to the fitted density plot."
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Bin width type"
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid ""
+"Choose the histogram bin width rule. Select Manual to specify the number of "
+"bins."
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Sturges"
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Scott"
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Doane"
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Freedman-Diaconis"
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Manual"
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Number of bins"
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Set the number of histogram bins."
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Merge Plots Across"
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Distributions"
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Overlay fitted density curves for the selected distributions."
+msgstr ""
+
+#, fuzzy
+msgctxt "ParametricDensityPlot|"
+msgid "Confidence intervals"
+msgstr "Betrouwbaarheidsintervallen"
+
+msgctxt "ParametricDensityPlot|"
+msgid "Show confidence intervals around the fitted density curve."
+msgstr ""
+
+msgctxt "ParametricDensityPlot|"
+msgid "Set the confidence level for the fitted density."
+msgstr ""
+
+#, fuzzy
+msgctxt "ParametricDensityPlot|"
+msgid "X-axis transformation"
+msgstr "X-as-transformatie"
+
+msgctxt "ParametricDensityPlot|"
+msgid ""
+"Choose the transformation for the x-axis. Log shows the distribution of log "
+"survival times."
+msgstr ""
+
+#, fuzzy
+msgctxt "ParametricDensityPlot|"
+msgid "None"
+msgstr "Geen"
+
+#, fuzzy
+msgctxt "ParametricDensityPlot|"
+msgid "Log"
+msgstr "Log"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Choose the distribution shared by all mixture components. All, Best AIC and "
+"Best BIC compare the distributions selected in Advanced."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose a distribution, show all selected distributions, or select the best "
+"using AIC or BIC."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Restrict parameters"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Fix baseline distribution parameters at specified values. Leave a field "
+"empty to estimate the parameter."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify a fixed value or a numeric expression. Leave empty to estimate this "
+"parameter."
+msgstr ""
+
+#, qt-format
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Parameter model: %1"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify each model independently, and set coefficient restrictions, "
+"covariate transformations or factor contrasts."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Ancillary parameter regression"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Use predictors to model additional distribution parameters, such as shape or "
+"scale."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select a specified model, show all models, or select the best using AIC or "
+"BIC."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select a specified model, show all models, or select the best using AIC or "
+"BIC."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set coefficient restrictions, covariate transformations and factor contrasts "
+"for each model."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Component"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Parameter restriction"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predictor specification"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Fix regression coefficients at specified values or expressions. Leave empty "
+"to estimate them; separate multiple values with commas or semicolons."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Treatment (dummy)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Sum"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Helmert"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Orthogonal polynomial"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "SAS"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose how to code the factor's levels in the regression model."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Reference"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the factor level used as the reference for Treatment or SAS coding."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Base"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the base of the logarithm. Use a positive value other than 1."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Multiplier"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set a nonzero multiplier for the logarithm."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Exponent"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the exponent for the power transformation."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Degrees of freedom"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the degrees of freedom for the natural cubic spline. Higher values allow "
+"more flexible curves."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Root degree"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the degree of the root. A value of 2 gives a square root."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Degree"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the polynomial degree: 1 for linear, 2 for quadratic, 3 for cubic."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Kelvin"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Celsius"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Fahrenheit"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the units of the temperature variable."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Stratify by"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Show separate groups of observed data for the selected predictors."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the predictors used to group observations. Factors use their levels; "
+"numeric predictors use quantile groups."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the number of quantile groups for numeric predictors."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Group unique levels"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Use individual values instead of quantile groups when the number of distinct "
+"values is within the specified limit."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Parameters"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "rate"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "shape"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "scale"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "meanlog"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "sdlog"
+msgstr ""
+
+#, qt-format
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "%1 transformation"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Model term"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the axis transformation: the original scale, a logarithmic scale or "
+"the transformation used in the model."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the first predictor value to display, in original units. Leave blank to "
+"use the observed minimum."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the last predictor value to display, in original units. Leave blank to "
+"use the observed maximum."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Observation"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Add observation"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Delete observation"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Enter predictor values for one observation per row. Leave cells empty to use "
+"the sample mean or factor reference level."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"The saved manual input columns do not match the current predictors. Review "
+"the saved values, then reset the table and re-enter them for the current "
+"predictors."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lifetime quantile / Time"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lifetime quantile / Time (prediction)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Time"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Time (prediction)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lifetime / Time"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lifetime / Time (prediction)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "X-axis variables"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select predictors for the x-axis, or choose Lifetime / Time to plot "
+"predictions over percentiles or time."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Draw separate lines for predictor levels or groups, or for the selected "
+"times or percentiles."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Create separate plots for predictor levels or groups, or for the selected "
+"times or percentiles."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Time / horizon"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Horizon"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Outcome"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Survival time"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict lifetime percentiles, median or mean from the fitted model."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Time ratio"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Current lifetime divided by reference lifetime. Values above 1 indicate "
+"longer survival."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Acceleration factor"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Reference lifetime divided by current lifetime. Values above 1 indicate "
+"shorter survival."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Survival probability"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the probability of surviving beyond each selected time."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Failure probability"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the probability of the event occurring by each selected time."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the event rate at each selected time."
+msgstr ""
+
+#, fuzzy
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Cumulative hazard"
+msgstr "Cumulatieve hazard"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the accumulated hazard up to each selected time."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Restricted mean survival time"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the average survival time up to each selected time."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict for"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose predictions for selected variable values, manually entered "
+"observations, dataset rows with missing outcomes, or observations from a CSV "
+"file."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Variables"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Manual input"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Missing outcomes (dataset)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "CSV file"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select a CSV file with one observation per row. Column names and factor "
+"levels must match the dataset."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lifetime"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the expected survival time."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the median survival time (the 50th percentile)."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Percentiles"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict survival times at the selected percentiles."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose how to specify lifetime percentiles: equal intervals, a sequence or "
+"custom values."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Equal intervals"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Intervals"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the number of equal intervals between 0 and 100."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "0"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the first percentile in the sequence. Leave blank to start at 0."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Step"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "10"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the percentile increment. Leave blank to use an increment of 10."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "100"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the last percentile in the sequence. Leave blank to end at 100."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Values"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Enter lifetime percentiles from 0 to 100, separated by commas."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose how to specify prediction times: equal intervals, a sequence or "
+"custom values."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Custom (relative)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Custom (absolute)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the number of equal intervals between zero and the maximum follow-up "
+"time."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the first time in the sequence. Leave blank to start at 0."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Maximum follow-up / 10"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the time increment. Leave blank to use the default increment."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Maximum follow-up"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the last time in the sequence. Leave blank to use the maximum follow-up "
+"time."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Percentages"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Enter prediction times as percentages of the maximum follow-up time, "
+"separated by commas."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "25%, 50%, 75% of follow-up"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Enter non-negative prediction times, separated by commas. Leave blank to use "
+"the default times."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Output"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Plot every selected measure in its own panel. For new observations, use "
+"observation numbers on the x-axis and separate lines for times or lifetime "
+"percentiles."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Curves and points"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Contour"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose predictor plots for individual predictors, or contour plots for two "
+"numeric predictors."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Show a table of the selected predictions."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Long"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Wide"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Show times, horizons and lifetime percentiles in rows (Long) or separate "
+"column groups (Wide)."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Export predictions to dataset"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Add the selected predictions as new columns in the dataset."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Column prefix"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set a prefix for the names of exported prediction columns."
+msgstr ""
+
+#, qt-format
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Observation %1"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Unassigned reference values"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Average (design)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Average (population)"
+msgstr ""
+
+#, fuzzy
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Default"
+msgstr "Standaard"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose a design average, a population average, default reference values or "
+"custom values."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Value"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Enter reference values for unassigned predictors. Leave cells empty to use "
+"design averages."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Assigned covariate values"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose quantile groups or custom values for numeric predictors used in "
+"separate lines or plots."
+msgstr ""
+
+#, qt-format
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Level %1"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Add row"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Remove row"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Enter values for each numeric predictor used in separate lines or plots. "
+"Their combinations define the prediction groups."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Survival time y-axis scale"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the y-axis scale for survival time, time ratios or acceleration "
+"factors."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Probability y-axis scale"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the y-axis scale for survival or failure probabilities."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the x-axis scale for lifetime percentiles or time."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Covariate x-axis settings"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the axis transformation and plotting range for each numeric predictor on "
+"the x-axis."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Contours"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Levels"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose automatic contour levels or enter custom levels for each selected "
+"measure."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the approximate number of rounded contour levels."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Common across figures"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Use the same contour levels across figures for each selected measure."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Enter contour levels in the outcome's original units, separated by commas."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Heatmap scale"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the colour scale and limits of the heatmap for each selected measure."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predictor values in table"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the number of numeric predictor values used in prediction tables."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Display"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Prediction interval"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Show a range for individual survival times at the selected predictor values."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the coverage of the prediction interval."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Combine predictor plots"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Combine the plots for the selected predictors in one figure."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the legend position for prediction plots."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the theme for prediction plots."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Connect x-axis levels"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Connect predicted values across factor levels on the x-axis."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Observed data"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Add observed event times to predictor plots, or observed predictor values to "
+"contour plots."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Overlay Kaplan-Meier curves for comparison with the model predictions, where "
+"available."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Show censored observations as marks along the time axis."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Colors for prediction series."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Merge series across"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Overlay selected distributions."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Overlay predictions for the separately fitted subgroups."
+msgstr ""
+
+#, fuzzy
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Components"
+msgstr "Componenten"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Overlay selected numbers of mixture components."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Combine the selected time-based prediction measures in one table."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Round time table values"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Round prediction times in tables to the nearest integer."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Compare observed failure times with the fitted distribution to assess model "
+"fit. Available for right-censored data."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the reference distribution for the probability plot's axes."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Show points representing the observed failure probabilities."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Overlay probability plots for separately fitted subgroups."
+msgstr ""
+
+#, fuzzy
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Strata"
+msgstr "Straten"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Overlay the observed groups in one probability plot, or show each group in a "
+"separate plot."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose how to adjust the ranks of observations when some survival times are "
+"censored."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the legend position for the probability plot."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the colours used in the probability plot."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Fix this component's regression coefficients at specified values. Leave "
+"empty to estimate them; separate multiple values with commas or semicolons."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals vs. predicted time"
+msgstr ""
+
+#, fuzzy
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Confidence interval"
+msgstr "Betrouwbaarheidsinterval"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Bounds"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Two-sided"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lower"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Upper"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose two-sided confidence intervals or one-sided lower or upper bounds."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Simulation draws"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the number of simulations used for confidence intervals. More "
+"simulations improve precision but take longer."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Fitted model equation"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Show the fitted model equations in a table."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Decimals"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the number of decimal places displayed in the fitted equations."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Natural log: ln(x)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "General log (c, y): c log<sub>y</sub>(x)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Arrhenius (eV): 1/(k<sub>B</sub>T)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Reciprocal: 1/x"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Power (y): x<sup>y</sup>"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Root (y): <sup>y</sup>√x"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Polynomial"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Scale: (x - mean(x)) / sd(x)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Natural cubic spline"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Eyring: 1/T and ln(T)"
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose a transformation for the covariate before fitting the model. "
+"Arrhenius and Eyring are for temperature effects."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Add continuous predictors to the mixture model. Each component has its own "
+"coefficients."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Add continuous predictors to the survival model."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Add categorical predictors to the mixture model. Each component has its own "
+"coefficients."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Add categorical predictors to the survival model."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable of positive integer case frequencies. Each value gives the "
+"number of observations represented by that row."
+msgstr ""
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Fit separate models for each combination of the selected factors' levels."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Diagnostics"
+msgstr "Diagnostiek"
+
+#, fuzzy
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Residual Plots"
+msgstr "Residuenplots"
+
+#, fuzzy
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Residuals vs. time"
+msgstr "Residuen vs. tijd"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Plot the selected residuals against cumulative interval endpoints."
+msgstr ""
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Residuals vs. predicted"
+msgstr ""
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid ""
+"Plot residuals against fitted values on the regression scale, or fitted "
+"interval event counts for count residuals."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Residuals histogram"
+msgstr "Histogram van residuen"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Display the distribution of the selected residuals."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Type"
+msgstr "Type"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Regression"
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Response"
+msgstr "Respons"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Pearson"
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Deviance"
+msgstr "Deviance"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Randomized quantile"
+msgstr ""
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid ""
+"Regression residuals use the package's log-scale least-squares regression. "
+"Response, Pearson, deviance and randomized quantile residuals use Poisson "
+"interval event counts with means obtained from the fitted cumulative curve. "
+"Count residuals assume an NHPP, including for Duane. Set a seed under "
+"Advanced to reproduce randomized quantile residuals."
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid "Export"
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid ""
+"Add residuals and fitted counts as dataset columns, preserving the original "
+"row order."
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid "Column prefix"
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid "Set a non-empty prefix for exported column names."
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid "Residuals"
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid "Regression"
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid ""
+"Export the package's log-scale regression residuals. Available for least-"
+"squares fits."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventExport|"
+msgid "Response"
+msgstr "Respons"
+
+msgctxt "RecurrentEventExport|"
+msgid "Export observed minus fitted interval event counts."
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid "Pearson"
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid ""
+"Export interval count differences divided by the square root of the fitted "
+"interval mean."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventExport|"
+msgid "Deviance"
+msgstr "Deviance"
+
+msgctxt "RecurrentEventExport|"
+msgid "Export signed Poisson deviance residuals for observation intervals."
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid "Randomized quantile"
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid ""
+"Export the same cached normal quantile residuals used in diagnostic and "
+"probability plots. Set a seed under Advanced to reproduce them."
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid "Fitted Values"
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid "Cumulative events"
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid "Export fitted cumulative events at each interval endpoint."
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid "Interval events"
+msgstr ""
+
+msgctxt "RecurrentEventExport|"
+msgid ""
+"Export expected events within each observation interval, obtained by "
+"differencing the fitted cumulative mean."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Predictions"
+msgstr "Voorspellingen"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Outcome"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Mission reliability"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Predict the probability of no events during a mission starting at each "
+"selected time: exp(-(M(t + d) - M(t))), where d is the mission duration. "
+"This assumes an NHPP, including for the Duane growth curve."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Survival probability"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Predict event-free survival: the probability of no events from time zero to "
+"each selected time, exp(-M(t)), assuming an NHPP. For Duane, this assumes an "
+"NHPP interpretation of its fitted growth curve. This does not add patient-"
+"level censoring support."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Failure probability"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Predict the probability of at least one event from time zero to each "
+"selected time, 1 - exp(-M(t)), assuming an NHPP. For Duane, this assumes an "
+"NHPP interpretation of its fitted growth curve. This is the complement of "
+"event-free survival."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Cumulative events"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Predict the expected cumulative number of events since time zero."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Event intensity"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Predict the instantaneous event rate per unit time."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Cumulative mean time between events"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Predict cumulative time divided by expected cumulative events. This is an "
+"average time per event up to the selected time."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Instantaneous mean time between events"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Predict the reciprocal of instantaneous event intensity. This is a local "
+"rate-based measure, not the expected waiting time to the next event when the "
+"rate changes."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Time"
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Grid"
+msgstr "Raster"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Equal intervals"
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Sequence"
+msgstr "Reeks"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Custom (relative)"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Custom (absolute)"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Choose how to specify prediction times: equal intervals, a sequence or "
+"custom values."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Intervals"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Set the number of equal intervals between the first observed endpoint and "
+"maximum follow-up in each subgroup."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "From"
+msgstr "Van"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "First endpoint"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Set a positive first time in the sequence. Leave blank to use the first "
+"observed endpoint in each subgroup."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Step"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "(To - From) / 10"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Set a positive time increment. Leave blank to use (To - From) / 10, or From "
+"when both endpoints are equal."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "To"
+msgstr "Tot"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Maximum follow-up"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Set the last prediction time. Use a time beyond observed follow-up to "
+"forecast. Leave blank to use the maximum follow-up in each subgroup."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Percentages"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Enter prediction times as percentages of the maximum follow-up time, "
+"separated by commas."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Values"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "25%, 50%, 75% of follow-up"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Enter positive prediction times separated by commas, in the original time "
+"units. Leave blank to use 25%, 50% and 75% of follow-up."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Mission duration"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Set a positive mission duration in the original time units. The time grid "
+"specifies mission start times."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Output"
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Plot"
+msgstr "Plot"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Plot every selected measure in its own panel."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Table"
+msgstr "Tabel"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Show a table of the selected predictions."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Long"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Wide"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Show times in rows (Long) or separate column groups (Wide)."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Y-axis scale"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Linear"
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Log"
+msgstr "Log"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Choose the y-axis scale for the predicted quantities."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "X-axis transformation"
+msgstr "X-as-transformatie"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Choose the x-axis scale for time."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Display"
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Confidence intervals"
+msgstr "Betrouwbaarheidsintervallen"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Include pointwise confidence intervals for the figures and tables. These are "
+"not prediction intervals for future counts. Rate-based intervals are "
+"unavailable for piecewise models."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Set the confidence level for the confidence intervals."
+msgstr ""
+"Stel het betrouwbaarheidsniveau voor de betrouwbaarheidsintervallen in."
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Legend"
+msgstr "Legenda"
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Bottom"
+msgstr "Onder"
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Right"
+msgstr "Rechts"
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Left"
+msgstr "Links"
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Top"
+msgstr "Boven"
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "None"
+msgstr "Geen"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Choose the legend position for prediction plots."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Theme"
+msgstr "Thema"
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "White background"
+msgstr "Witte achtergrond"
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Light"
+msgstr "Licht"
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Minimal"
+msgstr "Minimaal"
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Detailed"
+msgstr "Gedetailleerd"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Choose the theme for prediction plots."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Observed data"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Add observed cumulative events or cumulative mean time between events to the "
+"corresponding plots."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Colors for prediction series."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Merge series across"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Subgroups"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Overlay predictions for the separately fitted subgroups."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventPredictions|"
+msgid "Merge tables across measures"
+msgstr "Tabellen over maten samenvoegen"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Combine the selected time-based prediction measures in one table."
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Round time table values"
+msgstr ""
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Round evaluation times in tables to the nearest integer. Rounded times must "
+"remain positive."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Probability plot"
+msgstr "Kansplot"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid ""
+"Check Poisson interval counts using randomized quantile residuals from "
+"fitted interval means. Normal Q-Q and uniform P-P plots should follow the "
+"reference line under an NHPP. This is a count-model diagnostic, not a "
+"lifetime probability plot. Set a seed under Advanced to reproduce it."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Canvas"
+msgstr "Canvas"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Normal (Q-Q)"
+msgstr ""
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Uniform (P-P)"
+msgstr ""
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid ""
+"Compare quantile residuals with standard normal quantiles, or their "
+"cumulative probabilities with uniform plotting positions."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Empirical points"
+msgstr "Empirische punten"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Show one randomized quantile residual for each observation interval."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Coordinates"
+msgstr "Coördinaten"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Display the theoretical and observed coordinates beside each point."
+msgstr ""
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Reference line"
+msgstr ""
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Show the identity line expected under the fitted NHPP count model."
+msgstr ""
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Merge Plots Across"
+msgstr ""
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Subgroups"
+msgstr ""
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Overlay probability diagnostics for separately fitted subgroups."
+msgstr ""
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Reference envelope"
+msgstr ""
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid ""
+"Show pointwise order-statistic bounds for the reference distribution, "
+"treating fitted parameters as known. This exploratory envelope does not "
+"account for parameter estimation and is not a calibrated goodness-of-fit "
+"test."
+msgstr ""
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Set the pointwise reference-envelope coverage."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Grid"
+msgstr "Raster"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Show grid lines on the probability plot."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Plotting position"
+msgstr "Plotpositie"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Median"
+msgstr "Mediaan"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Benard"
+msgstr "Benard"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Hazen"
+msgstr "Hazen"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Mean"
+msgstr "Gemiddelde"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Blom"
+msgstr "Blom"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid ""
+"Choose the theoretical plotting positions for the ordered interval residuals."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Legend"
+msgstr "Legenda"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Bottom"
+msgstr "Onder"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Right"
+msgstr "Rechts"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Left"
+msgstr "Links"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Top"
+msgstr "Boven"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "None"
+msgstr "Geen"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Choose the legend position for merged subgroup plots."
+msgstr ""
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Choose colors for subgroup probability diagnostics."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Theme"
+msgstr "Thema"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Detailed"
+msgstr "Gedetailleerd"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "White background"
+msgstr "Witte achtergrond"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Light"
+msgstr "Licht"
+
+#, fuzzy
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Minimal"
+msgstr "Minimaal"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Choose the probability plot theme."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Add residuals, fitted values or mixture classifications from the displayed "
+"models as new columns in the dataset."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Set a prefix for the names of exported columns."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Export martingale residuals for each observation."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export observed minus predicted mean survival time, treating censored times "
+"as observed. Unavailable for interval-censored data."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export Cox-Snell residuals. For counting-process data, these are conditional "
+"on survival to entry. Unavailable for interval-censored data."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export the fitted relative risk, centered at mean covariate values within "
+"each stratum."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export the fitted log relative risk, centered at mean covariate values "
+"within each stratum."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Export the fitted mean survival time for each observation."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Export the fitted median survival time for each observation."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export the estimated probability that each observation belongs to each "
+"mixture component."
+msgstr ""
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Export the most likely mixture component for each observation."
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Model recurrent events from event counts in successive observation "
+"intervals. Fit each independent test sequence separately using Subgroup."
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Time"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Select cumulative interval endpoints or interval durations. Rows must follow "
+"the observation order within each subgroup."
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Event Count (optional)"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Select the number of events within each interval, not cumulative counts. "
+"Leave empty for one event per interval. ReliaGrowR currently requires "
+"positive counts in every interval."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid "Subgroup"
+msgstr "Subgroep"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Fit each combination of factor levels as an independent observation "
+"sequence. Do not split one sequence by changing operating conditions."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid "Model"
+msgstr "Model"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Duane"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Crow–AMSAA (power-law NHPP)"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Log-linear NHPP"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Piecewise power-law NHPP"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Choose the recurrent-event model. Crow–AMSAA is a power-law non-homogeneous "
+"Poisson process (NHPP)."
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Estimation"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Maximum likelihood"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Least squares"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Maximum likelihood uses counts in observation intervals. Least squares fits "
+"a regression on logarithms of cumulative quantities."
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Time input"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Cumulative interval endpoints"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Interval durations"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Choose how Time describes the observation intervals. Each sequence starts at "
+"zero. Maximum likelihood uses an interval-count likelihood rather than an "
+"exact-event-time likelihood."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid "Statistics"
+msgstr "Statistieken"
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid "Model summary"
+msgstr "Modelsamenvatting"
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid "Include a table with information about the model fit."
+msgstr "Neem een tabel op met informatie over de modelfit."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Data summary"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Show observation intervals, total events, follow-up time and observed "
+"cumulative mean time between events for each subgroup."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid "Coefficients"
+msgstr "Coëfficiënten"
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid "Include a table with coefficient estimates."
+msgstr "Neem een tabel op met coëfficiëntschattingen."
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid "Confidence intervals"
+msgstr "Betrouwbaarheidsintervallen"
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid "Include confidence intervals for the coefficients."
+msgstr "Neem betrouwbaarheidsintervallen voor de coëfficiënten op."
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid "Set the confidence level for the confidence intervals."
+msgstr ""
+"Stel het betrouwbaarheidsniveau voor de betrouwbaarheidsintervallen in."
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid "Coefficients covariance matrix"
+msgstr "Covariantiematrix van de coëfficiënten"
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Include a table with the covariance matrix of the coefficient estimates."
+msgstr ""
+"Neem een tabel op met de covariantiematrix van de coëfficiëntschattingen."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Segment estimates"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Show segment slopes, their standard errors, growth rates and scales returned "
+"by ReliaGrowR."
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Change points"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Show estimated change-point times in the original time units and native "
+"standard errors on the log-time scale."
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Fitted model equation"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Show the fitted model equations in a table."
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Decimals"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Set the number of decimal places displayed in the fitted equations."
+msgstr ""
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid "Advanced"
+msgstr "Geavanceerd"
+
+#, fuzzy
+msgctxt "RecurrentEventAnalysis|"
+msgid "Confidence interval"
+msgstr "Betrouwbaarheidsinterval"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Bounds"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Two-sided"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Lower"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Upper"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Choose two-sided confidence intervals or one-sided lower or upper bounds."
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Model Options"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Starting change points"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Provide initial locations for estimated change points. When unchecked, the "
+"package initializes one change point automatically. These locations are "
+"starting values, not fixed change points."
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Times"
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Enter starting change-point times in the original time units, separated by "
+"commas."
+msgstr ""
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Reproducibility"
+msgstr ""
+
+msgctxt "Upgrades|"
+msgid ""
+"Prediction and diagnostic settings have changed. Please review the updated "
+"options and results."
+msgstr ""
+
+msgctxt "Upgrades|"
+msgid ""
+"Prediction, diagnostic and starting-value settings have changed. Please "
+"review the updated options and results."
 msgstr ""

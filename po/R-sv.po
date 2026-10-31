@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2026-10-17 05:53\n"
+"POT-Creation-Date: 2026-10-31 05:54\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: sv\n"
@@ -63,10 +63,15 @@ msgstr ""
 msgid "%1$s: non-finite values were exported as missing."
 msgstr ""
 
-msgid "The column '%1$s' already exists. Specify a different export prefix."
+msgid "Export"
 msgstr ""
 
-msgid "Export"
+msgid ""
+"More than one export requests the column '%1$s'. Specify distinct export "
+"prefixes."
+msgstr ""
+
+msgid "The column '%1$s' already exists. Specify a different export prefix."
 msgstr ""
 
 msgid "Message"
@@ -225,12 +230,12 @@ msgstr ""
 msgid "The mixture model could not be estimated from any starting value: %1$s"
 msgstr ""
 
-msgid "The mixture model could not be finalized: %1$s"
-msgstr ""
-
 msgid ""
 "The component probabilities could not be evaluated accurately. Try a "
 "different distribution or fewer components."
+msgstr ""
+
+msgid "The mixture model could not be finalized: %1$s"
 msgstr ""
 
 msgid ""
@@ -339,6 +344,13 @@ msgid "Standard errors and confidence intervals are based on the delta method."
 msgstr ""
 
 msgid ""
+"The component means and medians describe the baseline distribution at zero "
+"fitted design. Treatment and SAS factor contrasts have zero design at their "
+"omitted reference level; other contrasts can have a baseline that does not "
+"correspond to an observed category."
+msgstr ""
+
+msgid ""
 "The component means and medians correspond to the reference level of factors "
 "and zero value of covariates."
 msgstr ""
@@ -380,6 +392,9 @@ msgid "Components"
 msgstr ""
 
 msgid "Starts"
+msgstr ""
+
+msgid "Failed Starts"
 msgstr ""
 
 msgid "Replications"
@@ -453,6 +468,11 @@ msgid ""
 msgstr ""
 
 msgid ""
+"Each row is treated as an independent observation. Repeated intervals from "
+"the same subject are not linked to a common mixture component."
+msgstr ""
+
+msgid ""
 "The log-likelihood is lower than that of the nested model with %1$s; the "
 "reported estimates are a local optimum. Consider more random starts."
 msgstr ""
@@ -478,6 +498,15 @@ msgstr ""
 msgid "Hazard"
 msgstr ""
 
+msgid "Cumulative Hazard"
+msgstr ""
+
+msgid "Restricted Mean Survival Time"
+msgstr ""
+
+msgid "No observations are available in this stratum."
+msgstr ""
+
 msgid ""
 "The model failed to produce predictions. Consider simplifying the model."
 msgstr ""
@@ -485,7 +514,19 @@ msgstr ""
 msgid "No finite predictions are available for this plot."
 msgstr ""
 
+msgid "Distribution / Component"
+msgstr ""
+
+msgid "No positive predictions are available for a logarithmic y-axis."
+msgstr ""
+
+msgid "RMST"
+msgstr ""
+
 msgid "%1$s (log scale)"
+msgstr ""
+
+msgid "Fitted density"
 msgstr ""
 
 msgid "Component 1"
@@ -503,6 +544,266 @@ msgid "Membership probabilities must be greater than 0.5 and less than 1."
 msgstr ""
 
 msgid "Membership probabilities must be distinct."
+msgstr ""
+
+msgid "The selected predictor has no fitted model term. Choose Linear or Log."
+msgstr ""
+
+msgid ""
+"The displayed models use different transformations for this predictor. "
+"Choose Linear or Log, or display the models separately."
+msgstr ""
+
+msgid ""
+"Polynomial, spline and Eyring specifications contain multiple model terms. "
+"Choose Linear or Log for this axis."
+msgstr ""
+
+msgid ""
+"This model-term transformation is not invertible across the displayed "
+"predictor range. Choose Linear or Log."
+msgstr ""
+
+msgid "1 / %s"
+msgstr ""
+
+msgid "1 / (k_B %1$s) (eV⁻¹; temperature in Kelvin)"
+msgstr ""
+
+msgid "Standardized %s"
+msgstr ""
+
+msgid "A logarithmic axis requires positive predictor values."
+msgstr ""
+
+msgid ""
+"No finite predictions remain after the selected axis transformations. Choose "
+"a different scale or evaluation range."
+msgstr ""
+
+msgid "A logarithmic plot range requires positive predictor values."
+msgstr ""
+
+msgid "The plot range for %s requires finite scalar values or expressions."
+msgstr ""
+
+msgid "From must be smaller than To for the plot range of %s."
+msgstr ""
+
+msgid "The logarithmic plot range for %s must be positive."
+msgstr ""
+
+msgid "The plot range for %s is outside its fitted transformation's domain."
+msgstr ""
+
+msgid "%1$s%% CI"
+msgstr ""
+
+msgid "%1$s%% Lower Bound"
+msgstr ""
+
+msgid "%1$s%% Upper Bound"
+msgstr ""
+
+msgid ""
+"Some confidence bounds are missing because simulated predictions could not "
+"be evaluated (%1$i of %2$i evaluations)."
+msgstr ""
+
+msgid "Some confidence bounds are infinite or exceed numerical range."
+msgstr ""
+
+msgid "Custom reference values require exactly one row."
+msgstr ""
+
+msgid "Reference value for %1$s must be an existing factor level."
+msgstr ""
+
+msgid "Reference value for %1$s must be one finite number or expression."
+msgstr ""
+
+msgid ""
+"The reference value of %1$s is outside its transformation domain. Choose "
+"Average or valid Custom values."
+msgstr ""
+
+msgid ""
+"Contour levels must be finite values or numeric expressions separated by "
+"commas."
+msgstr ""
+
+msgid "Probability contour levels must be between 0 and 1."
+msgstr ""
+
+msgid "Contour levels must be non-negative."
+msgstr ""
+
+msgid "Computing common contour levels"
+msgstr ""
+
+msgid "A logarithmic heatmap scale requires positive predicted values."
+msgstr ""
+
+msgid "Heatmap limits require finite scalar values or expressions."
+msgstr ""
+
+msgid "From must be smaller than To for the heatmap scale."
+msgstr ""
+
+msgid "Probability heatmap limits must be between 0 and 1."
+msgstr ""
+
+msgid "Heatmap limits must be non-negative."
+msgstr ""
+
+msgid "Logarithmic heatmap limits must be positive."
+msgstr ""
+
+msgid "Percentile %1$s"
+msgstr ""
+
+msgid "Select a mean, percentile or time-evaluated measure for predictions."
+msgstr ""
+
+msgid "The prediction input contains no observations."
+msgstr ""
+
+msgid "Select an existing CSV file for custom predictions."
+msgstr ""
+
+msgid ""
+"The prediction CSV file could not be read. Use a comma-separated file with a "
+"header row."
+msgstr ""
+
+msgid "The prediction CSV file contains duplicate column names."
+msgstr ""
+
+msgid "The prediction CSV file is missing these columns: %1$s."
+msgstr ""
+
+msgid "Add at least one observation to the prediction input table."
+msgstr ""
+
+msgid ""
+"The prediction input table does not match the predictors. Reset the table "
+"and enter the observations again."
+msgstr ""
+
+msgid "Prediction row %1$i: '%2$s' must be one of these subgroup levels: %3$s."
+msgstr ""
+
+msgid ""
+"Prediction row %1$i specifies a subgroup combination absent from the fitting "
+"data."
+msgstr ""
+
+msgid "Blank values for %1$s in %2$s use the default profile level %3$s."
+msgstr ""
+
+msgid ""
+"Prediction row %1$i: the value of '%2$s' is outside the domain of its model "
+"transformation."
+msgstr ""
+
+msgid "Prediction row %1$i: '%2$s' must be one of these levels: %3$s."
+msgstr ""
+
+msgid "Prediction row %1$i: '%2$s' requires one finite numeric value%3$s."
+msgstr ""
+
+msgid "Predictions"
+msgstr ""
+
+msgid "Observation"
+msgstr ""
+
+msgid "%1$s: %2$s"
+msgstr ""
+
+msgid "Note."
+msgstr ""
+
+msgid "Some requested quantities are infinite or exceed numerical range."
+msgstr ""
+
+msgid "The model predictions could not be matched to the input observations."
+msgstr ""
+
+msgid ""
+"No observations with supported predictor values are available for this model."
+msgstr ""
+
+msgid "At Specified Times"
+msgstr ""
+
+msgid "Lifetime Summaries"
+msgstr ""
+
+msgid "Time or Horizon"
+msgstr ""
+
+msgid "Percentile"
+msgstr ""
+
+msgid ""
+"%1$i observations have missing or unsupported predictor values and were not "
+"predicted."
+msgstr ""
+
+msgid ""
+"Confidence intervals are unavailable because the fitted model is on the "
+"minimum-spread boundary."
+msgstr ""
+
+msgid "%1$s, ..., %2$s (%3$i total)"
+msgstr ""
+
+msgid "observations: %1$s"
+msgstr ""
+
+msgid "lifetime percentiles: %1$s"
+msgstr ""
+
+msgid "times: %1$s"
+msgstr ""
+
+msgid ""
+"Some predictions are infinite or exceed numerical range and are omitted from "
+"the figure (%1$s)."
+msgstr ""
+
+msgid "Some predictions are infinite or exceed numerical range (%1$s)."
+msgstr ""
+
+msgid ""
+"Some confidence bounds are infinite or exceed numerical range and are "
+"omitted from the figure (%1$s; %2$s)."
+msgstr ""
+
+msgid ""
+"Some confidence bounds are infinite or exceed numerical range (%1$s; %2$s)."
+msgstr ""
+
+msgid "Survival Time"
+msgstr ""
+
+msgid "Prediction range"
+msgstr ""
+
+msgid "Lifetime percentile"
+msgstr ""
+
+msgid "%1$s at %2$s"
+msgstr ""
+
+msgid "lower"
+msgstr ""
+
+msgid "upper"
+msgstr ""
+
+msgid "Density Plot"
 msgstr ""
 
 msgid "Residuals vs. Time"
@@ -526,10 +827,68 @@ msgstr ""
 msgid "Cox-Snell residuals are not available for interval-censored data."
 msgstr ""
 
+msgid ""
+"The equation for %1$s in component %2$i cannot be estimated. The following "
+"predictor terms are zero for every observation used to fit the model: %3$s. "
+"This can happen when a factor level or a combination of factor levels has no "
+"observations after missing-value exclusions or subgroup selection. The "
+"coefficients of these terms cannot be estimated from the available data."
+msgstr ""
+
+msgid ""
+"The equation for %1$s in component %2$i cannot be estimated because the "
+"following predictor terms are linear combinations of other terms: %3$s. "
+"Their coefficients cannot be estimated separately from the other predictors."
+msgstr ""
+
+msgid "Fitted Model Equations"
+msgstr ""
+
+msgid "Parameter %i"
+msgstr ""
+
+msgid ""
+"The fitted Arrhenius expression does not match its transformation constant."
+msgstr ""
+
+msgid "The fitted equation terms do not match the native design columns."
+msgstr ""
+
+msgid "The native seed does not match the prepared baseline parameters."
+msgstr ""
+
+msgid "Factor '%1$s' needs at least two observed levels in the fitting data."
+msgstr ""
+
+msgid ""
+"The selected reference level '%1$s' for factor '%2$s' is absent from the "
+"fitting data. Choose a level present in this subgroup or change the subgroup "
+"selection."
+msgstr ""
+
+msgid "%1$s = %2$s"
+msgstr ""
+
+msgid "%1$s contrast %2$s (%3$s)"
+msgstr ""
+
+msgid "contrasts dropped from factor %s"
+msgstr ""
+
 msgid "Subgroup: %1$s"
 msgstr ""
 
 msgid "%1$s, %2$i comp."
+msgstr ""
+
+msgid ""
+"Gompertz does not support the Eyring specification. Select another "
+"distribution or choose another term transformation."
+msgstr ""
+
+msgid ""
+"No selected distribution supports the Eyring specification. Select at least "
+"one distribution other than Gompertz."
 msgstr ""
 
 msgid ""
@@ -538,17 +897,46 @@ msgid ""
 msgstr ""
 
 msgid ""
-"The model failed to produce a probability plot. Consider simplifying the "
-"model."
+"The fixed value for %1$s in %2$s, component %3$i, must be a single finite "
+"number within the parameter's range."
+msgstr ""
+
+msgid ""
+"The fixed %1$s in component %2$i conflicts with the minimum log-time "
+"standard deviation. Change the fixed value or the minimum spread."
+msgstr ""
+
+msgid ""
+"Expression inputs allow numeric arithmetic and mathematical functions only."
+msgstr ""
+
+msgid "Prediction"
+msgstr ""
+
+msgid "The prediction value of %1$s is outside its transformation domain."
+msgstr ""
+
+msgid ""
+"Some confidence intervals could not be evaluated and are shown as missing."
+msgstr ""
+
+msgid ""
+"Some population predictions could not be evaluated and are shown as missing."
 msgstr ""
 
 msgid "Predicted Survival Time"
 msgstr ""
 
-msgid "Predicted Failure Probability"
+msgid "Acceleration Factor"
+msgstr ""
+
+msgid "Time Ratio"
 msgstr ""
 
 msgid "Predicted Survival Probability"
+msgstr ""
+
+msgid "Predicted Failure Probability"
 msgstr ""
 
 msgid "Predicted Hazard"
@@ -566,80 +954,135 @@ msgstr ""
 msgid "Some predictions could not be evaluated and are shown as missing."
 msgstr ""
 
-msgid "Some requested quantities are infinite or exceed numerical range."
+msgid "Mean Time Ratio"
+msgstr ""
+
+msgid "Median Time Ratio"
+msgstr ""
+
+msgid "Mean Acceleration Factor"
+msgstr ""
+
+msgid "Median Acceleration Factor"
+msgstr ""
+
+msgid "Mean Survival Time"
+msgstr ""
+
+msgid "Median Survival Time"
 msgstr ""
 
 msgid ""
-"Some confidence intervals could not be evaluated and are shown as missing."
+"Lifetime percentiles must be finite values separated by commas, such as '25, "
+"50, 75'."
 msgstr ""
 
-msgid "Survival Time"
+msgid "Lifetime percentiles must be between 0 and 100."
 msgstr ""
 
-msgid "Cumulative Hazard"
+msgid "Sequence values must be finite numeric expressions."
 msgstr ""
 
-msgid "Restricted Mean Survival Time"
+msgid "Percentile sequences require 0 <= From < To <= 100 and a positive Step."
 msgstr ""
 
-msgid "Quantile"
-msgstr ""
-
-msgid ""
-"Life time tables cannot be merged when a model produces multiple "
-"predictions. Disable 'Merge tables across measures'."
+msgid "Time sequences require 0 <= From < To and a positive Step."
 msgstr ""
 
 msgid ""
-"The model failed to produce survival predictions. Consider simplifying the "
-"model."
+"Follow-up percentages must be finite values separated by commas, such as "
+"'25, 50, 75'."
+msgstr ""
+
+msgid "Follow-up percentages must be between 0 and 100."
+msgstr ""
+
+msgid "Times or horizons must be finite values separated by commas."
+msgstr ""
+
+msgid "Times or horizons must be greater than or equal to 0."
+msgstr ""
+
+msgid "Variables"
 msgstr ""
 
 msgid ""
-"The model failed to produce hazard predictions. Consider simplifying the "
-"model."
+"Prediction ranges include fitted event-time variability and exclude "
+"parameter-estimation uncertainty."
+msgstr ""
+
+msgid "Lower %1$s%%"
+msgstr ""
+
+msgid "Upper %1$s%%"
+msgstr ""
+
+msgid "%1$s (Percentile: %2$s)"
+msgstr ""
+
+msgid "%1$s (Horizon: %2$s)"
+msgstr ""
+
+msgid "%1$s (Time: %2$s)"
+msgstr ""
+
+msgid "%1$s%% Prediction range"
+msgstr ""
+
+msgid "Some lifetime percentiles are infinite or exceed numerical range."
 msgstr ""
 
 msgid ""
-"The model failed to produce cumulative predictions. Consider simplifying the "
-"model."
+"Predictions average survival over observed fitting-data profiles, holding "
+"displayed predictors fixed."
 msgstr ""
 
 msgid ""
-"The model failed to produce restricted mean survival time predictions. "
-"Consider simplifying the model."
-msgstr ""
-
-msgid "%1$s (log(-log(1-p)) scale)"
-msgstr ""
-
-msgid ""
-"Custom steps for predicted survival time were specified in an incorrect "
-"format. Try '0.25, 0.50, 0.75'."
-msgstr ""
-
-msgid "Custom steps for predicted survival time must be between 0 and 1."
+"Numerical predictors are at their sample means (%1$s) and categorical "
+"predictor contributions (%2$s) are averaged equally across their levels on "
+"each parameter's link scale."
 msgstr ""
 
 msgid ""
-"Step from for predicted survival time must be a finite, non-negative number."
+"Categorical predictor contributions (%1$s) are averaged equally across their "
+"levels on each parameter's link scale."
 msgstr ""
 
-msgid "Step to for predicted survival time must be a finite, positive number."
-msgstr ""
-
-msgid ""
-"Step size for predicted survival time must be a finite, positive number."
-msgstr ""
-
-msgid "Step to for predicted survival time must be greater than step from."
+msgid "Numerical predictors are at their sample means (%1$s)."
 msgstr ""
 
 msgid ""
-"Custom steps for predicted survival time must be greater than or equal to 0."
+"Numerical predictors are at zero (%1$s) and categorical predictors use their "
+"default levels (%2$s)."
+msgstr ""
+
+msgid "Numerical predictors are at zero (%1$s)."
+msgstr ""
+
+msgid "Categorical predictors use their default levels (%1$s)."
+msgstr ""
+
+msgid "Custom values: %1$s."
+msgstr ""
+
+msgid ""
+"Some observed times could not be mapped to the reference profile and are "
+"omitted from this diagnostic. Available points and fitted curves are "
+"retained."
+msgstr ""
+
+msgid ""
+"Empirical points for affected strata are unavailable because their fitted "
+"probabilities could not be evaluated. Fitted curves are retained where "
+"available."
 msgstr ""
 
 msgid "Probability Plot"
+msgstr ""
+
+msgid ""
+"The model failed to produce a probability plot. Consider simplifying the "
+"model."
 msgstr ""
 
 msgid "The probability plot requires at least one fitted model."
@@ -648,6 +1091,12 @@ msgstr ""
 msgid ""
 "The probability plot requires at least one positive observed failure time, "
 "censored observation, or fitted curve."
+msgstr ""
+
+msgid "Adjusted time (log scale)"
+msgstr ""
+
+msgid "Adjusted time"
 msgstr ""
 
 msgid "Fitted"
@@ -672,6 +1121,128 @@ msgid "Weibull"
 msgstr ""
 
 msgid "The probability plot requires positive time values."
+msgstr ""
+
+msgid "%1$s: %2$s to %3$s"
+msgstr ""
+
+msgid "%1$s (stratum %2$d)"
+msgstr ""
+
+msgid ""
+"The parameter restriction for '%1$s' in '%2$s' must contain finite numeric "
+"values or expressions, separated by commas or semicolons."
+msgstr ""
+
+msgid "%1$s, component %2$i"
+msgstr ""
+
+msgid ""
+"No main-effect regression coefficient for '%1$s' is present in '%2$s'. Add "
+"its main effect or leave its parameter restriction empty."
+msgstr ""
+
+msgid ""
+"Factor '%1$s' in '%2$s' has %3$i regression coefficients (%4$i levels). "
+"Supply one value or %3$i values; %5$i were supplied."
+msgstr ""
+
+msgid ""
+"Term '%1$s' in '%2$s' has %3$i regression coefficients. Supply one value or "
+"%3$i values; %4$i were supplied."
+msgstr ""
+
+msgid ""
+"Custom assigned values for %1$s must be finite numbers or numeric "
+"expressions."
+msgstr ""
+
+msgid ""
+"%1$s has %2$i nonempty groups instead of the requested %3$i; tied values "
+"remain together."
+msgstr ""
+
+msgid "Event"
+msgstr ""
+
+msgid "Kaplan-Meier"
+msgstr ""
+
+msgid "Observed"
+msgstr ""
+
+msgid ""
+"This lifetime summary is not finite or could not be evaluated for the "
+"selected model and predictor values."
+msgstr ""
+
+msgid "Some prediction-range endpoints are unbounded and are not drawn."
+msgstr ""
+
+msgid ""
+"%1$s%% prediction range: fitted event-time variability; parameter "
+"uncertainty excluded."
+msgstr ""
+
+msgid ""
+"Kaplan-Meier overlays require fixed factor profiles; continuous predictors "
+"or averaged factor levels have no matching empirical curve."
+msgstr ""
+
+msgid ""
+"Native design standardization requires finite nonnegative fitting weights "
+"with a positive total."
+msgstr ""
+
+msgid ""
+"The standardized design exceeds the supported numerical range. Choose "
+"another predictor transformation or scale."
+msgstr ""
+
+msgid ""
+"The selected native link point is unavailable or does not match the fitted "
+"coefficient layout."
+msgstr ""
+
+msgid ""
+"The standardized initial baseline cannot be represented on the native "
+"parameter scale. Choose another predictor transformation or scale."
+msgstr ""
+
+msgid ""
+"The native information or covariance matrix is unavailable or nonfinite."
+msgstr ""
+
+msgid ""
+"The native information or covariance matrix is not symmetric positive "
+"definite."
+msgstr ""
+
+msgid "The normalized native information or covariance matrix is nonfinite."
+msgstr ""
+
+msgid "The native information or covariance matrix is not positive definite."
+msgstr ""
+
+msgid ""
+"The native covariance matrix is inconsistent with the observed information. "
+"Standard errors and confidence intervals are unavailable."
+msgstr ""
+
+msgid ""
+"Native covariance calculation failed: %1$s. Standard errors and confidence "
+"intervals are unavailable."
+msgstr ""
+
+msgid ""
+"The covariance matrix cannot be represented as positive definite in the "
+"original coefficient units. Standard errors and confidence intervals are "
+"unavailable."
+msgstr ""
+
+msgid ""
+"The covariance matrix cannot be represented in the original coefficient "
+"units. Standard errors and confidence intervals are unavailable."
 msgstr ""
 
 msgid "Model fitting"
@@ -718,20 +1289,37 @@ msgstr ""
 msgid "Likelihood ratio test for nested models based on %s distribution."
 msgstr ""
 
+msgid ""
+"A likelihood-ratio test is reported only when the second model extends the "
+"first model. Compare non-nested relationships using AIC or BIC."
+msgstr ""
+
 msgid "z"
 msgstr ""
 
 msgid "P-values are based on a Wald test."
 msgstr ""
 
-msgid ""
-"The standard errors and confidence intervals of the mixing probabilities are "
-"based on the delta method."
+msgid "Regression coefficients for %1$s act on its %2$s link."
 msgstr ""
 
 msgid ""
-"The component parameters correspond to the reference level of factors and "
-"zero value of covariates."
+"Fixed parameters are specified by the user; their standard errors and "
+"confidence intervals are not estimated."
+msgstr ""
+
+msgid ""
+"Mixture components with fixed parameters retain the specified numbering."
+msgstr ""
+
+msgid ""
+"Eyring log-temperature coefficients are fixed by the preset; their standard "
+"errors and confidence intervals are not estimated."
+msgstr ""
+
+msgid ""
+"The standard errors and confidence intervals of the mixing probabilities are "
+"based on the delta method."
 msgstr ""
 
 msgid ""
@@ -745,21 +1333,16 @@ msgid ""
 "not the component mixing probabilities reported in the coefficients table."
 msgstr ""
 
-msgid "Lower CI"
-msgstr ""
-
-msgid "Upper CI"
+msgid ""
+"The baseline standard deviation of the natural logarithm of survival time "
+"was constrained to be at least %1$g in each component (%2$g%% of the "
+"unconstrained one-component model's baseline log-time standard deviation, "
+"%3$g)."
 msgstr ""
 
 msgid ""
-"The standard deviation of the natural logarithm of survival time was "
-"constrained to be at least %1$g in each component (%2$g%% of the "
-"unconstrained one-component model's log-time standard deviation, %3$g)."
-msgstr ""
-
-msgid ""
-"The standard deviation of the natural logarithm of survival time was "
-"constrained to be at least %1$g in each component."
+"The baseline standard deviation of the natural logarithm of survival time "
+"was constrained to be at least %1$g in each component."
 msgstr ""
 
 msgid ""
@@ -768,10 +1351,13 @@ msgid ""
 "likelihood-ratio tests involving this fit are unavailable."
 msgstr ""
 
+msgid "Inference unavailable: %1$s"
+msgstr ""
+
 msgid "%1$s failed with the following message: %2$s"
 msgstr ""
 
-msgid "%1$s model %2$s%3$s failed with the following message: %4$s."
+msgid "%1$s model %2$s%3$s failed with the following message: %4$s"
 msgstr ""
 
 msgid ""
@@ -858,6 +1444,496 @@ msgstr ""
 msgid ""
 "Results are based on %1$s with %2$s which was the best fitting model across "
 "all models and numbers of components."
+msgstr ""
+
+msgid "from Kelvin"
+msgstr ""
+
+msgid "from Celsius"
+msgstr ""
+
+msgid "from Fahrenheit"
+msgstr ""
+
+msgid ""
+"The Eyring preset is available only for the location equation. Choose "
+"another transformation for ancillary parameters."
+msgstr ""
+
+msgid ""
+"Gompertz was omitted because it does not support the Eyring specification."
+msgstr ""
+
+msgid ""
+"The Eyring initial values require finite design columns and finite "
+"nonnegative fitting weights."
+msgstr ""
+
+msgid ""
+"The Eyring initial adjustment is undefined when the fitting weights have "
+"zero total. Supply at least one positive fitting weight."
+msgstr ""
+
+msgid ""
+"The Eyring structural initial adjustment exceeds the supported numerical "
+"range."
+msgstr ""
+
+msgid ""
+"The Eyring initial baseline cannot be represented on the native parameter "
+"scale. Choose a different predictor transformation or scale."
+msgstr ""
+
+msgid "The custom logarithm base must be one finite number or expression."
+msgstr ""
+
+msgid "The custom logarithm base must be positive."
+msgstr ""
+
+msgid "The custom logarithm base must be different from 1."
+msgstr ""
+
+msgid ""
+"The logarithm multiplier must be one finite, nonzero number or expression."
+msgstr ""
+
+msgid "The exponent or root degree must be one finite number or expression."
+msgstr ""
+
+msgid "The exponent or root degree must be different from 0."
+msgstr ""
+
+msgid "The root degree is too close to zero to evaluate its reciprocal."
+msgstr ""
+
+msgid "The transformation of '%1$s' requires finite numeric values."
+msgstr ""
+
+msgid "Scaling '%1$s' requires a finite, nonzero standard deviation."
+msgstr ""
+
+msgid ""
+"The logarithmic transformation of '%1$s' requires strictly positive stress "
+"values."
+msgstr ""
+
+msgid ""
+"The temperature transformation of '%1$s' requires finite absolute "
+"temperatures above zero. Check the selected temperature units."
+msgstr ""
+
+msgid "The reciprocal transformation of '%1$s' requires nonzero stress values."
+msgstr ""
+
+msgid "A negative exponent for '%1$s' requires nonzero values."
+msgstr ""
+
+msgid "A fractional exponent for '%1$s' requires nonnegative values."
+msgstr ""
+
+msgid "The power-transformed values of '%1$s' exceed the numeric range."
+msgstr ""
+
+msgid "Natural cubic splines require a continuous numeric predictor: '%s'."
+msgstr ""
+
+msgid ""
+"The natural cubic spline of '%1$s' requires at least %2$s distinct values."
+msgstr ""
+
+msgid ""
+"The polynomial transformation of '%1$s' requires at least %2$s distinct "
+"values."
+msgstr ""
+
+msgid "The polynomial transformation of '%1$s' exceeds the numeric range."
+msgstr ""
+
+msgid "Polynomial"
+msgstr ""
+
+msgid "Natural cubic spline"
+msgstr ""
+
+msgid "%1$s(%2$s, %3$s)"
+msgstr ""
+
+msgid "Eyring log temperature(%1$s, %2$s)"
+msgstr ""
+
+msgid "Scale"
+msgstr ""
+
+msgid "Power"
+msgstr ""
+
+msgid "Root"
+msgstr ""
+
+msgid "Arrhenius"
+msgstr ""
+
+msgid "Eyring"
+msgstr ""
+
+msgid "Reciprocal"
+msgstr ""
+
+msgid "%1$s(%2$s) [eV]"
+msgstr ""
+
+msgid ""
+"Assign predictors to X-axis variables and Time to Separate lines or Separate "
+"plots."
+msgstr ""
+
+msgid ""
+"Relative lifetime requires a finite summary for both the reference and "
+"current predictor values."
+msgstr ""
+
+msgid "%1$s averaged over the fitting population"
+msgstr ""
+
+msgid "%1$s averaged equally over its factor levels (design average)"
+msgstr ""
+
+msgid "Reference: %1$s; line and panel predictors are held fixed."
+msgstr ""
+
+msgid ""
+"Time ratio = current/reference lifetime. Values above 1 indicate longer "
+"survival."
+msgstr ""
+
+msgid ""
+"Acceleration factor = reference/current lifetime. Values above 1 indicate "
+"shorter survival."
+msgstr ""
+
+msgid "Ratios may depend on the percentile."
+msgstr ""
+
+msgid "Computing contour predictions"
+msgstr ""
+
+msgid "Separate lines"
+msgstr ""
+
+msgid "Duane"
+msgstr ""
+
+msgid "Crow–AMSAA"
+msgstr ""
+
+msgid "Log-linear NHPP"
+msgstr ""
+
+msgid "Piecewise power-law NHPP"
+msgstr ""
+
+msgid "No observations are available."
+msgstr ""
+
+msgid ""
+"Time, event counts and subgroup variables cannot contain missing values. "
+"Complete the interval records rather than omitting them."
+msgstr ""
+
+msgid "All times must be finite and greater than zero."
+msgstr ""
+
+msgid "Event counts must be finite, non-negative integers."
+msgstr ""
+
+msgid ""
+"ReliaGrowR currently requires a positive event count in every interval. Zero-"
+"count intervals cannot be removed because they contain exposure information."
+msgstr ""
+
+msgid "At least three observation intervals are required in each subgroup."
+msgstr ""
+
+msgid ""
+"Cumulative interval endpoints must be strictly increasing within each "
+"subgroup. Order the rows by time or choose Interval durations."
+msgstr ""
+
+msgid "Enter positive starting change-point times separated by commas."
+msgstr ""
+
+msgid ""
+"Starting change points must be distinct and lie strictly between the first "
+"and last observed endpoints."
+msgstr ""
+
+msgid ""
+"The log-linear estimate reached a numerical bound in ReliaGrowR. This fit "
+"cannot be reported reliably."
+msgstr ""
+
+msgid ""
+"The power-law estimate reached a numerical bound in ReliaGrowR. This fit "
+"cannot be reported reliably."
+msgstr ""
+
+msgid "The model returned non-finite estimates. The fit cannot be reported."
+msgstr ""
+
+msgid ""
+"The covariance matrix is singular or not positive definite. Standard errors "
+"and confidence intervals are unavailable."
+msgstr ""
+
+msgid ""
+"The power-law fit did not converge. ReliaGrowR's optimizer fails when beta "
+"is close to zero, which happens when nearly all events occur early in follow-"
+"up. Consider the log-linear model or least-squares estimation."
+msgstr ""
+
+msgid ""
+"The fitted curve does not give finite positive expected counts in every "
+"interval. Count residuals and probability diagnostics require a valid "
+"increasing NHPP cumulative mean."
+msgstr ""
+
+msgid "Regression Residuals"
+msgstr ""
+
+msgid "Response Residuals"
+msgstr ""
+
+msgid "Pearson Residuals"
+msgstr ""
+
+msgid "Randomized Quantile Residuals"
+msgstr ""
+
+msgid ""
+"Regression residuals are available only for least-squares fits. Choose "
+"another residual type."
+msgstr ""
+
+msgid ""
+"Finite randomized quantile residuals could not be calculated for this fitted "
+"count model."
+msgstr ""
+
+msgid "Fitted Log Cumulative Mean Time Between Events"
+msgstr ""
+
+msgid "Fitted Log Cumulative Events"
+msgstr ""
+
+msgid "Fitted Interval Events"
+msgstr ""
+
+msgid "Theoretical Probability"
+msgstr ""
+
+msgid "Theoretical Normal Quantile"
+msgstr ""
+
+msgid "Observed Probability"
+msgstr ""
+
+msgid "Observed Quantile Residual"
+msgstr ""
+
+msgid "Enter a non-empty prefix for exported columns."
+msgstr ""
+
+msgid "%1$s, %2$s: %3$s"
+msgstr ""
+
+msgid "%1$s, %2$s: non-finite values were exported as missing."
+msgstr ""
+
+msgid "Data Summary"
+msgstr ""
+
+msgid "Intervals"
+msgstr ""
+
+msgid "Follow-up Time"
+msgstr ""
+
+msgid "Cumulative Mean Time Between Events"
+msgstr ""
+
+msgid ""
+"Log-likelihood, AIC and BIC refer to log-scale regression of cumulative "
+"quantities and cannot be compared with grouped-count maximum-likelihood "
+"values."
+msgstr ""
+
+msgid ""
+"Coefficients describe the segmented regression of log cumulative events on "
+"log time. Change-point coefficients are reported as log times."
+msgstr ""
+
+msgid "Confidence intervals are based on normal approximation."
+msgstr ""
+
+msgid ""
+"Standard errors and confidence intervals use native regression "
+"approximations that do not account for dependence between cumulative "
+"observations."
+msgstr ""
+
+msgid "Equation"
+msgstr ""
+
+msgid ""
+"M(t) is expected cumulative events, m(t) is instantaneous event intensity, "
+"and t / M(t) is cumulative mean time between events."
+msgstr ""
+
+msgid "Segment Estimates"
+msgstr ""
+
+msgid "Segment"
+msgstr ""
+
+msgid "Slope (β)"
+msgstr ""
+
+msgid "Growth Rate"
+msgstr ""
+
+msgid "Scale (λ)"
+msgstr ""
+
+msgid "Change Points"
+msgstr ""
+
+msgid "Change Point"
+msgstr ""
+
+msgid "Standard Error (Log Time)"
+msgstr ""
+
+msgid "Intercept"
+msgstr ""
+
+msgid "Slope (segment 1)"
+msgstr ""
+
+msgid "Slope change (change point %1$s)"
+msgstr ""
+
+msgid "Change point %1$s (log time)"
+msgstr ""
+
+msgid "A reliable covariance matrix is unavailable."
+msgstr ""
+
+msgid ""
+"The covariance matrix uses the same reported parameter scale as the "
+"coefficient estimates."
+msgstr ""
+
+msgid "Segment %1$i: M(t) = %2$s * t^(%3$s); %4$s < t <= %5$s"
+msgstr ""
+
+msgid "Mission start time"
+msgstr ""
+
+msgid "Mission Reliability"
+msgstr ""
+
+msgid "Cumulative Events"
+msgstr ""
+
+msgid "Event Intensity"
+msgstr ""
+
+msgid "Instantaneous Mean Time Between Events"
+msgstr ""
+
+msgid ""
+"Prediction times must be positive finite numbers. Enter numbers separated by "
+"commas."
+msgstr ""
+
+msgid "Enter positive percentages of maximum follow-up, separated by commas."
+msgstr ""
+
+msgid "Specify no more than 10,001 prediction times."
+msgstr ""
+
+msgid ""
+"From and To must each contain one positive time, with From less than or "
+"equal to To."
+msgstr ""
+
+msgid "Step must contain one positive finite number."
+msgstr ""
+
+msgid ""
+"Specify one positive step producing no more than 10,001 prediction times."
+msgstr ""
+
+msgid ""
+"Rounding produces a non-positive evaluation time. Disable Round time table "
+"values to retain the original times."
+msgstr ""
+
+msgid ""
+"The model cannot provide finite positive predictions at these times. Reduce "
+"the prediction range or choose another model."
+msgstr ""
+
+msgid ""
+"The mission endpoints cannot be represented at these times. Adjust the "
+"duration or prediction range."
+msgstr ""
+
+msgid ""
+"Mission reliability requires a positive event rate throughout each mission. "
+"Choose another model or prediction range."
+msgstr ""
+
+msgid ""
+"The model cannot provide finite positive expected event counts over these "
+"missions. Adjust the duration or prediction range."
+msgstr ""
+
+msgid "Mission Start Time"
+msgstr ""
+
+msgid ""
+"Mission reliability is the probability of no events during a mission of "
+"duration %1$s starting at each listed time, assuming an NHPP."
+msgstr ""
+
+msgid ""
+"Probabilities assume an NHPP: survival is no events and failure is at least "
+"one event since time zero."
+msgstr ""
+
+msgid ""
+"Duane probabilities assume its fitted growth curve is the cumulative mean of "
+"an NHPP."
+msgstr ""
+
+msgid ""
+"Mission-reliability confidence intervals use a delta-method approximation "
+"accounting for covariance between the cumulative means at mission start and "
+"end."
+msgstr ""
+
+msgid ""
+"Confidence intervals use native regression approximations that do not "
+"account for dependence between cumulative observations."
+msgstr ""
+
+msgid ""
+"Confidence intervals for rate-based measures are unavailable for piecewise "
+"models."
+msgstr ""
+
+msgid "Predictions beyond observed follow-up extrapolate the fitted trend."
 msgstr ""
 
 msgid "Model Tests Table"
@@ -980,6 +2056,15 @@ msgid ""
 msgid_plural ""
 "%1$i candidate fits were omitted because their likelihoods could not be "
 "evaluated reliably at the available numerical precision."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"%1$i starting-value or candidate attempt failed and was omitted; %2$i of "
+"%3$i starts produced no usable candidate."
+msgid_plural ""
+"%1$i starting-value or candidate attempts failed and were omitted; %2$i of "
+"%3$i starts produced no usable candidate."
 msgstr[0] ""
 msgstr[1] ""
 
