@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "POT-Creation-Date: 2026-10-31 05:54\n"
-"PO-Revision-Date: 2026-10-26 13:51+0000\n"
+"PO-Revision-Date: 2026-11-01 08:51+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/jasp/jaspsurvival-r/zh_Hans/>\n"
@@ -16,383 +16,341 @@ msgstr ""
 msgid ""
 "An open interval may use negative infinity for its start or positive "
 "infinity for its end, but not the reverse."
-msgstr ""
+msgstr "开区间可以用负无穷作为起点或用正无穷作为终点，但不能反过来。"
 
 msgid "No observations remain after excluding missing values."
-msgstr ""
+msgstr "排除缺失值后没有剩余观测。"
 
 msgid "The end time must be larger than the start time."
-msgstr ""
+msgstr "结束时间必须大于开始时间。"
 
 msgid "The interval end must be greater than or equal to the interval start."
-msgstr ""
+msgstr "区间终点必须大于或等于区间起点。"
 
 msgid "The weights variable must be an integer."
-msgstr ""
+msgstr "权重变量必须为整数。"
 
 msgid "The weights variable must not contain missing values."
-msgstr ""
+msgstr "权重变量不能包含缺失值。"
 
 msgid "The weights variable must be positive."
-msgstr ""
+msgstr "权重变量必须为正。"
 
 msgid "%1$i observations omitted due to missing values."
-msgstr ""
+msgstr "因缺失值而省略了 %1$i 个观测。"
 
-#, fuzzy
 msgid "Events"
-msgstr "事件状态"
+msgstr "事件"
 
-#, fuzzy
 msgid "Censored"
-msgstr "删失类型"
+msgstr "删失"
 
 msgid "Left censored"
-msgstr ""
+msgstr "左删失"
 
 msgid "Right censored"
-msgstr ""
+msgstr "右删失"
 
-#, fuzzy
 msgid "Interval censored"
-msgstr "区间终点"
+msgstr "区间删失"
 
-#, fuzzy
 msgid "Censoring Summary"
 msgstr "删失汇总"
 
-#, fuzzy
 msgid "Subgroup"
 msgstr "子组"
 
-#, fuzzy
 msgid "Count"
 msgstr "计数"
 
 msgid "%1$s: non-finite values were exported as missing."
-msgstr ""
+msgstr "%1$s：非有限值已作为缺失值导出。"
 
-#, fuzzy
 msgid "Export"
 msgstr "导出"
 
 msgid ""
 "More than one export requests the column '%1$s'. Specify distinct export "
 "prefixes."
-msgstr ""
+msgstr "有多个导出请求列“%1$s”。请指定不同的导出前缀。"
 
 msgid "The column '%1$s' already exists. Specify a different export prefix."
-msgstr ""
+msgstr "列“%1$s”已存在。请指定不同的导出前缀。"
 
 msgid "Message"
-msgstr ""
+msgstr "消息"
 
-#, fuzzy
 msgid "Exported values could not be matched to the original observations."
-msgstr "导出每个观测基于拟合 Cox 模型的偏差残差。"
+msgstr "导出的值无法与原始观测匹配。"
 
-#, fuzzy
 msgid "Fitted mean survival time"
-msgstr "中位生存时间"
+msgstr "拟合平均生存时间"
 
-#, fuzzy
 msgid "Response residual"
-msgstr "响应"
+msgstr "响应残差"
 
-#, fuzzy
 msgid "Fitted median survival time"
-msgstr "中位生存时间"
+msgstr "拟合中位生存时间"
 
-#, fuzzy
 msgid "Cox-Snell residual"
-msgstr "Cox-Snell"
+msgstr "Cox-Snell 残差"
 
-#, fuzzy
 msgid "Component %1$i probability"
-msgstr "成分概率"
+msgstr "成分 %1$i 概率"
 
-#, fuzzy
 msgid "Component index"
 msgstr "成分索引"
 
-#, fuzzy
 msgid "Martingale residual"
-msgstr "Martingale"
+msgstr "鞅残差"
 
-#, fuzzy
 msgid "Deviance residual"
-msgstr "偏差"
+msgstr "偏差残差"
 
-#, fuzzy
 msgid "Fitted relative risk"
-msgstr "相对风险"
+msgstr "拟合相对风险"
 
-#, fuzzy
 msgid "Fitted linear predictor"
-msgstr "线性预测值"
+msgstr "拟合线性预测子"
 
 msgid "Full dataset"
-msgstr ""
+msgstr "完整数据集"
 
-#, fuzzy
 msgid "Response"
 msgstr "响应"
 
-#, fuzzy
 msgid "Cox-Snell"
 msgstr "Cox-Snell"
 
-#, fuzzy
 msgid "Martingale Residuals"
-msgstr "Martingale"
+msgstr "鞅残差"
 
-#, fuzzy
 msgid "Deviance Residuals"
-msgstr "残差"
+msgstr "偏差残差"
 
-#, fuzzy
 msgid "Score Residuals"
-msgstr "残差"
+msgstr "得分残差"
 
-#, fuzzy
 msgid "Schoenfeld Residuals"
-msgstr "Schoenfeld"
+msgstr "Schoenfeld 残差"
 
-#, fuzzy
 msgid "Scaled Schoenfeld Residuals"
-msgstr "Scaled Schoenfeld"
+msgstr "标度 Schoenfeld 残差"
 
-#, fuzzy
 msgid "Survival Plot"
-msgstr "生存分析"
+msgstr "生存图"
 
-#, fuzzy
 msgid "Risk Plot"
-msgstr "风险表"
+msgstr "风险图"
 
-#, fuzzy
 msgid "Cumulative Hazard Plot"
-msgstr "累积风险"
+msgstr "累积风险图"
 
-#, fuzzy
 msgid "Complementary Log-Log Plot"
-msgstr "互补双对数"
+msgstr "互补双对数图"
 
 msgid "log(Time)"
-msgstr ""
+msgstr "log(时间)"
 
-#, fuzzy
 msgid "Kaplan-Meier Summary Table"
-msgstr "Kaplan-Meier"
+msgstr "Kaplan-Meier 汇总表"
 
 msgid "%s%% CI"
-msgstr ""
+msgstr "%s%% 置信区间"
 
-#, fuzzy
 msgid "Strata"
 msgstr "分层"
 
 msgid "N"
-msgstr ""
+msgstr "N"
 
-#, fuzzy
 msgid "Restricted Mean"
-msgstr "限制平均生存时间"
+msgstr "受限均值"
 
 msgid "Standard Error"
-msgstr ""
+msgstr "标准误"
 
-#, fuzzy
 msgid "Median Survival"
-msgstr "中位生存时间"
+msgstr "中位生存"
 
-#, fuzzy
 msgid "Lower"
-msgstr "最低"
+msgstr "下限"
 
 msgid "Upper"
-msgstr ""
+msgstr "上界"
 
-#, fuzzy
 msgid "Tests Table"
-msgstr "检验"
+msgstr "检验表"
 
-#, fuzzy
 msgid "Test"
 msgstr "检验"
 
 msgid "Chi Square"
-msgstr ""
+msgstr "卡方"
 
 msgid "df"
-msgstr ""
+msgstr "自由度"
 
 msgid "p"
-msgstr ""
+msgstr "p"
 
 msgid "At least one strata needs to be specified"
-msgstr ""
+msgstr "至少需要指定一个分层"
 
-#, fuzzy
 msgid "Log-rank (Mantel-Haenszel)"
 msgstr "Log-Rank（Mantel-Haenszel）"
 
-#, fuzzy
 msgid "Peto and Peto"
 msgstr "Peto 与 Peto"
 
-#, fuzzy
 msgid "Flemming-Harrington"
 msgstr "Fleming-Harrington"
 
-#, fuzzy
 msgid "Life Table"
 msgstr "生命表"
 
 msgid "Time"
-msgstr ""
+msgstr "时间"
 
-#, fuzzy
 msgid "At Risk"
-msgstr "风险"
+msgstr "处于风险中"
 
-#, fuzzy
 msgid "Survival"
-msgstr "生存分析"
+msgstr "生存"
 
 msgid "At least one starting value method must be selected."
-msgstr ""
+msgstr "必须至少选择一种起始值方法。"
 
 msgid "The mixture model requires all event times to be positive."
-msgstr ""
+msgstr "混合模型要求所有事件时间均为正。"
 
 msgid "No starting values could be constructed for the mixture model."
-msgstr ""
+msgstr "无法为混合模型构建起始值。"
 
 msgid "Fitting %1$s mixture (%2$i components)"
-msgstr ""
+msgstr "正在拟合 %1$s 混合模型（%2$i 个成分）"
 
 msgid "The mixture model could not be estimated from any starting value: %1$s"
-msgstr ""
+msgstr "无法从任何起始值估计混合模型：%1$s"
 
 msgid ""
 "The component probabilities could not be evaluated accurately. Try a "
 "different distribution or fewer components."
-msgstr ""
+msgstr "无法准确计算成分概率。请尝试其他分布或减少成分数。"
 
 msgid "The mixture model could not be finalized: %1$s"
-msgstr ""
+msgstr "混合模型无法完成：%1$s"
 
 msgid ""
 "No constrained candidate converged. Try more starting values, a different "
 "distribution, or fewer components."
-msgstr ""
+msgstr "没有受约束的候选解收敛。请尝试更多起始值、其他分布或减少成分数。"
 
 msgid "The log-likelihood is not finite."
-msgstr ""
+msgstr "对数似然不是有限值。"
 
 msgid "The EM algorithm produced no valid state."
-msgstr ""
+msgstr "EM 算法未产生有效状态。"
 
 msgid ""
 "The mixture model requires events or positive censoring times. Check the "
 "survival times and event status."
-msgstr ""
+msgstr "混合模型要求存在事件或正的删失时间。请检查生存时间和事件状态。"
 
 msgid ""
 "A mixture component degenerated during the estimation. Consider fewer "
 "components."
-msgstr ""
+msgstr "估计过程中某个混合成分退化。请考虑减少成分数。"
 
 msgid "Censoring type '%1$s' is not supported by the mixture model."
-msgstr ""
+msgstr "混合模型不支持删失类型“%1$s”。"
 
 msgid ""
 "The initial parameters do not satisfy the minimum log-time standard "
 "deviation."
-msgstr ""
+msgstr "初始参数不满足最小对数时间标准差。"
 
 msgid ""
 "The selected solution could not be retained while computing its covariance. "
 "Try a different distribution or fewer components."
-msgstr ""
+msgstr "在计算协方差时无法保留所选解。请尝试其他分布或减少成分数。"
 
 msgid "The log-likelihood of the mixture model is not finite."
-msgstr ""
+msgstr "混合模型的对数似然不是有限值。"
 
 msgid ""
 "The likelihood may lose numerical precision at these censoring or entry "
 "times. Results cannot be reported reliably. Try a different distribution or "
 "fewer components."
 msgstr ""
+"在这些删失时间或进入时间上，似然可能损失数值精度，无法可靠报告结果。请尝试其"
+"他分布或减少成分数。"
 
 msgid ""
 "A minimum log-time standard deviation is not available for %1$s. Select log-"
 "normal, Weibull, log-logistic, or gamma."
 msgstr ""
+"%1$s 没有可用的最小对数时间标准差。请选择对数正态、Weibull、对数 Logistic 或 "
+"Gamma。"
 
 msgid ""
 "The one-component reference model could not be fitted. Try a different "
 "distribution or use an absolute minimum log-time standard deviation."
-msgstr ""
+msgstr "无法拟合单成分参照模型。请尝试其他分布或使用绝对最小对数时间标准差。"
 
 msgid ""
 "The one-component reference model did not yield a converged, positive log-"
 "time standard deviation. Try a different distribution or use an absolute "
 "minimum log-time standard deviation."
 msgstr ""
+"单成分参照模型未得到收敛且为正的对数时间标准差。请尝试其他分布或使用绝对最小"
+"对数时间标准差。"
 
 msgid ""
 "The fitted parameters do not satisfy the minimum log-time standard "
 "deviation. Results cannot be reported reliably."
-msgstr ""
+msgstr "拟合参数不满足最小对数时间标准差，无法可靠报告结果。"
 
 msgid ""
 "The constrained optimizer did not converge. Try a different distribution or "
 "a simpler model."
-msgstr ""
+msgstr "受约束优化器未收敛。请尝试其他分布或更简单的模型。"
 
 msgid ""
 "Some mixture quantiles could not be evaluated accurately and are shown as "
 "missing."
-msgstr ""
+msgstr "部分混合分位数无法准确计算，显示为缺失。"
 
-#, fuzzy
 msgid "Component Mean and Median"
-msgstr "均值和中位数"
+msgstr "成分均值与中位数"
 
-#, fuzzy
 msgid "Mixture Classification"
 msgstr "混合分类"
 
-#, fuzzy
 msgid "Estimation Diagnostics"
 msgstr "估计诊断"
 
-#, fuzzy
 msgid "Mixture Components"
-msgstr "最大成分数"
+msgstr "混合成分"
 
-#, fuzzy
 msgid "Component"
 msgstr "成分"
 
-#, fuzzy
 msgid "Estimate"
-msgstr "估计"
+msgstr "估计值"
 
 msgid ""
 "Some component means or medians are infinite or could not be evaluated "
 "numerically and are shown as missing."
-msgstr ""
+msgstr "部分成分均值或中位数为无穷大或无法数值计算，显示为缺失。"
 
 msgid ""
 "Some standard errors or confidence intervals could not be evaluated and are "
 "shown as missing."
-msgstr ""
+msgstr "部分标准误或置信区间无法计算，显示为缺失。"
 
 msgid "Standard errors and confidence intervals are based on the delta method."
-msgstr ""
+msgstr "标准误和置信区间基于 delta 方法。"
 
 msgid ""
 "The component means and medians describe the baseline distribution at zero "
@@ -400,520 +358,497 @@ msgid ""
 "omitted reference level; other contrasts can have a baseline that does not "
 "correspond to an observed category."
 msgstr ""
+"成分均值和中位数描述拟合设计为零时的基线分布。处理对比和 SAS 因子对比在被省略"
+"的参照水平上设计为零；其他对比的基线可能不对应任何观测类别。"
 
 msgid ""
 "The component means and medians correspond to the reference level of factors "
 "and zero value of covariates."
-msgstr ""
+msgstr "成分均值和中位数对应因子的参照水平和协变量的零值。"
 
-#, fuzzy
 msgid "Mixing probability"
-msgstr "失败概率"
+msgstr "混合概率"
 
-#, fuzzy
 msgid "Mean"
 msgstr "均值"
 
-#, fuzzy
 msgid "Median"
 msgstr "中位数"
 
-#, fuzzy
 msgid "Component %1$i"
-msgstr "成分索引"
+msgstr "成分 %1$i"
 
-#, fuzzy
 msgid "Classified"
-msgstr "分类"
+msgstr "已分类"
 
-#, fuzzy
 msgid "Proportion"
-msgstr "比例风险"
+msgstr "比例"
 
-#, fuzzy
 msgid "Mean posterior probability"
-msgstr "归属概率"
+msgstr "平均后验概率"
 
 msgid ""
 "Observations are classified to the component with the highest posterior "
 "probability. The relative entropy of the classification is %1$.3f (values "
 "close to 1 indicate low uncertainty in the assignments)."
 msgstr ""
+"观测被分类到后验概率最高的成分。分类的相对熵为 %1$.3f（接近 1 表示归类的不确"
+"定性低）。"
 
-#, fuzzy
 msgid "Distribution"
 msgstr "分布"
 
-#, fuzzy
 msgid "Model"
 msgstr "模型"
 
-#, fuzzy
 msgid "Components"
 msgstr "成分"
 
 msgid "Starts"
-msgstr ""
+msgstr "起始值"
 
 msgid "Failed Starts"
-msgstr ""
+msgstr "失败的起始值"
 
-#, fuzzy
 msgid "Replications"
-msgstr "预测"
+msgstr "重复次数"
 
-#, fuzzy
 msgid "Log Lik."
 msgstr "对数似然"
 
 msgid "Next Best Log Lik."
-msgstr ""
+msgstr "次优对数似然"
 
 msgid "Degenerate Candidates"
-msgstr ""
+msgstr "退化候选解"
 
 msgid "Min. Component n (ESS)"
-msgstr ""
+msgstr "最小成分 n（ESS）"
 
-#, fuzzy
 msgid "Min. Component Events"
-msgstr "成分"
+msgstr "最小成分事件数"
 
 msgid "Optimizer Converged"
-msgstr ""
+msgstr "优化器已收敛"
 
 msgid "Hessian Positive Definite"
-msgstr ""
+msgstr "Hessian 正定"
 
 msgid "yes"
-msgstr ""
+msgstr "是"
 
 msgid "no"
-msgstr ""
+msgstr "否"
 
-#, fuzzy
 msgid "Estimation warning: %1$s"
-msgstr "估计诊断"
+msgstr "估计警告：%1$s"
 
 msgid ""
 "The reported solution was reached by only %1$i of %2$i starts; the estimates "
 "might be a local optimum. Consider more random starts."
 msgstr ""
+"所报告的解仅由 %1$i/%2$i 个起始值达到；估计值可能是局部最优。请考虑增加随机起"
+"始值。"
 
 msgid ""
 "All candidate solutions were flagged as degenerate or failed to converge; "
 "the reported estimates may be unreliable. Consider fewer components or more "
 "starting values."
 msgstr ""
+"所有候选解都被标记为退化或未能收敛；所报告的估计值可能不可靠。请考虑减少成分"
+"数或增加起始值。"
 
 msgid ""
 "The selected solution triggered component diagnostics despite satisfying the "
 "spread bound. Inspect the component sizes and dispersion before interpreting "
 "the mixture."
 msgstr ""
+"所选解虽满足离散度界，但触发了成分诊断。在解释混合模型前请检查各成分的大小和"
+"离散程度。"
 
 msgid ""
 "The smallest component is supported by %1$.1f effective events; such a "
 "component is weakly identified. Consider fewer components."
-msgstr ""
+msgstr "最小成分仅由 %1$.1f 个有效事件支撑；该成分识别较弱。请考虑减少成分数。"
 
 msgid ""
 "All components coincide; the mixture is not identified and its standard "
 "errors are unreliable. Consider fewer components."
-msgstr ""
+msgstr "所有成分重合；混合模型不可识别，其标准误不可靠。请考虑减少成分数。"
 
 msgid ""
 "Components %1$s coincide; the mixture is not identified and its standard "
 "errors are unreliable. Consider fewer components."
-msgstr ""
+msgstr "成分 %1$s 重合；混合模型不可识别，其标准误不可靠。请考虑减少成分数。"
 
 msgid ""
 "The Hessian or parameter covariance could not be used reliably; standard "
 "errors and confidence intervals may be unavailable or unreliable."
-msgstr ""
+msgstr "Hessian 或参数协方差无法可靠使用；标准误和置信区间可能不可用或不可靠。"
 
 msgid ""
 "Each row is treated as an independent observation. Repeated intervals from "
 "the same subject are not linked to a common mixture component."
-msgstr ""
+msgstr "每一行都视为独立观测。同一受试者的重复区间不会关联到同一混合成分。"
 
 msgid ""
 "The log-likelihood is lower than that of the nested model with %1$s; the "
 "reported estimates are a local optimum. Consider more random starts."
 msgstr ""
+"对数似然低于含 %1$s 的嵌套模型；所报告的估计值为局部最优。请考虑增加随机起始"
+"值。"
 
 msgid "%1$s model %2$s with %3$s%4$s"
-msgstr ""
+msgstr "%1$s 模型 %2$s，含 %3$s%4$s"
 
 msgid "%1$s and %2$s"
-msgstr ""
+msgstr "%1$s和%2$s"
 
-#, fuzzy
 msgid "mixing probability"
-msgstr "失败概率"
+msgstr "混合概率"
 
-#, fuzzy
 msgid "Survival Probability"
 msgstr "生存概率"
 
-#, fuzzy
 msgid "Failure Probability"
-msgstr "失败概率"
+msgstr "失效概率"
 
-#, fuzzy
 msgid "Density"
 msgstr "密度"
 
-#, fuzzy
 msgid "Hazard"
 msgstr "风险率"
 
-#, fuzzy
 msgid "Cumulative Hazard"
 msgstr "累积风险"
 
-#, fuzzy
 msgid "Restricted Mean Survival Time"
 msgstr "限制平均生存时间"
 
 msgid "No observations are available in this stratum."
-msgstr ""
+msgstr "该层中没有可用观测。"
 
 msgid ""
 "The model failed to produce predictions. Consider simplifying the model."
-msgstr ""
+msgstr "模型未能生成预测。请考虑简化模型。"
 
 msgid "No finite predictions are available for this plot."
-msgstr ""
+msgstr "此图没有可用的有限预测值。"
 
-#, fuzzy
 msgid "Distribution / Component"
-msgstr "分布"
+msgstr "分布 / 成分"
 
 msgid "No positive predictions are available for a logarithmic y-axis."
-msgstr ""
+msgstr "对数 y 轴没有可用的正预测值。"
 
 msgid "RMST"
-msgstr ""
+msgstr "RMST"
 
 msgid "%1$s (log scale)"
-msgstr ""
+msgstr "%1$s（对数刻度）"
 
-#, fuzzy
 msgid "Fitted density"
-msgstr "拟合值"
+msgstr "拟合密度"
 
-#, fuzzy
 msgid "Component 1"
-msgstr "成分"
+msgstr "成分 1"
 
-#, fuzzy
 msgid "Mixture"
 msgstr "混合"
 
 msgid ""
 "Membership probabilities were specified in an incorrect format. Try '0.95, "
 "0.99'."
-msgstr ""
+msgstr "成员概率的指定格式不正确。请尝试“0.95, 0.99”。"
 
 msgid "Membership probabilities must be greater than 0.5 and less than 1."
-msgstr ""
+msgstr "成员概率必须大于 0.5 且小于 1。"
 
-#, fuzzy
 msgid "Membership probabilities must be distinct."
-msgstr "归属概率"
+msgstr "成员概率必须互不相同。"
 
 msgid "The selected predictor has no fitted model term. Choose Linear or Log."
-msgstr ""
+msgstr "所选预测变量没有拟合模型项。请选择线性或对数。"
 
 msgid ""
 "The displayed models use different transformations for this predictor. "
 "Choose Linear or Log, or display the models separately."
 msgstr ""
+"所显示的模型对该预测变量使用了不同的变换。请选择线性或对数，或分别显示这些模"
+"型。"
 
 msgid ""
 "Polynomial, spline and Eyring specifications contain multiple model terms. "
 "Choose Linear or Log for this axis."
-msgstr ""
+msgstr "多项式、样条和 Eyring 设定包含多个模型项。请为此轴选择线性或对数。"
 
 msgid ""
 "This model-term transformation is not invertible across the displayed "
 "predictor range. Choose Linear or Log."
-msgstr ""
+msgstr "该模型项变换在所显示的预测变量范围内不可逆。请选择线性或对数。"
 
 msgid "1 / %s"
-msgstr ""
+msgstr "1 / %s"
 
 msgid "1 / (k_B %1$s) (eV⁻¹; temperature in Kelvin)"
-msgstr ""
+msgstr "1 / (k_B %1$s)（eV⁻¹；温度单位为开尔文）"
 
 msgid "Standardized %s"
-msgstr ""
+msgstr "标准化 %s"
 
 msgid "A logarithmic axis requires positive predictor values."
-msgstr ""
+msgstr "对数轴要求预测变量值为正。"
 
 msgid ""
 "No finite predictions remain after the selected axis transformations. Choose "
 "a different scale or evaluation range."
-msgstr ""
+msgstr "在所选轴变换后没有剩余的有限预测值。请选择其他刻度或评估范围。"
 
 msgid "A logarithmic plot range requires positive predictor values."
-msgstr ""
+msgstr "对数绘图范围要求预测变量值为正。"
 
 msgid "The plot range for %s requires finite scalar values or expressions."
-msgstr ""
+msgstr "%s 的绘图范围要求有限标量值或表达式。"
 
 msgid "From must be smaller than To for the plot range of %s."
-msgstr ""
+msgstr "%s 的绘图范围起点必须小于终点。"
 
 msgid "The logarithmic plot range for %s must be positive."
-msgstr ""
+msgstr "%s 的对数绘图范围必须为正。"
 
 msgid "The plot range for %s is outside its fitted transformation's domain."
-msgstr ""
+msgstr "%s 的绘图范围超出其拟合变换的定义域。"
 
 msgid "%1$s%% CI"
-msgstr ""
+msgstr "%1$s%% 置信区间"
 
 msgid "%1$s%% Lower Bound"
-msgstr ""
+msgstr "%1$s%% 下限"
 
 msgid "%1$s%% Upper Bound"
-msgstr ""
+msgstr "%1$s%% 上限"
 
 msgid ""
 "Some confidence bounds are missing because simulated predictions could not "
 "be evaluated (%1$i of %2$i evaluations)."
-msgstr ""
+msgstr "部分置信限缺失，因为模拟预测无法计算（%2$i 次评估中的 %1$i 次）。"
 
 msgid "Some confidence bounds are infinite or exceed numerical range."
-msgstr ""
+msgstr "部分置信限为无穷大或超出数值范围。"
 
 msgid "Custom reference values require exactly one row."
-msgstr ""
+msgstr "自定义参照值必须恰好包含一行。"
 
 msgid "Reference value for %1$s must be an existing factor level."
-msgstr ""
+msgstr "%1$s 的参照值必须是现有的因子水平。"
 
 msgid "Reference value for %1$s must be one finite number or expression."
-msgstr ""
+msgstr "%1$s 的参照值必须是一个有限数字或表达式。"
 
 msgid ""
 "The reference value of %1$s is outside its transformation domain. Choose "
 "Average or valid Custom values."
-msgstr ""
+msgstr "%1$s 的参照值超出其变换定义域。请选择平均值或有效的自定义值。"
 
 msgid ""
 "Contour levels must be finite values or numeric expressions separated by "
 "commas."
-msgstr ""
+msgstr "等高线水平必须是以逗号分隔的有限值或数值表达式。"
 
 msgid "Probability contour levels must be between 0 and 1."
-msgstr ""
+msgstr "概率等高线水平必须介于 0 与 1 之间。"
 
 msgid "Contour levels must be non-negative."
-msgstr ""
+msgstr "等高线水平必须为非负。"
 
 msgid "Computing common contour levels"
-msgstr ""
+msgstr "正在计算公共等高线水平"
 
 msgid "A logarithmic heatmap scale requires positive predicted values."
-msgstr ""
+msgstr "对数热图刻度要求预测值为正。"
 
 msgid "Heatmap limits require finite scalar values or expressions."
-msgstr ""
+msgstr "热图范围要求有限标量值或表达式。"
 
 msgid "From must be smaller than To for the heatmap scale."
-msgstr ""
+msgstr "热图刻度的起点必须小于终点。"
 
 msgid "Probability heatmap limits must be between 0 and 1."
-msgstr ""
+msgstr "概率热图范围必须介于 0 与 1 之间。"
 
 msgid "Heatmap limits must be non-negative."
-msgstr ""
+msgstr "热图范围必须为非负。"
 
 msgid "Logarithmic heatmap limits must be positive."
-msgstr ""
+msgstr "对数热图范围必须为正。"
 
 msgid "Percentile %1$s"
-msgstr ""
+msgstr "百分位数 %1$s"
 
 msgid "Select a mean, percentile or time-evaluated measure for predictions."
-msgstr ""
+msgstr "请为预测选择均值、百分位数或按时间评估的度量。"
 
 msgid "The prediction input contains no observations."
-msgstr ""
+msgstr "预测输入不包含任何观测。"
 
 msgid "Select an existing CSV file for custom predictions."
-msgstr ""
+msgstr "请选择一个现有的 CSV 文件用于自定义预测。"
 
 msgid ""
 "The prediction CSV file could not be read. Use a comma-separated file with a "
 "header row."
-msgstr ""
+msgstr "无法读取预测 CSV 文件。请使用带表头行的逗号分隔文件。"
 
 msgid "The prediction CSV file contains duplicate column names."
-msgstr ""
+msgstr "预测 CSV 文件包含重复的列名。"
 
 msgid "The prediction CSV file is missing these columns: %1$s."
-msgstr ""
+msgstr "预测 CSV 文件缺少以下列：%1$s。"
 
 msgid "Add at least one observation to the prediction input table."
-msgstr ""
+msgstr "请至少向预测输入表添加一条观测。"
 
 msgid ""
 "The prediction input table does not match the predictors. Reset the table "
 "and enter the observations again."
-msgstr ""
+msgstr "预测输入表与预测变量不匹配。请重置表格并重新输入观测。"
 
 msgid "Prediction row %1$i: '%2$s' must be one of these subgroup levels: %3$s."
-msgstr ""
+msgstr "预测第 %1$i 行：“%2$s”必须是以下子组水平之一：%3$s。"
 
 msgid ""
 "Prediction row %1$i specifies a subgroup combination absent from the fitting "
 "data."
-msgstr ""
+msgstr "预测第 %1$i 行指定的子组组合在拟合数据中不存在。"
 
 msgid "Blank values for %1$s in %2$s use the default profile level %3$s."
-msgstr ""
+msgstr "%2$s 中 %1$s 的空值将使用默认剖面水平 %3$s。"
 
 msgid ""
 "Prediction row %1$i: the value of '%2$s' is outside the domain of its model "
 "transformation."
-msgstr ""
+msgstr "预测第 %1$i 行：“%2$s”的值超出其模型变换的定义域。"
 
 msgid "Prediction row %1$i: '%2$s' must be one of these levels: %3$s."
-msgstr ""
+msgstr "预测第 %1$i 行：“%2$s”必须是以下水平之一：%3$s。"
 
 msgid "Prediction row %1$i: '%2$s' requires one finite numeric value%3$s."
-msgstr ""
+msgstr "预测第 %1$i 行：“%2$s”需要一个有限数值%3$s。"
 
-#, fuzzy
 msgid "Predictions"
 msgstr "预测"
 
-#, fuzzy
 msgid "Observation"
-msgstr "观测数据"
+msgstr "观测"
 
 msgid "%1$s: %2$s"
-msgstr ""
+msgstr "%1$s：%2$s"
 
 msgid "Note."
-msgstr ""
+msgstr "注。"
 
 msgid "Some requested quantities are infinite or exceed numerical range."
-msgstr ""
+msgstr "部分所请求的量为无穷大或超出数值范围。"
 
 msgid "The model predictions could not be matched to the input observations."
-msgstr ""
+msgstr "模型预测无法与输入观测匹配。"
 
 msgid ""
 "No observations with supported predictor values are available for this model."
-msgstr ""
+msgstr "此模型没有具有受支持预测变量值的观测。"
 
 msgid "At Specified Times"
-msgstr ""
+msgstr "在指定时间"
 
 msgid "Lifetime Summaries"
-msgstr ""
+msgstr "寿命汇总"
 
 msgid "Time or Horizon"
-msgstr ""
+msgstr "时间或时域"
 
 msgid "Percentile"
-msgstr ""
+msgstr "百分位"
 
 msgid ""
 "%1$i observations have missing or unsupported predictor values and were not "
 "predicted."
-msgstr ""
+msgstr "%1$i 个观测的预测变量值缺失或不受支持，未进行预测。"
 
 msgid ""
 "Confidence intervals are unavailable because the fitted model is on the "
 "minimum-spread boundary."
-msgstr ""
+msgstr "由于拟合模型位于最小离散度边界，置信区间不可用。"
 
 msgid "%1$s, ..., %2$s (%3$i total)"
-msgstr ""
+msgstr "%1$s，…，%2$s（共 %3$i 个）"
 
 msgid "observations: %1$s"
-msgstr ""
+msgstr "观测：%1$s"
 
 msgid "lifetime percentiles: %1$s"
-msgstr ""
+msgstr "寿命百分位数：%1$s"
 
 msgid "times: %1$s"
-msgstr ""
+msgstr "时间：%1$s"
 
 msgid ""
 "Some predictions are infinite or exceed numerical range and are omitted from "
 "the figure (%1$s)."
-msgstr ""
+msgstr "部分预测为无穷大或超出数值范围，已从图中省略（%1$s）。"
 
 msgid "Some predictions are infinite or exceed numerical range (%1$s)."
-msgstr ""
+msgstr "部分预测为无穷大或超出数值范围（%1$s）。"
 
 msgid ""
 "Some confidence bounds are infinite or exceed numerical range and are "
 "omitted from the figure (%1$s; %2$s)."
-msgstr ""
+msgstr "部分置信限为无穷大或超出数值范围，已从图中省略（%1$s；%2$s）。"
 
 msgid ""
 "Some confidence bounds are infinite or exceed numerical range (%1$s; %2$s)."
-msgstr ""
+msgstr "部分置信限为无穷大或超出数值范围（%1$s；%2$s）。"
 
-#, fuzzy
 msgid "Survival Time"
 msgstr "生存时间"
 
-#, fuzzy
 msgid "Prediction range"
-msgstr "预测"
+msgstr "预测范围"
 
 msgid "Lifetime percentile"
-msgstr ""
+msgstr "寿命百分位数"
 
 msgid "%1$s at %2$s"
-msgstr ""
+msgstr "%2$s 处的 %1$s"
 
 msgid "lower"
-msgstr ""
+msgstr "下限"
 
 msgid "upper"
-msgstr ""
+msgstr "上限"
 
-#, fuzzy
 msgid "Density Plot"
-msgstr "密度"
+msgstr "密度图"
 
-#, fuzzy
 msgid "Residuals vs. Time"
-msgstr "残差与时间"
+msgstr "残差对时间"
 
-#, fuzzy
 msgid "Residuals vs. Predictors"
-msgstr "残差与预测变量"
+msgstr "残差对预测变量"
 
-#, fuzzy
 msgid "Residuals vs. Predicted"
-msgstr "残差与预测时间"
+msgstr "残差对预测值"
 
-#, fuzzy
 msgid "Residual Histogram"
 msgstr "残差直方图"
 
-#, fuzzy
 msgid "Residuals vs. %1$s"
-msgstr "残差与时间"
+msgstr "残差对 %1$s"
 
-#, fuzzy
 msgid "Predicted Time"
-msgstr "预测"
+msgstr "预测时间"
 
 msgid "Cox-Snell residuals are not available for interval-censored data."
-msgstr ""
+msgstr "区间删失数据没有可用的 Cox-Snell 残差。"
 
 msgid ""
 "The equation for %1$s in component %2$i cannot be estimated. The following "
@@ -922,536 +857,523 @@ msgid ""
 "observations after missing-value exclusions or subgroup selection. The "
 "coefficients of these terms cannot be estimated from the available data."
 msgstr ""
+"无法估计成分 %2$i 中 %1$s 的方程。以下预测项在用于拟合模型的每个观测上均为零"
+"：%3$s。当某个因子水平或因子水平组合在排除缺失值或选择子组后没有观测时，就可"
+"能出现这种情况。这些项的系数无法从可用数据估计。"
 
 msgid ""
 "The equation for %1$s in component %2$i cannot be estimated because the "
 "following predictor terms are linear combinations of other terms: %3$s. "
 "Their coefficients cannot be estimated separately from the other predictors."
 msgstr ""
+"无法估计成分 %2$i 中 %1$s 的方程，因为以下预测项是其他项的线性组合：%3$s。它"
+"们的系数无法与其他预测变量分开估计。"
 
 msgid "Fitted Model Equations"
-msgstr ""
+msgstr "拟合模型方程"
 
-#, fuzzy
 msgid "Parameter %i"
-msgstr "参数化（Parametric）"
+msgstr "参数 %i"
 
 msgid ""
 "The fitted Arrhenius expression does not match its transformation constant."
-msgstr ""
+msgstr "拟合的 Arrhenius 表达式与其变换常数不匹配。"
 
 msgid "The fitted equation terms do not match the native design columns."
-msgstr ""
+msgstr "拟合的方程项与本机设计列不匹配。"
 
 msgid "The native seed does not match the prepared baseline parameters."
-msgstr ""
+msgstr "本机种子与准备好的基线参数不匹配。"
 
 msgid "Factor '%1$s' needs at least two observed levels in the fitting data."
-msgstr ""
+msgstr "因子“%1$s”在拟合数据中至少需要两个观测水平。"
 
 msgid ""
 "The selected reference level '%1$s' for factor '%2$s' is absent from the "
 "fitting data. Choose a level present in this subgroup or change the subgroup "
 "selection."
 msgstr ""
+"为因子“%2$s”选择的参照水平“%1$s”在拟合数据中不存在。请选择此子组中存在的水平"
+"或更改子组选择。"
 
 msgid "%1$s = %2$s"
-msgstr ""
+msgstr "%1$s = %2$s"
 
 msgid "%1$s contrast %2$s (%3$s)"
-msgstr ""
+msgstr "%1$s 对比 %2$s（%3$s）"
 
 msgid "contrasts dropped from factor %s"
-msgstr ""
+msgstr "从因子 %s 中剔除的对比"
 
-#, fuzzy
 msgid "Subgroup: %1$s"
-msgstr "子组"
+msgstr "子组：%1$s"
 
 msgid "%1$s, %2$i comp."
-msgstr ""
+msgstr "%1$s，%2$i 个成分"
 
 msgid ""
 "Gompertz does not support the Eyring specification. Select another "
 "distribution or choose another term transformation."
-msgstr ""
+msgstr "Gompertz 不支持 Eyring 设定。请选择其他分布或选择其他项变换。"
 
 msgid ""
 "No selected distribution supports the Eyring specification. Select at least "
 "one distribution other than Gompertz."
-msgstr ""
+msgstr "所选分布均不支持 Eyring 设定。请至少选择一个 Gompertz 以外的分布。"
 
 msgid ""
 "No parametric distribution selected. Please select at least one parametric "
 "distribution."
-msgstr ""
+msgstr "未选择参数分布。请至少选择一个参数分布。"
 
 msgid ""
 "The fixed value for %1$s in %2$s, component %3$i, must be a single finite "
 "number within the parameter's range."
-msgstr ""
+msgstr "%2$s 中成分 %3$i 的 %1$s 固定值必须是一个位于参数范围内的有限数值。"
 
 msgid ""
 "The fixed %1$s in component %2$i conflicts with the minimum log-time "
 "standard deviation. Change the fixed value or the minimum spread."
-msgstr ""
+msgstr "成分 %2$i 中固定的 %1$s 与最小对数时间标准差冲突。请更改固定值或最小离散度。"
 
 msgid ""
 "Expression inputs allow numeric arithmetic and mathematical functions only."
-msgstr ""
+msgstr "表达式输入仅允许数值运算和数学函数。"
 
-#, fuzzy
 msgid "Prediction"
 msgstr "预测"
 
 msgid "The prediction value of %1$s is outside its transformation domain."
-msgstr ""
+msgstr "%1$s 的预测值超出其变换定义域。"
 
 msgid ""
 "Some confidence intervals could not be evaluated and are shown as missing."
-msgstr ""
+msgstr "部分置信区间无法计算，显示为缺失。"
 
 msgid ""
 "Some population predictions could not be evaluated and are shown as missing."
-msgstr ""
+msgstr "部分总体预测无法计算，显示为缺失。"
 
-#, fuzzy
 msgid "Predicted Survival Time"
-msgstr "限制平均生存时间"
+msgstr "预测生存时间"
 
 msgid "Acceleration Factor"
-msgstr ""
+msgstr "加速因子"
 
-#, fuzzy
 msgid "Time Ratio"
-msgstr "生存时间"
+msgstr "时间比"
 
-#, fuzzy
 msgid "Predicted Survival Probability"
-msgstr "生存概率"
+msgstr "预测生存概率"
 
-#, fuzzy
 msgid "Predicted Failure Probability"
-msgstr "失败概率"
+msgstr "预测失效概率"
 
 msgid "Predicted Hazard"
-msgstr ""
+msgstr "预测风险"
 
-#, fuzzy
 msgid "Predicted Cumulative Hazard"
-msgstr "累积风险"
+msgstr "预测累积风险"
 
-#, fuzzy
 msgid "Predicted Restricted Mean Survival Time"
-msgstr "限制平均生存时间"
+msgstr "预测受限平均生存时间"
 
-#, fuzzy
 msgid "Life Time Table"
-msgstr "生命表"
+msgstr "寿命表"
 
 msgid "Some predictions could not be evaluated and are shown as missing."
-msgstr ""
+msgstr "部分预测无法计算，显示为缺失。"
 
 msgid "Mean Time Ratio"
-msgstr ""
+msgstr "平均时间比"
 
 msgid "Median Time Ratio"
-msgstr ""
+msgstr "中位时间比"
 
 msgid "Mean Acceleration Factor"
-msgstr ""
+msgstr "平均加速因子"
 
 msgid "Median Acceleration Factor"
-msgstr ""
+msgstr "中位加速因子"
 
-#, fuzzy
 msgid "Mean Survival Time"
 msgstr "平均生存时间"
 
-#, fuzzy
 msgid "Median Survival Time"
 msgstr "中位生存时间"
 
 msgid ""
 "Lifetime percentiles must be finite values separated by commas, such as '25, "
 "50, 75'."
-msgstr ""
+msgstr "寿命百分位数必须是以逗号分隔的有限值，例如“25, 50, 75”。"
 
 msgid "Lifetime percentiles must be between 0 and 100."
-msgstr ""
+msgstr "寿命百分位数必须介于 0 与 100 之间。"
 
 msgid "Sequence values must be finite numeric expressions."
-msgstr ""
+msgstr "序列值必须是有限数值表达式。"
 
 msgid "Percentile sequences require 0 <= From < To <= 100 and a positive Step."
-msgstr ""
+msgstr "百分位序列要求 0 <= 起点 < 终点 <= 100，且步长为正。"
 
 msgid "Time sequences require 0 <= From < To and a positive Step."
-msgstr ""
+msgstr "时间序列要求 0 <= 起点 < 终点，且步长为正。"
 
 msgid ""
 "Follow-up percentages must be finite values separated by commas, such as "
 "'25, 50, 75'."
-msgstr ""
+msgstr "随访百分比必须是以逗号分隔的有限值，例如“25, 50, 75”。"
 
 msgid "Follow-up percentages must be between 0 and 100."
-msgstr ""
+msgstr "随访百分比必须介于 0 与 100 之间。"
 
 msgid "Times or horizons must be finite values separated by commas."
-msgstr ""
+msgstr "时间或时域必须是以逗号分隔的有限值。"
 
 msgid "Times or horizons must be greater than or equal to 0."
-msgstr ""
+msgstr "时间或时域必须大于或等于 0。"
 
-#, fuzzy
 msgid "Variables"
-msgstr "协变量"
+msgstr "变量"
 
 msgid ""
 "Prediction ranges include fitted event-time variability and exclude "
 "parameter-estimation uncertainty."
-msgstr ""
+msgstr "预测范围包含拟合的事件时间变异，不包含参数估计的不确定性。"
 
 msgid "Lower %1$s%%"
-msgstr ""
+msgstr "下限 %1$s%%"
 
 msgid "Upper %1$s%%"
-msgstr ""
+msgstr "上限 %1$s%%"
 
 msgid "%1$s (Percentile: %2$s)"
-msgstr ""
+msgstr "%1$s（百分位数：%2$s）"
 
 msgid "%1$s (Horizon: %2$s)"
-msgstr ""
+msgstr "%1$s（时域：%2$s）"
 
 msgid "%1$s (Time: %2$s)"
-msgstr ""
+msgstr "%1$s（时间：%2$s）"
 
 msgid "%1$s%% Prediction range"
-msgstr ""
+msgstr "%1$s%% 预测范围"
 
 msgid "Some lifetime percentiles are infinite or exceed numerical range."
-msgstr ""
+msgstr "部分寿命百分位数为无穷大或超出数值范围。"
 
 msgid ""
 "Predictions average survival over observed fitting-data profiles, holding "
 "displayed predictors fixed."
-msgstr ""
+msgstr "预测在显示预测变量固定的条件下，对拟合数据中观测到的剖面求生存平均。"
 
 msgid ""
 "Numerical predictors are at their sample means (%1$s) and categorical "
 "predictor contributions (%2$s) are averaged equally across their levels on "
 "each parameter's link scale."
 msgstr ""
+"数值预测变量取样本均值（%1$s），类别预测变量贡献（%2$s）在每个参数的连接尺度"
+"上按其水平等权平均。"
 
 msgid ""
 "Categorical predictor contributions (%1$s) are averaged equally across their "
 "levels on each parameter's link scale."
-msgstr ""
+msgstr "类别预测变量贡献（%1$s）在每个参数的连接尺度上按其水平等权平均。"
 
 msgid "Numerical predictors are at their sample means (%1$s)."
-msgstr ""
+msgstr "数值预测变量取样本均值（%1$s）。"
 
 msgid ""
 "Numerical predictors are at zero (%1$s) and categorical predictors use their "
 "default levels (%2$s)."
-msgstr ""
+msgstr "数值预测变量取零（%1$s），类别预测变量使用其默认水平（%2$s）。"
 
 msgid "Numerical predictors are at zero (%1$s)."
-msgstr ""
+msgstr "数值预测变量取零（%1$s）。"
 
 msgid "Categorical predictors use their default levels (%1$s)."
-msgstr ""
+msgstr "类别预测变量使用其默认水平（%1$s）。"
 
 msgid "Custom values: %1$s."
-msgstr ""
+msgstr "自定义值：%1$s。"
 
 msgid ""
 "Some observed times could not be mapped to the reference profile and are "
 "omitted from this diagnostic. Available points and fitted curves are "
 "retained."
-msgstr ""
+msgstr "部分观测时间无法映射到参照剖面，已从此诊断中省略。可用点和拟合曲线予以保留。"
 
 msgid ""
 "Empirical points for affected strata are unavailable because their fitted "
 "probabilities could not be evaluated. Fitted curves are retained where "
 "available."
-msgstr ""
+msgstr "受影响层的经验点不可用，因为其拟合概率无法计算。可用处的拟合曲线予以保留。"
 
-#, fuzzy
 msgid "Probability Plot"
 msgstr "概率图"
 
 msgid ""
 "The model failed to produce a probability plot. Consider simplifying the "
 "model."
-msgstr ""
+msgstr "模型未能生成概率图。请考虑简化模型。"
 
 msgid "The probability plot requires at least one fitted model."
-msgstr ""
+msgstr "概率图至少需要一个拟合模型。"
 
 msgid ""
 "The probability plot requires at least one positive observed failure time, "
 "censored observation, or fitted curve."
-msgstr ""
+msgstr "概率图至少需要一个正的观测失效时间、删失观测或拟合曲线。"
 
 msgid "Adjusted time (log scale)"
-msgstr ""
+msgstr "校正时间（对数刻度）"
 
 msgid "Adjusted time"
-msgstr ""
+msgstr "校正时间"
 
-#, fuzzy
 msgid "Fitted"
-msgstr "拟合曲线"
+msgstr "拟合值"
 
-#, fuzzy
 msgid "Failure Probability (%s scale)"
-msgstr "失败概率"
+msgstr "失效概率（%s 刻度）"
 
-#, fuzzy
 msgid "exponential"
 msgstr "指数"
 
-#, fuzzy
 msgid "log-normal"
 msgstr "对数正态"
 
 msgid "Time (log scale)"
-msgstr ""
+msgstr "时间（对数刻度）"
 
-#, fuzzy
 msgid "log-logistic"
 msgstr "对数 Logistic"
 
-#, fuzzy
 msgid "Weibull"
 msgstr "威布尔"
 
 msgid "The probability plot requires positive time values."
-msgstr ""
+msgstr "概率图要求时间值为正。"
 
 msgid "%1$s: %2$s to %3$s"
-msgstr ""
+msgstr "%1$s：%2$s 至 %3$s"
 
 msgid "%1$s (stratum %2$d)"
-msgstr ""
+msgstr "%1$s（第 %2$d 层）"
 
 msgid ""
 "The parameter restriction for '%1$s' in '%2$s' must contain finite numeric "
 "values or expressions, separated by commas or semicolons."
-msgstr ""
+msgstr "“%2$s”中“%1$s”的参数限制必须包含有限数值或表达式，以逗号或分号分隔。"
 
 msgid "%1$s, component %2$i"
-msgstr ""
+msgstr "%1$s，成分 %2$i"
 
 msgid ""
 "No main-effect regression coefficient for '%1$s' is present in '%2$s'. Add "
 "its main effect or leave its parameter restriction empty."
-msgstr ""
+msgstr "“%2$s”中不存在“%1$s”的主效应回归系数。请添加其主效应或将其参数限制留空。"
 
 msgid ""
 "Factor '%1$s' in '%2$s' has %3$i regression coefficients (%4$i levels). "
 "Supply one value or %3$i values; %5$i were supplied."
 msgstr ""
+"“%2$s”中的因子“%1$s”有 %3$i 个回归系数（%4$i 个水平）。请提供一个值或 %3$i 个"
+"值；已提供 %5$i 个。"
 
 msgid ""
 "Term '%1$s' in '%2$s' has %3$i regression coefficients. Supply one value or "
 "%3$i values; %4$i were supplied."
 msgstr ""
+"“%2$s”中的项“%1$s”有 %3$i 个回归系数。请提供一个值或 %3$i 个值；已提供 %4$i "
+"个。"
 
 msgid ""
 "Custom assigned values for %1$s must be finite numbers or numeric "
 "expressions."
-msgstr ""
+msgstr "%1$s 的自定义赋值必须是有限数字或数值表达式。"
 
 msgid ""
 "%1$s has %2$i nonempty groups instead of the requested %3$i; tied values "
 "remain together."
-msgstr ""
+msgstr "%1$s 有 %2$i 个非空组，而请求的是 %3$i 个；相同值仍归为一组。"
 
 msgid "Event"
-msgstr ""
+msgstr "事件"
 
-#, fuzzy
 msgid "Kaplan-Meier"
 msgstr "Kaplan-Meier"
 
-#, fuzzy
 msgid "Observed"
-msgstr "观测数据"
+msgstr "观测值"
 
 msgid ""
 "This lifetime summary is not finite or could not be evaluated for the "
 "selected model and predictor values."
-msgstr ""
+msgstr "对于所选模型和预测变量值，该寿命汇总不是有限值或无法计算。"
 
 msgid "Some prediction-range endpoints are unbounded and are not drawn."
-msgstr ""
+msgstr "部分预测范围端点无界，未予绘制。"
 
 msgid ""
 "%1$s%% prediction range: fitted event-time variability; parameter "
 "uncertainty excluded."
-msgstr ""
+msgstr "%1$s%% 预测范围：拟合的事件时间变异；不含参数不确定性。"
 
 msgid ""
 "Kaplan-Meier overlays require fixed factor profiles; continuous predictors "
 "or averaged factor levels have no matching empirical curve."
 msgstr ""
+"Kaplan-Meier 叠加要求固定的因子剖面；连续预测变量或平均后的因子水平没有匹配的"
+"经验曲线。"
 
 msgid ""
 "Native design standardization requires finite nonnegative fitting weights "
 "with a positive total."
-msgstr ""
+msgstr "本机设计标准化要求拟合适重为有限非负值且总和为正。"
 
 msgid ""
 "The standardized design exceeds the supported numerical range. Choose "
 "another predictor transformation or scale."
-msgstr ""
+msgstr "标准化设计超出支持的数值范围。请选择其他预测变量变换或尺度。"
 
 msgid ""
 "The selected native link point is unavailable or does not match the fitted "
 "coefficient layout."
-msgstr ""
+msgstr "所选本机连接点不可用或与拟合系数布局不匹配。"
 
 msgid ""
 "The standardized initial baseline cannot be represented on the native "
 "parameter scale. Choose another predictor transformation or scale."
-msgstr ""
+msgstr "标准化初始基线无法在本机参数尺度上表示。请选择其他预测变量变换或尺度。"
 
 msgid ""
 "The native information or covariance matrix is unavailable or nonfinite."
-msgstr ""
+msgstr "本机信息矩阵或协方差矩阵不可用或非有限。"
 
 msgid ""
 "The native information or covariance matrix is not symmetric positive "
 "definite."
-msgstr ""
+msgstr "本机信息矩阵或协方差矩阵不是对称正定。"
 
 msgid "The normalized native information or covariance matrix is nonfinite."
-msgstr ""
+msgstr "归一化的本机信息矩阵或协方差矩阵非有限。"
 
 msgid "The native information or covariance matrix is not positive definite."
-msgstr ""
+msgstr "本机信息矩阵或协方差矩阵不是正定。"
 
 msgid ""
 "The native covariance matrix is inconsistent with the observed information. "
 "Standard errors and confidence intervals are unavailable."
-msgstr ""
+msgstr "本机协方差矩阵与观测信息不一致。标准误和置信区间不可用。"
 
 msgid ""
 "Native covariance calculation failed: %1$s. Standard errors and confidence "
 "intervals are unavailable."
-msgstr ""
+msgstr "本机协方差计算失败：%1$s。标准误和置信区间不可用。"
 
 msgid ""
 "The covariance matrix cannot be represented as positive definite in the "
 "original coefficient units. Standard errors and confidence intervals are "
 "unavailable."
-msgstr ""
+msgstr "协方差矩阵无法在原始系数单位下表示为正定。标准误和置信区间不可用。"
 
 msgid ""
 "The covariance matrix cannot be represented in the original coefficient "
 "units. Standard errors and confidence intervals are unavailable."
-msgstr ""
+msgstr "协方差矩阵无法在原始系数单位下表示。标准误和置信区间不可用。"
 
-#, fuzzy
 msgid "Model fitting"
 msgstr "模型拟合"
 
-#, fuzzy
 msgid "Model Summary"
 msgstr "模型摘要"
 
-#, fuzzy
 msgid "Sequential Model Comparison"
 msgstr "序贯模型比较"
 
-#, fuzzy
 msgid "Coefficients Summary"
-msgstr "系数"
+msgstr "系数摘要"
 
-#, fuzzy
 msgid "Coefficients Covariance Matrix"
 msgstr "系数协方差矩阵"
 
-#, fuzzy
 msgid "AIC"
 msgstr "AIC"
 
-#, fuzzy
 msgid "BIC"
 msgstr "BIC"
 
-#, fuzzy
 msgid "AIC Weight"
 msgstr "AIC 权重"
 
-#, fuzzy
 msgid "BIC Weight"
 msgstr "BIC 权重"
 
-#, fuzzy
 msgid "Rank"
 msgstr "Rank函数"
 
 msgid "Error:"
-msgstr ""
+msgstr "错误："
 
 msgid "Warning:"
-msgstr ""
+msgstr "警告："
 
 msgid ""
 "Comparisons involving an active spread bound have no likelihood-ratio "
 "statistic or p-value; other comparisons use the %1$s approximation."
-msgstr ""
+msgstr "涉及生效离散度界的比较没有似然比统计量或 p 值；其他比较使用 %1$s 近似。"
 
 msgid "Likelihood ratio test for nested models based on %s distribution."
-msgstr ""
+msgstr "嵌套模型基于 %s 分布的似然比检验。"
 
 msgid ""
 "A likelihood-ratio test is reported only when the second model extends the "
 "first model. Compare non-nested relationships using AIC or BIC."
 msgstr ""
+"仅当第二个模型扩展第一个模型时才报告似然比检验。非嵌套关系请使用 AIC 或 BIC "
+"比较。"
 
 msgid "z"
-msgstr ""
+msgstr "z"
 
 msgid "P-values are based on a Wald test."
-msgstr ""
+msgstr "p 值基于 Wald 检验。"
 
 msgid "Regression coefficients for %1$s act on its %2$s link."
-msgstr ""
+msgstr "%1$s 的回归系数作用于其 %2$s 连接。"
 
 msgid ""
 "Fixed parameters are specified by the user; their standard errors and "
 "confidence intervals are not estimated."
-msgstr ""
+msgstr "固定参数由用户指定；不估计其标准误和置信区间。"
 
 msgid ""
 "Mixture components with fixed parameters retain the specified numbering."
-msgstr ""
+msgstr "含固定参数的混合成分保留指定编号。"
 
 msgid ""
 "Eyring log-temperature coefficients are fixed by the preset; their standard "
 "errors and confidence intervals are not estimated."
-msgstr ""
+msgstr "Eyring 对数温度系数由预设固定；不估计其标准误和置信区间。"
 
 msgid ""
 "The standard errors and confidence intervals of the mixing probabilities are "
 "based on the delta method."
-msgstr ""
+msgstr "混合概率的标准误和置信区间基于 delta 方法。"
 
 msgid ""
 "The covariance matrix uses the estimation scale: distribution parameters "
 "constrained to be positive are log-transformed. This scale can differ from "
 "the coefficients table."
 msgstr ""
+"协方差矩阵使用估计尺度：约束为正的分布参数取对数变换。该尺度可能与系数表不同"
+"。"
 
 msgid ""
 "The v parameters are conditional stick-breaking weights on the logit scale, "
 "not the component mixing probabilities reported in the coefficients table."
-msgstr ""
+msgstr "v 参数是 logit 尺度上的条件折断权重，而非系数表中报告的成分混合概率。"
 
 msgid ""
 "The baseline standard deviation of the natural logarithm of survival time "
@@ -1459,693 +1381,688 @@ msgid ""
 "unconstrained one-component model's baseline log-time standard deviation, "
 "%3$g)."
 msgstr ""
+"自然对数生存时间的基线标准差在每个成分中至少约束为 %1$g（为无约束单成分模型基"
+"线对数时间标准差的 %2$g%%，即 %3$g）。"
 
 msgid ""
 "The baseline standard deviation of the natural logarithm of survival time "
 "was constrained to be at least %1$g in each component."
-msgstr ""
+msgstr "自然对数生存时间的基线标准差在每个成分中至少约束为 %1$g。"
 
 msgid ""
 "The minimum log-time standard deviation bound (%1$g) is active. Standard "
 "errors, confidence intervals, covariance estimates, Wald tests, and "
 "likelihood-ratio tests involving this fit are unavailable."
 msgstr ""
+"最小对数时间标准差界（%1$g）已生效。涉及此拟合的标准误、置信区间、协方差估计"
+"、Wald 检验和似然比检验不可用。"
 
 msgid "Inference unavailable: %1$s"
-msgstr ""
+msgstr "推断不可用：%1$s"
 
 msgid "%1$s failed with the following message: %2$s"
-msgstr ""
+msgstr "%1$s 失败，消息如下：%2$s"
 
 msgid "%1$s model %2$s%3$s failed with the following message: %4$s"
-msgstr ""
+msgstr "%1$s 模型 %2$s%3$s 失败，消息如下：%4$s"
 
 msgid ""
 "All following output is based on the best fitting %1$s distribution with "
 "%2$s."
-msgstr ""
+msgstr "以下所有输出均基于拟合最佳的 %1$s 分布，含 %2$s。"
 
 msgid ""
 "All following output is based on the best fitting number of components "
 "(%1$s)."
-msgstr ""
+msgstr "以下所有输出均基于拟合最佳的成分数（%1$s）。"
 
 msgid ""
 "All following output is based on the best fitting number of components "
 "within each distribution."
-msgstr ""
+msgstr "以下所有输出均基于每种分布内拟合最佳的成分数。"
 
 msgid "All following output is based on the best fitting %1$s distribution."
-msgstr ""
+msgstr "以下所有输出均基于拟合最佳的 %1$s 分布。"
 
 msgid ""
 "Results are based on %1$s distribution which was the best fitting "
 "distribution."
-msgstr ""
+msgstr "结果基于 %1$s 分布，即拟合最佳的分布。"
 
 msgid "Results are based on %1$s."
-msgstr ""
+msgstr "结果基于 %1$s。"
 
 msgid ""
 "Results are based on %1$s with distribution %2$s which is the best fitting "
 "distribution across models."
-msgstr ""
+msgstr "结果基于 %1$s，分布为 %2$s，这是跨模型拟合最佳的分布。"
 
 msgid "Results are based on best fitting models."
-msgstr ""
+msgstr "结果基于拟合最佳的模型。"
 
 msgid "Results are based on best fitting models within each distribution."
-msgstr ""
+msgstr "结果基于每种分布内拟合最佳的模型。"
 
 msgid ""
 "Results are based on %1$s with %2$s distribution which was the best fitting "
 "model across all models and distributions."
-msgstr ""
+msgstr "结果基于 %1$s，分布为 %2$s，这是跨所有模型和分布拟合最佳的模型。"
 
 msgid ""
 "Results are based on %1$s distribution with %2$s which was the best fitting "
 "combination of distribution and number of components."
-msgstr ""
+msgstr "结果基于 %1$s 分布，含 %2$s，这是分布与成分数的最佳拟合组合。"
 
 msgid ""
 "Results are based on the best fitting number of components within each "
 "distribution."
-msgstr ""
+msgstr "结果基于每种分布内拟合最佳的成分数。"
 
 msgid ""
 "Results are based on %1$s which was the best fitting number of components."
-msgstr ""
+msgstr "结果基于 %1$s，即拟合最佳的成分数。"
 
 msgid ""
 "Results are based on %1$s with %2$s distribution and %3$s which was the best "
 "fitting combination of distribution and number of components across models."
 msgstr ""
+"结果基于 %1$s，分布为 %2$s，成分数为 %3$s，这是跨模型分布与成分数的最佳拟合组"
+"合。"
 
 msgid ""
 "Results are based on %1$s with the best fitting number of components within "
 "each distribution."
-msgstr ""
+msgstr "结果基于 %1$s，并采用每种分布内拟合最佳的成分数。"
 
 msgid ""
 "Results are based on %1$s with %2$s which was the best fitting number of "
 "components across models."
-msgstr ""
+msgstr "结果基于 %1$s，含 %2$s，这是跨模型拟合最佳的成分数。"
 
 msgid ""
 "Results are based on %1$s with %2$s distribution and %3$s which was the best "
 "fitting model across all models, distributions, and numbers of components."
 msgstr ""
+"结果基于 %1$s，分布为 %2$s，成分数为 %3$s，这是跨所有模型、分布和成分数拟合最"
+"佳的模型。"
 
 msgid ""
 "Results are based on the best fitting number of components and model within "
 "each distribution."
-msgstr ""
+msgstr "结果基于每种分布内拟合最佳的成分数和模型。"
 
 msgid ""
 "Results are based on %1$s with %2$s which was the best fitting model across "
 "all models and numbers of components."
-msgstr ""
+msgstr "结果基于 %1$s，含 %2$s，这是跨所有模型和成分数拟合最佳的模型。"
 
 msgid "from Kelvin"
-msgstr ""
+msgstr "由开尔文"
 
 msgid "from Celsius"
-msgstr ""
+msgstr "由摄氏度"
 
 msgid "from Fahrenheit"
-msgstr ""
+msgstr "由华氏度"
 
 msgid ""
 "The Eyring preset is available only for the location equation. Choose "
 "another transformation for ancillary parameters."
-msgstr ""
+msgstr "Eyring 预设仅适用于位置方程。请为附带参数选择其他变换。"
 
 msgid ""
 "Gompertz was omitted because it does not support the Eyring specification."
-msgstr ""
+msgstr "Gompertz 因不支持 Eyring 设定而被省略。"
 
 msgid ""
 "The Eyring initial values require finite design columns and finite "
 "nonnegative fitting weights."
-msgstr ""
+msgstr "Eyring 初始值要求设计列为有限值且拟合适重为有限非负值。"
 
 msgid ""
 "The Eyring initial adjustment is undefined when the fitting weights have "
 "zero total. Supply at least one positive fitting weight."
-msgstr ""
+msgstr "当拟合适重总和为零时，Eyring 初始调整无定义。请至少提供一个正的拟合适重。"
 
 msgid ""
 "The Eyring structural initial adjustment exceeds the supported numerical "
 "range."
-msgstr ""
+msgstr "Eyring 结构初始调整超出支持的数值范围。"
 
 msgid ""
 "The Eyring initial baseline cannot be represented on the native parameter "
 "scale. Choose a different predictor transformation or scale."
-msgstr ""
+msgstr "Eyring 初始基线无法在本机参数尺度上表示。请选择其他预测变量变换或尺度。"
 
 msgid "The custom logarithm base must be one finite number or expression."
-msgstr ""
+msgstr "自定义对数底必须是一个有限数字或表达式。"
 
 msgid "The custom logarithm base must be positive."
-msgstr ""
+msgstr "自定义对数底必须为正。"
 
 msgid "The custom logarithm base must be different from 1."
-msgstr ""
+msgstr "自定义对数底必须不等于 1。"
 
 msgid ""
 "The logarithm multiplier must be one finite, nonzero number or expression."
-msgstr ""
+msgstr "对数乘数必须是一个有限非零数字或表达式。"
 
 msgid "The exponent or root degree must be one finite number or expression."
-msgstr ""
+msgstr "指数或根次数必须是一个有限数字或表达式。"
 
 msgid "The exponent or root degree must be different from 0."
-msgstr ""
+msgstr "指数或根次数必须不等于 0。"
 
 msgid "The root degree is too close to zero to evaluate its reciprocal."
-msgstr ""
+msgstr "根次数过于接近零，无法计算其倒数。"
 
 msgid "The transformation of '%1$s' requires finite numeric values."
-msgstr ""
+msgstr "“%1$s”的变换要求有限数值。"
 
 msgid "Scaling '%1$s' requires a finite, nonzero standard deviation."
-msgstr ""
+msgstr "“%1$s”的标度化要求有限非零标准差。"
 
 msgid ""
 "The logarithmic transformation of '%1$s' requires strictly positive stress "
 "values."
-msgstr ""
+msgstr "“%1$s”的对数变换要求应力值严格为正。"
 
 msgid ""
 "The temperature transformation of '%1$s' requires finite absolute "
 "temperatures above zero. Check the selected temperature units."
-msgstr ""
+msgstr "“%1$s”的温度变换要求绝对温度为有限值且大于零。请检查所选温度单位。"
 
 msgid "The reciprocal transformation of '%1$s' requires nonzero stress values."
-msgstr ""
+msgstr "“%1$s”的倒数变换要求应力值非零。"
 
 msgid "A negative exponent for '%1$s' requires nonzero values."
-msgstr ""
+msgstr "“%1$s”的负指数要求值非零。"
 
 msgid "A fractional exponent for '%1$s' requires nonnegative values."
-msgstr ""
+msgstr "“%1$s”的分数指数要求值非负。"
 
 msgid "The power-transformed values of '%1$s' exceed the numeric range."
-msgstr ""
+msgstr "“%1$s”的幂变换值超出数值范围。"
 
 msgid "Natural cubic splines require a continuous numeric predictor: '%s'."
-msgstr ""
+msgstr "自然三次样条要求连续数值预测变量：“%s”。"
 
 msgid ""
 "The natural cubic spline of '%1$s' requires at least %2$s distinct values."
-msgstr ""
+msgstr "“%1$s”的自然三次样条至少需要 %2$s 个不同值。"
 
 msgid ""
 "The polynomial transformation of '%1$s' requires at least %2$s distinct "
 "values."
-msgstr ""
+msgstr "“%1$s”的多项式变换至少需要 %2$s 个不同值。"
 
 msgid "The polynomial transformation of '%1$s' exceeds the numeric range."
-msgstr ""
+msgstr "“%1$s”的多项式变换超出数值范围。"
 
 msgid "Polynomial"
-msgstr ""
+msgstr "多项式"
 
 msgid "Natural cubic spline"
-msgstr ""
+msgstr "自然三次样条"
 
 msgid "%1$s(%2$s, %3$s)"
-msgstr ""
+msgstr "%1$s(%2$s, %3$s)"
 
 msgid "Eyring log temperature(%1$s, %2$s)"
-msgstr ""
+msgstr "Eyring 对数温度(%1$s, %2$s)"
 
 msgid "Scale"
-msgstr ""
+msgstr "缩放"
 
 msgid "Power"
-msgstr ""
+msgstr "效力"
 
 msgid "Root"
-msgstr ""
+msgstr "根"
 
 msgid "Arrhenius"
-msgstr ""
+msgstr "Arrhenius"
 
 msgid "Eyring"
-msgstr ""
+msgstr "Eyring"
 
 msgid "Reciprocal"
-msgstr ""
+msgstr "倒数"
 
 msgid "%1$s(%2$s) [eV]"
-msgstr ""
+msgstr "%1$s(%2$s) [eV]"
 
 msgid ""
 "Assign predictors to X-axis variables and Time to Separate lines or Separate "
 "plots."
-msgstr ""
+msgstr "请将预测变量分配到 X 轴变量，并将时间分配到分线或分图。"
 
 msgid ""
 "Relative lifetime requires a finite summary for both the reference and "
 "current predictor values."
-msgstr ""
+msgstr "相对寿命要求参照和当前预测变量值都有有限汇总。"
 
 msgid "%1$s averaged over the fitting population"
-msgstr ""
+msgstr "%1$s 在拟合总体上取平均"
 
 msgid "%1$s averaged equally over its factor levels (design average)"
-msgstr ""
+msgstr "%1$s 在其因子水平上等权平均（设计平均）"
 
 msgid "Reference: %1$s; line and panel predictors are held fixed."
-msgstr ""
+msgstr "参照：%1$s；分线和分图预测变量保持固定。"
 
 msgid ""
 "Time ratio = current/reference lifetime. Values above 1 indicate longer "
 "survival."
-msgstr ""
+msgstr "时间比 = 当前/参照寿命。大于 1 的值表示生存时间更长。"
 
 msgid ""
 "Acceleration factor = reference/current lifetime. Values above 1 indicate "
 "shorter survival."
-msgstr ""
+msgstr "加速因子 = 参照/当前寿命。大于 1 的值表示生存时间更短。"
 
 msgid "Ratios may depend on the percentile."
-msgstr ""
+msgstr "比值可能取决于百分位数。"
 
-#, fuzzy
 msgid "Computing contour predictions"
-msgstr "指定用于预测的自定义时间点。"
+msgstr "正在计算等高线预测"
 
 msgid "Separate lines"
-msgstr ""
+msgstr "分隔线"
 
 msgid "Duane"
-msgstr ""
+msgstr "Duane"
 
 msgid "Crow–AMSAA"
-msgstr ""
+msgstr "Crow–AMSAA"
 
 msgid "Log-linear NHPP"
-msgstr ""
+msgstr "对数线性 NHPP"
 
 msgid "Piecewise power-law NHPP"
-msgstr ""
+msgstr "分段幂律 NHPP"
 
 msgid "No observations are available."
-msgstr ""
+msgstr "没有可用观测。"
 
 msgid ""
 "Time, event counts and subgroup variables cannot contain missing values. "
 "Complete the interval records rather than omitting them."
-msgstr ""
+msgstr "时间、事件计数和子组变量不能包含缺失值。请补全区间记录，而不是省略它们。"
 
 msgid "All times must be finite and greater than zero."
-msgstr ""
+msgstr "所有时间必须为有限值且大于零。"
 
 msgid "Event counts must be finite, non-negative integers."
-msgstr ""
+msgstr "事件计数必须为有限非负整数。"
 
 msgid ""
 "ReliaGrowR currently requires a positive event count in every interval. Zero-"
 "count intervals cannot be removed because they contain exposure information."
 msgstr ""
+"ReliaGrowR 目前要求每个区间的事件计数为正。零计数区间不能删除，因为它们包含暴"
+"露信息。"
 
 msgid "At least three observation intervals are required in each subgroup."
-msgstr ""
+msgstr "每个子组至少需要三个观测区间。"
 
 msgid ""
 "Cumulative interval endpoints must be strictly increasing within each "
 "subgroup. Order the rows by time or choose Interval durations."
-msgstr ""
+msgstr "每个子组内的累积区间端点必须严格递增。请按时间排列行或选择区间时长。"
 
 msgid "Enter positive starting change-point times separated by commas."
-msgstr ""
+msgstr "请输入以逗号分隔的正的起始变点时间。"
 
 msgid ""
 "Starting change points must be distinct and lie strictly between the first "
 "and last observed endpoints."
-msgstr ""
+msgstr "起始变点必须互不相同，且严格位于首个和末个观测端点之间。"
 
 msgid ""
 "The log-linear estimate reached a numerical bound in ReliaGrowR. This fit "
 "cannot be reported reliably."
-msgstr ""
+msgstr "对数线性估计在 ReliaGrowR 中触及数值边界，无法可靠报告此拟合。"
 
 msgid ""
 "The power-law estimate reached a numerical bound in ReliaGrowR. This fit "
 "cannot be reported reliably."
-msgstr ""
+msgstr "幂律估计在 ReliaGrowR 中触及数值边界，无法可靠报告此拟合。"
 
 msgid "The model returned non-finite estimates. The fit cannot be reported."
-msgstr ""
+msgstr "模型返回非有限估计值，无法报告此拟合。"
 
 msgid ""
 "The covariance matrix is singular or not positive definite. Standard errors "
 "and confidence intervals are unavailable."
-msgstr ""
+msgstr "协方差矩阵奇异或非正定。标准误和置信区间不可用。"
 
 msgid ""
 "The power-law fit did not converge. ReliaGrowR's optimizer fails when beta "
 "is close to zero, which happens when nearly all events occur early in follow-"
 "up. Consider the log-linear model or least-squares estimation."
 msgstr ""
+"幂律拟合未收敛。当 beta 接近零时 ReliaGrowR 的优化器会失败，这在几乎所有事件"
+"都发生在随访早期时会出现。请考虑对数线性模型或最小二乘估计。"
 
 msgid ""
 "The fitted curve does not give finite positive expected counts in every "
 "interval. Count residuals and probability diagnostics require a valid "
 "increasing NHPP cumulative mean."
 msgstr ""
+"拟合曲线并非在每个区间都给出有限正的期望计数。计数残差和概率诊断需要有效的递"
+"增 NHPP 累积均值。"
 
-#, fuzzy
 msgid "Regression Residuals"
-msgstr "残差"
+msgstr "回归残差"
 
-#, fuzzy
 msgid "Response Residuals"
-msgstr "残差"
+msgstr "响应残差"
 
-#, fuzzy
 msgid "Pearson Residuals"
-msgstr "残差"
+msgstr "Pearson 残差"
 
 msgid "Randomized Quantile Residuals"
-msgstr ""
+msgstr "随机化分位数残差"
 
 msgid ""
 "Regression residuals are available only for least-squares fits. Choose "
 "another residual type."
-msgstr ""
+msgstr "回归残差仅适用于最小二乘拟合。请选择其他残差类型。"
 
 msgid ""
 "Finite randomized quantile residuals could not be calculated for this fitted "
 "count model."
-msgstr ""
+msgstr "无法为此拟合计数模型计算有限的随机化分位数残差。"
 
 msgid "Fitted Log Cumulative Mean Time Between Events"
-msgstr ""
+msgstr "拟合对数累积平均事件间隔时间"
 
 msgid "Fitted Log Cumulative Events"
-msgstr ""
+msgstr "拟合对数累积事件数"
 
-#, fuzzy
 msgid "Fitted Interval Events"
-msgstr "区间终点"
+msgstr "拟合区间事件数"
 
-#, fuzzy
 msgid "Theoretical Probability"
-msgstr "生存概率"
+msgstr "理论概率"
 
 msgid "Theoretical Normal Quantile"
-msgstr ""
+msgstr "理论正态分位数"
 
-#, fuzzy
 msgid "Observed Probability"
-msgstr "生存概率"
+msgstr "观测概率"
 
-#, fuzzy
 msgid "Observed Quantile Residual"
-msgstr "观测数据"
+msgstr "观测分位数残差"
 
 msgid "Enter a non-empty prefix for exported columns."
-msgstr ""
+msgstr "请输入导出列的非空前缀。"
 
 msgid "%1$s, %2$s: %3$s"
-msgstr ""
+msgstr "%1$s，%2$s：%3$s"
 
 msgid "%1$s, %2$s: non-finite values were exported as missing."
-msgstr ""
+msgstr "%1$s，%2$s：非有限值已作为缺失值导出。"
 
 msgid "Data Summary"
-msgstr ""
+msgstr "数据汇总"
 
-#, fuzzy
 msgid "Intervals"
-msgstr "间隔"
+msgstr "区间"
 
 msgid "Follow-up Time"
-msgstr ""
+msgstr "随访时间"
 
 msgid "Cumulative Mean Time Between Events"
-msgstr ""
+msgstr "累积平均事件间隔时间"
 
 msgid ""
 "Log-likelihood, AIC and BIC refer to log-scale regression of cumulative "
 "quantities and cannot be compared with grouped-count maximum-likelihood "
 "values."
-msgstr ""
+msgstr "对数似然、AIC 和 BIC 指累积量的对数尺度回归，不能与分组计数最大似然值比较。"
 
 msgid ""
 "Coefficients describe the segmented regression of log cumulative events on "
 "log time. Change-point coefficients are reported as log times."
-msgstr ""
+msgstr "系数描述对数累积事件对对数时间的分段回归。变点系数以对数时间报告。"
 
-#, fuzzy
 msgid "Confidence intervals are based on normal approximation."
-msgstr "置信区间模拟抽样数"
+msgstr "置信区间基于正态近似。"
 
 msgid ""
 "Standard errors and confidence intervals use native regression "
 "approximations that do not account for dependence between cumulative "
 "observations."
-msgstr ""
+msgstr "标准误和置信区间使用本机回归近似，未考虑累积观测之间的相依性。"
 
 msgid "Equation"
-msgstr ""
+msgstr "方程"
 
 msgid ""
 "M(t) is expected cumulative events, m(t) is instantaneous event intensity, "
 "and t / M(t) is cumulative mean time between events."
-msgstr ""
+msgstr "M(t) 为期望累积事件数，m(t) 为瞬时事件强度，t / M(t) 为累积平均事件间隔时间。"
 
-#, fuzzy
 msgid "Segment Estimates"
-msgstr "估计"
+msgstr "分段估计"
 
 msgid "Segment"
-msgstr ""
+msgstr "分段"
 
 msgid "Slope (β)"
-msgstr ""
+msgstr "斜率（β）"
 
 msgid "Growth Rate"
-msgstr ""
+msgstr "增长率"
 
 msgid "Scale (λ)"
-msgstr ""
+msgstr "尺度（λ）"
 
 msgid "Change Points"
-msgstr ""
+msgstr "变点"
 
 msgid "Change Point"
-msgstr ""
+msgstr "变点"
 
 msgid "Standard Error (Log Time)"
-msgstr ""
+msgstr "标准误（对数时间）"
 
 msgid "Intercept"
-msgstr ""
+msgstr "截距"
 
 msgid "Slope (segment 1)"
-msgstr ""
+msgstr "斜率（第 1 段）"
 
 msgid "Slope change (change point %1$s)"
-msgstr ""
+msgstr "斜率变化（变点 %1$s）"
 
 msgid "Change point %1$s (log time)"
-msgstr ""
+msgstr "变点 %1$s（对数时间）"
 
 msgid "A reliable covariance matrix is unavailable."
-msgstr ""
+msgstr "没有可靠的协方差矩阵。"
 
-#, fuzzy
 msgid ""
 "The covariance matrix uses the same reported parameter scale as the "
 "coefficient estimates."
-msgstr "纳入包含系数估计协方差矩阵的表格。"
+msgstr "协方差矩阵使用与系数估计相同的报告参数尺度。"
 
 msgid "Segment %1$i: M(t) = %2$s * t^(%3$s); %4$s < t <= %5$s"
-msgstr ""
+msgstr "第 %1$i 段：M(t) = %2$s * t^(%3$s)；%4$s < t <= %5$s"
 
 msgid "Mission start time"
-msgstr ""
+msgstr "任务开始时间"
 
 msgid "Mission Reliability"
-msgstr ""
+msgstr "任务可靠度"
 
-#, fuzzy
 msgid "Cumulative Events"
-msgstr "累积风险"
+msgstr "累积事件数"
 
-#, fuzzy
 msgid "Event Intensity"
-msgstr "事件指示值"
+msgstr "事件强度"
 
 msgid "Instantaneous Mean Time Between Events"
-msgstr ""
+msgstr "瞬时平均事件间隔时间"
 
 msgid ""
 "Prediction times must be positive finite numbers. Enter numbers separated by "
 "commas."
-msgstr ""
+msgstr "预测时间必须为正的有限数字。请输入以逗号分隔的数字。"
 
 msgid "Enter positive percentages of maximum follow-up, separated by commas."
-msgstr ""
+msgstr "请输入最大随访时间的正百分比，以逗号分隔。"
 
-#, fuzzy
 msgid "Specify no more than 10,001 prediction times."
-msgstr "指定用于预测的自定义时间点。"
+msgstr "最多指定 10,001 个预测时间。"
 
 msgid ""
 "From and To must each contain one positive time, with From less than or "
 "equal to To."
-msgstr ""
+msgstr "起点和终点必须各包含一个正的时间，且起点小于或等于终点。"
 
 msgid "Step must contain one positive finite number."
-msgstr ""
+msgstr "步长必须包含一个正的有限数字。"
 
 msgid ""
 "Specify one positive step producing no more than 10,001 prediction times."
-msgstr ""
+msgstr "请指定一个正的步长，使预测时间不超过 10,001 个。"
 
 msgid ""
 "Rounding produces a non-positive evaluation time. Disable Round time table "
 "values to retain the original times."
-msgstr ""
+msgstr "舍入会产生非正的评估时间。请禁用“对时间表值舍入”以保留原始时间。"
 
 msgid ""
 "The model cannot provide finite positive predictions at these times. Reduce "
 "the prediction range or choose another model."
-msgstr ""
+msgstr "模型在这些时间上无法给出有限正的预测。请缩小预测范围或选择其他模型。"
 
 msgid ""
 "The mission endpoints cannot be represented at these times. Adjust the "
 "duration or prediction range."
-msgstr ""
+msgstr "任务端点无法在这些时间上表示。请调整时长或预测范围。"
 
 msgid ""
 "Mission reliability requires a positive event rate throughout each mission. "
 "Choose another model or prediction range."
-msgstr ""
+msgstr "任务可靠度要求每次任务全程的事件率为正。请选择其他模型或预测范围。"
 
 msgid ""
 "The model cannot provide finite positive expected event counts over these "
 "missions. Adjust the duration or prediction range."
-msgstr ""
+msgstr "模型在这些任务上无法给出有限正的期望事件计数。请调整时长或预测范围。"
 
 msgid "Mission Start Time"
-msgstr ""
+msgstr "任务开始时间"
 
 msgid ""
 "Mission reliability is the probability of no events during a mission of "
 "duration %1$s starting at each listed time, assuming an NHPP."
 msgstr ""
+"任务可靠度是在假定 NHPP 下，从所列各时间开始、持续 %1$s 的任务期间不发生事件"
+"的概率。"
 
 msgid ""
 "Probabilities assume an NHPP: survival is no events and failure is at least "
 "one event since time zero."
-msgstr ""
+msgstr "概率基于 NHPP 假定：生存指自时间零点起无事件，失效指至少发生一个事件。"
 
 msgid ""
 "Duane probabilities assume its fitted growth curve is the cumulative mean of "
 "an NHPP."
-msgstr ""
+msgstr "Duane 概率假定其拟合增长曲线为 NHPP 的累积均值。"
 
 msgid ""
 "Mission-reliability confidence intervals use a delta-method approximation "
 "accounting for covariance between the cumulative means at mission start and "
 "end."
 msgstr ""
+"任务可靠度置信区间使用 delta 方法近似，并考虑任务开始与结束时累积均值之间的协"
+"方差。"
 
 msgid ""
 "Confidence intervals use native regression approximations that do not "
 "account for dependence between cumulative observations."
-msgstr ""
+msgstr "置信区间使用本机回归近似，未考虑累积观测之间的相依性。"
 
 msgid ""
 "Confidence intervals for rate-based measures are unavailable for piecewise "
 "models."
-msgstr ""
+msgstr "分段模型的率类度量没有可用的置信区间。"
 
 msgid "Predictions beyond observed follow-up extrapolate the fitted trend."
-msgstr ""
+msgstr "超出观测随访的预测是对拟合趋势的外推。"
 
 msgid "Model Tests Table"
-msgstr ""
+msgstr "模型检验表"
 
 msgid "At least one factor or covariate needs to be specified"
-msgstr ""
+msgstr "至少需要指定一个因子或协变量"
 
 msgid "The model failed with the following message: %1$s."
-msgstr ""
+msgstr "模型失败，消息如下：%1$s。"
 
-#, fuzzy
 msgid "Likelihood ratio"
 msgstr "似然比"
 
-#, fuzzy
 msgid "Wald"
 msgstr "Wald"
 
-#, fuzzy
 msgid "Score"
 msgstr "Score"
 
-#, fuzzy
 msgid "Tests are based on the H₁ model."
-msgstr "检验 H₁ 模型的所有参数。"
+msgstr "检验基于 H₁ 模型。"
 
-#, fuzzy
 msgid "Cox Proportional Hazards Summary Table"
-msgstr "比例风险"
+msgstr "Cox 比例风险摘要表"
 
 msgid ""
 "Either 'theta' of 'df' must be set to a value larger than zero when using "
 "'Fixed' frailty method."
-msgstr ""
+msgstr "使用“固定”脆弱性方法时，必须将“theta”或“df”设置为大于零的值。"
 
 msgid "The null model failed with the following message:"
-msgstr ""
+msgstr "零模型失败，消息如下："
 
 msgid "%1$i observations with %2$i events."
-msgstr ""
+msgstr "%1$i 个观测，其中 %2$i 个事件。"
 
 msgid "Null model contains nuisance parameters: %1$s"
-msgstr ""
+msgstr "零模型包含冗余参数：%1$s"
 
 msgid "Robust variance estimation based on %1$s."
-msgstr ""
+msgstr "稳健方差估计基于 %1$s。"
 
 msgid "Frailty based on %1$s."
-msgstr ""
+msgstr "脆弱性基于 %1$s。"
 
-#, fuzzy
 msgid "Model Fit Summary Table"
-msgstr "模型摘要"
+msgstr "模型拟合摘要表"
 
 msgid "Concordance"
-msgstr ""
+msgstr "一致性"
 
 msgid "Frailty Summary Table"
-msgstr ""
+msgstr "脆弱性摘要表"
 
-#, fuzzy
 msgid "Variance"
-msgstr "偏差"
+msgstr "方差"
 
-#, fuzzy
 msgid "Cox Proportional Hazards Estimates Table"
-msgstr "比例风险"
+msgstr "Cox 比例风险估计表"
 
 msgid "Robust Standard Error"
-msgstr ""
+msgstr "稳健标准误"
 
 msgid "%.0f%% CI"
-msgstr ""
+msgstr "%.0f%% 置信区间"
 
 msgid "VS-MPR%s"
-msgstr ""
+msgstr "VS-MPR%s"
 
 msgid ""
 "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value,\n"
@@ -2153,50 +2070,47 @@ msgid ""
 "  1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37\n"
 "  (Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
+"Vovk-Sellke <em>p</em>-比值：基于 <em>p</em> 值，\n"
+" 支持 H%1$s 相对 H%2$s 的最大可能优势比等于\n"
+"  1/(-e <em>p</em> log(<em>p</em>))，其中 <em>p</em> %3$s .37\n"
+"  (Sellke, Bayarri, & Berger, 2001)。"
 
 msgid "Results are stratified via: %1$s."
-msgstr ""
+msgstr "结果按以下方式分层：%1$s。"
 
-#, fuzzy
 msgid "Hazard Ratios Estimates Table"
-msgstr "风险比估计"
+msgstr "风险比估计表"
 
-#, fuzzy
 msgid "Hazard Ratio"
-msgstr "风险率"
+msgstr "风险比"
 
-#, fuzzy
 msgid "Proporational Hazards Assumption Test Table"
-msgstr "比例风险"
+msgstr "比例风险假定检验表"
 
 msgid "The model test failed with the following message: %1$s"
-msgstr ""
+msgstr "模型检验失败，消息如下：%1$s"
 
 msgid "Global"
-msgstr ""
+msgstr "全局"
 
 msgid "Tests are performed using the %1$s survival times transformation."
-msgstr ""
+msgstr "检验使用 %1$s 生存时间变换。"
 
-#, fuzzy
 msgid "Proporational Hazards Assumption Test Plots"
-msgstr "比例风险"
+msgstr "比例风险假定检验图"
 
 msgid "Beta(t)"
-msgstr ""
+msgstr "Beta(t)"
 
-#, fuzzy
 msgid "Residual Plots"
 msgstr "残差图"
 
 msgid "No predictors in the model."
-msgstr ""
+msgstr "模型中没有预测变量。"
 
-#, fuzzy
 msgid "Predicted Survival"
-msgstr "残差与预测生存"
+msgstr "预测生存"
 
-#, fuzzy
 msgid "Residuals Histogram"
 msgstr "残差直方图"
 
@@ -2206,7 +2120,7 @@ msgid ""
 msgid_plural ""
 "%1$i candidate fits were omitted because their likelihoods could not be "
 "evaluated reliably at the available numerical precision."
-msgstr[0] ""
+msgstr[0] "有 %1$i 个候选拟合被省略，因为在可用数值精度下无法可靠计算其似然。"
 
 msgid ""
 "%1$i starting-value or candidate attempt failed and was omitted; %2$i of "
@@ -2215,6 +2129,8 @@ msgid_plural ""
 "%1$i starting-value or candidate attempts failed and were omitted; %2$i of "
 "%3$i starts produced no usable candidate."
 msgstr[0] ""
+"%1$i 个起始值或候选尝试失败并被省略；%3$i 个起始值中有 %2$i 个未产生可用候选"
+"解。"
 
 msgid ""
 "Component %1$s has a negligible weight or diverging parameters; consider "
@@ -2222,12 +2138,11 @@ msgid ""
 msgid_plural ""
 "Components %1$s have a negligible weight or diverging parameters; consider "
 "fewer components."
-msgstr[0] ""
+msgstr[0] "成分 %1$s 的权重可忽略或参数发散；请考虑减少成分数。"
 
-#, fuzzy
 msgid "%1$i component"
 msgid_plural "%1$i components"
-msgstr[0] "最大成分数"
+msgstr[0] "%1$i 个成分"
 
 #~ msgctxt "Description|"
 #~ msgid "Perform analyses of censored time to event data."
