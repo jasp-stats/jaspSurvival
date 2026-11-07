@@ -3,10 +3,17 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Language: de\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
+"PO-Revision-Date: 2026-11-08 09:35+0000\n"
+"Last-Translator: Johannes Keyser <jokeyser@users.noreply.hosted.weblate.org>"
+"\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspsurvival-"
+"qml/de/>\n"
+"Language: de\n"
+"X-Generator: Weblate 2026.11.2.dev0\n"
 
 msgctxt "Description|"
 msgid "Survival"
@@ -270,12 +277,10 @@ msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Best AIC"
 msgstr "Bestes AIC"
 
-#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Best BIC"
 msgstr "Bestes BIC"
 
-#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Components"
 msgstr "Komponenten"
@@ -286,48 +291,45 @@ msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Mean and median"
-msgstr ""
+msgstr "Mittelwert und Median"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Classification"
-msgstr ""
+msgstr "Klassifikation"
 
-#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Diagnostics"
-msgstr "Diagnostik"
+msgstr "Diagnostiken"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Estimation diagnostics"
-msgstr ""
+msgstr "Schätzdiagnostiken"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Component plot"
-msgstr ""
+msgstr "Komponentendiagramm"
 
-#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Type"
 msgstr "Typ"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Survival probability"
-msgstr ""
+msgstr "Überlebenswahrscheinlichkeit"
 
+#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Failure probability"
-msgstr ""
+msgstr "Ausfallwahrscheinlichkeit"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Density"
-msgstr ""
+msgstr "Dichte"
 
-#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Hazard"
-msgstr "Hazard-Rate"
+msgstr ""
 
-#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Advanced"
 msgstr "Erweitert"
@@ -338,11 +340,11 @@ msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Relative"
-msgstr ""
+msgstr "Relativ"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Absolute"
-msgstr ""
+msgstr "Absolut"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Minimum log-time SD"
@@ -354,15 +356,16 @@ msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Starting Values"
-msgstr ""
+msgstr "Startwerte"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "K-means"
-msgstr ""
+msgstr "K-Mittelwerte"
 
+#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Random"
-msgstr ""
+msgstr "Zufall"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Set the number of random starting values."
