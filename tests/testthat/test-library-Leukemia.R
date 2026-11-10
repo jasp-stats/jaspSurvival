@@ -10,10 +10,9 @@ test_that("NonParametricSurvivalAnalysis results match", {
   opts <- jaspTools::analysisOptions(jaspFile)
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
-  # Encode and run analysis
-  encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
+  # Run analysis
   set.seed(1)
-  results <- jaspTools::runAnalysis("NonParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+  results <- jaspTools::runAnalysis("NonParametricSurvivalAnalysis", dataset, opts)
 
   table <- results[["results"]][["LifeTableContainer"]][["collection"]][["LifeTableContainer_table1"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -43,9 +42,8 @@ test_that("NonParametricSurvivalAnalysis results match", {
 
   table <- results[["results"]][["summaryTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(7, 18, 31, 11, 52.6454545454545, 19.8286027955626, "jaspColumn2=Maintained",
-     "", 11, 8, 23, 12, 22.7083333333333, 4.18094198103315, "jaspColumn2=Nonmaintained",
-     ""))
+    list(7, 18, 31, 11, 52.6454545454545, 19.8286027955626, "x=Maintained", "", 11, 8, 23, 12,
+         22.7083333333333, 4.18094198103315, "x=Nonmaintained", ""))
 
   plotName <- results[["results"]][["surivalPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]

@@ -103,10 +103,8 @@ test_that("Default sharper starts recover the compact component in the lung exam
                  "predictionsOutputTable", "mixtureMeanAndMedian", "mixtureClassification"))
     options[[name]] <- FALSE
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
-  encoded <- jaspTools:::encodeOptionsAndDataset(options, dataset)
   set.seed(1)
-  results <- jaspTools::runAnalysis("ParametricMixtureSurvivalAnalysis", encoded$dataset, encoded$options,
-                                   encodedDataset = TRUE, view = FALSE)
+  results <- jaspTools::runAnalysis("ParametricMixtureSurvivalAnalysis", dataset, options, view = FALSE)
   expect_identical(results[["status"]], "complete")
 
   findMixture <- function(object) {
@@ -136,5 +134,9 @@ test_that("Default sharper starts recover the compact component in the lung exam
   expect_equal(fit[["loglik"]], independent, tolerance = 1e-7, scale = 1)
   expect_equal(attr(fit, "mixture")[["starts"]], 30)
   expect_gt(attr(fit, "mixture")[["minEvents"]], 5)
-  expect_length(jaspSurvival:::.sapmFitMessages(fit), 0)
+  # How many of the random starts also reach this optimum depends on the random number stream (jaspBase no longer
+  # uses the legacy sample.kind = "Rounding"): no start may fail and the fit may not warn, but a note that few starts
+  # replicated the optimum is allowed.
+  messages <- jaspSurvival:::.sapmFitMessages(fit)
+  expect_length(grep("the estimates might be a local optimum", messages, fixed = TRUE, invert = TRUE, value = TRUE), 0)
 })
