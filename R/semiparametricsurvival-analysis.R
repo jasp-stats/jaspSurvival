@@ -779,7 +779,9 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   } else {
 
-    estimatesFit <- summary(fit)$coefficients
+    # a penalized (frailty) fit truncates the coefficient names to maxlabel = 25 characters by default, which cuts
+    # the encoded column names in two (and the result label could not be decoded anymore)
+    estimatesFit <- summary(fit, maxlabel = .Machine$integer.max)$coefficients
     toExtract    <- c(
       "est"    = "coef",
       "se"     = "se(coef)",
