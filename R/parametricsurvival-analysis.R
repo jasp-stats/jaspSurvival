@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NULL) {
+ParametricSurvivalAnalysisInternal <- function(jaspResults, dataset, options, state = NULL) {
 
   options[["analysisType"]] <- "parametric"
   .sapRun(jaspResults, dataset, options)
@@ -23,7 +23,7 @@ ParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NU
   return()
 }
 
-ParametricMixtureSurvivalAnalysis <- function(jaspResults, dataset, options, state = NULL) {
+ParametricMixtureSurvivalAnalysisInternal <- function(jaspResults, dataset, options, state = NULL) {
 
   options[["analysisType"]] <- "mixture"
   .sapRun(jaspResults, dataset, options)

@@ -1,4 +1,4 @@
-RecurrentEventAnalysis <- function(jaspResults, dataset, options) {
+RecurrentEventAnalysisInternal <- function(jaspResults, dataset, options) {
 
   if (.sareReady(options))
     .sareCheckDataset(dataset, options)
