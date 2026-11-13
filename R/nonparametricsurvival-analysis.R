@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-NonParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NULL) {
+NonParametricSurvivalAnalysisInternal <- function(jaspResults, dataset, options, state = NULL) {
 
   # non-parametric allows only for right censored data -- set the options for generic functions downstream
   options[["analysisType"]] <- "nonparametric"

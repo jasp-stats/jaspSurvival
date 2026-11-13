@@ -6,7 +6,7 @@ Description
 	title : 		qsTr("Survival")
 	description:	qsTr("Perform survival, lifetime, and recurrent-event analyses.")
 	icon:			"survival-analysis.svg"
-	hasWrappers: 	false
+	hasWrappers: 	true
 
 	GroupTitle
 	{
