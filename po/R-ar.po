@@ -1,0 +1,4527 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Qt-Contexts: true\n"
+"Language: ar\n"
+"Last-Translator: Fahad Mahfouz Al-Subhi "
+"<fahadalsubhi@users.noreply.hosted.weblate.org>\n"
+"Language-Team: Arabic <https://hosted.weblate.org/projects/jasp/jaspsurvival-"
+"r/ar/>\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+"PO-Revision-Date: 2026-11-11 18:40+0000\n"
+"X-Generator: Weblate 2026.11.2.dev0\n"
+
+msgctxt "Description|"
+msgid "Survival"
+msgstr "البقاء"
+
+msgctxt "Description|"
+msgid "Classical"
+msgstr "كلاسيكي"
+
+msgctxt "Description|"
+msgid "Non-Parametric"
+msgstr "لامعلمي"
+
+msgctxt "Description|"
+msgid "Non-Parametric Survival Analysis"
+msgstr "تحليل البقاء اللامعلمي"
+
+msgctxt "Description|"
+msgid "Semi-Parametric"
+msgstr "شبه معلمي"
+
+msgctxt "Description|"
+msgid "Semi-Parametric Survival Analysis"
+msgstr "تحليل البقاء شبه المعلمي"
+
+msgctxt "Description|"
+msgid "Parametric"
+msgstr "معلمي"
+
+msgctxt "Description|"
+msgid "Parametric Survival Analysis"
+msgstr "تحليل البقاء المعلمي"
+
+msgctxt "Description|"
+msgid "Parametric Mixture"
+msgstr "خليط معلمي"
+
+msgctxt "Description|"
+msgid "Parametric Mixture Survival Analysis"
+msgstr "تحليل البقاء بخليط معلمي"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"This analysis computes a survival curve for censored data using the Kaplan-"
+"Meier estimator for single-event survival data. It estimates the probability "
+"of survival over time, allowing you to understand and visualize the "
+"distribution of survival times within your data. The analysis accommodates "
+"censored observations (subjects for whom the event has not occurred during "
+"the study period) and enables comparison of survival curves across different "
+"groups using statistical tests such as the Log-Rank test, Peto and Peto "
+"test, and Fleming-Harrington test. Additionally, you can generate life "
+"tables to summarize survival data at specified intervals."
+msgstr ""
+"يحسب هذا التحليل منحنى بقاء للبيانات المراقَبة بمقدّر كابلان–ماير لبيانات بقاء "
+"ذات حدث واحد. يقدّر احتمال البقاء عبر الزمن، ويتيح فهم توزيع أزمنة البقاء "
+"وعرضه. يستوعب المشاهدات المراقَبة (الأفراد الذين لم يقع لهم الحدث خلال الدراسة)"
+"، ويتيح مقارنة منحنيات المجموعات باختبارات لوغاريتم الرتب وبيتو–بيتو وفليمنغ–"
+"هارينغتون. ويمكن إنشاء جداول حياة لتلخيص بيانات البقاء ضمن فترات محددة."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Time to Event"
+msgstr "الزمن حتى وقوع الحدث"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the time until the event or censoring "
+"occurs."
+msgstr "تحديد المتغير الذي يمثل الزمن حتى وقوع الحدث أو حدوث الرقابة."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Event Status"
+msgstr "حالة الحدث"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Choose the variable that indicates the event status, specifying whether each "
+"observation is an event or censored."
+msgstr ""
+"اختر المتغير الذي يشير إلى حالة الحدث، مع تحديد ما إذا كانت كل مشاهدة حدثاً "
+"أم خاضعة للرقابة."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Event Indicator"
+msgstr "مؤشر الحدث"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Specify the value in the Event Status variable that indicates the occurrence "
+"of the event."
+msgstr "تحديد القيمة التي تشير إلى وقوع الحدث في متغير حالة الحدث."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Strata"
+msgstr "الطبقات"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Select variables to define strata, allowing separate survival curves for "
+"each stratum."
+msgstr "تحديد متغيرات لتعريف الطبقات، مما يتيح منحنيات بقاء مستقلة لكل طبقة."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Weights"
+msgstr "الأوزان"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable for case weights, weighting each observation accordingly "
+"in the model."
+msgstr "تحديد متغير لأوزان الحالات، لترجيح كل مشاهدة وفقًا له في النموذج."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Censoring summary"
+msgstr "ملخص الرقابة"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Create a summary table with information about the censoring status of the "
+"data."
+msgstr "إنشاء جدول ملخص بمعلومات عن حالة رقابة البيانات."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Tests"
+msgstr "الاختبارات"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Log-rank (Mantel-Haenszel)"
+msgstr "اختبار الرتب اللوغاريتمي (مانتل–هانزل)"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Include the Log-Rank (Mantel-Haenszel) test to compare survival curves "
+"across strata."
+msgstr ""
+"إدراج اختبار لوغاريتم الرتب (مانتل–هانزل) لمقارنة منحنيات البقاء عبر الطبقات."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Peto and Peto"
+msgstr "بيتو وبيتو"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Include the Peto and Peto modification of the Gehan-Wilcoxon test to compare "
+"survival curves across strata."
+msgstr ""
+"تضمين تعديل بيتو وبيتو لاختبار غيهان–ويلكوكسون لمقارنة منحنيات البقاء بين "
+"الطبقات."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Flemming-Harrington"
+msgstr "فليمينغ–هارينغتون"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Include the Fleming-Harrington test to compare survival curves across "
+"strata., with a customizable rho parameter."
+msgstr ""
+"إدراج اختبار فليمنغ–هارينغتون لمقارنة منحنيات البقاء عبر الطبقات، مع إمكانية "
+"تخصيص معلمة rho."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Rho"
+msgstr "رو"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Set the rho parameter for the Fleming-Harrington test, controlling the "
+"weight given to different time points (values between 0 and 1)."
+msgstr ""
+"اضبط معلمة Rho لاختبار فليمنغ- هارينجتون ، متحكماً في الوزن الممنوح لنقاط "
+"الوقت المختلفة (القيم بين 0 و 1)."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Life table"
+msgstr "جدول الحياة"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Generate a life table summarizing survival data at specified time intervals."
+msgstr "إعداد جدول حياة يوجز بيانات البقاء على قيد الحياة في فترات زمنية محددة."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Steps type"
+msgstr "نوع الخطوات"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Default"
+msgstr "افتراضي"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Quantiles"
+msgstr "القيم الكمية (Quantiles)"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Fixed size"
+msgstr "حجم ثابت"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Number"
+msgstr "العدد"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Specify the number of intervals when using Quantiles as the steps type."
+msgstr "تحديد عدد الفترات عند اختيار الكميات نوعًا للخطوات."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Round steps"
+msgstr "تقريب الخطوات"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Round the interval boundaries to the nearest integer when using Quantiles "
+"steps."
+msgstr "تقريب حدود الفترات إلى أقرب عدد صحيح عند استخدام خطوات الكميات."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "From"
+msgstr "من"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Set the starting time for intervals when using Fixed size steps."
+msgstr "تعيين زمن بداية الفترات عند استخدام خطوات ذات حجم ثابت."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Size"
+msgstr "الحجم"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Define the size of each interval when using Fixed size steps."
+msgstr "تحديد حجم كل فترة عند استخدام خطوات ثابتة الحجم."
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "To"
+msgstr "إلى"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid "Set the ending time for intervals when using Fixed size steps."
+msgstr "تعيين زمن نهاية الفترات عند استخدام خطوات ذات حجم ثابت."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "All"
+msgstr "الكل"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Best AIC"
+msgstr "أفضل AIC"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Best BIC"
+msgstr "أفضل BIC"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Components"
+msgstr "المكونات"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Mixture"
+msgstr "الخليط"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Mean and median"
+msgstr "المتوسط والوسيط"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Classification"
+msgstr "التصنيف"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Diagnostics"
+msgstr "التشخيص"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Estimation diagnostics"
+msgstr "تشخيصات التقدير"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Component plot"
+msgstr "رسم المكوّن"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Type"
+msgstr "النوع"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Survival probability"
+msgstr "احتمال البقاء"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Failure probability"
+msgstr "احتمال الفشل"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Density"
+msgstr "الكثافة"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Hazard"
+msgstr "معدل الخطر"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Advanced"
+msgstr "متقدم"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Constrain minimum spread"
+msgstr "تقييد الحد الأدنى للتشتت"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Relative"
+msgstr "نسبي"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Absolute"
+msgstr "مطلق"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Minimum log-time SD"
+msgstr "أدنى انحراف معياري للوغاريتم الزمن"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Maximum components"
+msgstr "الحد الأقصى للمكونات"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Starting Values"
+msgstr "قيم البدء"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "K-means"
+msgstr "المتوسطات k"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Random"
+msgstr "عشوائي"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Set the number of random starting values."
+msgstr "تحديد عدد قيم البدء العشوائية."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "EM iterations"
+msgstr "تكرارات EM"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set the number of EM iterations that refine each starting value before the "
+"likelihood is maximized directly. The state after the first and after the "
+"last EM iteration are both used as starting values of the direct "
+"maximization."
+msgstr ""
+"حدّد عدد تكرارات خوارزمية التوقع والتعظيم (EM) التي تحسّن كل قيمة ابتدائية قبل "
+"تعظيم الإمكان مباشرةً. تُستخدم الحالتان بعد أول تكرار وآخر تكرار لـEM قيمًا "
+"ابتدائية للتعظيم المباشر."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Compare models across components"
+msgstr "مقارنة النماذج عبر المكونات"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Always display model information (distribution, number of components, and "
+"model name) in output tables."
+msgstr ""
+"عرض معلومات النموذج (توزيع، عدد المكونات، واسم النموذج) في جداول النواتج."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "This analysis performs a parametric survival analysis."
+msgstr "يُجري هذا التحليل تحليل بقاء معلميًا."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Interval Start"
+msgstr "بداية الفترة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the start time of the observation "
+"interval. Only available when Censoring Type is set to Interval or Counting."
+msgstr ""
+"تحديد متغير زمن بداية فترة المشاهدة. يتوفر فقط عند ضبط نوع الرقابة على "
+"الفترية أو عملية العد."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Interval End"
+msgstr "نهاية الفترة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the end time of the observation "
+"interval. Only available when Censoring Type is set to Interval or Counting."
+msgstr ""
+"تحديد متغير زمن نهاية فترة المشاهدة. يتوفر فقط عند ضبط نوع الرقابة على "
+"الفترية أو عملية العد."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Time to Event"
+msgstr "الزمن حتى وقوع الحدث"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the time until the event or censoring "
+"occurs. Only available when Censoring Type is set to Right."
+msgstr ""
+"تحديد متغير الزمن حتى وقوع الحدث أو الرقابة. يتوفر فقط عند ضبط نوع الرقابة "
+"على اليمنى."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Event Status"
+msgstr "حالة الحدث"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the variable that indicates the event status, specifying whether each "
+"observation is an event or censored."
+msgstr ""
+"اختر المتغير الذي يشير إلى حالة الحدث، مع تحديد ما إذا كانت كل مشاهدة حدثاً "
+"أم خاضعة للرقابة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Event Indicator"
+msgstr "مؤشر الحدث"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify the value in the Event Status variable that indicates the occurrence "
+"of the event."
+msgstr "تحديد القيمة التي تشير إلى وقوع الحدث في متغير حالة الحدث."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Covariates"
+msgstr "المتغيرات المصاحبة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Factors"
+msgstr "العوامل"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Weights"
+msgstr "الأوزان"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Subgroup"
+msgstr "المجموعة الفرعية"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Censoring Type"
+msgstr "نوع الرقابة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Right"
+msgstr "اليمين"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Counting"
+msgstr "العدّ"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Interval"
+msgstr "الفترة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"If interval censoring is selected, the following coding needs to be used: "
+"left-censored data is represented as (NA, t2), right-censored data as (t1, "
+"NA), exact data as (t, t), and interval-censored data as (t1, t2)."
+msgstr ""
+"عند اختيار الرقابة الفترية، استخدم الترميز: اليسرى (NA, t2)، واليمنى (t1, NA)"
+"، والمشاهدات الدقيقة (t, t)، والفترية (t1, t2)."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Censoring summary"
+msgstr "ملخص الرقابة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Create a summary table with information about the censoring status of the "
+"data."
+msgstr "إنشاء جدول ملخص بمعلومات عن حالة رقابة البيانات."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Distribution"
+msgstr "التوزيع"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Exponential"
+msgstr "أسي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Gamma"
+msgstr "غاما"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Generalized F"
+msgstr "توزيع F المعمم"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Generalized gamma"
+msgstr "توزيع غاما المعمم"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Gompertz"
+msgstr "غومبرتز"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log-logistic"
+msgstr "لوجستي لوغاريتمي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log-normal"
+msgstr "لوغاريتمي طبيعي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Weibull"
+msgstr "ويبل"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Generalized gamma (original)"
+msgstr "توزيع غاما المعمم (الأصلي)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Generalized F (original)"
+msgstr "توزيع F المعمم (الأصلي)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "All"
+msgstr "الكل"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Best AIC"
+msgstr "أفضل AIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Best BIC"
+msgstr "أفضل BIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Model"
+msgstr "النموذج"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Interpret model"
+msgstr "تفسير النموذج"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Diagnostics"
+msgstr "التشخيص"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Advanced"
+msgstr "متقدم"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Selected Parametric Distributions"
+msgstr "التوزيعات المعلمية المحددة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Output Formatting"
+msgstr "تنسيق المخرجات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include full dataset in subgroup analysis"
+msgstr "إدراج المجموعة الكاملة من البيانات في تحليل الفريق الفرعي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Include the full dataset output in the subgroup analysis. This option is "
+"only available when the subgroup analysis is selected."
+msgstr ""
+"يدرج ناتج مجموعة البيانات الكاملة في تحليل الفريق الفرعي. لا يكون هذا الخيار "
+"متاحاً إلا عند اختيار تحليل المجموعة الفرعية."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Compare models across distributions"
+msgstr "مقارنة النماذج بين التوزيعات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Compare models across distributions. This option is only available when the "
+"multiple models and parametric distributions are specified."
+msgstr ""
+"مقارنة النماذج عبر التوزيعات. يتاح هذا الخيار فقط عند تحديد نماذج متعددة "
+"وتوزيعات معلمية."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Always display model information"
+msgstr "إظهار معلومات النموذج دائمًا"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Always display model information (distribution and model name) in output "
+"tables."
+msgstr "عرض معلومات النموذج (التوزيع واسم النموذج) دائمًا في جداول المخرجات."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predictions"
+msgstr "التنبؤات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Table"
+msgstr "الجدول"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Plot"
+msgstr "المخطط"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Quantiles"
+msgstr "القيم الكمية (Quantiles)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Sequence"
+msgstr "التعاقب"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Custom"
+msgstr "مخصص"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Number"
+msgstr "العدد"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "From"
+msgstr "من"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "To"
+msgstr "إلى"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Confidence intervals"
+msgstr "فترات الثقة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include confidence intervals for the figures and tables."
+msgstr "إدراج فترات الثقة في الأشكال والجداول."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the confidence level for the confidence intervals."
+msgstr "وضع مستوى الثقة لفترات الثقة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Legend"
+msgstr "مفتاح الرسم"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Bottom"
+msgstr "أسفل"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Left"
+msgstr "اليسار"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Top"
+msgstr "أعلى"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "None"
+msgstr "بلا"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Theme"
+msgstr "السمة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "White background"
+msgstr "خلفية بيضاء"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Light"
+msgstr "فاتح"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Minimal"
+msgstr "بسيط"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Detailed"
+msgstr "تفصيلي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Kaplan-Meier"
+msgstr "كابلان–ماير"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Censoring events"
+msgstr "حالات الرقابة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "X-axis transformation"
+msgstr "تحويل المحور X"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log"
+msgstr "لوغاريتمي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log(-log(1-p))"
+msgstr "Log(-log(1-p))"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Hazard"
+msgstr "معدل الخطر"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Merge tables across measures"
+msgstr "دمج الجداول بين المقاييس"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Probability plot"
+msgstr "مخطط الاحتمال"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Canvas"
+msgstr "مساحة الرسم"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Empirical points"
+msgstr "نقاط تجريبية"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Coordinates"
+msgstr "الإحداثيات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Display the time and failure probability next to each empirical point."
+msgstr "عرض الزمن واحتمال الفشل بجوار كل نقطة تجريبية."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Fitted curve"
+msgstr "المنحنى المقدّر"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Plot the fitted curve from the selected parametric model."
+msgstr "رسم المنحنى الملائم من النموذج المعلمي المحدد."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Show censored observations as rug marks at the bottom of the plot. Only "
+"available when Censoring Type is set to Right."
+msgstr ""
+"عرض المشاهدات الخاضعة للرقابة كشرطات صغيرة أسفل المخطط. يتوفر فقط عند ضبط "
+"نوع الرقابة على اليمنى."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Merge the probability plots across distributions into a single plot. Only "
+"available when no model selection is being performed."
+msgstr ""
+"دمج مخططات الاحتمال عبر التوزيعات في مخطط واحد. يتوفر فقط عند عدم إجراء "
+"اختيار للنموذج."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include confidence interval bounds for the fitted probability curve."
+msgstr "إدراج حدود فترة الثقة لمنحنى الاحتمال الملائم."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the confidence level for the probability plot confidence intervals."
+msgstr "تعيين مستوى الثقة لفترات الثقة في مخطط الاحتمال."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Grid"
+msgstr "شبكة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Display probability-paper grid lines."
+msgstr "عرض خطوط شبكة ورق الاحتمالات."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Plotting position"
+msgstr "موضع الرسم الاحتمالي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the method used to compute empirical failure probability plotting "
+"positions."
+msgstr "تحديد الطريقة المستخدمة لحساب مواضع رسم احتمال الفشل التجريبي."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Median"
+msgstr "الوسيط"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Benard"
+msgstr "بينار (Benard)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Hazen"
+msgstr "هازن"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Mean"
+msgstr "المتوسط"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Blom"
+msgstr "بلوم (Blom)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Rank adjustment"
+msgstr "تصحيح الرتب"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Johnson"
+msgstr "جونسون"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Ties"
+msgstr "القيم المتعادلة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select how tied failure times are handled when computing empirical plotting "
+"positions."
+msgstr ""
+"تحديد كيفية التعامل مع أزمنة الفشل المتساوية عند حساب مواضع الرسم التجريبية."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Highest"
+msgstr "الأعلى"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lowest"
+msgstr "الأدنى"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Sequential"
+msgstr "متتابع"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the theme for the probability plot's appearance."
+msgstr "تحديد سمة مظهر مخطط الاحتمال."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residual Plots"
+msgstr "مخططات البواقي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals vs. time"
+msgstr "البواقي مقابل الزمن"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus time. Only available when Censoring Type is set to "
+"Right."
+msgstr ""
+"رسم البواقي مقابل الزمن. يتوفر فقط عند ضبط نوع الرقابة على الرقابة اليمنى."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals vs. predictors"
+msgstr "البواقي مقابل المتنبئات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus predictors to assess model fit. Available when model "
+"terms are specified."
+msgstr ""
+"رسم البواقي مقابل المتنبئات لتقييم مطابقة النموذج. متاح عند تحديد حدود "
+"النموذج."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Plot residuals versus predicted mean survival times."
+msgstr "رسم البواقي مقابل متوسطات أزمنة البقاء المتنبأ بها."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals histogram"
+msgstr "مدرج تكراري للبواقي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Display a histogram of residuals to assess their distribution."
+msgstr "عرض مدرج تكراري للبواقي لتقييم توزيعها."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Type"
+msgstr "النوع"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the type of residuals to plot"
+msgstr "اختر نوع البواقي المراد رسمها"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Response"
+msgstr "الاستجابة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Cox-Snell"
+msgstr "كوكس–سنيل"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with information about the model fit."
+msgstr "إدراج جدول يتضمن معلومات عن مطابقة النموذج."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Statistics"
+msgstr "الإحصاءات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Model summary"
+msgstr "ملخص النموذج"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Rank models"
+msgstr "ترتيب النماذج"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Rank models based on the selected criterion."
+msgstr "ترتيب النماذج وفقًا للمعيار المحدد."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "AIC"
+msgstr "AIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "BIC"
+msgstr "BIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Log lik."
+msgstr "لوغاريتم الإمكان"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "AIC weights"
+msgstr "أوزان AIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include AIC weights in the model summary."
+msgstr "إدراج أوزان AIC في موجز النموذج."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "BIC weights"
+msgstr "أوزان BIC"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include BIC weights in the model summary."
+msgstr "إدراج الأوزان BIC في موجز النموذج."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Coefficients"
+msgstr "المعاملات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with coefficient estimates."
+msgstr "إدراج جدول مع تقديرات المعامل."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include confidence intervals for the coefficients."
+msgstr "إدراج فترات الثقة للمعاملات."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Coefficients covariance matrix"
+msgstr "مصفوفة تغاير المعاملات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Include a table with the covariance matrix of the coefficient estimates."
+msgstr "إدراج جدول لمصفوفة تباين تقديرات المعاملات وتغايرها."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Sequential model comparison"
+msgstr "مقارنة النماذج المتتابعة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Include a table with the results of the sequential model comparison."
+msgstr "إدراج جدول بنتائج المقارنة المتتابعة بين النماذج."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Export"
+msgstr "تصدير"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Column prefix"
+msgstr "بادئة العمود"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Residuals"
+msgstr "البواقي"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Martingale"
+msgstr "مارتينغال"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Deviance"
+msgstr "الانحراف"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export deviance residuals from the fitted Cox model for each observation."
+msgstr "تصدير بواقي الانحراف من نموذج كوكس المقدّر لكل مشاهدة."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Response"
+msgstr "الاستجابة"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Cox-Snell"
+msgstr "كوكس–سنيل"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Fitted Values"
+msgstr "القيم الملائمة"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Relative risk"
+msgstr "الخطر النسبي"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Linear predictor"
+msgstr "المتنبئ الخطي"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Mean survival time"
+msgstr "متوسط زمن البقاء"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Median survival time"
+msgstr "وسيط زمن البقاء"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Mixture Classification"
+msgstr "تصنيف الخليط"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Component probabilities"
+msgstr "احتمالات المكونات"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Component index"
+msgstr "فهرس المكوّن"
+
+msgctxt "SurvivalPlot|"
+msgid "Plot"
+msgstr "المخطط"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"This option generates a customizable survival plot to visualize the "
+"estimated survival probabilities over time from your survival analysis. You "
+"can choose different transformations of the survival probabilities to "
+"display, such as Survival, Risk, Cumulative Hazard, or Complementary Log-Log "
+"functions, depending on your analytical needs. The plot allows you to "
+"include confidence intervals to assess the precision of the estimates and "
+"add a risk table to provide detailed information about the number of "
+"subjects at risk and events over time. You can further enhance the plot by "
+"adding quantile lines to highlight specific survival times (e.g., median "
+"survival time) and adjust the legend position, color palette, and overall "
+"theme to suit your preferences."
+msgstr ""
+"ينشئ هذا الخيار مخطط بقاء قابلًا للتخصيص لعرض احتمالات البقاء المقدَّرة عبر "
+"الزمن. يمكن عرض تحويلات مختلفة، مثل البقاء أو المخاطر أو الخطر التراكمي أو "
+"دالة لوغاريتم–لوغاريتم المتممة، بحسب الحاجة التحليلية. يتيح تضمين فترات "
+"الثقة لتقييم دقة التقديرات، وجدول المعرضين للخطر لعرض أعداد الأفراد المعرضين "
+"والأحداث عبر الزمن. ويمكن إضافة خطوط كميات لتحديد أزمنة بقاء معينة (كالوسيط)، "
+"وضبط موضع المفتاح ولوحة الألوان والسمة العامة."
+
+msgctxt "SurvivalPlot|"
+msgid "Type"
+msgstr "النوع"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Select the type of statistic to plot: Survival, Risk, Cumulative Hazard, or "
+"Complementary Log-Log."
+msgstr ""
+"تحديد نوع الإحصاء المراد رسمه: البقاء أو الخطر أو المخاطر التراكمية أو "
+"اللوغاريتم–اللوغاريتم المكمّل."
+
+msgctxt "SurvivalPlot|"
+msgid "Survival"
+msgstr "البقاء"
+
+msgctxt "SurvivalPlot|"
+msgid "Risk"
+msgstr "مخاطر"
+
+msgctxt "SurvivalPlot|"
+msgid "Cumulative hazard"
+msgstr "الخطر التراكمي"
+
+msgctxt "SurvivalPlot|"
+msgid "Complementary log-log"
+msgstr "الرابط اللوغاريتمي المزدوج المتمّم"
+
+msgctxt "SurvivalPlot|"
+msgid "Confidence interval"
+msgstr "فترة الثقة"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Include confidence intervals in the survival plot to show the variability "
+"around the estimates."
+msgstr "إدراج فترات الثقة في مخطط البقاء لإظهار التباين حول التقديرات."
+
+msgctxt "SurvivalPlot|"
+msgid "Risk table"
+msgstr "جدول المخاطر"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Add a risk table below the plot to display additional information about the "
+"number of subjects at risk over time."
+msgstr ""
+"إضافة جدول للمخاطر أسفل المخطط لعرض معلومات إضافية عن عدد الأفراد المعرضين "
+"للخطر بمرور الزمن."
+
+msgctxt "SurvivalPlot|"
+msgid "Number at risk"
+msgstr "عدد المعرضين للخطر"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Display the number of subjects at risk at each time point in the risk table."
+msgstr ""
+"عرض عدد المفحوصين المعرّضين لوقوع الحدث عند كل نقطة زمنية في جدول المخاطر."
+
+msgctxt "SurvivalPlot|"
+msgid "Cum. number of observed events"
+msgstr "العدد التراكمي للأحداث المشاهدة"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Display the cumulative number of observed events (e.g., deaths) at each time "
+"point in the risk table."
+msgstr ""
+"يعرض العدد التراكمي للأحداث الملاحظة (مثل الوفاة) في كل نقطة زمنية في جدول "
+"المخاطر."
+
+msgctxt "SurvivalPlot|"
+msgid "Cum. number of censored obs."
+msgstr "العدد التراكمي للمشاهدات المراقبة رقابيًا"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Display the cumulative number of censored observations at each time point in "
+"the risk table."
+msgstr ""
+"عرض العدد التراكمي للمشاهدات الخاضعة للرقابة في كل نقطة وقت في جدول المخاطر."
+
+msgctxt "SurvivalPlot|"
+msgid "Number of events in time interval"
+msgstr "عدد الأحداث في الفترة الزمنية"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Display the number of events that occurred within each time interval in the "
+"risk table."
+msgstr "عرض عدد الأحداث التي حدثت داخل كل فاصلة زمنية في جدول المخاطر."
+
+msgctxt "SurvivalPlot|"
+msgid "Number of censored obs. in time interval"
+msgstr "عدد المشاهدات الخاضعة للرقابة في الفترة الزمنية"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Display the number of censored observations within each time interval in the "
+"risk table."
+msgstr "عرض عدد المشاهدات الخاضعة للرقابة داخل كل فترة زمنية في جدول المخاطر."
+
+msgctxt "SurvivalPlot|"
+msgid "As a single line"
+msgstr "كخط واحد"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Combine all selected risk table statistics into a single line for a more "
+"compact display."
+msgstr "دمج إحصاءات جدول المخاطر المحددة في سطر واحد لتقليل مساحة العرض."
+
+msgctxt "SurvivalPlot|"
+msgid "Add quantile"
+msgstr "إضافة قيمة كمية"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Add a vertical line on the plot at a specified quantile (e.g., median "
+"survival time)."
+msgstr "إضافة خط عمودي عند كُميّة محددة في الرسم (مثل وسيط زمن البقاء)."
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Specify the quantile value (between 0 and 1) at which to add the vertical "
+"line on the plot."
+msgstr "تحديد قيمة الكمية (بين 0 و1) التي يُضاف عندها الخط الرأسي إلى المخطط."
+
+msgctxt "SurvivalPlot|"
+msgid "Legend"
+msgstr "مفتاح الرسم"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Choose the position of the legend on the plot: Bottom, Right, Left, Top, or "
+"None. Only available when Strata variables are specified."
+msgstr ""
+"اختيار موضع مفتاح المخطط: أسفل أو يمين أو يسار أو أعلى أو بلا. يتوفر فقط عند "
+"تحديد متغيرات الطبقات."
+
+msgctxt "SurvivalPlot|"
+msgid "Bottom"
+msgstr "أسفل"
+
+msgctxt "SurvivalPlot|"
+msgid "Right"
+msgstr "اليمين"
+
+msgctxt "SurvivalPlot|"
+msgid "Left"
+msgstr "اليسار"
+
+msgctxt "SurvivalPlot|"
+msgid "Top"
+msgstr "أعلى"
+
+msgctxt "SurvivalPlot|"
+msgid "None"
+msgstr "بلا"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Customize the color palette used in the plot. Only available when Strata "
+"variables are specified."
+msgstr ""
+"تخصيص لوحة الألوان المستخدمة في المخطط. يتوفر فقط عند تحديد متغيرات الطبقات."
+
+msgctxt "SurvivalPlot|"
+msgid "Theme"
+msgstr "السمة"
+
+msgctxt "SurvivalPlot|"
+msgid ""
+"Select the theme for the plot's appearance: JASP for the default look or "
+"ggsurvfit for the ggsurvfit package style."
+msgstr ""
+"تحديد سمة مظهر المخطط: JASP للمظهر الافتراضي، أو ggsurvfit لأسلوب حزمة "
+"ggsurvfit."
+
+msgctxt "SurvivalPlot|"
+msgid "JASP"
+msgstr "JASP"
+
+msgctxt "SurvivalPlot|"
+msgid "ggsurvfit"
+msgstr "ggsurvfit"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"This analysis performs a Cox proportional hazards regression, a statistical "
+"method used in survival analysis to examine the relationship between the "
+"time until an event occurs (such as death or failure) and one or more "
+"predictor variables. It helps you understand how different factors influence "
+"the risk or hazard of the event happening at any given time. The Cox model "
+"is particularly useful because it can handle censored data (when the event "
+"has not occurred for some subjects during the study period) and does not "
+"require assumptions about the baseline hazard function."
+msgstr ""
+"يجري هذا التحليل انحدار كوكس للأخطار النسبية، لفحص علاقة الزمن حتى وقوع حدث "
+"(كالوفاة أو الفشل) بمتغير متنبئ واحد أو أكثر. يوضح تأثير العوامل المختلفة في "
+"الخطر اللحظي لوقوع الحدث. يفيد نموذج كوكس في معالجة البيانات المراقَبة (عندما "
+"لا يقع الحدث لبعض الأفراد خلال الدراسة)، ولا يتطلب افتراض شكل معلمي محدد لدالة "
+"الخطر الأساسية."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Interval Start"
+msgstr "بداية الفترة"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the start time of the observation "
+"interval. Only available when Censoring Type is set to Counting."
+msgstr ""
+"تحديد متغير زمن بداية فترة المشاهدة. يتوفر فقط عند ضبط نوع الرقابة على عملية "
+"العد."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Interval End"
+msgstr "نهاية الفترة"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the end time of the observation "
+"interval. Only available when Censoring Type is set to Counting."
+msgstr ""
+"تحديد متغير زمن نهاية فترة المشاهدة. يتوفر فقط عند ضبط نوع الرقابة على عملية "
+"العد."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Time to Event"
+msgstr "الزمن حتى وقوع الحدث"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the variable that represents the time until the event or censoring "
+"occurs. Only available when Censoring Type is set to Right."
+msgstr ""
+"تحديد متغير الزمن حتى وقوع الحدث أو الرقابة. يتوفر فقط عند ضبط نوع الرقابة "
+"على اليمنى."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Event Status"
+msgstr "حالة الحدث"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Choose the variable that indicates the event status, specifying whether each "
+"observation is an event or censored."
+msgstr ""
+"اختر المتغير الذي يشير إلى حالة الحدث، مع تحديد ما إذا كانت كل مشاهدة حدثاً "
+"أم خاضعة للرقابة."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Event Indicator"
+msgstr "مؤشر الحدث"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Specify the value in the Event Status variable that indicates the occurrence "
+"of the event."
+msgstr "تحديد القيمة التي تشير إلى وقوع الحدث في متغير حالة الحدث."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Covariates"
+msgstr "المتغيرات المصاحبة"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Add continuous variables as covariates to include them in the Cox regression "
+"model."
+msgstr ""
+"إضافة متغيرات مستمرة بوصفها متغيرات مصاحبة لإدراجها في نموذج انحدار كوكس."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Factors"
+msgstr "العوامل"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Add categorical variables as factors to include them in the Cox regression "
+"model."
+msgstr "إضافة متغيرات فئوية بوصفها عوامل لإدراجها في نموذج انحدار كوكس."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Weights"
+msgstr "الأوزان"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable for case weights, weighting each observation accordingly "
+"in the model."
+msgstr "تحديد متغير لأوزان الحالات، لترجيح كل مشاهدة وفقًا له في النموذج."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Censoring Type"
+msgstr "نوع الرقابة"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the type of censoring in your data: Right censoring or Counting "
+"process."
+msgstr "تحديد نوع الرقابة في البيانات: الرقابة اليمنى أو عملية العد."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Right"
+msgstr "اليمين"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Counting"
+msgstr "العدّ"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Censoring summary"
+msgstr "ملخص الرقابة"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Create a summary table with information about the censoring status of the "
+"data."
+msgstr "إنشاء جدول ملخص بمعلومات عن حالة رقابة البيانات."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Method"
+msgstr "الطريقة"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Efron"
+msgstr "إفرون"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Breslow"
+msgstr "بريسلو (Breslow)"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Exact"
+msgstr "دقيق"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Choose the method for handling tied event times: Efron, Breslow, or Exact."
+msgstr ""
+"اختر طريقة التعامل مع أزمنة الأحداث المتعادلة: إفرون أو بريسلو أو الطريقة "
+"الدقيقة."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Strata, Cluster, and Frailty"
+msgstr "الطبقات والعناقيد والهشاشة"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Strata"
+msgstr "الطبقات"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select variables to define strata, allowing separate baseline hazard "
+"functions for each stratum."
+msgstr ""
+"تحديد متغيرات لتعريف الطبقات، مما يتيح دوال مخاطر أساسية منفصلة لكل طبقة."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Cluster"
+msgstr "العنقود"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable to define clusters of correlated observations for robust "
+"variance estimation. Disabled when a Frailty variable is specified or Method "
+"is set to Exact."
+msgstr ""
+"حدّد متغيرًا يعرّف عناقيد المشاهدات المترابطة لاستخدام التقدير الحصين للتباين. "
+"يُعطَّل هذا الخيار عند تحديد متغير للهشاشة أو اختيار الطريقة الدقيقة."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Frailty"
+msgstr "الهشاشة"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable for frailty to model unobserved heterogeneity using random "
+"effects. Disabled when a Cluster variable is specified."
+msgstr ""
+"تحديد متغير للهشاشة لنمذجة عدم التجانس غير المشاهد بآثار عشوائية. يُعطَّل عند "
+"تحديد متغير عنقود."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Distribution"
+msgstr "التوزيع"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Choose the distribution for the frailty term: Gamma, Gaussian, or T "
+"distribution. Only available when a Frailty variable is specified."
+msgstr ""
+"اختيار توزيع حد الهشاشة: غاما أو غاوسي أو T. يتوفر فقط عند تحديد متغير "
+"الهشاشة."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Gamma"
+msgstr "غاما"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Gaussian"
+msgstr "غاوسي"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "T"
+msgstr "T"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the estimation method for the frailty distribution. Options vary "
+"based on the chosen Distribution."
+msgstr "تحديد طريقة تقدير توزيع الهشاشة. تختلف الخيارات بحسب التوزيع المختار."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "EM"
+msgstr "EM"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "AIC"
+msgstr "AIC"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Fixed"
+msgstr "ثابت"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "REML"
+msgstr "REML"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Df"
+msgstr "درجات الحرية"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Set the degrees of freedom (Df) for the T frailty distribution. Only visible "
+"when Distribution is set to T."
+msgstr ""
+"تعيين درجات الحرية (Df) لتوزيع الهشاشة T. يظهر فقط عند ضبط التوزيع على T."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Fix"
+msgstr "تثبيت"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Choose the parameter to fix in the frailty model when Method is set to "
+"Fixed: Theta or Df."
+msgstr ""
+"اختر المعلمة المراد تثبيتها في نموذج الهشاشة عند ضبط الطريقة على «ثابت»: "
+"Theta أو Df."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Theta"
+msgstr "ثيتا"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Specify the value of Theta to fix in the frailty model. Only visible when "
+"Fix is set to Theta."
+msgstr ""
+"تحديد قيمة Theta المراد تثبيتها في نموذج الهشاشة. يظهر فقط عند ضبط خيار "
+"التثبيت على Theta."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Specify the degrees of freedom (Df) to fix in the frailty model. Only "
+"visible when Fix is set to Df."
+msgstr ""
+"تحديد درجات الحرية (Df) المراد تثبيتها في نموذج الهشاشة. يظهر فقط عند ضبط "
+"خيار التثبيت على Df."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Model"
+msgstr "النموذج"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Components"
+msgstr "المكونات"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Statistics"
+msgstr "الإحصاءات"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Model fit"
+msgstr "مطابقة النموذج"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include overall model fit statistics in the output."
+msgstr "إدراج إحصاءات المطابقة الكلية للنموذج في المخرجات."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Tests"
+msgstr "الاختبارات"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Test all parameters of the H₁ model."
+msgstr "اختبار جميع معلمات نموذج H₁."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Likelihood ratio"
+msgstr "نسبة الإمكان"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include the Likelihood Ratio Test in the model summary."
+msgstr "إدراج اختبار نسبة الإمكان في ملخص النموذج."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Wald"
+msgstr "والد"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Include the Wald Test in the model summary. Disabled when a Frailty variable "
+"is specified."
+msgstr ""
+"إدراج اختبار والد في ملخص النموذج. يُعطَّل عند تحديد متغير الهشاشة (Frailty)."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Score (log-rank)"
+msgstr "الدرجة (الرتب اللوغاريتمية)"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Include the Score (Log-Rank) Test in the model summary. Disabled when a "
+"Frailty variable is specified."
+msgstr ""
+"إدراج اختبار الدرجة (لوغاريتم الرتب) في ملخص النموذج. يُعطَّل عند تحديد متغير "
+"الهشاشة."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Coefficients"
+msgstr "المعاملات"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Estimates"
+msgstr "التقديرات"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Display the estimated coefficients in the model output."
+msgstr "عرض المعاملات المقدّرة في مخرجات النموذج."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Vovk-Sellke maximum p-ratio"
+msgstr "أقصى نسبة p لفوفك–سيلكه"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include the Vovk-Sellke maximum p-ratio for each coefficient."
+msgstr "إدراج نسبة p القصوى لفوفك–سيلكه لكل معامل."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Hazard ratio estimates"
+msgstr "تقديرات نسبة الأخطار"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Display the hazard ratio estimates (exponentiated coefficients)."
+msgstr "عرض تقديرات نسب المخاطر (أُسّ المعاملات)."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include frailty"
+msgstr "إدراج الهشاشة"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Include the effect of frailty in hazard ratio estimates. Only available when "
+"a Frailty variable is specified."
+msgstr ""
+"إدراج أثر الهشاشة في تقديرات نسبة المخاطر. يتوفر فقط عند تحديد متغير الهشاشة."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Confidence intervals"
+msgstr "فترات الثقة"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Include confidence intervals for the coefficients."
+msgstr "إدراج فترات الثقة للمعاملات."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Set the confidence level (e.g., 95%) for the confidence intervals."
+msgstr "تحديد مستوى الثقة (95% مثلاً) لفترات الثقة."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Plot"
+msgstr "المخطط"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Diagnostics"
+msgstr "التشخيص"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Proportional Hazards"
+msgstr "الأخطار النسبية"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Table"
+msgstr "الجدول"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Provide a table to test the proportional hazards assumption."
+msgstr "توفير جدول لاختبار افتراض المخاطر النسبية."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Generate plots to assess the proportional hazards assumption."
+msgstr "إنشاء رسوم لتقييم افتراض تناسب المخاطر."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Transformation"
+msgstr "التحويل"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the transformation for time in proportional hazards testing: KM, "
+"Rank, or Identity."
+msgstr "تحديد تحويل الزمن في اختبار تناسب المخاطر: KM أو الرتب أو دالة الهوية."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "KM"
+msgstr "KM"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Rank"
+msgstr "الرتبة"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Identity"
+msgstr "الهوية"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Test terms"
+msgstr "اختبار الحدود"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Test the proportional hazards assumption for individual model terms (instead "
+"of coefficients)."
+msgstr "اختبار افتراض تناسب المخاطر لحدود النموذج الفردية (بدلًا من المعاملات)."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residual Plots"
+msgstr "مخططات البواقي"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residuals vs. time"
+msgstr "البواقي مقابل الزمن"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus time to detect non-proportional hazards. Available "
+"only for Martingale or Deviance residuals."
+msgstr ""
+"رسم البواقي مقابل الزمن لكشف عدم تناسب المخاطر. متاح فقط لبواقي مارتينغال أو "
+"الانحراف."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residuals vs. predictors"
+msgstr "البواقي مقابل المتنبئات"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus predictors to assess model fit. Available when model "
+"terms are specified."
+msgstr ""
+"رسم البواقي مقابل المتنبئات لتقييم مطابقة النموذج. متاح عند تحديد حدود "
+"النموذج."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residuals vs. predicted survival"
+msgstr "البواقي مقابل البقاء المتنبّأ به"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Plot residuals versus predicted survival probabilities. Available only for "
+"Martingale or Deviance residuals."
+msgstr ""
+"رسم البواقي مقابل احتمالات البقاء المتنبأ بها. متاح فقط لبواقي مارتينغال أو "
+"الانحراف."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Residuals histogram"
+msgstr "مدرج تكراري للبواقي"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Display a histogram of residuals to assess their distribution. Available "
+"only for Martingale or Deviance residuals."
+msgstr ""
+"عرض مدرج تكراري للبواقي لتقييم توزيعها. متاح فقط لبواقي مارتينغال أو الانحراف."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Type"
+msgstr "النوع"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid ""
+"Select the type of residuals to plot: Martingale, Deviance, Score, "
+"Schoenfeld, or Scaled Schoenfeld."
+msgstr ""
+"تحديد نوع البواقي المراد رسمها: مارتينغال أو الانحراف أو الدرجة أو شونفيلد أو "
+"شونفيلد المحجَّمة."
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Martingale"
+msgstr "مارتينغال"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Deviance"
+msgstr "الانحراف"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Score"
+msgstr "الدرجة"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Schoenfeld"
+msgstr "شونفيلد"
+
+msgctxt "SemiParametricSurvivalAnalysis|"
+msgid "Scaled Schoenfeld"
+msgstr "بواقي شونفيلد المحجّمة"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"This analysis models survival times as a finite mixture of components from "
+"the same parametric family."
+msgstr ""
+"ينمذج هذا التحليل أزمنة البقاء كمزيج محدود من مكونات تنتمي إلى العائلة "
+"المعلمية نفسها."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Include a table with the diagnostics of the estimation of each mixture "
+"model: the number of starting values, how many of them reached the reported "
+"solution, the log-likelihood of the reported and of the next best distinct "
+"solution, the number of degenerate candidate solutions, the effective sample "
+"size and the effective number of events of the smallest component, optimizer "
+"convergence, and whether the Hessian of the likelihood is positive definite. "
+"Replications indicate agreement between starts, not proof of a global "
+"maximum."
+msgstr ""
+"يتضمن جدولًا بتشخيصات تقدير كل نموذج خليط: عدد البدءات، وعدد ما وصل منها إلى "
+"الحل المعروض، ولوغاريتم إمكانه وأفضل حل متميز يليه، وعدد الحلول المرشحة "
+"المنحلّة، وحجم العينة الفعّال وعدد الأحداث الفعّال في أصغر مكون، وتقارب خوارزمية "
+"الاستمثال، وموجبـية تعيين مصفوفة هسيان المستخدمة في التقدير. يدل تكرر الحل "
+"على اتفاق البدءات، ولا يثبت بلوغ أقصى قيمة عامة."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "X-axis transformation"
+msgstr "تحويل المحور X"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "None"
+msgstr "بلا"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Log"
+msgstr "لوغاريتمي"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select starting values for constrained mixture estimation. The best "
+"converged solution found within the minimum spread bound is reported. More "
+"starts reduce the risk of a local optimum but take longer."
+msgstr ""
+"حدّد القيم الابتدائية لتقدير نموذج الخليط المقيّد. يُعرض أفضل حل متقارب يفي "
+"بالحد الأدنى للتشتت. تقلل زيادة عدد البدءات من خطر الوصول إلى حل أمثل محلي، "
+"لكنها تستغرق وقتًا أطول."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select starting values for mixture estimation. The best non-degenerate "
+"solution found is reported. If all solutions are degenerate, the best is "
+"reported with a warning. More starts reduce the risk of a local optimum but "
+"take longer."
+msgstr ""
+"حدّد القيم الابتدائية لتقدير نموذج الخليط. يُعرض أفضل حل غير منحلّ. وإذا كانت "
+"الحلول جميعها منحلّة، يُعرض أفضلها مع تحذير. تقلل زيادة عدد البدءات من خطر "
+"الوصول إلى حل أمثل محلي، لكنها تستغرق وقتًا أطول."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Equal-sized groups"
+msgstr "مجموعات متساوية الحجم"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Start from one partition of the ordered survival times into groups of equal "
+"size."
+msgstr "البدء بتقسيم واحد لأزمنة البقاء المرتبة إلى مجموعات متساوية الحجم."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Tail partitions"
+msgstr "تقسيمات الذيل"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Start from partitions that isolate the tails: 15/85% and 85/15% for two "
+"components, 15/70/15% for three, and 10/40/40/10% for four."
+msgstr ""
+"البدء بتقسيمات تعزل الذيول: 15/85% و85/15% لمكونين، و15/70/15% لثلاثة، و10/40/"
+"40/10% لأربعة."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Split simpler model"
+msgstr "تقسيم نموذج أبسط"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Start from a model with one component fewer. Each start splits one of its "
+"components at its median, keeping the other components unchanged. The "
+"simpler model is fitted when needed."
+msgstr ""
+"يبدأ بنموذج يقل عدد مكوناته بمقدار واحد. تقسم كل بداية أحد مكوناته عند وسيطه"
+"، وتبقي المكونات الأخرى دون تغيير. يُلاءَم النموذج الأبسط عند الحاجة."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Draw independent sets of random centres from the observed event times and "
+"assign each observation to the nearest centre. Higher values try more sets "
+"of centres."
+msgstr ""
+"ارسم مجموعات مستقلة من المراكز العشوائية من وقت الحدث الملاحَظ واعين كل مشاهدة "
+"إلى أقرب مركز. القيم الأعلى تحاول زيادة مجموعات المراكز."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Initialization Settings"
+msgstr "إعدادات التهيئة"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Apply these settings to every starting value method."
+msgstr "تطبيق هذه الإعدادات على كل طريقة لتحديد قيم البدء."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Membership probability"
+msgstr "احتمال العضوية"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Higher probabilities produce sharper starts. Each starting value is tried "
+"with every initial membership probability."
+msgstr ""
+"تعطي الاحتمالات الأعلى بدايات أكثر حسمًا. تُجرَّب كل قيمة ابتدائية مع كل احتمال "
+"انتماء أولي."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Merge Plots Across"
+msgstr "دمج الرسوم عبر"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Distributions"
+msgstr "التوزيعات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Subgroups"
+msgstr "المجموعات الفرعية"
+
+msgctxt "Upgrades|"
+msgid ""
+"Parametric survival models now always include an intercept. Results may "
+"change if this saved analysis previously excluded the intercept."
+msgstr ""
+"تتضمن نماذج البقاء المعلمية الآن ثابتًا دائمًا. قد تتغير النتائج إذا كان هذا "
+"التحليل المحفوظ يستبعد الثابت سابقًا."
+
+msgctxt "Description|"
+msgid "Perform survival, lifetime, and recurrent-event analyses."
+msgstr "إجراء تحليلات البقاء وزمن الحياة والأحداث المتكررة."
+
+msgctxt "Description|"
+msgid "Recurrent Events"
+msgstr "الأحداث المتكررة"
+
+msgctxt "Description|"
+msgid "Recurrent Event Analysis"
+msgstr "تحليل الأحداث المتكررة"
+
+msgctxt "NonParametricSurvivalAnalysis|"
+msgid ""
+"Choose Default, Quantiles or Fixed size intervals. Quantiles uses frequency-"
+"weighted observed times, including censored times, rather than the estimated "
+"survival distribution."
+msgstr ""
+"اختيار فترات افتراضية أو كميات أو حجم ثابت. تستخدم الكميات أزمنة المشاهدة "
+"المرجحة بالتكرار، بما فيها أزمنة الرقابة، بدلًا من توزيع البقاء المقدَّر."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Choose the number of mixture components, or compare several numbers using "
+"All, Best AIC or Best BIC. Set the maximum in Advanced."
+msgstr ""
+"اختر عدد مكونات المخلوط، أو اقارن عدة أرقام باستخدام الكل، أفضل AIC أو أفضل "
+"BIC. اضبط الحد الأقصى في المتقدم."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Show the baseline mean and median lifetime of each mixture component."
+msgstr "عرض متوسط زمن الحياة ووسيطه عند خط الأساس لكل مكون من مكونات المزيج."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Summarize the assignment of observations to mixture components and the "
+"quality of the classification."
+msgstr "تلخيص إسناد المشاهدات إلى مكونات المخلوط ونوعية التصنيف."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Show the mixture and each component's survival measures. Density curves are "
+"weighted by the mixing proportions and sum to the mixture density."
+msgstr ""
+"عرض مقاييس البقاء للمزيج ولكل مكون. تُرجَّح منحنيات الكثافة بنسب المزج، ويعطي "
+"مجموعها كثافة المزيج."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Choose the measure to display in the component plot."
+msgstr "اختر المقياس المراد عرضه في رسم المكوّن."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Cumulative hazard"
+msgstr "الخطر التراكمي"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Restricted mean survival time"
+msgstr "متوسط زمن البقاء المقيّد"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Choose the transformation for the x-axis of the component plot."
+msgstr "اختر تحويل المحور x لرسم المكوّن."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Y-axis transformation"
+msgstr "تحويل المحور y"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Linear"
+msgstr "خطي"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Display the selected measure on a linear or logarithmic y-axis."
+msgstr "عرض المقياس المحدد على محور y خطي أو لوغاريتمي."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Merge Plots Across"
+msgstr "دمج الرسوم عبر"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Distributions"
+msgstr "التوزيعات"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Overlay the component plots for the selected distributions."
+msgstr "إظهار مخططات المكونات للتوزيعات المحددة متراكبةً."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Legend"
+msgstr "مفتاح الرسم"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Choose the legend position for the component plot, or hide the legend."
+msgstr "اختر موضع مفتاح رسم المكوّن، أو أخفِ المفتاح."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Bottom"
+msgstr "أسفل"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Right"
+msgstr "اليمين"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Left"
+msgstr "اليسار"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Top"
+msgstr "أعلى"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Overlay probability plots for different numbers of mixture components."
+msgstr "إظهار مخططات الاحتمال لأعداد مختلفة من مكونات المزيج متراكبةً."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set a minimum baseline spread for each mixture component. Uncertainty "
+"estimates are unavailable when an estimated spread reaches the bound."
+msgstr ""
+"تعيين حد أدنى لانتشار خط الأساس لكل مكون مزيج. لا تتوفر تقديرات عدم اليقين "
+"عندما يبلغ الانتشار المقدَّر الحد."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Express the minimum spread relative to a one-component model, or as an "
+"absolute value."
+msgstr ""
+"التعبير عن الحد الأدنى للتشتت نسبةً إلى نموذج بمكوّن واحد، أو كقيمة مطلقة."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set the minimum log-time standard deviation as a percentage of that in a one-"
+"component model."
+msgstr ""
+"تعيين الحد الأدنى للانحراف المعياري للوغاريتم الزمن كنسبة مئوية من قيمته في "
+"نموذج ذي مكون واحد."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set the minimum standard deviation of log survival time. Choose an "
+"application-specific bound and check sensitivity; 0.1 is only a preset."
+msgstr ""
+"تعيين الحد الأدنى للانحراف المعياري للوغاريتم زمن البقاء. اختر حدًا مناسبًا "
+"للتطبيق وافحص الحساسية؛ 0.1 قيمة مسبقة فقط."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Set the maximum number of components to compare when All, Best AIC or Best "
+"BIC is selected."
+msgstr ""
+"تعيين العدد الأقصى للمكونات للمقارنة عند اختيار الكل أو الأفضل وفق AIC أو "
+"الأفضل وفق BIC."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Use k-means clustering of log survival times to obtain starting values."
+msgstr ""
+"استخدام العنقدة بمتوسطات k للوغاريتمات أزمنة البقاء للحصول على قيم ابتدائية."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Compare models across different numbers of mixture components."
+msgstr "مقارنة النماذج عبر أعداد مختلفة من مكونات المخلوط."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Advanced specification"
+msgstr "مواصفات متقدمة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set coefficient restrictions, transformations and factor contrasts for this "
+"parameter's models."
+msgstr ""
+"تعيين قيود المعاملات والتحويلات والمقارنات الخطية للعوامل لنماذج هذه المعلمة."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Specify whether the data are right-censored, interval-censored or include "
+"delayed entry."
+msgstr ""
+"تحديد ما إذا كانت البيانات خاضعة لرقابة يمنى أو فترية أو تتضمن دخولًا متأخرًا."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify whether the data are right-censored, interval-censored or include "
+"delayed entry."
+msgstr ""
+"تحديد ما إذا كانت البيانات خاضعة لرقابة يمنى أو فترية أو تتضمن دخولًا متأخرًا."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Transformation"
+msgstr "التحويل"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Linear"
+msgstr "خطي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the transformation for the heatmap colour scale."
+msgstr "اختر تحويل مقياس ألوان الخريطة الحرارية."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the lower colour limit in the outcome's original units. Leave blank for "
+"an automatic limit."
+msgstr ""
+"تعيين الحد الأدنى للون بوحدات النتيجة الأصلية. اتركه فارغًا لتحديد الحد تلقائيًا."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the upper colour limit in the outcome's original units. Leave blank for "
+"an automatic limit."
+msgstr ""
+"تعيين الحد الأعلى للون بوحدات النتيجة الأصلية. اتركه فارغًا لتحديد الحد تلقائيًا."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Model variables"
+msgstr "متغيرات النموذج"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "X-axis"
+msgstr "المحور السيني"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the numeric predictor for the horizontal contour axis."
+msgstr "تحديد المتغير المتنبئ العددي للمحور الأفقي للمخطط الكنتوري."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Y-axis"
+msgstr "المحور الصادي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the numeric predictor for the vertical contour axis."
+msgstr "تحديد المتغير المتنبئ العددي للمحور الرأسي للمخطط الكنتوري."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Separate lines"
+msgstr "خطوط منفصلة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Draw separate contour lines for the levels or groups of the selected "
+"predictors."
+msgstr "رسم خطوط كنتور منفصلة لمستويات المتنبئات المحددة أو مجموعاتها."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Separate plots"
+msgstr "رسوم منفصلة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Create separate contour plots for the levels or groups of the selected "
+"predictors."
+msgstr "إنشاء رسوم كنتور منفصلة لمستويات المتنبئات المحددة أو مجموعاتها."
+
+msgctxt "ParametricDensityPlot|"
+msgid "Density plot"
+msgstr "مخطط الكثافة"
+
+msgctxt "ParametricDensityPlot|"
+msgid ""
+"Compare the fitted distribution of survival times with the observed data."
+msgstr "مقارنة التوزيع المقدّر لأزمنة البقاء بالبيانات المشاهدة."
+
+msgctxt "ParametricDensityPlot|"
+msgid "Observed data"
+msgstr "البيانات المشاهدة"
+
+msgctxt "ParametricDensityPlot|"
+msgid ""
+"Add a histogram of the observed survival times to the fitted density plot."
+msgstr "إضافة مدرج تكراري لأزمنة البقاء المشاهدة إلى رسم الكثافة المقدّرة."
+
+msgctxt "ParametricDensityPlot|"
+msgid "Bin width type"
+msgstr "نوع عرض الفئة"
+
+msgctxt "ParametricDensityPlot|"
+msgid ""
+"Choose the histogram bin width rule. Select Manual to specify the number of "
+"bins."
+msgstr "اختر قاعدة عرض فئات المدرج التكراري. اختر «يدوي» لتحديد عدد الفئات."
+
+msgctxt "ParametricDensityPlot|"
+msgid "Sturges"
+msgstr "ستورجس"
+
+msgctxt "ParametricDensityPlot|"
+msgid "Scott"
+msgstr "سكوت"
+
+msgctxt "ParametricDensityPlot|"
+msgid "Doane"
+msgstr "دوان (Doane)"
+
+msgctxt "ParametricDensityPlot|"
+msgid "Freedman-Diaconis"
+msgstr "فريدمان–دياكونيس"
+
+msgctxt "ParametricDensityPlot|"
+msgid "Manual"
+msgstr "يدوي"
+
+msgctxt "ParametricDensityPlot|"
+msgid "Number of bins"
+msgstr "عدد الفئات"
+
+msgctxt "ParametricDensityPlot|"
+msgid "Set the number of histogram bins."
+msgstr "تحديد عدد فئات المدرج التكراري."
+
+msgctxt "ParametricDensityPlot|"
+msgid "Merge Plots Across"
+msgstr "دمج الرسوم عبر"
+
+msgctxt "ParametricDensityPlot|"
+msgid "Distributions"
+msgstr "التوزيعات"
+
+msgctxt "ParametricDensityPlot|"
+msgid "Overlay fitted density curves for the selected distributions."
+msgstr "إظهار منحنيات الكثافة الملائمة للتوزيعات المحددة متراكبةً."
+
+msgctxt "ParametricDensityPlot|"
+msgid "Confidence intervals"
+msgstr "فترات الثقة"
+
+msgctxt "ParametricDensityPlot|"
+msgid "Show confidence intervals around the fitted density curve."
+msgstr "عرض فترات الثقة حول منحنى الكثافة الملائم."
+
+msgctxt "ParametricDensityPlot|"
+msgid "Set the confidence level for the fitted density."
+msgstr "تعيين مستوى الثقة للكثافة الملائمة."
+
+msgctxt "ParametricDensityPlot|"
+msgid "X-axis transformation"
+msgstr "تحويل المحور X"
+
+msgctxt "ParametricDensityPlot|"
+msgid ""
+"Choose the transformation for the x-axis. Log shows the distribution of log "
+"survival times."
+msgstr "اختيار تحويل المحور x. يعرض 'اللوغاريتم' توزيع لوغاريتمات أزمنة البقاء."
+
+msgctxt "ParametricDensityPlot|"
+msgid "None"
+msgstr "بلا"
+
+msgctxt "ParametricDensityPlot|"
+msgid "Log"
+msgstr "لوغاريتمي"
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Choose the distribution shared by all mixture components. All, Best AIC and "
+"Best BIC compare the distributions selected in Advanced."
+msgstr ""
+"اختر التوزيع المشترك بين كل مكونات المخلوط. الكل، أفضل AIC وأفضل BIC تقارن "
+"التوزيعات المنتقاة في المتقدم."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose a distribution, show all selected distributions, or select the best "
+"using AIC or BIC."
+msgstr ""
+"اختيار توزيع، أو عرض جميع التوزيعات المحددة، أو اختيار أفضلها باستخدام AIC "
+"أو BIC."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Restrict parameters"
+msgstr "تقييد المعلمات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Fix baseline distribution parameters at specified values. Leave a field "
+"empty to estimate the parameter."
+msgstr ""
+"ثبّت معلمات توزيع خط الأساس عند القيم المحددة. اترك الحقل فارغًا لتقدير المعلمة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify a fixed value or a numeric expression. Leave empty to estimate this "
+"parameter."
+msgstr "تحديد قيمة ثابتة أو تعبير عددي. اتركه فارغًا لتقدير هذه المعلمة."
+
+#, qt-format
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Parameter model: %1"
+msgstr "نموذج المعلمة: %1"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Specify each model independently, and set coefficient restrictions, "
+"covariate transformations or factor contrasts."
+msgstr ""
+"توصيف كل نموذج على حدة، وتعيين قيود المعاملات وتحويلات المتغيرات المصاحبة أو "
+"المقارنات الخطية للعوامل."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Ancillary parameter regression"
+msgstr "انحدار المعلمات المساعدة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Use predictors to model additional distribution parameters, such as shape or "
+"scale."
+msgstr ""
+"استخدام المتغيرات المتنبئة لنمذجة معلمات توزيع إضافية، مثل الشكل أو المقياس."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Select a specified model, show all models, or select the best using AIC or "
+"BIC."
+msgstr ""
+"تحديد نموذج معين، أو عرض جميع النماذج، أو اختيار أفضلها باستخدام AIC أو BIC."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select a specified model, show all models, or select the best using AIC or "
+"BIC."
+msgstr ""
+"تحديد نموذج معين، أو عرض جميع النماذج، أو اختيار أفضلها باستخدام AIC أو BIC."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set coefficient restrictions, covariate transformations and factor contrasts "
+"for each model."
+msgstr ""
+"حدّد قيود المعاملات وتحويلات المتغيرات المصاحبة والمقارنات التباينية للعوامل في "
+"كل نموذج."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Component"
+msgstr "المكوّن"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Parameter restriction"
+msgstr "قيد المعلمة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predictor specification"
+msgstr "تحديد المتنبئات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Fix regression coefficients at specified values or expressions. Leave empty "
+"to estimate them; separate multiple values with commas or semicolons."
+msgstr ""
+"تثبيت معاملات الانحدار عند قيم أو تعبيرات محددة. اتركه فارغًا لتقديرها؛ وافصل "
+"القيم المتعددة بفواصل أو فواصل منقوطة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Treatment (dummy)"
+msgstr "المعاملة (ترميز وهمي)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Sum"
+msgstr "المجموع"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Helmert"
+msgstr "هيلمرت"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Orthogonal polynomial"
+msgstr "كثير حدود متعامد"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "SAS"
+msgstr "SAS"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose how to code the factor's levels in the regression model."
+msgstr "اختر كيفية ترميز مستويات العامل في نموذج الانحدار."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Reference"
+msgstr "المرجع"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select the factor level used as the reference for Treatment or SAS coding."
+msgstr "تحديد مستوى العامل المستخدم مرجعًا لترميز المعالجة أو SAS."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Base"
+msgstr "الأساس"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the base of the logarithm. Use a positive value other than 1."
+msgstr "تعيين أساس اللوغاريتم. استخدم قيمة موجبة تختلف عن 1."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Multiplier"
+msgstr "معامل الضرب"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set a nonzero multiplier for the logarithm."
+msgstr "عيّن مضاعفاً غير صفري لـ لوغاريتم."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Exponent"
+msgstr "الأُسّ"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the exponent for the power transformation."
+msgstr "تعيين الأس لتحويل القوة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Degrees of freedom"
+msgstr "درجات الحرية"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the degrees of freedom for the natural cubic spline. Higher values allow "
+"more flexible curves."
+msgstr ""
+"تعيين درجات الحرية للدالة التجزيئية التكعيبية الطبيعية. تتيح القيم الأعلى "
+"منحنيات أكثر مرونة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Root degree"
+msgstr "رتبة الجذر"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the degree of the root. A value of 2 gives a square root."
+msgstr "تعيين رتبة الجذر. تعطي القيمة 2 جذرًا تربيعيًا."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Degree"
+msgstr "الدرجة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the polynomial degree: 1 for linear, 2 for quadratic, 3 for cubic."
+msgstr "تعيين درجة كثيرة الحدود: 1 للخطية، و2 للتربيعية، و3 للتكعيبية."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Kelvin"
+msgstr "كلفن"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Celsius"
+msgstr "درجة مئوية"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Fahrenheit"
+msgstr "فهرنهايت"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Select the units of the temperature variable."
+msgstr "اختر وحدات متغير درجة الحرارة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Stratify by"
+msgstr "التقسيم إلى طبقات حسب"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Show separate groups of observed data for the selected predictors."
+msgstr "أظهر مجموعات منفصلة من البيانات المُلاحظة للمتنبأين المختارين."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the predictors used to group observations. Factors use their levels; "
+"numeric predictors use quantile groups."
+msgstr ""
+"اختيار المتنبئات المستخدمة لتجميع المشاهدات. تُستخدم مستويات العوامل، وتُستخدم "
+"مجموعات الكميات للمتنبئات العددية."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the number of quantile groups for numeric predictors."
+msgstr "تعيين عدد مجموعات الكميات للمتغيرات المتنبئة العددية."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Group unique levels"
+msgstr "تجميع المستويات الفريدة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Use individual values instead of quantile groups when the number of distinct "
+"values is within the specified limit."
+msgstr ""
+"استخدام القيم الفردية بدلًا من مجموعات الكميات عندما يكون عدد القيم المتميزة "
+"ضمن الحد المحدد."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Parameters"
+msgstr "المعلمات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "rate"
+msgstr "المعدل"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "shape"
+msgstr "الشكل"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "scale"
+msgstr "المقياس"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "meanlog"
+msgstr "meanlog"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "sdlog"
+msgstr "sdlog"
+
+#, qt-format
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "%1 transformation"
+msgstr "تحويل %1"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Model term"
+msgstr "حد النموذج"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the axis transformation: the original scale, a logarithmic scale or "
+"the transformation used in the model."
+msgstr ""
+"انتقي تحويلات المحور: المقياس الأصلي، أو المقياس اللوغاريتمي أو التحويل "
+"المستخدم في النموذج."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the first predictor value to display, in original units. Leave blank to "
+"use the observed minimum."
+msgstr ""
+"تعيين أول قيمة للمتنبئ تُعرض بالوحدات الأصلية. اتركه فارغًا لاستخدام أصغر قيمة "
+"مشاهدة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the last predictor value to display, in original units. Leave blank to "
+"use the observed maximum."
+msgstr ""
+"تعيين آخر قيمة للمتنبئ تُعرض بالوحدات الأصلية. اتركه فارغًا لاستخدام أكبر قيمة "
+"مشاهدة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Observation"
+msgstr "مشاهدة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Add observation"
+msgstr "إضافة مشاهدة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Delete observation"
+msgstr "حذف المشاهدة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Enter predictor values for one observation per row. Leave cells empty to use "
+"the sample mean or factor reference level."
+msgstr ""
+"أدخل قيم المتنبئات لمشاهدة واحدة في كل صف. اترك الخلايا فارغة لاستخدام متوسط "
+"العينة أو المستوى المرجعي للعامل."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"The saved manual input columns do not match the current predictors. Review "
+"the saved values, then reset the table and re-enter them for the current "
+"predictors."
+msgstr ""
+"لا تطابق أعمدة الإدخال اليدوي المحفوظة المتغيرات المتنبئة الحالية. راجع القيم "
+"المحفوظة، ثم أعد ضبط الجدول وأدخلها مجددًا للمتغيرات المتنبئة الحالية."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lifetime quantile / Time"
+msgstr "كُميّة زمن البقاء / الزمن"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lifetime quantile / Time (prediction)"
+msgstr "كُميّة زمن البقاء / الزمن (التنبؤ)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Time"
+msgstr "الزمن"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Time (prediction)"
+msgstr "الزمن (التنبؤ)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lifetime / Time"
+msgstr "زمن البقاء / الزمن"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lifetime / Time (prediction)"
+msgstr "زمن البقاء / الزمن (التنبؤ)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "X-axis variables"
+msgstr "متغيرات المحور X"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select predictors for the x-axis, or choose Lifetime / Time to plot "
+"predictions over percentiles or time."
+msgstr ""
+"تحديد متنبئات للمحور x، أو اختيار زمن الحياة / الزمن لرسم التنبؤات عبر "
+"المئينات أو الزمن."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Draw separate lines for predictor levels or groups, or for the selected "
+"times or percentiles."
+msgstr ""
+"رسم خطوط منفصلة لمستويات المتنبئات أو المجموعات، أو للأزمنة أو المئينات "
+"المحددة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Create separate plots for predictor levels or groups, or for the selected "
+"times or percentiles."
+msgstr ""
+"إنشاء مخططات منفصلة لمستويات المتنبئات أو المجموعات، أو للأزمنة أو المئينات "
+"المحددة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Time / horizon"
+msgstr "الوقت/ الأفق"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Horizon"
+msgstr "أفق التنبؤ"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Outcome"
+msgstr "النتيجة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Survival time"
+msgstr "زمن البقاء"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict lifetime percentiles, median or mean from the fitted model."
+msgstr "التنبؤ بمئينات زمن الحياة أو وسيطه أو متوسطه من النموذج الملائم."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Time ratio"
+msgstr "نسبة الأزمنة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Current lifetime divided by reference lifetime. Values above 1 indicate "
+"longer survival."
+msgstr ""
+"زمن البقاء الحالي مقسومًا على المرجعي. تدل القيم الأكبر من 1 على بقاء أطول."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Acceleration factor"
+msgstr "معامل التسريع"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Reference lifetime divided by current lifetime. Values above 1 indicate "
+"shorter survival."
+msgstr ""
+"العمر المرجعي مقسوما على العمر الحالي. القيم التي تزيد عن 1 تشير إلى بقاء "
+"أقصر."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Survival probability"
+msgstr "احتمال البقاء"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the probability of surviving beyond each selected time."
+msgstr "توقع احتمالية النجاة بعد كل وقت مُنتقى."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Failure probability"
+msgstr "احتمال الفشل"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the probability of the event occurring by each selected time."
+msgstr "التنبؤ باحتمال وقوع الحدث بحلول كل زمن محدد."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the event rate at each selected time."
+msgstr "تنبأ بمعدل الحدث في كل وقت مختار."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Cumulative hazard"
+msgstr "الخطر التراكمي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the accumulated hazard up to each selected time."
+msgstr "التنبؤ بالمخاطر التراكمية حتى كل زمن محدد."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Restricted mean survival time"
+msgstr "متوسط زمن البقاء المقيّد"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the average survival time up to each selected time."
+msgstr "التنبؤ بمتوسط وقت البقاء حتى كل وقت مختار."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict for"
+msgstr "التنبؤ لـ"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose predictions for selected variable values, manually entered "
+"observations, dataset rows with missing outcomes, or observations from a CSV "
+"file."
+msgstr ""
+"اختيار التنبؤات لقيم متغيرات محددة، أو مشاهدات مدخلة يدويًا، أو صفوف بيانات "
+"ذات نتائج مفقودة، أو مشاهدات من ملف CSV."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Variables"
+msgstr "المتغيرات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Manual input"
+msgstr "إدخال يدوي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Missing outcomes (dataset)"
+msgstr "النتائج المفقودة (مجموعة البيانات)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "CSV file"
+msgstr "ملف CSV"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select a CSV file with one observation per row. Column names and factor "
+"levels must match the dataset."
+msgstr ""
+"تحديد ملف CSV بمشاهدة واحدة في كل صف. يجب أن تتطابق أسماء الأعمدة ومستويات "
+"العوامل مع مجموعة البيانات."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lifetime"
+msgstr "زمن البقاء"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the expected survival time."
+msgstr "التنبؤ بالوقت المتوقع للبقاء."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict the median survival time (the 50th percentile)."
+msgstr "التنبؤ بوسيط زمن البقاء (المئين 50)."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Percentiles"
+msgstr "المئينات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predict survival times at the selected percentiles."
+msgstr "توقع أوقات البقاء على قيد الحياة في المئينات المختارة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose how to specify lifetime percentiles: equal intervals, a sequence or "
+"custom values."
+msgstr ""
+"اختر كيفية تحديد مئينات زمن البقاء: فترات متساوية أو تسلسل أو قيم مخصصة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Equal intervals"
+msgstr "فترات متساوية"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Intervals"
+msgstr "الفترات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the number of equal intervals between 0 and 100."
+msgstr "تعيين عدد الفترات المتساوية بين 0 و100."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "0"
+msgstr "0"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the first percentile in the sequence. Leave blank to start at 0."
+msgstr "تعيين المئين الأول في المتتالية. اتركه فارغًا للبدء من 0."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Step"
+msgstr "الخطوة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "10"
+msgstr "10"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the percentile increment. Leave blank to use an increment of 10."
+msgstr "تعيين مقدار زيادة المئين. اتركه فارغًا لاستخدام زيادة قدرها 10."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "100"
+msgstr "100"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the last percentile in the sequence. Leave blank to end at 100."
+msgstr "تعيين المئين الأخير في المتتالية. اتركه فارغًا للانتهاء عند 100."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Values"
+msgstr "القيم"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Enter lifetime percentiles from 0 to 100, separated by commas."
+msgstr "أدخل مئينات زمن البقاء من 0 إلى 100، مفصولة بفواصل."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose how to specify prediction times: equal intervals, a sequence or "
+"custom values."
+msgstr "اختر كيفية تحديد أزمنة التنبؤ: فترات متساوية أو تسلسل أو قيم مخصصة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Custom (relative)"
+msgstr "مخصص (نسبي)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Custom (absolute)"
+msgstr "مخصص (مطلق)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the number of equal intervals between zero and the maximum follow-up "
+"time."
+msgstr "تعيين عدد الفترات المتساوية بين صفر وأقصى زمن متابعة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the first time in the sequence. Leave blank to start at 0."
+msgstr "تعيين الزمن الأول في المتتالية. اتركه فارغًا للبدء من 0."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Maximum follow-up / 10"
+msgstr "أقصى مدة للمتابعة / 10"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the time increment. Leave blank to use the default increment."
+msgstr "تعيين مقدار الزيادة الزمنية. اتركه فارغًا لاستخدام الزيادة الافتراضية."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Maximum follow-up"
+msgstr "أقصى مدة للمتابعة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the last time in the sequence. Leave blank to use the maximum follow-up "
+"time."
+msgstr "تعيين الزمن الأخير في المتتالية. اتركه فارغًا لاستخدام أقصى زمن متابعة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Percentages"
+msgstr "النسب المئوية"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Enter prediction times as percentages of the maximum follow-up time, "
+"separated by commas."
+msgstr "أدخل أزمنة التنبؤ كنسب مئوية من أقصى مدة للمتابعة، مفصولة بفواصل."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "25%, 50%, 75% of follow-up"
+msgstr "25% و50% و75% من مدة المتابعة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Enter non-negative prediction times, separated by commas. Leave blank to use "
+"the default times."
+msgstr ""
+"أدخل أزمنة تنبؤ غير سالبة، مفصولة بفواصل. اتركه فارغًا لاستخدام الأزمنة "
+"الافتراضية."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Output"
+msgstr "المخرجات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Plot every selected measure in its own panel. For new observations, use "
+"observation numbers on the x-axis and separate lines for times or lifetime "
+"percentiles."
+msgstr ""
+"رسم كل مقياس محدد في لوحة خاصة. للمشاهدات الجديدة، استخدم أرقام المشاهدات "
+"على المحور x وخطوطًا منفصلة للأزمنة أو مئينات زمن الحياة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Curves and points"
+msgstr "منحنيات ونقاط"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Contour"
+msgstr "خط كنتور"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose predictor plots for individual predictors, or contour plots for two "
+"numeric predictors."
+msgstr ""
+"اختيار مخططات المتنبئات لكل متنبئ على حدة، أو مخططات كنتورية لمتنبئين عدديين."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Show a table of the selected predictions."
+msgstr "عرض جدول التنبؤات المحددة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Long"
+msgstr "طويل"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Wide"
+msgstr "واسع"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Show times, horizons and lifetime percentiles in rows (Long) or separate "
+"column groups (Wide)."
+msgstr ""
+"عرض الأزمنة والآفاق الزمنية ومئينات زمن الحياة في صفوف (الصيغة الطويلة) أو "
+"مجموعات أعمدة منفصلة (الصيغة العريضة)."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Export predictions to dataset"
+msgstr "تصدير التنبؤات إلى مجموعة البيانات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Add the selected predictions as new columns in the dataset."
+msgstr "إضافة التنبؤات المحددة كأعمدة جديدة في مجموعة البيانات."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Column prefix"
+msgstr "بادئة العمود"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set a prefix for the names of exported prediction columns."
+msgstr "تعيين بادئة لأسماء أعمدة التنبؤ المصدَّرة."
+
+#, qt-format
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Observation %1"
+msgstr "المشاهدة %1"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Unassigned reference values"
+msgstr "قيم مرجعية غير مُعيّنة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Average (design)"
+msgstr "المتوسط (التصميم)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Average (population)"
+msgstr "المتوسط (المجتمع)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Default"
+msgstr "افتراضي"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose a design average, a population average, default reference values or "
+"custom values."
+msgstr ""
+"اختر متوسط التصميم أو متوسط المجتمع أو القيم المرجعية الافتراضية أو قيمًا "
+"مخصصة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Value"
+msgstr "القيمة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Enter reference values for unassigned predictors. Leave cells empty to use "
+"design averages."
+msgstr ""
+"أدخل قيمًا مرجعية للمتنبئات غير المسندة. اترك الخلايا فارغة لاستخدام متوسطات "
+"التصميم."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Assigned covariate values"
+msgstr "القيم المحددة للمتغيرات المصاحبة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose quantile groups or custom values for numeric predictors used in "
+"separate lines or plots."
+msgstr ""
+"اختيار مجموعات كميات أو قيم مخصصة للمتنبئات العددية المستخدمة في خطوط أو "
+"مخططات منفصلة."
+
+#, qt-format
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Level %1"
+msgstr "المستوى %1"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Add row"
+msgstr "إضافة صف"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Remove row"
+msgstr "إزالة صف"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Enter values for each numeric predictor used in separate lines or plots. "
+"Their combinations define the prediction groups."
+msgstr ""
+"أدخل قيم كل متنبئ عددي مستخدم في خطوط أو مخططات منفصلة. تحدد توليفات القيم "
+"مجموعات التنبؤ."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Survival time y-axis scale"
+msgstr "مقياس زمن البقاء على المحور y"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose the y-axis scale for survival time, time ratios or acceleration "
+"factors."
+msgstr "اختر مقياس المحور y لزمن البقاء أو نسب الأزمنة أو عوامل التسارع."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Probability y-axis scale"
+msgstr "مقياس الاحتمال على المحور y"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the y-axis scale for survival or failure probabilities."
+msgstr "اختر مقياس المحور y لاحتمالات البقاء أو الفشل."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the x-axis scale for lifetime percentiles or time."
+msgstr "اختر مقياس المحور x لمئينات زمن البقاء أو للزمن."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Covariate x-axis settings"
+msgstr "إعدادات المحور x للمتغير المصاحب"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the axis transformation and plotting range for each numeric predictor on "
+"the x-axis."
+msgstr "تعيين تحويل المحور ونطاق الرسم لكل متغير متنبئ عددي على المحور x."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Contours"
+msgstr "خطوط الكنتور"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Levels"
+msgstr "المستويات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose automatic contour levels or enter custom levels for each selected "
+"measure."
+msgstr "اختر مستويات كنتور تلقائية أو أدخل مستويات مخصصة لكل مقياس محدد."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the approximate number of rounded contour levels."
+msgstr "تعيين العدد التقريبي لمستويات الخطوط الكنتورية ذات القيم المقربة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Common across figures"
+msgstr "مشترك بين الأشكال"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Use the same contour levels across figures for each selected measure."
+msgstr "استخدام مستويات الخطوط الكنتورية نفسها بين الأشكال لكل مقياس محدد."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Enter contour levels in the outcome's original units, separated by commas."
+msgstr "أدخل مستويات الكنتور بوحدات النتيجة الأصلية، مفصولة بفواصل."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Heatmap scale"
+msgstr "مقياس الخريطة الحرارية"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the colour scale and limits of the heatmap for each selected measure."
+msgstr "تعيين مقياس الألوان وحدود الخريطة الحرارية لكل مقياس محدد."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Predictor values in table"
+msgstr "قيم المتنبئات في الجدول"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the number of numeric predictor values used in prediction tables."
+msgstr "تعيين عدد قيم المتغيرات المتنبئة العددية المستخدمة في جداول التنبؤ."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Display"
+msgstr "عرض"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Prediction interval"
+msgstr "فترة التنبؤ"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Show a range for individual survival times at the selected predictor values."
+msgstr "عرض نطاق لأزمنة البقاء الفردية عند القيم المحددة للمتغيرات المتنبئة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the coverage of the prediction interval."
+msgstr "ضبط تغطية فترة التنبؤ."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Combine predictor plots"
+msgstr "دمج رسوم المتنبئات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Combine the plots for the selected predictors in one figure."
+msgstr "دمج رسوم المتنبئات المحددة في شكل واحد."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the legend position for prediction plots."
+msgstr "اختر موضع مفتاح رسوم التنبؤ."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the theme for prediction plots."
+msgstr "اختر مظهر مخططات التنبؤ."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Connect x-axis levels"
+msgstr "وصل مستويات المحور x"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Connect predicted values across factor levels on the x-axis."
+msgstr "وصل القيم المتنبّأ بها عبر مستويات العامل على المحور x."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Observed data"
+msgstr "البيانات المشاهدة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Add observed event times to predictor plots, or observed predictor values to "
+"contour plots."
+msgstr ""
+"إضافة أزمنة الأحداث المشاهدة إلى مخططات المتنبئات، أو قيم المتنبئات المشاهدة "
+"إلى المخططات الكنتورية."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Overlay Kaplan-Meier curves for comparison with the model predictions, where "
+"available."
+msgstr ""
+"إظهار منحنيات كابلان–ماير متراكبةً للمقارنة مع تنبؤات النموذج، حيثما توفرت."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Show censored observations as marks along the time axis."
+msgstr "أظهر مشاهدات مُخضعة للرقابة كعلامات على طول المحور الزمني."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Colors for prediction series."
+msgstr "الألوان لسلسلة التنبؤ."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Merge series across"
+msgstr "دمج السلاسل عبر"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Overlay selected distributions."
+msgstr "عرض التوزيعات المحددة متراكبة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Overlay predictions for the separately fitted subgroups."
+msgstr "إظهار تنبؤات المجموعات الفرعية الملائمة كلٌّ على حدة متراكبةً."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Components"
+msgstr "المكونات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Overlay selected numbers of mixture components."
+msgstr "إظهار النتائج للأعداد المحددة من مكونات المزيج متراكبةً."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Combine the selected time-based prediction measures in one table."
+msgstr "دمج مقاييس التنبؤ الزمنية المحددة في جدول واحد."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Round time table values"
+msgstr "تقريب قيم جدول الزمن"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Round prediction times in tables to the nearest integer."
+msgstr "تقريب أزمنة التنبؤ في الجداول إلى أقرب عدد صحيح."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Compare observed failure times with the fitted distribution to assess model "
+"fit. Available for right-censored data."
+msgstr ""
+"مقارنة أزمنة الفشل المشاهدة بالتوزيع الملائم لتقييم مطابقة النموذج. متاح "
+"للبيانات الخاضعة لرقابة يمنى."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the reference distribution for the probability plot's axes."
+msgstr "اختر التوزيع المرجعي لمحاور رسم الاحتمال."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Show points representing the observed failure probabilities."
+msgstr "عرض نقاط تمثل احتمالات الفشل المشاهدة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Overlay probability plots for separately fitted subgroups."
+msgstr "إظهار مخططات الاحتمال للمجموعات الفرعية الملائمة كلٌّ على حدة متراكبةً."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Strata"
+msgstr "الطبقات"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Overlay the observed groups in one probability plot, or show each group in a "
+"separate plot."
+msgstr ""
+"عرض المجموعات المشاهدة متراكبةً في مخطط احتمال واحد، أو عرض كل مجموعة في مخطط "
+"منفصل."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose how to adjust the ranks of observations when some survival times are "
+"censored."
+msgstr "اختر كيفية تعديل رتب المشاهدات عندما تخضع بعض أزمنة البقاء للرقابة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the legend position for the probability plot."
+msgstr "اختر موضع مفتاح رسم الاحتمال."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Choose the colours used in the probability plot."
+msgstr "اختر الألوان المستخدمة في رسم الاحتمال."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Fix this component's regression coefficients at specified values. Leave "
+"empty to estimate them; separate multiple values with commas or semicolons."
+msgstr ""
+"تثبيت معاملات انحدار هذا المكون عند قيم محددة. اتركه فارغًا لتقديرها؛ وافصل "
+"القيم المتعددة بفواصل أو فواصل منقوطة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Residuals vs. predicted time"
+msgstr "البواقي مقابل الزمن المتنبّأ به"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Confidence interval"
+msgstr "فترة الثقة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Bounds"
+msgstr "الحدود"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Two-sided"
+msgstr "ثنائي الطرف"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Lower"
+msgstr "الحد الأدنى"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Upper"
+msgstr "الحد الأعلى"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose two-sided confidence intervals or one-sided lower or upper bounds."
+msgstr "اختر فترات ثقة ثنائية الطرف، أو حدودًا سفلية أو علوية أحادية الطرف."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Simulation draws"
+msgstr "سحبات المحاكاة"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Set the number of simulations used for confidence intervals. More "
+"simulations improve precision but take longer."
+msgstr ""
+"تعيين عدد المحاكاة المستخدمة لفترات الثقة. تزيد المحاكاة الأكثر الدقةَ لكنها "
+"تستغرق وقتًا أطول."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Fitted model equation"
+msgstr "معادلة النموذج المقدّر"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Show the fitted model equations in a table."
+msgstr "عرض معادلات النموذج المقدّر في جدول."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Decimals"
+msgstr "المنازل العشرية"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Set the number of decimal places displayed in the fitted equations."
+msgstr "تعيين عدد المنازل العشرية المعروضة في المعادلات الملائمة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Natural log: ln(x)"
+msgstr "اللوغاريتم الطبيعي: ln(x)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "General log (c, y): c log<sub>y</sub>(x)"
+msgstr "اللوغاريتم العام (c, y): c log<sub>y</sub>(x)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Arrhenius (eV): 1/(k<sub>B</sub>T)"
+msgstr "أرينيوس (eV): 1/(k<sub>B</sub>T)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Reciprocal: 1/x"
+msgstr "المقلوب: 1/x"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Power (y): x<sup>y</sup>"
+msgstr "الأس (y): x<sup>y</sup>"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Root (y): <sup>y</sup>√x"
+msgstr "الجذر (y): <sup>y</sup>√x"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Polynomial"
+msgstr "كثيرة الحدود"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Scale: (x - mean(x)) / sd(x)"
+msgstr "توحيد المقياس: (x - mean(x)) / sd(x)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Natural cubic spline"
+msgstr "منحنى تكعيبي طبيعي مجزّأ (Spline)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Eyring: 1/T and ln(T)"
+msgstr "إيرينغ: 1/T وln(T)"
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Choose a transformation for the covariate before fitting the model. "
+"Arrhenius and Eyring are for temperature effects."
+msgstr ""
+"اختيار تحويل للمتغير المصاحب قبل ملاءمة النموذج. يُستخدم تحويلا أرهينيوس "
+"وإيرينغ لآثار درجة الحرارة."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Add continuous predictors to the mixture model. Each component has its own "
+"coefficients."
+msgstr "إضافة متنبئات مستمرة إلى نموذج الخليط. لكل مكوّن معاملاته الخاصة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Add continuous predictors to the survival model."
+msgstr "إضافة متنبئات مستمرة إلى نموذج البقاء."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Add categorical predictors to the mixture model. Each component has its own "
+"coefficients."
+msgstr "إضافة متنبئات فئوية إلى نموذج الخليط. لكل مكوّن معاملاته الخاصة."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid "Add categorical predictors to the survival model."
+msgstr "إضافة متنبئات فئوية إلى نموذج البقاء."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Select a variable of positive integer case frequencies. Each value gives the "
+"number of observations represented by that row."
+msgstr ""
+"تحديد متغير لتكرارات الحالات الموجبة الصحيحة. تمثل كل قيمة عدد المشاهدات التي "
+"يمثلها ذلك الصف."
+
+msgctxt "ParametricSurvivalAnalysis|"
+msgid ""
+"Fit separate models for each combination of the selected factors' levels."
+msgstr "ملاءمة نماذج منفصلة لكل توليفة من مستويات العوامل المحددة."
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Diagnostics"
+msgstr "التشخيص"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Residual Plots"
+msgstr "مخططات البواقي"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Residuals vs. time"
+msgstr "البواقي مقابل الزمن"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Plot the selected residuals against cumulative interval endpoints."
+msgstr "رسم البواقي المحددة مقابل نقاط النهاية التراكمية للفترات."
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Residuals vs. predicted"
+msgstr "البواقي مقابل القيم المتنبّأ بها"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid ""
+"Plot residuals against fitted values on the regression scale, or fitted "
+"interval event counts for count residuals."
+msgstr ""
+"رسم البواقي مقابل القيم الملائمة على مقياس الانحدار، أو مقابل أعداد الأحداث "
+"الملائمة للفترات عند استخدام بواقي العد."
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Residuals histogram"
+msgstr "مدرج تكراري للبواقي"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Display the distribution of the selected residuals."
+msgstr "عرض توزيع البواقي المحددة."
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Type"
+msgstr "النوع"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Regression"
+msgstr "الانحدار"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Response"
+msgstr "الاستجابة"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Pearson"
+msgstr "بيرسون"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Deviance"
+msgstr "الانحراف"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid "Randomized quantile"
+msgstr "الكُميّة العشوائية"
+
+msgctxt "RecurrentEventDiagnostics|"
+msgid ""
+"Regression residuals use the package's log-scale least-squares regression. "
+"Response, Pearson, deviance and randomized quantile residuals use Poisson "
+"interval event counts with means obtained from the fitted cumulative curve. "
+"Count residuals assume an NHPP, including for Duane. Set a seed under "
+"Advanced to reproduce randomized quantile residuals."
+msgstr ""
+"تستخدم بواقي الانحدار انحدار المربعات الصغرى على المقياس اللوغاريتمي في "
+"الحزمة. وتستخدم بواقي الاستجابة وبيرسون والانحراف والكميات العشوائية تكرارات "
+"أحداث بواسون في الفترات، بمتوسطات مشتقة من المنحنى التراكمي الملاءَم. تفترض "
+"بواقي التكرارات NHPP، حتى لنموذج دوان. حدّد بذرة في «متقدم» لإعادة إنتاج بواقي "
+"الكميات العشوائية."
+
+msgctxt "RecurrentEventExport|"
+msgid "Export"
+msgstr "تصدير"
+
+msgctxt "RecurrentEventExport|"
+msgid ""
+"Add residuals and fitted counts as dataset columns, preserving the original "
+"row order."
+msgstr ""
+"إضافة البواقي والتكرارات المقدّرة كأعمدة مع الحفاظ على ترتيب الصفوف الأصلي."
+
+msgctxt "RecurrentEventExport|"
+msgid "Column prefix"
+msgstr "بادئة العمود"
+
+msgctxt "RecurrentEventExport|"
+msgid "Set a non-empty prefix for exported column names."
+msgstr "تعيين بادئة غير فارغة لأسماء الأعمدة المصدَّرة."
+
+msgctxt "RecurrentEventExport|"
+msgid "Residuals"
+msgstr "البواقي"
+
+msgctxt "RecurrentEventExport|"
+msgid "Regression"
+msgstr "الانحدار"
+
+msgctxt "RecurrentEventExport|"
+msgid ""
+"Export the package's log-scale regression residuals. Available for least-"
+"squares fits."
+msgstr ""
+"تصدير بواقي الانحدار على المقياس اللوغاريتمي من الحزمة. متاح لملاءمة المربعات "
+"الصغرى."
+
+msgctxt "RecurrentEventExport|"
+msgid "Response"
+msgstr "الاستجابة"
+
+msgctxt "RecurrentEventExport|"
+msgid "Export observed minus fitted interval event counts."
+msgstr "تصدير الفرق بين أعداد الأحداث المشاهدة والمقدّرة في الفترات."
+
+msgctxt "RecurrentEventExport|"
+msgid "Pearson"
+msgstr "بيرسون"
+
+msgctxt "RecurrentEventExport|"
+msgid ""
+"Export interval count differences divided by the square root of the fitted "
+"interval mean."
+msgstr ""
+"تصدير فروق أعداد الأحداث في الفترات مقسومة على الجذر التربيعي لمتوسط عدد "
+"الأحداث المقدّر."
+
+msgctxt "RecurrentEventExport|"
+msgid "Deviance"
+msgstr "الانحراف"
+
+msgctxt "RecurrentEventExport|"
+msgid "Export signed Poisson deviance residuals for observation intervals."
+msgstr "تصدير بواقي انحراف بواسون ذات الإشارة لفترات المشاهدة."
+
+msgctxt "RecurrentEventExport|"
+msgid "Randomized quantile"
+msgstr "الكُميّة العشوائية"
+
+msgctxt "RecurrentEventExport|"
+msgid ""
+"Export the same cached normal quantile residuals used in diagnostic and "
+"probability plots. Set a seed under Advanced to reproduce them."
+msgstr ""
+"تصدير بواقي الكميات الطبيعية المخزنة نفسها المستخدمة في مخططات التشخيص "
+"والاحتمال. عيّن بذرة في الخيارات المتقدمة لإعادة إنتاجها."
+
+msgctxt "RecurrentEventExport|"
+msgid "Fitted Values"
+msgstr "القيم الملائمة"
+
+msgctxt "RecurrentEventExport|"
+msgid "Cumulative events"
+msgstr "الأحداث التراكمية"
+
+msgctxt "RecurrentEventExport|"
+msgid "Export fitted cumulative events at each interval endpoint."
+msgstr "تصدير الأحداث التراكمية المقدّرة عند نهاية كل فترة."
+
+msgctxt "RecurrentEventExport|"
+msgid "Interval events"
+msgstr "الأحداث في الفترة"
+
+msgctxt "RecurrentEventExport|"
+msgid ""
+"Export expected events within each observation interval, obtained by "
+"differencing the fitted cumulative mean."
+msgstr ""
+"تصدير الأحداث المتوقعة داخل فترة كل مشاهدة، بحساب فروق المتوسط التراكمي "
+"الملائم."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Predictions"
+msgstr "التنبؤات"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Outcome"
+msgstr "النتيجة"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Mission reliability"
+msgstr "اعتمادية المهمة"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Predict the probability of no events during a mission starting at each "
+"selected time: exp(-(M(t + d) - M(t))), where d is the mission duration. "
+"This assumes an NHPP, including for the Duane growth curve."
+msgstr ""
+"التنبؤ باحتمال عدم وقوع أحداث خلال مهمة تبدأ عند كل زمن محدد: exp(-(M(t + "
+"d) - M(t)))، حيث d مدة المهمة. يفترض ذلك NHPP، بما فيه منحنى نمو دوان."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Survival probability"
+msgstr "احتمال البقاء"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Predict event-free survival: the probability of no events from time zero to "
+"each selected time, exp(-M(t)), assuming an NHPP. For Duane, this assumes an "
+"NHPP interpretation of its fitted growth curve. This does not add patient-"
+"level censoring support."
+msgstr ""
+"يتنبأ بالبقاء الخالي من الأحداث: احتمال عدم وقوع أحداث من الزمن صفر حتى كل "
+"زمن محدد، exp(-M(t))، بافتراض عملية بواسون غير متجانسة (NHPP). يفترض نموذج "
+"دوان تفسير منحنى نموه الملاءَم بوصفه NHPP. لا يضيف هذا دعمًا للمراقبة على مستوى "
+"المريض."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Failure probability"
+msgstr "احتمال الفشل"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Predict the probability of at least one event from time zero to each "
+"selected time, 1 - exp(-M(t)), assuming an NHPP. For Duane, this assumes an "
+"NHPP interpretation of its fitted growth curve. This is the complement of "
+"event-free survival."
+msgstr ""
+"التنبؤ باحتمال حدث واحد على الأقل من الزمن صفر إلى كل زمن محدد: 1 - exp(-M(t))"
+"، بافتراض NHPP. ولدوان، يُفترض تفسير NHPP لمنحنى نموه الملائم. وهذا مكمّل "
+"البقاء بلا أحداث."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Cumulative events"
+msgstr "الأحداث التراكمية"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Predict the expected cumulative number of events since time zero."
+msgstr "تنبأ بالعدد التراكمي المتوقع للأحداث منذ الصفر"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Event intensity"
+msgstr "شدة الحدث"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Predict the instantaneous event rate per unit time."
+msgstr "التنبؤ بالمعدل اللحظي للحدث لكل وحدة زمنية."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Cumulative mean time between events"
+msgstr "متوسط الوقت المتراكم بين الأحداث"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Predict cumulative time divided by expected cumulative events. This is an "
+"average time per event up to the selected time."
+msgstr ""
+"التنبؤ بالزمن التراكمي مقسومًا على العدد التراكمي المتوقع للأحداث. وهو متوسط "
+"الزمن لكل حدث حتى الزمن المحدد."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Instantaneous mean time between events"
+msgstr "متوسط الزمن اللحظي بين الأحداث"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Predict the reciprocal of instantaneous event intensity. This is a local "
+"rate-based measure, not the expected waiting time to the next event when the "
+"rate changes."
+msgstr ""
+"التنبؤ بمقلوب شدة الحدث اللحظية. هو مقياس معدل محلي، وليس زمن الانتظار "
+"المتوقع للحدث التالي عند تغير المعدل."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Time"
+msgstr "الزمن"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Grid"
+msgstr "شبكة"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Equal intervals"
+msgstr "فترات متساوية"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Sequence"
+msgstr "التعاقب"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Custom (relative)"
+msgstr "مخصص (نسبي)"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Custom (absolute)"
+msgstr "مخصص (مطلق)"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Choose how to specify prediction times: equal intervals, a sequence or "
+"custom values."
+msgstr "اختر كيفية تحديد أزمنة التنبؤ: فترات متساوية أو تسلسل أو قيم مخصصة."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Intervals"
+msgstr "الفترات"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Set the number of equal intervals between the first observed endpoint and "
+"maximum follow-up in each subgroup."
+msgstr ""
+"تعيين عدد الفترات المتساوية بين أول نقطة نهاية مشاهدة وأقصى متابعة في كل "
+"مجموعة فرعية."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "From"
+msgstr "من"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "First endpoint"
+msgstr "نقطة النهاية الأولى"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Set a positive first time in the sequence. Leave blank to use the first "
+"observed endpoint in each subgroup."
+msgstr ""
+"تعيين زمن أول موجب في المتتالية. اتركه فارغًا لاستخدام أول نقطة نهاية مشاهدة "
+"في كل مجموعة فرعية."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Step"
+msgstr "الخطوة"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "(To - From) / 10"
+msgstr "(إلى - من) / 10"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Set a positive time increment. Leave blank to use (To - From) / 10, or From "
+"when both endpoints are equal."
+msgstr ""
+"تعيين زيادة زمنية موجبة. اتركه فارغًا لاستخدام (To - From) / 10، أو From عند "
+"تساوي نقطتي النهاية."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "To"
+msgstr "إلى"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Maximum follow-up"
+msgstr "أقصى مدة للمتابعة"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Set the last prediction time. Use a time beyond observed follow-up to "
+"forecast. Leave blank to use the maximum follow-up in each subgroup."
+msgstr ""
+"تعيين آخر زمن تنبؤ. استخدم زمنًا يتجاوز المتابعة المشاهدة للاستشراف. اتركه "
+"فارغًا لاستخدام أقصى متابعة في كل مجموعة فرعية."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Percentages"
+msgstr "النسب المئوية"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Enter prediction times as percentages of the maximum follow-up time, "
+"separated by commas."
+msgstr "أدخل أزمنة التنبؤ كنسب مئوية من أقصى مدة للمتابعة، مفصولة بفواصل."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Values"
+msgstr "القيم"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "25%, 50%, 75% of follow-up"
+msgstr "25% و50% و75% من مدة المتابعة"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Enter positive prediction times separated by commas, in the original time "
+"units. Leave blank to use 25%, 50% and 75% of follow-up."
+msgstr ""
+"أدخل أزمنة تنبؤ موجبة مفصولة بفواصل، بوحدات الزمن الأصلية. اتركه فارغًا "
+"لاستخدام 25% و50% و75% من مدة المتابعة."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Mission duration"
+msgstr "مدة المهمة"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Set a positive mission duration in the original time units. The time grid "
+"specifies mission start times."
+msgstr ""
+"تعيين مدة مهمة موجبة بوحدات الزمن الأصلية. تحدد شبكة الأزمنة أزمنة بدء المهمات."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Output"
+msgstr "المخرجات"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Plot"
+msgstr "المخطط"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Plot every selected measure in its own panel."
+msgstr "رسم كل مقياس محدد في لوحة منفصلة."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Table"
+msgstr "الجدول"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Show a table of the selected predictions."
+msgstr "عرض جدول التنبؤات المحددة."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Long"
+msgstr "طويل"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Wide"
+msgstr "واسع"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Show times in rows (Long) or separate column groups (Wide)."
+msgstr ""
+"عرض الأزمنة في صفوف (الصيغة الطويلة) أو مجموعات أعمدة منفصلة (الصيغة العريضة)."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Y-axis scale"
+msgstr "مقياس المحور Y"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Linear"
+msgstr "خطي"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Log"
+msgstr "لوغاريتمي"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Choose the y-axis scale for the predicted quantities."
+msgstr "اختر مقياس محور y للكميات المتوقعة."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "X-axis transformation"
+msgstr "تحويل المحور X"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Choose the x-axis scale for time."
+msgstr "اختر مقياس الزمن على المحور السيني."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Display"
+msgstr "عرض"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Confidence intervals"
+msgstr "فترات الثقة"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Include pointwise confidence intervals for the figures and tables. These are "
+"not prediction intervals for future counts. Rate-based intervals are "
+"unavailable for piecewise models."
+msgstr ""
+"إدراج فترات ثقة نقطية في الأشكال والجداول. ليست فترات تنبؤ للأعداد المستقبلية. "
+"الفترات القائمة على المعدلات غير متاحة للنماذج المقطعية."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Set the confidence level for the confidence intervals."
+msgstr "وضع مستوى الثقة لفترات الثقة."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Legend"
+msgstr "مفتاح الرسم"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Bottom"
+msgstr "أسفل"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Right"
+msgstr "اليمين"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Left"
+msgstr "اليسار"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Top"
+msgstr "أعلى"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "None"
+msgstr "بلا"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Choose the legend position for prediction plots."
+msgstr "اختر موضع مفتاح رسوم التنبؤ."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Theme"
+msgstr "السمة"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "White background"
+msgstr "خلفية بيضاء"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Light"
+msgstr "فاتح"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Minimal"
+msgstr "بسيط"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Detailed"
+msgstr "تفصيلي"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Choose the theme for prediction plots."
+msgstr "اختر مظهر مخططات التنبؤ."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Observed data"
+msgstr "البيانات المشاهدة"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Add observed cumulative events or cumulative mean time between events to the "
+"corresponding plots."
+msgstr ""
+"إضافة العدد التراكمي للأحداث المشاهدة أو المتوسط التراكمي للزمن بين الأحداث "
+"إلى المخططات المقابلة."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Colors for prediction series."
+msgstr "الألوان لسلسلة التنبؤ."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Merge series across"
+msgstr "دمج السلاسل عبر"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Subgroups"
+msgstr "المجموعات الفرعية"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Overlay predictions for the separately fitted subgroups."
+msgstr "إظهار تنبؤات المجموعات الفرعية الملائمة كلٌّ على حدة متراكبةً."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Merge tables across measures"
+msgstr "دمج الجداول بين المقاييس"
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Combine the selected time-based prediction measures in one table."
+msgstr "دمج مقاييس التنبؤ الزمنية المحددة في جدول واحد."
+
+msgctxt "RecurrentEventPredictions|"
+msgid "Round time table values"
+msgstr "تقريب قيم جدول الزمن"
+
+msgctxt "RecurrentEventPredictions|"
+msgid ""
+"Round evaluation times in tables to the nearest integer. Rounded times must "
+"remain positive."
+msgstr ""
+"تقريب أزمنة التقييم في الجداول إلى أقرب عدد صحيح. يجب أن تظل الأزمنة المقربة "
+"موجبة."
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Probability plot"
+msgstr "مخطط الاحتمال"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid ""
+"Check Poisson interval counts using randomized quantile residuals from "
+"fitted interval means. Normal Q-Q and uniform P-P plots should follow the "
+"reference line under an NHPP. This is a count-model diagnostic, not a "
+"lifetime probability plot. Set a seed under Advanced to reproduce it."
+msgstr ""
+"يفحص تكرارات بواسون في الفترات باستخدام بواقي الكميات العشوائية المحسوبة من "
+"متوسطات الفترات الملاءَمة. ينبغي أن تتبع رسوم Q-Q الطبيعية وP-P المنتظمة الخط "
+"المرجعي تحت عملية بواسون غير متجانسة (NHPP). هذا تشخيص لنموذج التكرارات، "
+"وليس مخطط احتمال لأزمنة الحياة. حدّد بذرة في «متقدم» لإعادة إنتاجه."
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Canvas"
+msgstr "مساحة الرسم"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Normal (Q-Q)"
+msgstr "طبيعي (Q-Q)"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Uniform (P-P)"
+msgstr "منتظم (P-P)"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid ""
+"Compare quantile residuals with standard normal quantiles, or their "
+"cumulative probabilities with uniform plotting positions."
+msgstr ""
+"مقارنة البواقي الكمية بكميات التوزيع الطبيعي المعياري، أو مقارنة احتمالاتها "
+"التراكمية بمواضع رسم منتظمة."
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Empirical points"
+msgstr "نقاط تجريبية"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Show one randomized quantile residual for each observation interval."
+msgstr "عرض باقٍ كمي عشوائي واحد لكل فترة مشاهدة."
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Coordinates"
+msgstr "الإحداثيات"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Display the theoretical and observed coordinates beside each point."
+msgstr "عرض الإحداثيات النظرية والمشاهدة بجوار كل نقطة."
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Reference line"
+msgstr "خط مرجعي"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Show the identity line expected under the fitted NHPP count model."
+msgstr "عرض خط الهوية المتوقع وفق نموذج العد NHPP الملائم."
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Merge Plots Across"
+msgstr "دمج الرسوم عبر"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Subgroups"
+msgstr "المجموعات الفرعية"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Overlay probability diagnostics for separately fitted subgroups."
+msgstr ""
+"إظهار التشخيصات الاحتمالية للمجموعات الفرعية الملائمة كلٌّ على حدة متراكبةً."
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Reference envelope"
+msgstr "غلاف مرجعي"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid ""
+"Show pointwise order-statistic bounds for the reference distribution, "
+"treating fitted parameters as known. This exploratory envelope does not "
+"account for parameter estimation and is not a calibrated goodness-of-fit "
+"test."
+msgstr ""
+"يعرض حدودًا نقطية لإحصاءات الترتيب في التوزيع المرجعي، مع معاملة المعلمات "
+"الملاءَمة على أنها معلومة. لا يأخذ هذا الغلاف الاستكشافي تقدير المعلمات في الحسبان"
+"، ولا يمثل اختبارًا معايرًا لحسن المطابقة."
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Set the pointwise reference-envelope coverage."
+msgstr "تعيين تغطية الغلاف المرجعي عند كل نقطة."
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Grid"
+msgstr "شبكة"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Show grid lines on the probability plot."
+msgstr "عرض خطوط الشبكة على رسم الاحتمال."
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Plotting position"
+msgstr "موضع الرسم الاحتمالي"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Median"
+msgstr "الوسيط"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Benard"
+msgstr "بينار (Benard)"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Hazen"
+msgstr "هازن"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Mean"
+msgstr "المتوسط"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Blom"
+msgstr "بلوم (Blom)"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid ""
+"Choose the theoretical plotting positions for the ordered interval residuals."
+msgstr "اختر مواضع الرسم النظرية لبواقي الفترات المرتّبة."
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Legend"
+msgstr "مفتاح الرسم"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Bottom"
+msgstr "أسفل"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Right"
+msgstr "اليمين"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Left"
+msgstr "اليسار"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Top"
+msgstr "أعلى"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "None"
+msgstr "بلا"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Choose the legend position for merged subgroup plots."
+msgstr "اختر موضع مفتاح الرسوم المدمجة للمجموعات الفرعية."
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Choose colors for subgroup probability diagnostics."
+msgstr "اختر ألوان مؤشرات تشخيص الاحتمال للمجموعات الفرعية."
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Theme"
+msgstr "السمة"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Detailed"
+msgstr "تفصيلي"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "White background"
+msgstr "خلفية بيضاء"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Light"
+msgstr "فاتح"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Minimal"
+msgstr "بسيط"
+
+msgctxt "RecurrentEventProbabilityPlot|"
+msgid "Choose the probability plot theme."
+msgstr "اختر مظهر مخطط الاحتمال."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Add residuals, fitted values or mixture classifications from the displayed "
+"models as new columns in the dataset."
+msgstr ""
+"إضافة البواقي أو القيم الملائمة أو تصنيفات المزيج من النماذج المعروضة كأعمدة "
+"جديدة في مجموعة البيانات."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Set a prefix for the names of exported columns."
+msgstr "اضبط سابقة لأسماء أعمدة التصدير."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Export martingale residuals for each observation."
+msgstr "تصدير بواقي مارتينغال لكل مشاهدة."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export observed minus predicted mean survival time, treating censored times "
+"as observed. Unavailable for interval-censored data."
+msgstr ""
+"تصدير الفرق بين زمن البقاء المشاهد ومتوسط زمن البقاء المتنبأ به، مع معاملة "
+"الأزمنة الخاضعة للرقابة كأزمنة مشاهدة. غير متاح للرقابة الفترية."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export Cox-Snell residuals. For counting-process data, these are conditional "
+"on survival to entry. Unavailable for interval-censored data."
+msgstr ""
+"تصدير بقايا كوكس-Snell. بالنسبة لبيانات عملية العد، هذه البيانات مشروطة "
+"بالبقاء على قيد الحياة حتى الدخول. غير متاحة للبيانات الخاضعة للرقابة لفترات "
+"فاصلة."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export the fitted relative risk, centered at mean covariate values within "
+"each stratum."
+msgstr ""
+"تصدير الخطر النسبي المقدّر، متمركزًا عند متوسطات المتغيرات المصاحبة داخل كل "
+"طبقة."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export the fitted log relative risk, centered at mean covariate values "
+"within each stratum."
+msgstr ""
+"تصدير لوغاريتم المخاطر النسبية الملائم، بعد التوسيط عند متوسط قيم المتغيرات "
+"المصاحبة داخل كل طبقة."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Export the fitted mean survival time for each observation."
+msgstr "تصدير متوسط زمن البقاء المقدّر لكل مشاهدة."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Export the fitted median survival time for each observation."
+msgstr "تصدير وسيط زمن البقاء المقدّر لكل مشاهدة."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid ""
+"Export the estimated probability that each observation belongs to each "
+"mixture component."
+msgstr ""
+"تصدير الاحتمال المقدر بأن كل مشاهدة تنتمي إلى كل مكون من مكونات المخلوط."
+
+msgctxt "ParametricMixtureSurvivalAnalysis|"
+msgid "Export the most likely mixture component for each observation."
+msgstr "تصدير مكون المزيج الأكثر ترجيحاً لكل مشاهدة."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Model recurrent events from event counts in successive observation "
+"intervals. Fit each independent test sequence separately using Subgroup."
+msgstr ""
+"نمذجة الأحداث المتكررة من أعدادها في فترات المشاهدة المتتالية. لائم كل سلسلة "
+"اختبار مستقلة على حدة باستخدام المجموعة الفرعية."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Time"
+msgstr "الزمن"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Select cumulative interval endpoints or interval durations. Rows must follow "
+"the observation order within each subgroup."
+msgstr ""
+"تحديد نقاط النهاية التراكمية للفترات أو مدد الفترات. يجب أن تتبع الصفوف "
+"ترتيب المشاهدات داخل كل مجموعة فرعية."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Event Count (optional)"
+msgstr "عدد الأحداث (اختياري)"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Select the number of events within each interval, not cumulative counts. "
+"Leave empty for one event per interval. ReliaGrowR currently requires "
+"positive counts in every interval."
+msgstr ""
+"حدّد عدد الأحداث داخل كل فترة، دون استخدام الأعداد التراكمية. اتركه فارغًا لحدث "
+"واحد في كل فترة. يتطلب ReliaGrowR حاليًا عددًا موجبًا في كل فترة."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Subgroup"
+msgstr "المجموعة الفرعية"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Fit each combination of factor levels as an independent observation "
+"sequence. Do not split one sequence by changing operating conditions."
+msgstr ""
+"ملاءمة كل توليفة من مستويات العوامل كسلسلة مشاهدات مستقلة. لا تقسّم سلسلة واحدة "
+"بتغيير ظروف التشغيل."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Model"
+msgstr "النموذج"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Duane"
+msgstr "دوان (Duane)"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Crow–AMSAA (power-law NHPP)"
+msgstr "كرو–AMSAA (عملية بواسون غير متجانسة وفق قانون القوة)"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Log-linear NHPP"
+msgstr "عملية بواسون غير متجانسة لوغاريتمية خطية"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Piecewise power-law NHPP"
+msgstr "عملية بواسون غير متجانسة بقانون قوة مقطعي"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Choose the recurrent-event model. Crow–AMSAA is a power-law non-homogeneous "
+"Poisson process (NHPP)."
+msgstr ""
+"اختيار نموذج الأحداث المتكررة. نموذج Crow–AMSAA عملية بواسون غير متجانسة "
+"(NHPP) ذات قانون قوة."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Estimation"
+msgstr "التقدير"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Maximum likelihood"
+msgstr "الإمكان الأعظم"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Least squares"
+msgstr "المربعات الصغرى"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Maximum likelihood uses counts in observation intervals. Least squares fits "
+"a regression on logarithms of cumulative quantities."
+msgstr ""
+"يستخدم الإمكان الأقصى التكرارات داخل فترات المشاهدة. وتلائم المربعات الصغرى "
+"انحدارًا على لوغاريتمات الكميات التراكمية."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Time input"
+msgstr "مدخلات الوقت"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Cumulative interval endpoints"
+msgstr "نهايات الفترات التراكمية"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Interval durations"
+msgstr "مدد الفترات"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Choose how Time describes the observation intervals. Each sequence starts at "
+"zero. Maximum likelihood uses an interval-count likelihood rather than an "
+"exact-event-time likelihood."
+msgstr ""
+"تحديد كيفية وصف متغير الزمن لفترات المشاهدة. تبدأ كل سلسلة عند صفر. يستخدم "
+"الإمكان الأقصى إمكان أعداد الأحداث في الفترات، بدلًا من إمكان أزمنة الأحداث "
+"الدقيقة."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Statistics"
+msgstr "الإحصاءات"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Model summary"
+msgstr "ملخص النموذج"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Include a table with information about the model fit."
+msgstr "إدراج جدول يتضمن معلومات عن مطابقة النموذج."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Data summary"
+msgstr "ملخص البيانات"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Show observation intervals, total events, follow-up time and observed "
+"cumulative mean time between events for each subgroup."
+msgstr ""
+"عرض فترات المشاهدة وإجمالي الأحداث وزمن المتابعة والمتوسط التراكمي المشاهد "
+"للزمن بين الأحداث لكل مجموعة فرعية."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Coefficients"
+msgstr "المعاملات"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Include a table with coefficient estimates."
+msgstr "إدراج جدول مع تقديرات المعامل."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Confidence intervals"
+msgstr "فترات الثقة"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Include confidence intervals for the coefficients."
+msgstr "إدراج فترات الثقة للمعاملات."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Set the confidence level for the confidence intervals."
+msgstr "وضع مستوى الثقة لفترات الثقة."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Coefficients covariance matrix"
+msgstr "مصفوفة تغاير المعاملات"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Include a table with the covariance matrix of the coefficient estimates."
+msgstr "إدراج جدول لمصفوفة تباين تقديرات المعاملات وتغايرها."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Segment estimates"
+msgstr "تقديرات المقاطع"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Show segment slopes, their standard errors, growth rates and scales returned "
+"by ReliaGrowR."
+msgstr ""
+"عرض ميول المقاطع وأخطائها المعيارية ومعدلات النمو ومعلمات المقياس التي يرجعها "
+"ReliaGrowR."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Change points"
+msgstr "نقاط التغير"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Show estimated change-point times in the original time units and native "
+"standard errors on the log-time scale."
+msgstr ""
+"أظهر أوقات التغيير المقدرة في وحدات الوقت الأصلية والأخطاء المعيارية الأصلية "
+"على مقياس الوقت اللوغاريتمي."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Fitted model equation"
+msgstr "معادلة النموذج المقدّر"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Show the fitted model equations in a table."
+msgstr "عرض معادلات النموذج المقدّر في جدول."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Decimals"
+msgstr "المنازل العشرية"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Set the number of decimal places displayed in the fitted equations."
+msgstr "تعيين عدد المنازل العشرية المعروضة في المعادلات الملائمة."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Advanced"
+msgstr "متقدم"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Confidence interval"
+msgstr "فترة الثقة"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Bounds"
+msgstr "الحدود"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Two-sided"
+msgstr "ثنائي الطرف"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Lower"
+msgstr "الحد الأدنى"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Upper"
+msgstr "الحد الأعلى"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Choose two-sided confidence intervals or one-sided lower or upper bounds."
+msgstr "اختر فترات ثقة ثنائية الطرف، أو حدودًا سفلية أو علوية أحادية الطرف."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Model Options"
+msgstr "خيارات النموذج"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Starting change points"
+msgstr "نقاط التغير الأولية"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Provide initial locations for estimated change points. When unchecked, the "
+"package initializes one change point automatically. These locations are "
+"starting values, not fixed change points."
+msgstr ""
+"حدّد مواقع ابتدائية لنقاط التغير المقدَّرة. عند إلغاء التحديد، تهيئ الحزمة نقطة "
+"تغير واحدة تلقائيًا. هذه المواقع قيم ابتدائية، وليست نقاط تغير ثابتة."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Times"
+msgstr "الأزمنة"
+
+msgctxt "RecurrentEventAnalysis|"
+msgid ""
+"Enter starting change-point times in the original time units, separated by "
+"commas."
+msgstr "أدخل أزمنة نقاط التغير الأولية بوحدات الزمن الأصلية، مفصولة بفواصل."
+
+msgctxt "RecurrentEventAnalysis|"
+msgid "Reproducibility"
+msgstr "قابلية إعادة الإنتاج"
+
+msgctxt "Upgrades|"
+msgid ""
+"Prediction and diagnostic settings have changed. Please review the updated "
+"options and results."
+msgstr "تغيرت إعدادات التنبؤ والتشخيص. يرجى مراجعة الخيارات والنتائج المحدَّثة."
+
+msgctxt "Upgrades|"
+msgid ""
+"Prediction, diagnostic and starting-value settings have changed. Please "
+"review the updated options and results."
+msgstr ""
+"تغيرت إعدادات التنبؤ والتشخيص والقيم الابتدائية. يرجى مراجعة الخيارات "
+"والنتائج المحدَّثة."
