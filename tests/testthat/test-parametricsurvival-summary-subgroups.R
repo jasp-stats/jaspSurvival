@@ -5,8 +5,9 @@
   environment(summary)$createJaspTable <- function() {
     table <- new.env(parent = emptyenv())
     table$columns <- character(0)
+    table$footnotes <- character(0)
     table$addColumnInfo <- function(name, ...) table$columns <- c(table$columns, name)
-    table$addFootnote <- function(...) NULL
+    table$addFootnote <- function(message, ...) table$footnotes <- c(table$footnotes, message)
     table$setData <- function(data) table$data <- data
     return(table)
   }
@@ -39,6 +40,7 @@ test_that("Single-model subgroup summaries do not compare different datasets", {
       table <- .subgroupSummaryTable(fits, criterion)
       expect_false(any(comparisonColumns %in% table$columns))
       expect_false(any(comparisonColumns %in% names(table$data)))
+      expect_equal(table$footnotes, gettext("Models cannot be compared because they are fitted to different datasets."))
       expect_equal(table$data$subgroup, vapply(fits, attr, character(1), which = "subgroup"))
       expect_equal(table$data$aic, vapply(fits, AIC, numeric(1)))
       expect_equal(table$data$bic, vapply(fits, BIC, numeric(1)))
@@ -49,8 +51,10 @@ test_that("Single-model subgroup summaries do not compare different datasets", {
 test_that("Competing fits within a subgroup retain weights and ranks", {
   for (group in c("A", "B", "fullDataset")) {
     fits <- list(.subgroupSummaryFit(group), .subgroupSummaryFit(group, distribution = "exp"))
+    expect_length(.subgroupSummaryTable(fits[1])$footnotes, 0L)
     for (criterion in c("aic", "bic", "logLik")) {
       table <- .subgroupSummaryTable(fits, criterion)
+      expect_length(table$footnotes, 0L)
       expect_true(all(c("aicWeight", "bicWeight", "rank") %in% table$columns))
       expect_equal(sum(table$data$aicWeight), 1)
       expect_equal(sum(table$data$bicWeight), 1)

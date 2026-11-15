@@ -201,6 +201,8 @@
   # add footnotes
   messages <- .sapSelectionFootnote(data, options)
   messages <- c(messages, .sapEyringOmissionNote(options))
+  if (length(fit) > 1 && !compareModels)
+    messages <- c(messages, gettext("Models cannot be compared because they are fitted to different datasets."))
   for (i in seq_along(messages))
     summaryTable$addFootnote(messages[[i]])
 
