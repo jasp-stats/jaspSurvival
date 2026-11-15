@@ -14,7 +14,7 @@ Section
 
 	title:		qsTr("Export")
 	columns:	2
-	info: qsTr("Add residuals, fitted values or mixture classifications from the displayed models as new columns in the dataset.")
+	info: qsTr("Column exports are temporarily unavailable because creating columns can change the variable labels in the results.")
 
 	TextField
 	{

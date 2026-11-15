@@ -87,6 +87,9 @@
 
 .saExportPreflight <- function(columns, columnExists = jaspBase:::columnExists, columnIsMine = jaspBase:::columnIsMine) {
 
+  if (length(columns))
+    .quitAnalysis(gettext("Exporting survival results to dataset columns is temporarily unavailable because creating columns can change the variable labels in the results. Turn off column exports to view the analysis."))
+
   names <- vapply(columns, `[[`, character(1), "name")
   if (anyDuplicated(names))
     .quitAnalysis(gettextf(
