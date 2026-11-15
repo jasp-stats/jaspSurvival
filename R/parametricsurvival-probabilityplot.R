@@ -525,7 +525,9 @@
 
 .sapProbabilityPlotHandleTies <- function(data, tiesHandler) {
 
-  if (!tiesHandler %in% c("highest", "lowest", "mean", "sequential"))
+  # Sequential ties retain one adjusted rank per failure, including frequency
+  # replicates. Renumbering distinct times would discard units while n stays fixed.
+  if (!tiesHandler %in% c("highest", "lowest", "mean"))
     return(data)
 
   tiedRanks <- stats::aggregate(
@@ -542,8 +544,7 @@
       tiesHandler,
       "highest"    = highest,
       "lowest"     = lowest,
-      "mean"       = (highest + lowest) / 2,
-      "sequential" = highest - cumsum(highest - lowest)
+      "mean"       = (highest + lowest) / 2
     )
   )
 
