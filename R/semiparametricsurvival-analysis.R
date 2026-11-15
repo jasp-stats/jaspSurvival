@@ -74,7 +74,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     fitContainer$dependOn(.saspDependencies)
     jaspResults[["fit"]] <- fitContainer
 
-    fit <- try(coxph(
+    fit <- try(.saspCoxph(coxph(
       formula = .saGetFormula(options, type = "Cox", null = FALSE),
       data    = dataset,
       x       = TRUE,
@@ -82,7 +82,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
       # id      = if (options[["id"]] != "")      dataset[[options[["id"]]]],
       cluster = if (options[["cluster"]] != "") dataset[[options[["cluster"]]]],
       weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]]
-    ))
+    )))
 
     attr(fit, "dataset") <- dataset
     jaspResults[["fit"]]$object <- fit
@@ -94,19 +94,35 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     fitNullContainer$dependOn(.saspDependencies)
     jaspResults[["fitNull"]] <- fitNullContainer
 
-    fitNull <- try(coxph(
+    fitNull <- try(.saspCoxph(coxph(
       formula = .saGetFormula(options, type = "Cox", null = TRUE),
       data    = dataset,
       method  = options[["method"]],
       # id      = if (options[["id"]] != "")      dataset[[options[["id"]]]],
       cluster = if (options[["cluster"]] != "") dataset[[options[["cluster"]]]],
       weights = if (options[["weights"]] != "") dataset[[options[["weights"]]]]
-    ))
+    )))
 
     jaspResults[["fitNull"]]$object <- fitNull
   }
 
   return()
+}
+.saspCoxph <- function(expr) {
+
+  warnings <- character()
+  fit <- withCallingHandlers(expr, warning = function(w) {
+    message <- conditionMessage(w)
+    # survival's penalized fitter spells one convergence warning "coverge".
+    if (grepl("converg|coverg|infinite", message, ignore.case = TRUE))
+      stop(gettextf("The Cox model could not be reliably estimated: %1$s", message), call. = FALSE)
+    warnings <<- c(warnings, message)
+    invokeRestart("muffleWarning")
+  })
+  if (any(is.infinite(stats::coef(fit))))
+    stop(gettext("The Cox model could not be reliably estimated because a coefficient is infinite."), call. = FALSE)
+  attr(fit, "fitWarnings") <- unique(warnings)
+  return(fit)
 }
 .saspHasPredictors <- function(jaspResults) {
 
@@ -248,6 +264,11 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   fit     <- jaspResults[["fit"]][["object"]]
   fitNull <- jaspResults[["fitNull"]][["object"]]
+
+  for (message in attr(fitNull, "fitWarnings"))
+    summaryTable$addFootnote(gettextf("Null model warning: %1$s", message))
+  for (message in attr(fit, "fitWarnings"))
+    summaryTable$addFootnote(gettextf("Alternative model warning: %1$s", message))
 
   if (jaspBase::isTryError(fitNull))
     summaryTable$addFootnote(fitNull, symbol = gettext("The null model failed with the following message:"))

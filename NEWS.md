@@ -2,6 +2,7 @@
 
 # jaspSurvival 0.98.2
 ## Fixed
+* Cox analyses report convergence problems instead of presenting affected fits as ordinary results.
 * Quantile lines mark the correct event times on survival, cumulative-hazard, and complementary log-log plots in Kaplan-Meier and Cox analyses.
 * Parametric survival summaries omit AIC/BIC weights and ranks across subgroups and explain that models fitted to different datasets cannot be compared.
 * Corrected probability plotting positions with sequential ties.
