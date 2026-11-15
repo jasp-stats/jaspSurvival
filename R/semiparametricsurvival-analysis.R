@@ -389,7 +389,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   estimatesTable$addColumnInfo(name = "param",  title = "",                        type = "string")
   estimatesTable$addColumnInfo(name = "est",    title = gettext("Estimate"),       type = "number")
   estimatesTable$addColumnInfo(name = "se",     title = gettext("Standard Error"), type = "number")
-  if (options[["cluster"]] != "" || options[["frailty"]] != "") # || options[["id"]] != ""
+  if (options[["cluster"]] != "") # || options[["id"]] != ""
     estimatesTable$addColumnInfo(name = "rse",    title = gettext("Robust Standard Error"), type = "number")
   if (options[["coefficientsConfidenceIntervals"]]) {
     overtitle <- gettextf("%.0f%% CI", 100 * options[["coefficientsConfidenceIntervalsLevel"]])
@@ -785,7 +785,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     toExtract    <- c(
       "est"    = "coef",
       "se"     = "se(coef)",
-      "rse"    = if (.saspHasFrailty(options)) "se2"   else "robust se",
+      "rse"    = "robust se",
       "zval"   = if (.saspHasFrailty(options)) "Chisq" else "z",
       "pval"   = if (.saspHasFrailty(options)) "p"     else "Pr(>|z|)"
     )
