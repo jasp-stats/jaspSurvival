@@ -10,10 +10,9 @@ test_that("SemiParametricSurvivalAnalysis (analysis 1) results match", {
   opts <- jaspTools::analysisOptions(jaspFile)[[1]]
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
-  # Encode and run analysis
-  encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
+  # Run analysis
   set.seed(1)
-  results <- jaspTools::runAnalysis("SemiParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+  results <- jaspTools::runAnalysis("SemiParametricSurvivalAnalysis", dataset, opts)
 
   table <- results[["results"]][["modelFitTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -38,21 +37,18 @@ test_that("SemiParametricSurvivalAnalysis (analysis 2) results match", {
   opts <- jaspTools::analysisOptions(jaspFile)[[2]]
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
-  # Encode and run analysis
-  encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
+  # Run analysis
   set.seed(1)
-  results <- jaspTools::runAnalysis("SemiParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+  results <- jaspTools::runAnalysis("SemiParametricSurvivalAnalysis", dataset, opts)
 
   table <- results[["results"]][["estimatesTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(0.161619857406316, 0.0641310047945991, "H<unicode>", "jaspColumn1",
-     0.00115695361003499, 0.0497401245026422, 0.259108710018033,
-     3.24928534100736))
+    list(0.161619857406316, 0.0641310047945991, "H<unicode>", "age", 0.00115695361003499,
+         0.0497401245026422, 0.259108710018033, 3.24928534100736))
 
   table <- results[["results"]][["hazardRatioTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(1.17541333170913, 1.0662320711259, "H<unicode>", "jaspColumn1",
-     1.29577466085843))
+    list(1.17541333170913, 1.0662320711259, "H<unicode>", "age", 1.29577466085843))
 
   table <- results[["results"]][["modelFitTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -65,8 +61,7 @@ test_that("SemiParametricSurvivalAnalysis (analysis 2) results match", {
 
   table <- results[["results"]][["proportionalHazardsTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(0.69143093228958, 1, 0.405678093672719, "jaspColumn1", 0.69143093228958,
-     1, 0.405678093672719, "Global"))
+    list(0.69143093228958, 1, 0.405678093672719, "age", 0.69143093228958, 1, 0.405678093672719, "Global"))
 
   plotName <- results[["results"]][["residualsPlots"]][["collection"]][["residualsPlots_residualPlotResidualHistogram"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
@@ -109,21 +104,18 @@ test_that("SemiParametricSurvivalAnalysis (analysis 3) results match", {
   opts <- jaspTools::analysisOptions(jaspFile)[[3]]
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
-  # Encode and run analysis
-  encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
+  # Run analysis
   set.seed(1)
-  results <- jaspTools::runAnalysis("SemiParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+  results <- jaspTools::runAnalysis("SemiParametricSurvivalAnalysis", dataset, opts)
 
   table <- results[["results"]][["estimatesTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(0.123879936963637, 0.00658864744672992, "H<unicode>", "jaspColumn1",
-     0.0384465599789823, 0.0598435942915716, 0.241171226480544, 2.07006177403158
-    ))
+    list(0.123879936963637, 0.00658864744672992, "H<unicode>", "age", 0.0384465599789823,
+         0.0598435942915716, 0.241171226480544, 2.07006177403158))
 
   table <- results[["results"]][["hazardRatioTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(1.13187996589524, 1.00661040033211, "H<unicode>", "jaspColumn1",
-     1.2727389432618))
+    list(1.13187996589524, 1.00661040033211, "H<unicode>", "age", 1.2727389432618))
 
   table <- results[["results"]][["modelFitTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -136,8 +128,7 @@ test_that("SemiParametricSurvivalAnalysis (analysis 3) results match", {
 
   table <- results[["results"]][["proportionalHazardsTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(1.12442304908746, 1, 0.288968046598394, "jaspColumn1", 1.12442304908746,
-     1, 0.288968046598394, "Global"))
+    list(1.12442304908746, 1, 0.288968046598394, "age", 1.12442304908746, 1, 0.288968046598394, "Global"))
 
   plotName <- results[["results"]][["residualsPlots"]][["collection"]][["residualsPlots_residualPlotResidualHistogram"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
@@ -180,26 +171,22 @@ test_that("SemiParametricSurvivalAnalysis (analysis 4) results match", {
   opts <- jaspTools::analysisOptions(jaspFile)[[4]]
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
-  # Encode and run analysis
-  encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
+  # Run analysis
   set.seed(1)
-  results <- jaspTools::runAnalysis("SemiParametricSurvivalAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+  results <- jaspTools::runAnalysis("SemiParametricSurvivalAnalysis", dataset, opts)
 
   table <- results[["results"]][["estimatesTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(0.062318329555653, -0.0525937416460908, "H<unicode>", "jaspColumn1",
-     0.291043368786259, 0.0586296850902137, 0.0590227630983666, 0.177230400757397,
-     1.05583551640566))
+    list(0.062318329555653, -0.0525937416460908, "H<unicode>", "age",
+         0.291043368786259, 0.0586296850902137, 0.0590227630983666, 0.177230400757397, 1.05583551640566))
 
   table <- results[["results"]][["frailtyTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(44.913746237973, 7.99009861923082, 3.78526719796018e-07, "jaspColumn3",
-     6.10630228739894))
+    list(44.913746237973, 7.99009861923082, 3.78526719796018e-07, "G", 6.10630228739894))
 
   table <- results[["results"]][["hazardRatioTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(1.06430108930181, 0.948034712927676, "H<unicode>", "jaspColumn1",
-     1.19482630039036))
+    list(1.06430108930181, 0.948034712927676, "H<unicode>", "age", 1.19482630039036))
 
   table <- results[["results"]][["modelFitTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -212,9 +199,8 @@ test_that("SemiParametricSurvivalAnalysis (analysis 4) results match", {
 
   table <- results[["results"]][["proportionalHazardsTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(0.0195685732474866, 0.986724813170825, 0.885250200704232, "jaspColumn1",
-     0.0195685732474866, 8.97682343240164, 0.999999999981531, "Global"
-    ))
+    list(0.0195685732474866, 0.986724813170825, 0.885250200704232, "age", 0.0195685732474866,
+         8.97682343240164, 0.999999999981531, "Global"))
 
   plotName <- results[["results"]][["residualsPlots"]][["collection"]][["residualsPlots_residualPlotResidualHistogram"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]

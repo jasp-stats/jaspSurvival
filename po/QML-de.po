@@ -270,12 +270,10 @@ msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Best AIC"
 msgstr "Bestes AIC"
 
-#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Best BIC"
 msgstr "Bestes BIC"
 
-#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Components"
 msgstr "Komponenten"
@@ -286,48 +284,46 @@ msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Mean and median"
-msgstr ""
+msgstr "Mittelwert und Median"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Classification"
-msgstr ""
+msgstr "Klassifikation"
 
-#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Diagnostics"
-msgstr "Diagnostik"
+msgstr "Diagnostiken"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Estimation diagnostics"
-msgstr ""
+msgstr "Schätzdiagnostiken"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Component plot"
-msgstr ""
+msgstr "Komponentendiagramm"
 
-#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Type"
 msgstr "Typ"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Survival probability"
-msgstr ""
+msgstr "Überlebenswahrscheinlichkeit"
 
+#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Failure probability"
-msgstr ""
+msgstr "Ausfallwahrscheinlichkeit"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Density"
-msgstr ""
+msgstr "Dichte"
 
 #, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Hazard"
 msgstr "Hazard-Rate"
 
-#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Advanced"
 msgstr "Erweitert"
@@ -338,11 +334,11 @@ msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Relative"
-msgstr ""
+msgstr "Relativ"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Absolute"
-msgstr ""
+msgstr "Absolut"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Minimum log-time SD"
@@ -354,15 +350,16 @@ msgstr ""
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Starting Values"
-msgstr ""
+msgstr "Startwerte"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "K-means"
-msgstr ""
+msgstr "K-Mittelwerte"
 
+#, fuzzy
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Random"
-msgstr ""
+msgstr "Zufall"
 
 msgctxt "ParametricMixtureSurvivalAnalysis|"
 msgid "Set the number of random starting values."
@@ -2587,17 +2584,19 @@ msgid ""
 "shorter survival."
 msgstr ""
 
+#, fuzzy
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Survival probability"
-msgstr ""
+msgstr "Überlebenswahrscheinlichkeit"
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Predict the probability of surviving beyond each selected time."
 msgstr ""
 
+#, fuzzy
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Failure probability"
-msgstr ""
+msgstr "Ausfallwahrscheinlichkeit"
 
 msgctxt "ParametricSurvivalAnalysis|"
 msgid "Predict the probability of the event occurring by each selected time."
@@ -3465,9 +3464,10 @@ msgid ""
 "This assumes an NHPP, including for the Duane growth curve."
 msgstr ""
 
+#, fuzzy
 msgctxt "RecurrentEventPredictions|"
 msgid "Survival probability"
-msgstr ""
+msgstr "Überlebenswahrscheinlichkeit"
 
 msgctxt "RecurrentEventPredictions|"
 msgid ""
@@ -3477,9 +3477,10 @@ msgid ""
 "level censoring support."
 msgstr ""
 
+#, fuzzy
 msgctxt "RecurrentEventPredictions|"
 msgid "Failure probability"
-msgstr ""
+msgstr "Ausfallwahrscheinlichkeit"
 
 msgctxt "RecurrentEventPredictions|"
 msgid ""

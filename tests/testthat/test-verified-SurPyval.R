@@ -10,10 +10,9 @@ test_that("RecurrentEventAnalysis (analysis 1) results match", {
   opts <- jaspTools::analysisOptions(jaspFile)[[1]]
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
-  # Encode and run analysis
-  encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
+  # Run analysis
   set.seed(1)
-  results <- jaspTools::runAnalysis("RecurrentEventAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+  results <- jaspTools::runAnalysis("RecurrentEventAnalysis", dataset, opts)
 
   table <- results[["results"]][["coefficientsTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
@@ -42,10 +41,9 @@ test_that("RecurrentEventAnalysis (analysis 2) results match", {
   opts <- jaspTools::analysisOptions(jaspFile)[[2]]
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
-  # Encode and run analysis
-  encoded <- jaspTools:::encodeOptionsAndDataset(opts, dataset)
+  # Run analysis
   set.seed(1)
-  results <- jaspTools::runAnalysis("RecurrentEventAnalysis", encoded$dataset, encoded$options, encodedDataset = TRUE)
+  results <- jaspTools::runAnalysis("RecurrentEventAnalysis", dataset, opts)
 
   table <- results[["results"]][["coefficientsTable"]][["data"]]
   jaspTools::expect_equal_tables(table,

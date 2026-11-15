@@ -70,16 +70,16 @@
 <text x='682.24' y='487.05' text-anchor='middle' style='font-size: 17.00px; font-family: sans;' textLength='37.82px' lengthAdjust='spacingAndGlyphs'>1200</text>
 <text x='399.59' y='517.23' text-anchor='middle' style='font-size: 17.00px; font-family: sans;' textLength='37.78px' lengthAdjust='spacingAndGlyphs'>Time</text>
 <text transform='translate(16.68,244.28) rotate(-90)' text-anchor='middle' style='font-size: 17.00px; font-family: sans;' textLength='144.57px' lengthAdjust='spacingAndGlyphs'>Survival Probability</text>
-<rect x='198.29' y='536.69' width='402.59' height='39.31' style='stroke-width: 0.75; stroke: none;' />
-<rect x='198.29' y='536.69' width='402.59' height='39.31' style='stroke-width: 10.67; stroke: none;' />
-<rect x='203.77' y='542.17' width='28.35' height='28.35' style='stroke-width: 10.67; stroke: none;' />
-<line x1='206.61' y1='556.35' x2='229.28' y2='556.35' style='stroke-width: 2.13; stroke: #1B9E77; stroke-linecap: butt;' />
-<rect x='204.48' y='542.88' width='26.93' height='26.93' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #1B9E77; fill-opacity: 0.20;' />
+<rect x='255.94' y='536.69' width='287.28' height='39.31' style='stroke-width: 0.75; stroke: none;' />
+<rect x='255.94' y='536.69' width='287.28' height='39.31' style='stroke-width: 10.67; stroke: none;' />
+<rect x='261.42' y='542.17' width='28.35' height='28.35' style='stroke-width: 10.67; stroke: none;' />
+<line x1='264.26' y1='556.35' x2='286.93' y2='556.35' style='stroke-width: 2.13; stroke: #1B9E77; stroke-linecap: butt;' />
+<rect x='262.13' y='542.88' width='26.93' height='26.93' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #1B9E77; fill-opacity: 0.20;' />
 <rect x='406.11' y='542.17' width='28.35' height='28.35' style='stroke-width: 10.67; stroke: none;' />
 <line x1='408.95' y1='556.35' x2='431.63' y2='556.35' style='stroke-width: 2.13; stroke: #666666; stroke-linecap: butt;' />
 <rect x='406.82' y='542.88' width='26.93' height='26.93' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #666666; fill-opacity: 0.20;' />
-<text x='237.60' y='562.20' style='font-size: 17.00px; font-family: sans;' textLength='163.04px' lengthAdjust='spacingAndGlyphs'>jaspColumn2=FALSE</text>
-<text x='439.94' y='562.20' style='font-size: 17.00px; font-family: sans;' textLength='155.46px' lengthAdjust='spacingAndGlyphs'>jaspColumn2=TRUE</text>
+<text x='295.25' y='562.20' style='font-size: 17.00px; font-family: sans;' textLength='105.39px' lengthAdjust='spacingAndGlyphs'>fustat=FALSE</text>
+<text x='439.94' y='562.20' style='font-size: 17.00px; font-family: sans;' textLength='97.81px' lengthAdjust='spacingAndGlyphs'>fustat=TRUE</text>
 <text x='399.59' y='19.67' text-anchor='middle' style='font-size: 17.00px; font-family: sans;' textLength='243.81px' lengthAdjust='spacingAndGlyphs'>analysis-3_figure-6_survival-plot</text>
 </g>
 </svg>

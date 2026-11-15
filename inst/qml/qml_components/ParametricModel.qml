@@ -77,7 +77,13 @@ Section
 		}
 		return parameters;
 	}
-	function queueRefresh() { Qt.callLater(refreshModels); }
+	// rawPredictors is stale until refreshModels has run: lists that discard the variables that are not predictors
+	// must wait for it, or a (re)bind of saved options would remove the variables assigned to them.
+	function queueRefresh()
+	{
+		if (predictorsInitialized) predictorsInitialized = false;
+		Qt.callLater(refreshModels);
+	}
 	function refreshModels()
 	{
 		if (!predictorSourcesReady || !analysisForm || !analysisForm.initialized() || !modelTerms.initialized || !advancedSpecificationControl.initialized || (advancedSpecificationControl.checked && !locationModifiers.initialized))
