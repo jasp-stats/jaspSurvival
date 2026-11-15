@@ -345,11 +345,11 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   frailtyTable <- createJaspTable(title = gettext("Frailty Summary Table"))
   frailtyTable$dependOn(.saspDependencies)
   frailtyTable$position <- 1.1
+  frailtyTable$addFootnote(gettext("The frailty variance is not reported because the fitting routine's variance update may not correspond to the reported fit."))
   jaspResults[["frailtyTable"]] <- frailtyTable
 
   # create empty table
   frailtyTable$addColumnInfo(name = "param",    title = "",                    type = "string")
-  frailtyTable$addColumnInfo(name = "variance", title = gettext("Variance"),   type = "number")
   frailtyTable$addColumnInfo(name = "chisq",    title = gettext("Chi Square"), type = "number")
   frailtyTable$addColumnInfo(name = "df",       title = gettext("df"),         type = "number")
   frailtyTable$addColumnInfo(name = "p",        title = gettext("p"),          type = "pvalue")
@@ -366,7 +366,6 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   frailtyTable$addRows(list(
     "param"    = options[["frailty"]],
-    "variance" = fit$history[[1]]$theta,
     "chisq"    = fitSummary$coefficients[grepl("frailty", rownames(fitSummary$coefficients)),"Chisq"],
     "df"       = fitSummary$coefficients[grepl("frailty", rownames(fitSummary$coefficients)),"DF"],
     "p"        = fitSummary$coefficients[grepl("frailty", rownames(fitSummary$coefficients)),"p"]
