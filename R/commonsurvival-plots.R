@@ -126,8 +126,8 @@
 }
 
 # Kaplan-Meier and Cox survival plots.
-.saGetSurvivalPlotHeight <- function(options) {
-  if (!options[["plotRiskTable"]])
+.saGetSurvivalPlotHeight <- function(options, type) {
+  if (!options[["plotRiskTable"]] || (type == "Cox" && options[["censoringType"]] == "counting"))
     return(400)
   else if (!options[["plotRiskTableAsASingleLine"]])
     return(450)
@@ -151,7 +151,7 @@
     "risk"                 = gettext("Risk Plot"),
     "cumulativeHazard"     = gettext("Cumulative Hazard Plot"),
     "complementaryLogLog"  = gettext("Complementary Log-Log Plot")
-  ), width = 450, height = .saGetSurvivalPlotHeight(options))
+  ), width = 450, height = .saGetSurvivalPlotHeight(options, type))
   surivalPlot$dependOn(c(if (type == "Cox") .saspDependencies else .sanpDependencies, "plot", "plotType", "plotCi", "plotRiskTable",
                          "plotRiskTableNumberAtRisk", "plotRiskTableCumulativeNumberOfObservedEvents",
                          "plotRiskTableCumulativeNumberOfCensoredObservations", "plotRiskTableNumberOfEventsInTimeInterval",
@@ -203,7 +203,15 @@
   if (options[["plotCi"]])
     tempPlot <- tempPlot + ggsurvfit::add_confidence_interval()
 
-  if (options[["plotRiskTable"]]) {
+  countingCox <- type == "Cox" && options[["censoringType"]] == "counting"
+  if (countingCox) {
+    note <- createJaspHtml(text = gettext("The risk table is unavailable for counting-process data because its counts may include observations before their entry time."), title = "")
+    note$dependOn(c(.saspDependencies, "plot"))
+    note$position <- 7.2
+    jaspResults[["survivalPlotRiskTableNote"]] <- note
+  }
+
+  if (options[["plotRiskTable"]] && !countingCox) {
     riskTableStatistics <-  c(
       if (options[["plotRiskTableNumberAtRisk"]])                               "n.risk",
       if (options[["plotRiskTableCumulativeNumberOfObservedEvents"]])           "cum.event",
