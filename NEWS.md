@@ -1,7 +1,8 @@
 # jaspSurvival Changelog
 
-# jaspSurvival 0.98.3
+# jaspSurvival 0.98.2
 ## Fixed
+* Parametric survival summaries omit AIC/BIC weights and ranks across subgroups and explain that models fitted to different datasets cannot be compared.
 * Corrected probability plotting positions with sequential ties.
 
 
