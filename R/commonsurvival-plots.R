@@ -220,8 +220,17 @@
     }
   }
 
-  if (options[["plotAddQuantile"]])
-    tempPlot <- tempPlot + ggsurvfit::add_quantile(y_value = options[["plotAddQuantileValue"]], color = "gray50", linewidth = 0.75)
+  if (options[["plotAddQuantile"]]) {
+    # add_quantile() expects a plotted ordinate, whereas p is an event-time quantile.
+    p <- options[["plotAddQuantileValue"]]
+    quantileLevel <- switch(options[["plotType"]],
+      "survival"            = 1 - p,
+      "risk"                = p,
+      "cumulativeHazard"    = -log1p(-p),
+      "complementaryLogLog" = log(-log1p(-p))
+    )
+    tempPlot <- tempPlot + ggsurvfit::add_quantile(y_value = quantileLevel, color = "gray50", linewidth = 0.75)
+  }
 
   if (options[["plotTheme"]] == "jasp")
     tempPlot <- tempPlot +
