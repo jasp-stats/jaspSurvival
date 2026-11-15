@@ -376,7 +376,7 @@
     return("Intercept")
   if (varName == "Global")
     return("Global")
-  if (grepl("gamma:", varName, fixed = TRUE) || grepl("gauss:", varName, fixed = TRUE) || grepl("t:", varName, fixed = TRUE))
+  if (grepl("^(gamma|gauss|t):", varName))
     return(paste0("(frailty) ", varName))
 
   for (vn in variables) {
