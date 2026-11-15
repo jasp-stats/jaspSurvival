@@ -156,6 +156,9 @@
 
 .sapSummaryTableFun                      <- function(fit, options) {
 
+  # A single-model table can combine subgroups, which are different datasets.
+  compareModels <- length(fit) > 1 && length(unique(lapply(fit, attr, which = "subgroup"))) == 1
+
   # create the table
   summaryTable <- createJaspTable()
   .sapAddModelColumns(summaryTable, options, output = "modelSummary")
@@ -163,11 +166,11 @@
   summaryTable$addColumnInfo(name = "df",            title = gettext("df"),           type = "integer")
   summaryTable$addColumnInfo(name = "aic",           title = gettext("AIC"),          type = "number", format="dp:3")
   summaryTable$addColumnInfo(name = "bic",           title = gettext("BIC"),          type = "number", format="dp:3")
-  if (options[["modelSummaryAicWeights"]] && length(fit) > 1)
+  if (options[["modelSummaryAicWeights"]] && compareModels)
     summaryTable$addColumnInfo(name = "aicWeight",     title = gettext("AIC Weight"),   type = "number", format="dp:3")
-  if (options[["modelSummaryBicWeights"]] && length(fit) > 1)
+  if (options[["modelSummaryBicWeights"]] && compareModels)
     summaryTable$addColumnInfo(name = "bicWeight",     title = gettext("BIC Weight"),   type = "number", format="dp:3")
-  if (options[["modelSummaryRankModels"]] && length(fit) > 1)
+  if (options[["modelSummaryRankModels"]] && compareModels)
     summaryTable$addColumnInfo(name = "rank",        title = gettext("Rank"),         type = "integer")
 
   if (!.saSurvivalReady(options))
@@ -177,15 +180,15 @@
   data <- .saSafeRbind(lapply(fit, .sapRowSummaryTable))
 
   # add information criteria weights
-  if (options[["modelSummaryAicWeights"]] && length(fit) > 1 && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
+  if (options[["modelSummaryAicWeights"]] && compareModels && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
     data$aicWeight <- .sapInformationCriteria2Weights(data[["aic"]])
   }
-  if (options[["modelSummaryBicWeights"]] && length(fit) > 1 && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
+  if (options[["modelSummaryBicWeights"]] && compareModels && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
     data$bicWeight <- .sapInformationCriteria2Weights(data[["bic"]])
   }
 
   # add model rank
-  if (options[["modelSummaryRankModels"]] && length(fit) > 1 && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
+  if (options[["modelSummaryRankModels"]] && compareModels && !is.null(data[[options[["modelSummaryRankModelsBy"]]]])) {
     data <- data[order(
       data[[options[["modelSummaryRankModelsBy"]]]],
       decreasing = options[["modelSummaryRankModelsBy"]] == "logLik",
