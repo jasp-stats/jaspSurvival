@@ -5,6 +5,7 @@
 * Recurrent event analysis
 
 ## Fixed
+* Corrected probability plotting positions with sequential ties.
 * Parametric models retain standard errors and confidence intervals when only one parameter is estimated.
 * Prediction figures precede tables; outcomes follow the interface order.
 * Small plotting improvements.
