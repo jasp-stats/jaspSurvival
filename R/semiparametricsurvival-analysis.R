@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state = NULL) {
+SemiParametricSurvivalAnalysisInternal <- function(jaspResults, dataset, options, state = NULL) {
 
   options[["analysisType"]] <- "semiparametric"
 
