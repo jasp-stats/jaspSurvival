@@ -450,6 +450,7 @@ Form
 		SA.SurvivalPlot
 		{
 			hasStrata: strata.count > 0
+			riskTableAvailable: !censoringTypeCounting.checked
 		}
 	}
 

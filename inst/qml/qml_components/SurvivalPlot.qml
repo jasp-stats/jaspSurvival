@@ -23,6 +23,8 @@ import JASP.Controls
 CheckBox
 {
 	required property bool hasStrata
+	property bool riskTableAvailable: true
+	id: survivalPlot
 	name:	"plot"
 	label:	qsTr("Plot")
 	info: qsTr("This option generates a customizable survival plot to visualize the estimated survival probabilities over time from your survival analysis. You can choose different transformations of the survival probabilities to display, such as Survival, Risk, Cumulative Hazard, or Complementary Log-Log functions, depending on your analytical needs. The plot allows you to include confidence intervals to assess the precision of the estimates and add a risk table to provide detailed information about the number of subjects at risk and events over time. You can further enhance the plot by adding quantile lines to highlight specific survival times (e.g., median survival time) and adjust the legend position, color palette, and overall theme to suit your preferences.")
@@ -52,9 +54,10 @@ CheckBox
 	CheckBox
 	{
 		name:		"plotRiskTable"
+		enabled:	survivalPlot.riskTableAvailable
 		label:		qsTr("Risk table")
 		checked:	false
-		info: qsTr("Add a risk table below the plot to display additional information about the number of subjects at risk over time.")
+		info: qsTr("Add a risk table below the plot to display additional information about the number of subjects at risk over time. Unavailable for counting-process Cox models because delayed-entry counts may be incorrect.")
 
 		CheckBox
 		{

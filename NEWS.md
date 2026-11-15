@@ -2,6 +2,7 @@
 
 # jaspSurvival 0.98.2
 ## Fixed
+* Disabled Cox risk tables for counting-process data to avoid incorrect risk counts.
 * Quantile lines mark the correct event times on survival, cumulative-hazard, and complementary log-log plots in Kaplan-Meier and Cox analyses.
 * Parametric survival summaries omit AIC/BIC weights and ranks across subgroups and explain that models fitted to different datasets cannot be compared.
 * Corrected probability plotting positions with sequential ties.
