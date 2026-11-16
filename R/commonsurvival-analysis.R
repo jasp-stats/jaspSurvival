@@ -252,7 +252,8 @@
     predictors <- options[["strata"]]
   } else if (type == "Cox") {
     # Cox proportional hazards always includes intercept
-    predictors <- c(.saGetPredictors(options, null = null), .saGetFrailty(options))
+    strata <- if (length(options[["strata"]])) paste0("strata(", options[["strata"]], ")")
+    predictors <- unique(c(.saGetPredictors(options, null = null), strata, .saGetFrailty(options)))
   }
 
   survival <- .saGetSurv(options)
@@ -376,7 +377,7 @@
     return("Intercept")
   if (varName == "Global")
     return("Global")
-  if (grepl("gamma:", varName, fixed = TRUE) || grepl("gauss:", varName, fixed = TRUE) || grepl("t:", varName, fixed = TRUE))
+  if (grepl("^(gamma|gauss|t):", varName))
     return(paste0("(frailty) ", varName))
 
   for (vn in variables) {

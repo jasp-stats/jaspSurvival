@@ -189,7 +189,7 @@ Form
 				id:					strata
 				title:			 	qsTr("Strata")
 				allowedColumns:		["nominal"]
-				info: qsTr("Select variables to define strata, allowing separate baseline hazard functions for each stratum.")
+				info: qsTr("Select variables to define strata, allowing separate baseline hazard functions for each stratum. Stratification always applies to both models, even when these variables are removed from Model Terms. Interactions with strata are only included when explicitly selected.")
 			}
 
 			// TODO: allow only if multiple outcomes are possible
@@ -340,6 +340,7 @@ Form
 			{
 				width:	parent.width * 5 / 9
 				id:		selectedModelTerms
+				sourceWithoutDefaultInteraction: ["covariates", "strata"]
 			}
 		}
 	}
