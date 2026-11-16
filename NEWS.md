@@ -3,6 +3,8 @@
 # jaspSurvival 0.98.2
 ## Fixed
 * Clarified which Cox model tests account for clustering.
+* Corrected standard-error reporting and coefficient confidence intervals in Cox frailty models.
+* Cox models consistently stratify both models and no longer add strata interactions by default.
 * Quantile lines mark the correct event times on survival, cumulative-hazard, and complementary log-log plots in Kaplan-Meier and Cox analyses.
 * Parametric survival summaries omit AIC/BIC weights and ranks across subgroups and explain that models fitted to different datasets cannot be compared.
 * Corrected probability plotting positions with sequential ties.
