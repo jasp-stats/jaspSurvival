@@ -283,6 +283,9 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
   if (length(nullPredictors) != 0)
     summaryTable$addFootnote(gettextf("Null model contains nuisance parameters: %1$s", paste(nullPredictors, collapse = ", ")))
 
+  if (length(options[["strata"]]))
+    summaryTable$addFootnote(gettextf("Both models are stratified via: %1$s.", paste(options[["strata"]], collapse = ", ")))
+
   if (options[["cluster"]] != "")
     summaryTable$addFootnote(gettextf("Robust variance estimation based on %1$s.", options[["cluster"]]))
 
