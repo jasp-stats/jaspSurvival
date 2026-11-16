@@ -2,6 +2,7 @@
 
 # jaspSurvival 0.98.2
 ## Fixed
+* Cox frailty summaries report the variance used by the fitted model instead of the optimizer's next proposal.
 * Fixed interaction labels incorrectly identified as frailty terms.
 * Clarified which Cox model tests account for clustering.
 * Corrected standard-error reporting and coefficient confidence intervals in Cox frailty models.

@@ -369,10 +369,13 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
     return()
 
   fitSummary <- summary(fit)
+  history <- fit[["history"]][[1]]
+  # Match survival's frailty print functions: use the last evaluated theta.
+  variance <- if (!is.null(history[["history"]])) history[["history"]][nrow(history[["history"]]), 1] else history[["theta"]]
 
   frailtyTable$addRows(list(
     "param"    = options[["frailty"]],
-    "variance" = fit$history[[1]]$theta,
+    "variance" = variance,
     "chisq"    = fitSummary$coefficients[grepl("frailty", rownames(fitSummary$coefficients)),"Chisq"],
     "df"       = fitSummary$coefficients[grepl("frailty", rownames(fitSummary$coefficients)),"DF"],
     "p"        = fitSummary$coefficients[grepl("frailty", rownames(fitSummary$coefficients)),"p"]

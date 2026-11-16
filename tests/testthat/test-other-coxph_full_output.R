@@ -182,7 +182,7 @@ test_that("SemiParametricSurvivalAnalysis (analysis 4) results match", {
 
   table <- results[["results"]][["frailtyTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(44.913746237973, 7.99009861923082, 3.78526719796018e-07, "G", 6.10630228739894))
+    list(44.913746237973, 7.99009861923082, 3.78526719796018e-07, "G", 6.08273884032661))
 
   table <- results[["results"]][["hazardRatioTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
