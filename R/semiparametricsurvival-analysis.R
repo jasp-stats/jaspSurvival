@@ -111,14 +111,24 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 .saspCoxph <- function(expr) {
 
   warnings <- character()
+  innerWarning <- "^Inner loop failed to con?verge for iterations "
   fit <- withCallingHandlers(expr, warning = function(w) {
     message <- conditionMessage(w)
     # survival's penalized fitter spells one convergence warning "coverge".
-    if (grepl("converg|coverg|infinite", message, ignore.case = TRUE))
+    if (!grepl(innerWarning, message) && grepl("converg|coverg|infinite", message, ignore.case = TRUE))
       stop(gettextf("The Cox model could not be reliably estimated: %1$s", message), call. = FALSE)
     warnings <<- c(warnings, message)
     invokeRestart("muffleWarning")
   })
+  inner <- grepl(innerWarning, warnings)
+  if (any(inner)) {
+    failedIterations <- as.integer(unlist(regmatches(warnings[inner], gregexpr("[0-9]+", warnings[inner]))))
+    # Earlier inner-loop failures need no warning once the final fit has converged.
+    if (fit[["iter"]][1L] %in% failedIterations ||
+        !all(vapply(fit[["history"]], function(x) isTRUE(x[["done"]]), logical(1))))
+      stop(gettext("The Cox frailty model did not converge."), call. = FALSE)
+    warnings <- warnings[!inner]
+  }
   if (any(is.infinite(stats::coef(fit))))
     stop(gettext("The Cox model could not be reliably estimated because a coefficient is infinite."), call. = FALSE)
   attr(fit, "fitWarnings") <- unique(warnings)
