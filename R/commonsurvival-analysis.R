@@ -252,7 +252,8 @@
     predictors <- options[["strata"]]
   } else if (type == "Cox") {
     # Cox proportional hazards always includes intercept
-    predictors <- c(.saGetPredictors(options, null = null), .saGetFrailty(options))
+    strata <- if (length(options[["strata"]])) paste0("strata(", options[["strata"]], ")")
+    predictors <- unique(c(.saGetPredictors(options, null = null), strata, .saGetFrailty(options)))
   }
 
   survival <- .saGetSurv(options)
