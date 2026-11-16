@@ -202,7 +202,7 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
 
   if (options[["testsWald"]] && options[["frailty"]] == "") {
     testsTable$addRows(list(
-      "test"   = gettext("Wald"),
+      "test"   = if (isTRUE(fitSummary[["used.robust"]])) gettext("Robust Wald") else gettext("Wald"),
       "chiSqr" = fitSummary[["waldtest"]][["test"]],
       "df"     = fitSummary[["waldtest"]][["df"]],
       "p"      = fitSummary[["waldtest"]][["pvalue"]]
@@ -217,6 +217,9 @@ SemiParametricSurvivalAnalysis <- function(jaspResults, dataset, options, state 
       "p"      = fitSummary[["sctest"]][["pvalue"]]
     ))
   }
+
+  if (isTRUE(fitSummary[["used.robust"]]) && (options[["testsLikelihoodRatio"]] || options[["testsScore"]]))
+    testsTable$addFootnote(gettext("The likelihood-ratio and score tests assume independent observations and do not account for clustering. The robust Wald test accounts for clustering."))
 
   testsTable$addFootnote(gettext("Tests are based on the H\u2081 model."))
 
