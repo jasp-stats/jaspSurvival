@@ -2,6 +2,7 @@
 
 # jaspSurvival 0.98.2
 ## Fixed
+* Fixed interaction labels incorrectly identified as frailty terms.
 * Clarified which Cox model tests account for clustering.
 * Corrected standard-error reporting and coefficient confidence intervals in Cox frailty models.
 * Cox models consistently stratify both models and no longer add strata interactions by default.
