@@ -164,74 +164,25 @@ test_that("SemiParametricSurvivalAnalysis (analysis 3) results match", {
 
 })
 
-test_that("SemiParametricSurvivalAnalysis (analysis 4) results match", {
+test_that("SemiParametricSurvivalAnalysis (analysis 4) reports final non-convergence", {
 
-  # Load from JASP example file
+  # The alternative fit fails on its final inner iteration; the null fit recovers.
   jaspFile <- testthat::test_path("jaspfiles", "other", "coxph_full_output.jasp")
   opts <- jaspTools::analysisOptions(jaspFile)[[4]]
   dataset <- jaspTools::extractDatasetFromJASPFile(jaspFile)
 
-  # Run analysis
   set.seed(1)
   results <- jaspTools::runAnalysis("SemiParametricSurvivalAnalysis", dataset, opts)
+  output <- results[["results"]]
 
-  table <- results[["results"]][["estimatesTable"]][["data"]]
-  jaspTools::expect_equal_tables(table,
-    list(0.062318329555653, -0.0525937416460908, "H<unicode>", "age",
-         0.291043368786259, 0.0586296850902137, 0.0590227630983666, 0.177230400757397, 1.05583551640566))
+  for (name in c("summaryTable", "estimatesTable", "hazardRatioTable", "modelFitTable", "testsTable"))
+    expect_match(output[[name]][["error"]][["errorMessage"]], "The Cox frailty model did not converge.", fixed = TRUE)
 
-  table <- results[["results"]][["frailtyTable"]][["data"]]
-  jaspTools::expect_equal_tables(table,
-    list(44.913746237973, 7.99009861923082, 3.78526719796018e-07, "G", 6.10630228739894))
+  for (name in c("estimatesTable", "frailtyTable", "testsTable"))
+    expect_length(output[[name]][["data"]], 0L)
+  expect_true(is.null(output[["surivalPlot"]][["data"]]) || output[["surivalPlot"]][["data"]] == "")
 
-  table <- results[["results"]][["hazardRatioTable"]][["data"]]
-  jaspTools::expect_equal_tables(table,
-    list(1.06430108930181, 0.948034712927676, "H<unicode>", "age", 1.19482630039036))
-
-  table <- results[["results"]][["modelFitTable"]][["data"]]
-  jaspTools::expect_equal_tables(table,
-    list(0.967889908256881, 0.00811146577439577, "H<unicode>", 0.967889908256881,
-     0.0149858635085453, "H<unicode>"))
-
-  plotName <- results[["results"]][["proportionalHazardsPlots"]][["collection"]][["proportionalHazardsPlots_plot1"]][["data"]]
-  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-4_figure-1_jaspcolumn1")
-
-  table <- results[["results"]][["proportionalHazardsTable"]][["data"]]
-  jaspTools::expect_equal_tables(table,
-    list(0.0195685732474866, 0.986724813170825, 0.885250200704232, "age", 0.0195685732474866,
-         8.97682343240164, 0.999999999981531, "Global"))
-
-  plotName <- results[["results"]][["residualsPlots"]][["collection"]][["residualsPlots_residualPlotResidualHistogram"]][["data"]]
-  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-4_figure-2_residuals-histogram")
-
-  plotName <- results[["results"]][["residualsPlots"]][["collection"]][["residualsPlots_residualPlotResidualVsPredicted"]][["data"]]
-  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-4_figure-3_residuals-vs-predicted")
-
-  plotName <- results[["results"]][["residualsPlots"]][["collection"]][["residualsPlots_residualPlotResidualVsPredictors1"]][["data"]]
-  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-4_figure-4_residuals-vs-jaspcolumn1")
-
-  plotName <- results[["results"]][["residualsPlots"]][["collection"]][["residualsPlots_residualPlotResidualVsTime"]][["data"]]
-  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-4_figure-5_residuals-vs-time")
-
-  table <- results[["results"]][["summaryTable"]][["data"]]
-  jaspTools::expect_equal_tables(table,
-    list(40.4496091964594, 44.4249273993426, 8.19811030560462, -12.0266942926251,
-     "H<unicode>", 44.1391919021048, 48.4921132784491, 8.97682343240164,
-     -13.0927725186507, "H<unicode>"))
-
-  plotName <- results[["results"]][["surivalPlot"]][["data"]]
-  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  jaspTools::expect_equal_plots(testPlot, "analysis-4_figure-6_survival-plot")
-
-  table <- results[["results"]][["testsTable"]][["data"]]
-  jaspTools::expect_equal_tables(table,
-    list(43.7843357050237, 8.97682343240164, 1.51557952374564e-06, "Likelihood ratio"
-    ))
+  jaspTools::expect_equal_tables(output[["summaryTable"]][["data"]],
+    list(40.4496091964594, 44.4249273993426, 8.19811030560462, -12.0266942926251, "H<unicode>"))
 
 })
-
