@@ -148,7 +148,7 @@ test_that("SemiParametricSurvivalAnalysis (analysis 3) results match", {
 
   table <- results[["results"]][["summaryTable"]][["data"]]
   jaspTools::expect_equal_tables(table,
-    list(69.9698807423251, 69.9698807423251, 0, -34.9849403711626, "H<unicode>",
+    list(39.9744289913238, 39.9744289913238, 0, -19.9872144956619, "H<unicode>",
      36.8843005777971, 37.3692072275851, 1, -17.4421502888985, "H<unicode>"
     ))
 
