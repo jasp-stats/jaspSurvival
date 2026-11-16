@@ -158,6 +158,13 @@
                          "plotRiskTableNumberOfCensoredObservationsInTimeInterval", "plotRiskTableAsASingleLine",
                          "plotAddQuantile", "plotAddQuantileValue",
                          "colorPalette", "plotLegend", "plotTheme"))
+  if (type == "Cox") {
+    surivalPlot$title <- gettextf("%1$s (Reference Values)", surivalPlot$title)
+    note <- createJaspHtml(text = gettext("Curves use the model's default reference values. Design columns containing only -1, 0 or 1 are set to zero; other columns, including interactions, are set to their means, using case weights when supplied. These are not population-averaged survival curves."), title = "")
+    note$dependOn(c(.saspDependencies, "plot", "plotType"))
+    note$position <- 7.1
+    jaspResults[["survivalPlotReferenceNote"]] <- note
+  }
   surivalPlot$position <- switch(
     type,
     "KM"  = 3,
