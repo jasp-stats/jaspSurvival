@@ -2,10 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jaspSurvival 0.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
-"POT-Creation-Date: 2026-10-31 05:54\n"
+"POT-Creation-Date: 2026-11-21 05:53\n"
 "PO-Revision-Date: 2026-11-08 10:51+0000\n"
-"Last-Translator: Johannes Keyser <jokeyser@users.noreply.hosted.weblate.org>"
-"\n"
+"Last-Translator: Johannes Keyser "
+"<jokeyser@users.noreply.hosted.weblate.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspsurvival-"
 "r/de/>\n"
 "Language: de\n"
@@ -1338,6 +1338,10 @@ msgstr "BIC-Gewicht"
 msgid "Rank"
 msgstr "Rang"
 
+msgid ""
+"Models cannot be compared because they are fitted to different datasets."
+msgstr ""
+
 msgid "Error:"
 msgstr "Fehler:"
 
@@ -2042,11 +2046,19 @@ msgstr "Das Modell ist mit der folgenden Meldung fehlgeschlagen: %1$s."
 msgid "Likelihood ratio"
 msgstr "Likelihood-Ratio"
 
+msgid "Robust Wald"
+msgstr ""
+
 msgid "Wald"
 msgstr "Wald"
 
 msgid "Score"
 msgstr "Score"
+
+msgid ""
+"The likelihood-ratio and score tests assume independent observations and do "
+"not account for clustering. The robust Wald test accounts for clustering."
+msgstr ""
 
 #, fuzzy
 msgid "Tests are based on the H₁ model."
@@ -2071,6 +2083,10 @@ msgstr "%1$i Beobachtungen mit %2$i Ereignissen."
 
 msgid "Null model contains nuisance parameters: %1$s"
 msgstr "Das Nullmodell enthält Störparameter: %1$s"
+
+#, fuzzy
+msgid "Both models are stratified via: %1$s."
+msgstr "Die Ergebnisse sind geschichtet über: %1$s."
 
 msgid "Robust variance estimation based on %1$s."
 msgstr "Robuste Varianzschätzung auf Basis von %1$s."

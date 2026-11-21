@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R-jaspSurvival\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
-"POT-Creation-Date: 2026-10-31 05:54\n"
+"POT-Creation-Date: 2026-11-21 05:53\n"
 "PO-Revision-Date: 2026-08-10 00:00+0000\n"
 "Last-Translator: automated <noreply>\n"
 "Language-Team: French\n"
@@ -1322,6 +1322,10 @@ msgstr "Poids BIC"
 msgid "Rank"
 msgstr "Rang"
 
+msgid ""
+"Models cannot be compared because they are fitted to different datasets."
+msgstr ""
+
 #, fuzzy
 msgid "Error:"
 msgstr "Erreur : "
@@ -2027,11 +2031,19 @@ msgstr "Le modèle a échoué avec le message suivant : %1$s."
 msgid "Likelihood ratio"
 msgstr "Rapport de vraisemblance"
 
+msgid "Robust Wald"
+msgstr ""
+
 msgid "Wald"
 msgstr "Wald"
 
 msgid "Score"
 msgstr "Score"
+
+msgid ""
+"The likelihood-ratio and score tests assume independent observations and do "
+"not account for clustering. The robust Wald test accounts for clustering."
+msgstr ""
 
 #, fuzzy
 msgid "Tests are based on the H₁ model."
@@ -2056,6 +2068,10 @@ msgstr "%1$i observations avec %2$i événements."
 
 msgid "Null model contains nuisance parameters: %1$s"
 msgstr "Le modèle nul contient des paramètres de nuisance : %1$s"
+
+#, fuzzy
+msgid "Both models are stratified via: %1$s."
+msgstr "Les résultats sont stratifiés par : %1$s."
 
 msgid "Robust variance estimation based on %1$s."
 msgstr "Estimation robuste de la variance basée sur %1$s."

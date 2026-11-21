@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jaspSurvival 0.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
-"POT-Creation-Date: 2026-10-31 05:54\n"
+"POT-Creation-Date: 2026-11-21 05:53\n"
 "PO-Revision-Date: 2026-01-01 00:00+0000\n"
 "Last-Translator: JASP translators\n"
 "Language-Team: Dutch\n"
@@ -1322,6 +1322,10 @@ msgstr "BIC-gewicht"
 msgid "Rank"
 msgstr "Rang"
 
+msgid ""
+"Models cannot be compared because they are fitted to different datasets."
+msgstr ""
+
 #, fuzzy
 msgid "Error:"
 msgstr "Fout:"
@@ -2026,11 +2030,19 @@ msgstr "Het model is mislukt met de volgende melding: %1$s."
 msgid "Likelihood ratio"
 msgstr "Likelihoodratio"
 
+msgid "Robust Wald"
+msgstr ""
+
 msgid "Wald"
 msgstr "Wald"
 
 msgid "Score"
 msgstr "Score"
+
+msgid ""
+"The likelihood-ratio and score tests assume independent observations and do "
+"not account for clustering. The robust Wald test accounts for clustering."
+msgstr ""
 
 #, fuzzy
 msgid "Tests are based on the H₁ model."
@@ -2055,6 +2067,10 @@ msgstr "%1$i waarnemingen met %2$i gebeurtenissen."
 
 msgid "Null model contains nuisance parameters: %1$s"
 msgstr "Het nulmodel bevat nuisanceparameters: %1$s"
+
+#, fuzzy
+msgid "Both models are stratified via: %1$s."
+msgstr "De resultaten zijn gestratificeerd via: %1$s."
 
 msgid "Robust variance estimation based on %1$s."
 msgstr "Robuuste variantschatting op basis van %1$s."

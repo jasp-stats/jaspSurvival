@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: jaspSurvival 0.98.2\n"
-"POT-Creation-Date: 2026-10-31 05:54\n"
+"Project-Id-Version: jaspSurvival 0.98.3\n"
+"POT-Creation-Date: 2026-11-21 05:53\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1088,6 +1088,9 @@ msgstr ""
 msgid "Rank"
 msgstr ""
 
+msgid "Models cannot be compared because they are fitted to different datasets."
+msgstr ""
+
 msgid "Error:"
 msgstr ""
 
@@ -1616,10 +1619,16 @@ msgstr ""
 msgid "Likelihood ratio"
 msgstr ""
 
+msgid "Robust Wald"
+msgstr ""
+
 msgid "Wald"
 msgstr ""
 
 msgid "Score"
+msgstr ""
+
+msgid "The likelihood-ratio and score tests assume independent observations and do not account for clustering. The robust Wald test accounts for clustering."
 msgstr ""
 
 msgid "Tests are based on the H₁ model."
@@ -1638,6 +1647,9 @@ msgid "%1$i observations with %2$i events."
 msgstr ""
 
 msgid "Null model contains nuisance parameters: %1$s"
+msgstr ""
+
+msgid "Both models are stratified via: %1$s."
 msgstr ""
 
 msgid "Robust variance estimation based on %1$s."

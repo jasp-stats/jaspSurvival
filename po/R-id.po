@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
-"POT-Creation-Date: 2026-10-31 05:54\n"
+"POT-Creation-Date: 2026-11-21 05:53\n"
 "PO-Revision-Date: 2026-09-09 23:44+0000\n"
 "Last-Translator: Zahid Rizky Fakhri <zahidrizkyfakhri@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/jasp/"
@@ -1279,6 +1279,10 @@ msgstr ""
 msgid "Rank"
 msgstr ""
 
+msgid ""
+"Models cannot be compared because they are fitted to different datasets."
+msgstr ""
+
 msgid "Error:"
 msgstr ""
 
@@ -1952,10 +1956,18 @@ msgstr ""
 msgid "Likelihood ratio"
 msgstr ""
 
+msgid "Robust Wald"
+msgstr ""
+
 msgid "Wald"
 msgstr ""
 
 msgid "Score"
+msgstr ""
+
+msgid ""
+"The likelihood-ratio and score tests assume independent observations and do "
+"not account for clustering. The robust Wald test accounts for clustering."
 msgstr ""
 
 msgid "Tests are based on the H₁ model."
@@ -1976,6 +1988,9 @@ msgid "%1$i observations with %2$i events."
 msgstr ""
 
 msgid "Null model contains nuisance parameters: %1$s"
+msgstr ""
+
+msgid "Both models are stratified via: %1$s."
 msgstr ""
 
 msgid "Robust variance estimation based on %1$s."
